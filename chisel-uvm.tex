@@ -27,6 +27,7 @@
 \newcommand{\simon}[1]{{\color{green} Simon: #1}}
 \newcommand{\abcdef}[1]{{\color{red} Author2: #1}}
 \newcommand{\rewrite}[1]{{\color{red} rewrite: #1}}
+\newcommand{\ducky}[1]{{\color{orange} Richard: #1}}
 
 % uncomment following for final submission
 %\renewcommand{\todo}[1]{}
@@ -80,6 +81,8 @@ adds object-oriented concepts for the non-synthesizable verification code.
 Chisel is a language, embedded in Scala, to describe and verify digital circuits.
 Scala/Chisel brings object-oriented and functional programming into the world of
 digital design.
+
+\ducky{Chisel is a synthesis language, without dedicated test constructs - do one thing well, instead of the jack-of-both-trades Verilog/SystemVerilog}
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -115,6 +118,7 @@ Section~\ref{sec:conclusion} concludes.
 into context or contrast to our current work.}
 
 \martin{Does BluseSpec Verilog has something to offer?}
+\ducky{BSV is a higher-level design abstraction around guarded atomic actions - so relevant in terms of raising the level of design for digital logic, but a different approach than Chisel. My understanding (which may be outdated / wrong) is that BSV is propreitary, which is one reason it does not have significant traction. Earlier versions were heavily Haskell-based, which also does not help with perceived usability, supposedly that is why they're now branded "Bluespec SystemVerilog".}
 
 
 \section{The Classic Hardware Description Languages}
@@ -142,6 +146,8 @@ the research and more software oriented approach of Chisel/Scala.
 \todo{Be nice to all and show how we can combine different approach to
 get the best of both worlds}
 
+\ducky{The main nontechnical benefits of UVM are a large library and userbase, and this inertia is probably going to hamper adoption of a new tool, especially if that new tool is more incremental than revolutionary. To my understanding, the main technical benefits of UVM are re-use and separation of responsibilities, and is inspired by an old-ish (and fairly verbose) form of OO}
+
 \subsection{Using UVM with Chisel}
 
 The Chisel toolchain translates Chisel code into plain Verilog for simulation and
@@ -167,10 +173,12 @@ A solution for this is based on the principle of using synthesis tools to analyz
 
 \todo{reusing Chisel tests (ScalaTest) within the UVM framework
 with the generated Verilog code}
+\ducky{UVM is largely a framework and library for testing blocks ("IP"), I don't think transpiling ChiselTest to UVM is feasible. Best I would practically hope for is interop between both, eg ChiselTest hooks to call UVM functions in a Verilog simulation environment, to enable continued use of legacy test code, Not sure the other way around is worth doing (calling ChiselTest functions from within a UVM environment)}
 
 \section{Co-Simulation}
 
 \todo{with C/C++/Java/Scala/Phyton, ....}
+\ducky{Should be tons of this already. CoCoTb is a Python cosimulation environment. Rocket-chip uses C++ cosimulation in their RTL tests.}
 
 \section{Evaluation}
 
@@ -178,6 +186,8 @@ Although this is a work-in-progress report, we have started with an evaluation.
 We implemented a simple ALU in SystemVerilog, classic Verilog, VHDL, and Chisel.
 We wrote a testbench in SystemVerilog and in Scala. As execution platform we
 used Synopsys VCS, ModelSim, Treadle, and Verilator.
+\ducky{Likely criticism from peer review is that the example is too simple.}
+\ducky{I'd also like to see some kind of human evaluation - though I'm not sure what kind of methodology is accepted in the digital design community. Could maybe drop a HCI paper cite to hint that whatever methodology used is accepted in other communities.}
 
 The examples are available in open source from: \url{https://github.com/chisel-uvm}.
 

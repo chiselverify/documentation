@@ -28,6 +28,7 @@
 \newcommand{\abcdef}[1]{{\color{red} Author2: #1}}
 \newcommand{\rewrite}[1]{{\color{red} rewrite: #1}}
 \newcommand{\ducky}[1]{{\color{orange} Richard: #1}}
+\newcommand{\kasper}[1]{{\color{purple} Kasper: #1}}
 
 % uncomment following for final submission
 %\renewcommand{\todo}[1]{}
@@ -156,6 +157,7 @@ An important issue is that the modules and port names in the generated Verilog
 code are reasonable and do not change when changing the Chisel design.
 
 \subsection{UVM with VHDL}
+\kasper{Shouldn't this actually be UVM with (System)Verilog? Or are we focusing specifically on VHDL because UVM isn't made for VHDL, and thus we're looking into what's possible?}
 
 \subsection{Chisel with Verilog}
 
@@ -283,9 +285,17 @@ Part of this is probably already looked at by PhD students at UCB.
 \item 
 \end{itemize}
 
+\subsection{Helpful links and resources}
+
 VHDL/SV comparison: \url{http://www.sunburst-design.com/papers/CummingsSNUG2003Boston_SystemVerilog_VHDL.pdf}
 
 Open-source design flow, maybe for the Basys3: \url{https://symbiflow.github.io/}
+
+Video primer on using UVM, explains what each component of the UVM test does and why things are set up the way they are
+\url{https://www.youtube.com/watch?v=FkclDiK4Oco}
+
+Website that has relatively in-depth and understandable explanations of UVM concepts and structure
+\url{https://www.chipverify.com/uvm/uvm-hello-world}
 
 
 

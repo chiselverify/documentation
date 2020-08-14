@@ -168,6 +168,8 @@ Chisel has support for black boxes, which allows to use Verilog code within the 
 
 A solution for this is based on the principle of using synthesis tools to analyze the VHDL RTL code and synthesize a gate-level netlist for this. These synthesis tools can often output a Verilog-based netlist. A free solution for this would be the Yosys \simon{ref} synthesis suite, which is an open-source digital hardware synthesis suite for Verilog code. It has support for VHDL by using Verific as a front-end, which requires a license. For an alternative solution to this, GHDL \simon{ref} would be used. GHDL is an open source simulator for VHDL which also funcions as a plugin for Yosys. This allows yosys to analyze VHDL files using GHDL and then synthesize a circuit. The gate-level netlist can then be saved as a Verilog file, which can be used for the simulation system. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002 and a subset of 2008.\\
 
+
+Testing
 \simon{Insert small image that depicts the workflow for this.}
 
 

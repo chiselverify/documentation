@@ -127,10 +127,32 @@ into context or contrast to our current work.}
 \section{SystemVerilog}
 
 \todo{adds some VHDL features to Verilog. Tries to please VHDL developers.}
+\kasper{Should we focus on SystemVerilog as an HDL or as an HVL? And should we add a third heading describing the setup of a UVM testbench?} 
 
 SystemVerilog is IEEE standard, proprietary tools.
 
 Chisel is research stuff and open-source
+
+\kasper{
+SystemVerilog is an extension of Verilog, both of which are standardized by the IEEE. Verilog was originally standardized as IEEE 1364, and SystemVerilog is a superset of Verilog, standardized in IEEE 1800. Since 2009, they have both been standardized under IEEE 1800. 
+
+Verilog was primarily an HDL with non-synthesizable constructs for testbenches, SystemVerilog can be seen as a Hardware Description and Verification Language (HDVL). This makes it a tool that both design and verification engineers can benefit from, and reduces the number of tools that a company must support. 
+
+Some of the major benefits that SystemVerilog introduce include: 
+\begin{itemize}
+    \item Enumerated types
+    \item User defined types using \texttt{typedef}
+    \item Object-oriented programming for more efficient testbench design
+    \item Interfaces that allow the designer to bundle related signals
+\end{itemize}
+Further benefits of SystemVerilog over Verilog are listed in \cite{Sutherland2010}.
+
+For verification engineers, the fact that SystemVerilog supports Object-oriented programming (OOP), makes it easier to design reusable and scalable testbenches. By designing generic components that can be extended to provide application-specific functionality, less re-use is required.
+
+SystemVerilog also introduces built-in support for Constrained Random Verification (CRV). In CRV, inputs to the DUT are randomized according to a set of constraints such that transactions for a given protocol can easily be generated. This saves designers the hassle of writing directed tests (is this relevant? I hope no companies are using only directed tests).
+
+SystemVerilog also supports functional verification, allowing the verification engineer to test whether edge and corner cases have been thoroughly tested. 
+}
 
 \section{Chisel}
 
@@ -178,6 +200,9 @@ Testing
 \todo{reusing Chisel tests (ScalaTest) within the UVM framework
 with the generated Verilog code}
 \ducky{UVM is largely a framework and library for testing blocks ("IP"), I don't think transpiling ChiselTest to UVM is feasible. Best I would practically hope for is interop between both, eg ChiselTest hooks to call UVM functions in a Verilog simulation environment, to enable continued use of legacy test code, Not sure the other way around is worth doing (calling ChiselTest functions from within a UVM environment)}
+
+\kasper{ I agree with Richard on his above point. It doesn't seem feasible to use Chisel features inside of UVM. Instead, UVM might be a useful tool to verify that hardware described in Chisel lives up to its specs. 
+It might be useful to focus on the fact that companies could transition their design teams into using Chisel and generating Verilog, while the verification teams wouldn't have to do anything different (assuming they already use UVM). I could definitely see this being feasible. }
 
 \section{Co-Simulation}
 

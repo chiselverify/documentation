@@ -53,10 +53,13 @@
 \begin{document}
 
 
-\title{Towards Verification of Digital Circuits with\\
-SystemVerilog/UVM and Chisel/Scala}
+%\title{Towards Verification of Digital Circuits with\\
+%SystemVerilog/UVM and Chisel/Scala}
 
-\author{Martin, Simon, Kasper, Richard, and Jan}
+\title{Towards a Verification Method with\\
+Chisel and Scala}
+
+\author{Martin, Simon, Kasper, Richard}
 
 % Most conferences have their own commands for author headings.
 
@@ -112,7 +115,8 @@ Section X and Y
 Section~\ref{sec:eval} evaluates...
 Section~\ref{sec:conclusion} concludes.
 
-\section{Related Work}
+
+\section{Overview of the Universal Verification Method}
 \label{sec:related}
 
 \todo{Show that you know the field. All related work shall be put
@@ -121,95 +125,42 @@ into context or contrast to our current work.}
 \martin{Does BluseSpec Verilog has something to offer?}
 \ducky{BSV is a higher-level design abstraction around guarded atomic actions - so relevant in terms of raising the level of design for digital logic, but a different approach than Chisel. My understanding (which may be outdated / wrong) is that BSV is propreitary, which is one reason it does not have significant traction. Earlier versions were heavily Haskell-based, which also does not help with perceived usability, supposedly that is why they're now branded "Bluespec SystemVerilog".}
 
+\section{The Open-Source Tools}
 
-\section{The Classic Hardware Description Languages}
+\subsection{Chisel}
 
-\section{SystemVerilog}
+Chisel is a hardware construction language in Scala.~\cite{chisel:dac2012}.
+Chisel allows to write hardware generators
+in Scala, which itself is an object-oriented and functional language.
+For hardware generation and testing the full Scala language and Java
+libraries are available. For example, we read in the string based TDM
+schedules~\footnote{available at: \url{https://github.com/t-crest/s4noc/tree/master/noc/vhdl/generated}}
+and convert them with a few lines of Scala code into a hardware table to
+drive the multiplexer of the router and the NI.
 
-\todo{adds some VHDL features to Verilog. Tries to please VHDL developers.}
-\kasper{Should we focus on SystemVerilog as an HDL or as an HVL? And should we add a third heading describing the setup of a UVM testbench?} 
+\martin{This is just a starting point, way more is needed.}
 
-SystemVerilog is IEEE standard, proprietary tools.
+\subsection{ChiselTest}
 
-Chisel is research stuff and open-source
+\subsection{Simulators}
 
-\kasper{
-SystemVerilog is an extension of Verilog, both of which are standardized by the IEEE. Verilog was originally standardized as IEEE 1364, and SystemVerilog is a superset of Verilog, standardized in IEEE 1800. Since 2009, they have both been standardized under IEEE 1800. 
+\todo{On Treadle and verilator}
 
-Verilog was primarily an HDL with non-synthesizable constructs for testbenches, SystemVerilog can be seen as a Hardware Description and Verification Language (HDVL). This makes it a tool that both design and verification engineers can benefit from, and reduces the number of tools that a company must support. 
 
-Some of the major benefits that SystemVerilog introduce include: 
-\begin{itemize}
-    \item Enumerated types
-    \item User defined types using \texttt{typedef}
-    \item Object-oriented programming for more efficient testbench design
-    \item Interfaces that allow the designer to bundle related signals
-\end{itemize}
-Further benefits of SystemVerilog over Verilog are listed in \cite{Sutherland2010}.
+\section{Integrating Legacy Languages}
 
-For verification engineers, the fact that SystemVerilog supports Object-oriented programming (OOP), makes it easier to design reusable and scalable testbenches. By designing generic components that can be extended to provide application-specific functionality, less re-use is required.
+\subsection{Verilog Components}
 
-SystemVerilog also introduces built-in support for Constrained Random Verification (CRV). In CRV, inputs to the DUT are randomized according to a set of constraints such that transactions for a given protocol can easily be generated. This saves designers the hassle of writing directed tests (is this relevant? I hope no companies are using only directed tests).
+\subsection{VHDL Components}
 
-SystemVerilog also supports functional verification, allowing the verification engineer to test whether edge and corner cases have been thoroughly tested. 
-}
-
-\section{Chisel}
-
-Chisel~\cite{chisel:dac2012} 
-
-\section{Combining the Approaches}
-
-Although SystemVerilog/UVM and Chisel/Scala look like competing initiatives
-to solve the verification problem, it should be possible to combine those two methods.
-By using this combination we might be able to enjoy the benefits of both worlds:
-the industrial proven SystemVerilog/UVM tool chain with the available IPs with
-the research and more software oriented approach of Chisel/Scala. 
-
-\todo{Be nice to all and show how we can combine different approach to
-get the best of both worlds}
-
-\ducky{The main nontechnical benefits of UVM are a large library and userbase, and this inertia is probably going to hamper adoption of a new tool, especially if that new tool is more incremental than revolutionary. To my understanding, the main technical benefits of UVM are re-use and separation of responsibilities, and is inspired by an old-ish (and fairly verbose) form of OO}
-
-\subsection{Using UVM with Chisel}
-
-The Chisel toolchain translates Chisel code into plain Verilog for simulation and
-synthesis. Therefore, we can use a UVM based test bench to test Chisel generated code.
-An important issue is that the modules and port names in the generated Verilog
-code are reasonable and do not change when changing the Chisel design.
-
-\subsection{UVM with VHDL}
-\kasper{Shouldn't this actually be UVM with (System)Verilog? Or are we focusing specifically on VHDL because UVM isn't made for VHDL, and thus we're looking into what's possible?}
-
-\subsection{Chisel with Verilog}
-
-\subsection{Chisel with VHDL}
-
-\todo{Simon, this is the place for you}
 Chisel has support for black boxes, which allows to use Verilog code within the Chisel design. However, it does not fully support VHDL. It can support VHDL using VCS, but there is no open source solution available for VHDL. This is due to the use of Treadle and Verilator \simon{Ref} for open source simulation. Treadle only supports Chisel code while Verilator is run on the generated Verilog. Therefore, Verilator can also simulate black boxes written in Verilog. However, VHDL is now a concern to companies that has a lot of source code written in VHDL, which needs to be compatible with any systems written in Chisel. As many simulation and synthesis tools supports mixed-language implementations, this is not an issue for the implementation part. But for open source testing, it proves to be a problem.
 
-A solution for this is based on the principle of using synthesis tools to analyze the VHDL RTL code and synthesize a gate-level netlist for this. These synthesis tools can often output a Verilog-based netlist. A free solution for this would be the Yosys \simon{ref} synthesis suite, which is an open-source digital hardware synthesis suite for Verilog code. It has support for VHDL by using Verific as a front-end, which requires a license. For an alternative solution to this, GHDL \simon{ref} would be used. GHDL is an open source simulator for VHDL which also funcions as a plugin for Yosys. This allows yosys to analyze VHDL files using GHDL and then synthesize a circuit. The gate-level netlist can then be saved as a Verilog file, which can be used for the simulation system. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002 and a subset of 2008.\\
-
+A solution for this is based on the principle of using synthesis tools to analyze the VHDL RTL code and synthesize a gate-level netlist for this. These synthesis tools can often output a Verilog-based netlist. A free solution for this would be the Yosys \simon{ref} synthesis suite, which is an open-source digital hardware synthesis suite for Verilog code. It has support for VHDL by using Verific as a front-end, which requires a license. For an alternative solution to this, GHDL \simon{ref} would be used. GHDL is an open source simulator for VHDL which also funcions as a plugin for Yosys. This allows yosys to analyze VHDL files using GHDL and then synthesize a circuit. The gate-level netlist can then be saved as a Verilog file, which can be used for the simulation system. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002 and a subset of 2008.
 
 Testing
 \simon{Insert small image that depicts the workflow for this.}
 
-
-\subsection{Chisel with UVM}
-
-\todo{reusing Chisel tests (ScalaTest) within the UVM framework
-with the generated Verilog code}
-\ducky{UVM is largely a framework and library for testing blocks ("IP"), I don't think transpiling ChiselTest to UVM is feasible. Best I would practically hope for is interop between both, eg ChiselTest hooks to call UVM functions in a Verilog simulation environment, to enable continued use of legacy test code, Not sure the other way around is worth doing (calling ChiselTest functions from within a UVM environment)}
-
-\kasper{ I agree with Richard on his above point. It doesn't seem feasible to use Chisel features inside of UVM. Instead, UVM might be a useful tool to verify that hardware described in Chisel lives up to its specs. 
-It might be useful to focus on the fact that companies could transition their design teams into using Chisel and generating Verilog, while the verification teams wouldn't have to do anything different (assuming they already use UVM). I could definitely see this being feasible. }
-
-\section{Co-Simulation}
-
-\todo{with C/C++/Java/Scala/Phyton, ....}
-\ducky{Should be tons of this already. CoCoTb is a Python cosimulation environment. Rocket-chip uses C++ cosimulation in their RTL tests.}
-
-\section{Evaluation}
+\section{First Experiments}
 
 Although this is a work-in-progress report, we have started with an evaluation.
 We implemented a simple ALU in SystemVerilog, classic Verilog, VHDL, and Chisel.
@@ -219,6 +170,20 @@ used Synopsys VCS, ModelSim, Treadle, and Verilator.
 \ducky{I'd also like to see some kind of human evaluation - though I'm not sure what kind of methodology is accepted in the digital design community. Could maybe drop a HCI paper cite to hint that whatever methodology used is accepted in other communities.}
 
 The examples are available in open source from: \url{https://github.com/chisel-uvm}.
+
+\subsection{Using UVM with Chisel}
+
+The Chisel toolchain translates Chisel code into plain Verilog for simulation and
+synthesis. Therefore, we can use a UVM based test bench to test Chisel generated code.
+An important issue is that the modules and port names in the generated Verilog
+code are reasonable and do not change when changing the Chisel design.
+
+
+\section{The Road Ahead}
+
+\todo{ScalaTest and PBT with ScalaCheck.}
+
+
 
 
 \subsection{Source Access}
@@ -250,6 +215,59 @@ testers and collecting coverage metrics within FIRRTL.
 %\newpage
 ~
 \newpage
+
+\section{The Classic Hardware Description Languages}
+
+\section{SystemVerilog}
+
+\todo{adds some VHDL features to Verilog. Tries to please VHDL developers.}
+
+SystemVerilog is IEEE standard, proprietary tools.
+
+Chisel is research stuff and open-source
+
+\section{Chisel}
+
+Chisel~\cite{chisel:dac2012} 
+
+\section{Combining the Approaches}
+
+Although SystemVerilog/UVM and Chisel/Scala look like competing initiatives
+to solve the verification problem, it should be possible to combine those two methods.
+By using this combination we might be able to enjoy the benefits of both worlds:
+the industrial proven SystemVerilog/UVM tool chain with the available IPs with
+the research and more software oriented approach of Chisel/Scala. 
+
+\todo{Be nice to all and show how we can combine different approach to
+get the best of both worlds}
+
+\ducky{The main nontechnical benefits of UVM are a large library and userbase, and this inertia is probably going to hamper adoption of a new tool, especially if that new tool is more incremental than revolutionary. To my understanding, the main technical benefits of UVM are re-use and separation of responsibilities, and is inspired by an old-ish (and fairly verbose) form of OO}
+
+\subsection{Using UVM with Chisel}
+
+The Chisel toolchain translates Chisel code into plain Verilog for simulation and
+synthesis. Therefore, we can use a UVM based test bench to test Chisel generated code.
+An important issue is that the modules and port names in the generated Verilog
+code are reasonable and do not change when changing the Chisel design.
+
+\subsection{UVM with VHDL}
+\kasper{Shouldn't this actually be UVM with (System)Verilog? Or are we focusing specifically on VHDL because UVM isn't made for VHDL, and thus we're looking into what's possible?}
+\martin{One can also use UVM/SystemVerilog test logic with a VHDL DUT.}
+
+\subsection{Chisel with Verilog}
+
+\subsection{Chisel with VHDL}
+
+\subsection{Chisel with UVM}
+
+\todo{reusing Chisel tests (ScalaTest) within the UVM framework
+with the generated Verilog code}
+\ducky{UVM is largely a framework and library for testing blocks ("IP"), I don't think transpiling ChiselTest to UVM is feasible. Best I would practically hope for is interop between both, eg ChiselTest hooks to call UVM functions in a Verilog simulation environment, to enable continued use of legacy test code, Not sure the other way around is worth doing (calling ChiselTest functions from within a UVM environment)}
+
+\section{Co-Simulation}
+
+\todo{with C/C++/Java/Scala/Phyton, ....}
+\ducky{Should be tons of this already. CoCoTb is a Python cosimulation environment. Rocket-chip uses C++ cosimulation in their RTL tests.}
 
 
 \section{Notes}

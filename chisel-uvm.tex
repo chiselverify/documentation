@@ -56,10 +56,10 @@
 %\title{Towards Verification of Digital Circuits with\\
 %SystemVerilog/UVM and Chisel/Scala}
 
-\title{Towards a Verification Method with\\
+\title{Towards an Open-Source Verification Method with
 Chisel and Scala}
 
-\author{Martin, Simon, Kasper, Richard}
+\author{Martin, Simon, Kasper, Richard, maybe Jan}
 
 % Most conferences have their own commands for author headings.
 
@@ -73,7 +73,9 @@ Chisel and Scala}
 \maketitle \thispagestyle{empty}
 
 \begin{abstract}
-Production of a chip is very expensive. Therefore, it is important to get the design right at the first tape-out. Throughout testing and verification of the design is mandatory.
+\martin{does not like this abstract.}
+Production of a chip is very expensive. Therefore, it is important to get the design right
+at the first tape-out. Throughout testing and verification of the design is mandatory.
 Until a few years, the two main design languages Verilog and VHDL dominated the
 design and testing of digital circuits. However, both languages are decades behind
 modern languages for software development.
@@ -81,11 +83,18 @@ modern languages for software development.
 Resent advances with SystemVerilog and Chisel bring object-oriented programming
 into the digital design and verification process. SystemVerilog, as an extension of Verilog,
 adds object-oriented concepts for the non-synthesizable verification code.
-Chisel is a language, embedded in Scala, to describe and verify digital circuits.
+Chisel is a language, embedded in Scala, to describe digital circuits.
+Circuits described in Chisel can be tested and verified with a Chisel testing
+framework and tests written in Scala.
 Scala/Chisel brings object-oriented and functional programming into the world of
 digital design.
 
+This paper describes a research project that aims at building a testing framework
+in Scala that takes the best methods from UVM and from decades of experience
+in software testing.
+
 \ducky{Chisel is a synthesis language, without dedicated test constructs - do one thing well, instead of the jack-of-both-trades Verilog/SystemVerilog}
+\martin{Ok, fixed it.}
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -171,14 +180,38 @@ drive the multiplexer of the router and the NI.
 
 \subsection{ChiselTest}
 
+\martin{Richard should write}
+
 \subsection{Simulators}
 
 \todo{On Treadle and verilator}
 
+\martin{Maybe a few words from Richard on Treadle, Simon on Verilator?}
+
+
+
+\subsection{Scala}
+
+The test environment and the driving code is written in Scala. Scala with its
+compatibility with Java has a very rich open-source library ecosystem.
+If you need a tool, e.g., and ELF file reader to load a binary, there will be a Java
+library available for it.
+
+Furthermore, we can use all the testing libraries that have been developed for
+software development. A popular library is ScalaTest. A Chisel tester can be embedded
+in a ScalaTest components and a simple \code{sbt test} will execute all the tests.
+
+\todo{Check what ScalaCheck can offer.}
 
 \section{Integrating Legacy Languages}
 
+A verification method is only usable when it can handle mixed-source designs.
+This means a Scala driven method mast be able to test components written in Verilog,
+VHDL, and SystemVerilog.
+
 \subsection{Verilog Components}
+
+\todo{write on black boxes and Verilator}
 
 \subsection{VHDL Components}
 
@@ -197,6 +230,8 @@ We wrote a testbench in SystemVerilog / UVM and in Scala. As execution platform 
 used Synopsys VCS, ModelSim, Treadle, and Verilator.
 \ducky{Likely criticism from peer review is that the example is too simple.}
 \ducky{I'd also like to see some kind of human evaluation - though I'm not sure what kind of methodology is accepted in the digital design community. Could maybe drop a HCI paper cite to hint that whatever methodology used is accepted in other communities.}
+
+\martin{We could also use my NoC example, which is not trivial ;-)}
 
 The examples are available in open source from: \url{https://github.com/chisel-uvm}.
 
@@ -251,6 +286,14 @@ testers and collecting coverage metrics within FIRRTL.
 %Systems (\mbox{T-CREST}).
 
 %\newpage
+
+
+\bibliographystyle{plain}
+% Please do not add any references to msbib.bib.
+% They get lost when I 'generate' is again (see Makefile)
+\bibliography{chisel-uvm,msbib}
+
+\end{document}
 ~
 \newpage
 ~
@@ -386,10 +429,6 @@ Website that has relatively in-depth and understandable explanations of UVM conc
 
 
 
-\bibliographystyle{plain}
-% Please do not add any references to msbib.bib.
-% They get lost when I 'generate' is again (see Makefile)
-\bibliography{chisel-uvm,msbib}
 
 \end{document}
 

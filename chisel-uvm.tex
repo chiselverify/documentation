@@ -78,16 +78,16 @@ Production of a chip is very expensive. Therefore, it is important to get the de
 at the first tape-out. Throughout testing and verification of the design is mandatory.
 Until a few years, the two main design languages Verilog and VHDL dominated the
 design and testing of digital circuits. However, both languages are decades behind
-modern languages for software development.
+modern languages for software development. \ducky{Why? What is great (and what do we want to bring over) from SW dev? Remember that SW is cheap and easy to change (so it's worth it to have bugs but ship faster), so it's not necessarily an apples-to-apples comparison.}
 
-Resent advances with SystemVerilog and Chisel bring object-oriented programming
+Resent advances with SystemVerilog and Chisel \ducky{should probably be described} bring object-oriented programming
 into the digital design and verification process. SystemVerilog, as an extension of Verilog,
 adds object-oriented concepts for the non-synthesizable verification code.
 Chisel is a language, embedded in Scala, to describe digital circuits.
 Circuits described in Chisel can be tested and verified with a Chisel testing
 framework and tests written in Scala.
 Scala/Chisel brings object-oriented and functional programming into the world of
-digital design.
+digital design. \ducky{What about OOP is great? How specifically does it benefit HW dev? Note, in SW dev, OOP can be done wrong / badly / verbosely (eg, Java), while (one of) the ASPIRE / ADEPT arguments for Chisel is generators + re-use.}
 
 This paper describes a research project that aims at building a testing framework
 in Scala that takes the best methods from UVM and from decades of experience
@@ -145,8 +145,11 @@ For example, the sequencer is the component responsible for generating transacti
     \label{fig:uvm_testbench}
 \end{figure}
 
+\ducky{an alternative graphic might be a layered (think networking, eg, TCP/IP or OSI model) graphic}
+
 The main components of a UVM testbench are as follows
 \kasper{Is this necessary? I had a difficult time understanding why all of the different components were necessary at first, but people with more verification experience might find it too basic?}
+\ducky{I think what this really needs (if this is needed at all) is an example that explains how all the parts work together, and what role they play in a whole testbench. The general argument for this is separation of concerns - it's not a great fit for small-scale testbenches like a single ALU, but makes more sense when working with complex systems and protocol buses. In a sense, it makes hard things easier, and easy things unnecessarily cumbersome - so does not scale down gracefully.}
 \begin{itemize}
     \item \textbf{Sequence(r):} Sequences define the order of transactions necessary for a given purpose, e.g. a synchronisation or reset sequence. The sequencer is responsible for transferring the transactions, defined by the sequence, to the driver
     \item \textbf{Driver:} Converts transactions into pin-level signals and drives these signals onto the DUT

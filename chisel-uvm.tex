@@ -81,7 +81,16 @@ richard.lin@berkeley.edu}
 \maketitle \thispagestyle{empty}
 
 \begin{abstract}
+Performance increase with general-purpose processors came to a halt.
+We cannot longer depend on Moor's Law to increase computing performance.
+The only way to achieve higher performance or lower energy consumption
+is by building domain-specific hardware accelerators.
+To efficiently design and verify hose domain-specific accelerators we need
+agile hardware development.
 
+This paper presents a combination of open-source tools for verifying
+circuits described in mixed languages. It builds on top of the Chisel
+hardware construction language and uses Scala to drive the verification.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -94,48 +103,43 @@ digital design, verification, object-oriented programming
 \label{sec:intro}
 
 
-Performance increase with general-purpose processors came to a halt.
 We cannot longer depend on Moor's Law to increase computing performance~\cite{dark-silicon:2011}.
+Performance increase with general-purpose processors came to a halt.
 The only way to achieve higher performance or lower energy consumption
 is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
-To efficient develop those accelerators we can learn from software development trends
-such as agile software development. We need agile hardware development~\cite{henn-patt:turing:2019}.
-
-
-\martin{does not like this abstract.}
-Production of a chip is very expensive. Therefore, it is important to get the design right
+Furthermore, the production of a chip is very expensive. Therefore, it is important to get the design right
 at the first tape-out. Throughout testing and verification of the design is mandatory.
+
+To efficient develop and verify those accelerators we can learn from software development trends
+such as agile software development~\cite{agile:manifesto}.
+We need agile hardware development~\cite{henn-patt:turing:2019}.
+
 Until a few years, the two main design languages Verilog and VHDL dominated the
 design and testing of digital circuits. However, both languages are decades behind
 modern languages for software development. \ducky{Why? What is great (and what do we want to bring over) from SW dev? Remember that SW is cheap and easy to change (so it's worth it to have bugs but ship faster), so it's not necessarily an apples-to-apples comparison.}
 
-Resent advances with SystemVerilog and Chisel \ducky{should probably be described} bring object-oriented programming
+Resent advances with SystemVerilog and Chisel bring object-oriented programming
 into the digital design and verification process. SystemVerilog, as an extension of Verilog,
 adds object-oriented concepts for the non-synthesizable verification code.
 Chisel is a language, embedded in Scala, to describe digital circuits.
 Circuits described in Chisel can be tested and verified with a Chisel testing
 framework and tests written in Scala.
 Scala/Chisel brings object-oriented and functional programming into the world of
-digital design. \ducky{What about OOP is great? How specifically does it benefit HW dev? Note, in SW dev, OOP can be done wrong / badly / verbosely (eg, Java), while (one of) the ASPIRE / ADEPT arguments for Chisel is generators + re-use.}
+digital design.
+
+\ducky{What about OOP is great? How specifically does it benefit HW dev? Note, in SW dev, OOP can be done wrong / badly / verbosely (eg, Java), while (one of) the ASPIRE / ADEPT arguments for Chisel is generators + re-use.}
+\martin{Feel free to add those arguments.}
 
 This paper describes a research project that aims at building a testing framework
 in Scala that takes the best methods from UVM and from decades of experience
 in software testing.
+Furthermore, our aim is to build on open-source projects only. Therefore, our
+work is in open-source as well.
 
-\ducky{Chisel is a synthesis language, without dedicated test constructs - do one thing well, instead of the jack-of-both-trades Verilog/SystemVerilog}
-\martin{Ok, fixed it.}
-
-\todo{A brief introduction what the paper is about. It shall include briefly the
-main contributions and findings. The contributions can be bullet listed.}
-
-This paper... \todo{purpose statement, latest in 4th paragraph}
-
-\todo{Test the bib with a reference that gives background on time-predictable
-computer architecture~\cite{tpca:jes}.}
-
-A paper is cited \cite{paper:example}.
-
-The contributions of this paper are: (1) ... (2) ...
+The main contribution of this paper is the exploration of available open-source tools
+with a small example design. We are able to verify digital designs written in mixed
+languages such as Verilog, VHDL, and Chisel and simulating all of them in a tool-flow
+consisting of open-source tools only.
 
 This paper is organized in N sections: The following section presents related work.
 Section~\ref{sec:related} provides background on the Universal Verification Methodology ...
@@ -162,7 +166,7 @@ For example, the sequencer is the component responsible for generating transacti
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.475\textwidth]{uvm-tb_Pedro-Araujo.png}
+    \includegraphics[width=0.35\textwidth]{uvm-tb_Pedro-Araujo.png}
     \caption{Representation of a simple UVM testbench. By Pedro Araújo / colorlesscube.com}
     \label{fig:uvm_testbench}
 \end{figure}

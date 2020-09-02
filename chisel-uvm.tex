@@ -173,6 +173,7 @@ For example, the sequencer is the component responsible for generating transacti
 
 \ducky{an alternative graphic might be a layered (think networking, eg, TCP/IP or OSI model) graphic}
 
+
 The main components of a UVM testbench are as follows
 \kasper{Is this necessary? I had a difficult time understanding why all of the different components were necessary at first, but people with more verification experience might find it too basic?}
 \ducky{I think what this really needs (if this is needed at all) is an example that explains how all the parts work together, and what role they play in a whole testbench. The general argument for this is separation of concerns - it's not a great fit for small-scale testbenches like a single ALU, but makes more sense when working with complex systems and protocol buses. In a sense, it makes hard things easier, and easy things unnecessarily cumbersome - so does not scale down gracefully.}
@@ -238,18 +239,37 @@ in a ScalaTest components and a simple \code{sbt test} will execute all the test
 \section{Integrating Legacy Languages}
 
 A verification method is only usable when it can handle mixed-source designs.
-This means a Scala driven method mast be able to test components written in Verilog,
+This means a Scala driven method must be able to test components written in Verilog,
 VHDL, and SystemVerilog.
 
-\subsection{Verilog Components}
+Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
+Therefore, it is relative easy to integrate Verilog components when wrapped into a black box.
+However, then Chisel needs to use the Verilator simulator to run the simulation.
 
-\todo{write on black boxes and Verilator}
 
-\subsection{VHDL Components}
+However, it does not fully support VHDL. It can support VHDL using VCS, but there is no
+open-source solution available for VHDL.
+This is due to the use of Treadle and Verilator \simon{Ref} for open source simulation.
+Treadle only supports Chisel code while Verilator is run on the generated Verilog.
+Therefore, Verilator can also simulate black boxes written in Verilog.
+However, VHDL is now a concern to companies that have a lot of source code written in VHDL,
+which needs to be compatible with any systems written in Chisel.
+As many simulation and synthesis tools support mixed-language implementations,
+this is not an issue for the implementation part. But for open-source testing, it proves to be a problem.
 
-Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design. However, it does not fully support VHDL. It can support VHDL using VCS, but there is no open source solution available for VHDL. This is due to the use of Treadle and Verilator \simon{Ref} for open source simulation. Treadle only supports Chisel code while Verilator is run on the generated Verilog. Therefore, Verilator can also simulate black boxes written in Verilog. However, VHDL is now a concern to companies that have a lot of source code written in VHDL, which needs to be compatible with any systems written in Chisel. As many simulation and synthesis tools support mixed-language implementations, this is not an issue for the implementation part. But for open source testing, it proves to be a problem.
+\martin{Simon, can you please update the description to what you have now?}
 
-A solution for this is based on the principle of using synthesis tools to analyze the VHDL RTL code and synthesize a gate-level netlist for this. These synthesis tools can often output a Verilog-based netlist. A free solution for this would be the Yosys \simon{ref} synthesis suite, which is an open-source digital hardware synthesis suite for Verilog code. It has support for VHDL by using Verific as a front-end, which requires a license. For an alternative solution to this, GHDL \simon{ref} would be used. GHDL is an open source simulator for VHDL which also funcions as a plugin for Yosys. This allows yosys to analyze VHDL files using GHDL and then synthesize a circuit. The gate-level netlist can then be saved as a Verilog file, which can be used for the simulation system. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002 and a subset of 2008.
+A solution for this is based on the principle of using synthesis tools to analyze the VHDL RTL code
+and synthesize a behavioral description for the component.
+These synthesis tools can often output a Verilog-based netlist.
+A free solution for this would be the Yosys \simon{ref} synthesis suite, which is an open-source
+digital hardware synthesis suite for Verilog code.
+Yosys has support for VHDL by using Verific as a front-end, which requires a license.
+For an alternative solution, we can use GHDL \simon{ref}.
+GHDL is an open source simulator for VHDL that can also be used as a plugin for Yosys.
+This allows Yosys to analyze VHDL files using GHDL and then synthesize a circuit.
+The gate-level netlist can then be saved as a Verilog file, which can be used for the simulation system.
+GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002 and a subset of 2008.
 
 Testing
 \simon{Insert small image that depicts the workflow for this.}

@@ -177,6 +177,7 @@ For example, the sequencer is the component responsible for generating transacti
 The main components of a UVM testbench are as follows
 \kasper{Is this necessary? I had a difficult time understanding why all of the different components were necessary at first, but people with more verification experience might find it too basic?}
 \ducky{I think what this really needs (if this is needed at all) is an example that explains how all the parts work together, and what role they play in a whole testbench. The general argument for this is separation of concerns - it's not a great fit for small-scale testbenches like a single ALU, but makes more sense when working with complex systems and protocol buses. In a sense, it makes hard things easier, and easy things unnecessarily cumbersome - so does not scale down gracefully.}
+\kasper{Good point. Perhaps referencing the "First Experiments" with UVM at this point would help? Definitely agree that we should include the fact that UVM is mostly for large-scale testbenches, and doesn't make sense for a small-scale test such as a simple ALU}
 \begin{itemize}
     \item \textbf{Sequence(r):} Sequences define the order of transactions necessary for a given purpose, e.g. a synchronisation or reset sequence. The sequencer is responsible for transferring the transactions, defined by the sequence, to the driver
     \item \textbf{Driver:} Converts transactions into pin-level signals and drives these signals onto the DUT

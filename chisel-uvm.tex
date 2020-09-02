@@ -54,7 +54,7 @@
 %\title{Towards Verification of Digital Circuits with\\
 %SystemVerilog/UVM and Chisel/Scala}
 
-\title{Towards an Open-Source Verification Method with
+\title{Towards an Open-Source Verification Method with\\
 Chisel and Scala}
 
 \author{\IEEEauthorblockN{Martin Schoeberl, Simon Thye Andersen,\\ Kasper Juul Hesse Rasmussen, Jan Madsen}
@@ -81,6 +81,27 @@ richard.lin@berkeley.edu}
 \maketitle \thispagestyle{empty}
 
 \begin{abstract}
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+digital design, verification, object-oriented programming
+\end{IEEEkeywords}
+
+\martin{We aim for \url{https://woset2020.hotcrp.com/}}
+
+\section{Introduction}
+\label{sec:intro}
+
+
+Performance increase with general-purpose processors came to a halt.
+We cannot longer depend on Moor's Law to increase computing performance~\cite{dark-silicon:2011}.
+The only way to achieve higher performance or lower energy consumption
+is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
+To efficient develop those accelerators we can learn from software development trends
+such as agile software development. We need agile hardware development~\cite{henn-patt:turing:2019}.
+
+
 \martin{does not like this abstract.}
 Production of a chip is very expensive. Therefore, it is important to get the design right
 at the first tape-out. Throughout testing and verification of the design is mandatory.
@@ -103,16 +124,6 @@ in software testing.
 
 \ducky{Chisel is a synthesis language, without dedicated test constructs - do one thing well, instead of the jack-of-both-trades Verilog/SystemVerilog}
 \martin{Ok, fixed it.}
-\end{abstract}
-
-\begin{IEEEkeywords}
-digital design, verification, object-oriented programming
-\end{IEEEkeywords}
-
-\martin{We aim for \url{https://woset2020.hotcrp.com/}}
-
-\section{Introduction}
-\label{sec:intro}
 
 \todo{A brief introduction what the paper is about. It shall include briefly the
 main contributions and findings. The contributions can be bullet listed.}

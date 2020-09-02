@@ -1,8 +1,6 @@
-%\documentclass[a4paper,twocolumn]{article}
-%\documentclass[10pt, conference, compsocconf]{IEEEtran}
-\documentclass[a4paper, conference]{IEEEtran}
+\documentclass[conference]{IEEEtran}
 
-
+\usepackage{cite}
 \usepackage{pslatex} % -- times instead of computer modern, especially for the plain article class
 \usepackage[colorlinks=false,bookmarks=false]{hyperref}
 \usepackage{booktabs}
@@ -59,8 +57,18 @@
 \title{Towards an Open-Source Verification Method with
 Chisel and Scala}
 
-\author{Martin, Simon, Kasper, Richard, maybe Jan}
-
+\author{\IEEEauthorblockN{Martin Schoeberl, Simon Thye Andersen,\\ Kasper Juul Hesse Rasmussen, Jan Madsen}
+\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+\textit{Technical University of Denmark}\\
+Lyngby, Denmark \\
+masca@dtu.dk, simon.thye@gmail.com,\\ s183735@student.dtu.dk, jama@dtu.dk}
+\and
+\IEEEauthorblockN{Richard Lin}
+\IEEEauthorblockA{\textit{Department of Electrical Engineering and Computer Sciences} \\
+\textit{UC Berkeley}\\
+Berkeley, CA \\
+richard.lin@berkeley.edu}
+}
 % Most conferences have their own commands for author headings.
 
 %\author{\IEEEauthorblockN{Edgar Lakis, Martin Schoeberl}\\
@@ -101,6 +109,7 @@ in software testing.
 digital design, verification, object-oriented programming
 \end{IEEEkeywords}
 
+\martin{We aim for \url{https://woset2020.hotcrp.com/}}
 
 \section{Introduction}
 \label{sec:intro}
@@ -127,15 +136,17 @@ Section~\ref{sec:conclusion} concludes.
 \section{Overview of the Universal Verification Methodology}
 \label{sec:related}
 
-\todo{Show that you know the field. All related work shall be put
-into context or contrast to our current work.}
 
-The Universal Verification Methodology (UVM) is a methodology for testing and verification of digital circuits, introduced in 2011. Previously, verification methodologies were vendor-specific, forcing users to stay with one tool, or to spend a lot of time and money transitioning to a new tool. UVM is unique in the fact it is an Accellera standard developed together with all of the major EDA vendors such as Questa, Cadence and Synopsys. As of 2017 it has also been standardised as IEEE 1800.2. Although SystemVerilog and UVM are IEEE standards, the standards are freely available from the IEEE.
+\todo{Related to our work}
+
+\todo{reference for UVM}
+
+The Universal Verification Methodology (UVM) is a methodology for testing and verification of digital circuits, introduced in 2011. Previously, verification methodologies were vendor-specific, forcing users to stay with one tool, or to spend a lot of time and money transitioning to a new tool. UVM is unique in the fact it is an Accellera standard developed together with all of the major EDA vendors such as Questa, Cadence and Synopsys. As of 2017 it has also been standardized as IEEE 1800.2. Although SystemVerilog and UVM are IEEE standards, the standards are freely available from the IEEE.
 
 UVM is implemented as a SystemVerilog library, and utilizes the fact that SystemVerilog allows for object-oriented design of testbenches. By using OOP patterns such as inheritance and polymorphism, the verification engineer is able to design generic components that can be extended and modified to provide application-specific functionality. 
 
 \subsection{A UVM Testbench}
-UVM Testbenches consist of several distinct components, as seen in fig. \ref{fig:uvm_testbench}. Each component performs only one task in the testbench, allowing the engineer to make changes to some components without affecting others. 
+UVM Testbenches consist of several distinct components, as seen in Figure~\ref{fig:uvm_testbench}. Each component performs only one task in the testbench, allowing the engineer to make changes to some components without affecting others. 
 For example, the sequencer is the component responsible for generating transactions for the DUT, whereas the driver is responsible for converting the transaction into pin-level wiggles, i.e. generating correct start/stop conditions as well as driving signals. If a new sequence of transactions is to be generated, only the sequencer is affected. Likewise, the sequencer does not care in what way the transactions are converted into pin-level signals - this is the sole responsibility of the driver. This makes for easier testbench design as there are fewer unnecessary dependencies. 
 
 \begin{figure}
@@ -186,9 +197,11 @@ Chisel is solely a Hardware Construction Language, and thus all valid Chisel cod
 
 \martin{Richard should write}
 
+\cite{chisel:tester2}
+
 \subsection{Simulators}
 
-\todo{On Treadle and verilator}
+\todo{On Treadle and Verilator}
 
 \martin{Maybe a few words from Richard on Treadle, Simon on Verilator?}
 

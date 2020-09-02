@@ -1,0 +1,729 @@
+% DFF template for Latex and A4 paper.
+% 12pt Times New Roman on 1.5 line spacing and 2 cm margins.
+
+% ----------------------------------------------------------------------
+
+% Either format with
+%    pdflatex projectdescription.tex
+% Or if you use dvips and ps2pdf, remember to specify A4 paper:
+%    latex  projectdescription
+%    dvips  -ta4 projectdescription -o projectdescription.ps
+%    ps2pdf -sPAPERSIZE=a4 projectdescription.ps
+
+% ----------------------------------------------------------------------
+
+\documentclass[fleqn,12pt]{article}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{times}
+\usepackage[danish,english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage{graphicx}         % For PDF figures
+% \usepackage[dvips]{graphicx}  % For EPS figures, using dvips + ps2pdf
+
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black]{hyperref}
+\usepackage{booktabs}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit}
+\usetikzlibrary{shapes,backgrounds}
+\usetikzlibrary{arrows,fit,automata,positioning,decorations,calc}
+\usetikzlibrary{spy}
+\usetikzlibrary{matrix,chains,decorations.pathreplacing}
+\usepackage{pgfgantt}
+
+\newcommand{\code}[1]{{\textsf{#1}}}
+
+% Adding comments in the text during writing process
+\newcommand{\todo}[1]{{\it TODO: #1}}
+\newcommand{\note}[1]{{\it Note: #1}}
+\newcommand{\martin}[1]{{\color{blue} Martin: #1}}
+\newcommand{\jens}[1]{{\color{green} Jens: #1}}
+
+% uncomment following for final submission
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\note}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\jens}[1]{}
+
+\usepackage{acronym}
+
+\acrodef{MLP}{Multi-Layer Perceptron}
+\acrodef{ANN}{Artificial Neural Network}
+\acrodef{CNN}{Convolutional Neural Network}
+\acrodef{AI}{Artificial Intelligence}
+\acrodef{NN}{Neural Network}
+\acrodef{RNN}{Recurrent Neural Network}
+\acrodef{SMT}{Satisfiability Modulo Theory}
+\acrodef{DNN}{Deep Neural Network}
+\acrodef{CPS}{Cyber-Physical System}
+\acrodef{SANN}{Synchronous Artificial Neural Network}
+\acrodef{WCRT}{Worst Case Reaction Time}
+
+\begin{document}
+% Empirically this seems to match MS Word's idea of 1.5 line spacing.
+% DO NOT CHANGE
+\setlength{\baselineskip}{1.44\baselineskip}
+
+% ----------------------------------------------------------------------
+% Enter the title of the project and your name
+
+\begin{center}
+  {\LARGE\bf DFF Project Description }\\[1ex]
+  {\LARGE\bf  Chisel or High-Level Verification of Digital Systems\\
+  or Software Defined Hardware}\\[1ex]
+  {\large Martin Schoeberl, DTU Compute}\\[1ex]
+ \end{center}
+
+% ----------------------------------------------------------------------
+% Delete the instruction
+
+%\noindent
+%The length of the project description must not exceed the number of pages indicated for the specific instrument in the Call, excl. a brief list of references, whether it includes figures/tables or not. You must use Times New Roman, 12 point font size, 1.5 line spacing and with a right, left, top and bottom margin of at least 2 cm.  This template is formatted accordingly. In the "Confirmation" \ section of the application form, you must confirm that your project description observes the permitted maximum length, before you can submit your application. The Council will disregard any portions of the project description that exceed the permitted maximum length.
+% Delete the instruction
+
+% ----------------------------------------------------------------------
+% Begin writing your project description
+
+%\section{Abstract for the application}
+%
+%Artificial intelligence (AI) with big data is a promising technology to solve several
+%seemingly unrelated problems, such as object recognition in images used for
+%fruit sorting or obstacle detection in self-driving cars, voice recognition and
+%natural language processing used in smartphones, or diagnostics in health car.
+%Some applications of AI will be in embedded systems where resources are
+%constraint and result must be delivered within a given deadline.
+%
+%The proposed project targets development of AI for embedded real-time systems,
+%which includes also ``Internet of Things'' (IoT) devices.
+%We target the AI based classification in the embedded devices with timing constraints.
+%As main technology for classification we will use artificial neural networks (ANN).
+%Training is usually not associated with time constraints and we envision that
+%the training is performed in the cloud, and not in the embedded device.
+
+\section{Ideas and Questions}
+
+\begin{itemize}
+\item Widex is interested in Chisel, may join a DFF proposal
+\item Peter Stst + microsoft cloud into Chisel project
+\item DeepSpec or DeepSp?? end-to-end for Chisel
+\item WP on VHDL generation from Chisel for better verification
+\item Verification (check what is current praxis)
+\item Industry issue is verification: how from Chisel to VHDL/Verilog
+\item How much ASIC design is done in DK? Revenue numbers?
+\item There are not enough HW designers available, so they shall be more productive
+\item Or we can attract SW developer with Chisel to do HW design
+\item Future cloud server will include FPGA for application speedup, how to program them
+\item Support letter from UCB
+\item External stay at UCB
+\item Richard should be part of it
+\item One PhD at ITU and PhD or postdoc (Lefteris at DTU)
+\item Kasper n hours per week plus maybe part time Torur
+\item Chisel workshop including hands-on tutorial in DK, at IDA, have an ok letter from them
+\item Thomas from Microsemi on board
+\item Konstantin Vinogradov <const.vin@gmail.com> from Widex is interested in a (industrial) PhD, might be a named candidate
+\item See for arguments: \url{https://cacm.acm.org/magazines/2020/7/245701-domain-specific-hardware-accelerators/fulltext}
+\end{itemize}
+
+\subsection{Contacts}
+
+Jesper Birch <jb@napatech.com> sent a word document and is interested.
+
+Teledyne:
+
+"Rytter, Morten (INT)" <Morten.Rytter@Teledyne.com>
+
+simon.andersen@teledyne.com
+
+
+
+One option would be for us to deliver test cases and discussions of what is needed for our company. 
+
+
+
+\subsection{TODO}
+
+Send proposal draft proposal and of August to Jesper, Thomas, ...
+
+\section{From InfinIT}
+
+Digital systems are already an integral part of our life. These systems are built out of microprocessors, application specific integrated circuits (ASICs), and field-programmable gate arrays (FPGAs). Several companies in Denmark are building digital systems. To increase competitivity of those companies, we need tools and methods to increase the productivity in designing and especially testing digital systems. Compared to software development and testing, digital design and testing methods and tools lack several decades of development. Within this project we plan to leverage software development and testing methods for digital design. This project explores the hardware construction language Chisel with Scala and the Universal Verification Method (UVM) with SystemVerilog for design and test of digital systems.
+
+
+
+UVM is becoming an industry standard for design verification. On the other hand there is an active development on a new hardware construction language, called Chisel. Chisel is embedded in Scala to write so-called hardware generators. Chisel is also called: software defined hardware. Another feature of the Chisel/Scala combination is to write models of the environment of the hardware design in Scala. As an example take a network interface (e.g., Ethernet) written as a high-level model in Scala connected to a microprocessor written in Chisel. With this example we are able to develop and test network code on the microprocessor, which is our digital design under test.
+
+
+
+As a first step we will explore and compare the two approaches: UVM/SystemVerilog and Chisel/Scala. When we generate hardware from Chisel, we generate a Verilog description of the digital circuit. This Verilog description can further be tested within UVM (plain Verilog is valid SystemVerilog). As a next step, we will explore how test, simulation, and verification code written in Scala to develop the Chisel description of the digital circuit can be reused at the UVM level to test the generated Verilog description of the circuit.
+
+
+Modern software techniques can be applied on testing where plausible. For example, fuzzing is a mature solution for producing random and yet meaningful inputs to trigger program failures. Symbolic execution explores program paths systematically via constraint solving.
+
+
+
+We are in contact with the developers of Chisel at the University of California in Berkeley, and especially with Richard Lin, who is developing the new testing framework for Chisel. Richard is interested in this project and the integration with UVM. Therefore, we agreed to have a cooperation meeting during the project at UC Berkeley.
+
+
+
+The project fits into the Infinit topic of IoT. The things of IoT are digital systems, often small and application specific systems. Application specific systems are built out of digital systems either with a dedicated ASIC or an FPGA.
+
+
+
+This mini-project will be executed in close cooperation with Microchip, WSA, Synopsys, and Syosil. 
+
+
+
+The students involved in the research project well then be well educated future engineers for digital system design and verification.
+
+
+
+3. Aktiviteter (beskriv) 1. Learning and exploring SystemVerilog/UVM (with Synopsys)
+2. Learning and exploring Chisel/Scala
+3. Defining two use cases together with Microchip
+4. Developing the two use-cases in Chisel and SystemVerilog with a comparison
+5. Developing the verification environment including high-level models of the environment in UVM and Chisel/Scala with a comparison
+6. Application of the UVM verification of the Chisel generated Verilog code
+7. Scala based testing and verification on top of UVM
+8. Develop an open course on verification of digital systems for DTU and use in industry
+
+
+
+
+4. MilestonesKnowledge of the tools30/4/2020Definitions of the use cases31/5/2020Use cases developed30/7/2020Verification and high-level models developed31/8/2020Cross verification from Scala to UVM functional, course material finalize31/10/2020
+
+5. Deltagere
+
+
+
+DTU, CVR-nr. 30 06 09 46, Martin Schoeberl (project lead) (masca@dtu.dk) and Jan Madsen (jama@dtu.dk)
+DTU will develop the use cases and the verification environment with UVM and Chisel/Scala. DTU will transfer knowledge on Chisel to Microchip and WSA.
+ITU, CVR-nr. 29 05 77 53, Peter Sestoft (sestoft@itu.dk) and Zhoulai Fu (zhfu@itu.dk)
+ITU will apply methods from software testing to digital hardware verification.
+Aarhus Universitet, CVR-nr: 31119103, Farshad Moradi (moradi@eng.au.dk)
+AU will explore UVM verification of Chisel generated Verilog code.
+Microchip Semiconductor Corp. A/S, CVR-nr. 24224694, Thomas Aakjer (Thomas.Aakjer@microchip.com)
+Microchip will provide use cases for the research in design and verification where DTU can explore Chisel with Scala.
+WS Audiology Denmark A/S, CVR-nr. 40296638, Ketil Julsgaard (ketil.julsgaard@wsa.com)
+WSA will provide digital-signal processing use cases for cosimulation of a Chisel description with a high-level description.
+Synopsys, CVR-nr. 25600568, Martine Chegaray (Martine.Chegaray@synopsys.com)
+Synopsis will provide the tools for UVM for the project and guide the usage.
+Syosil Aps, CVR-nr. 29399417, Jacob Sander Andersen (jacob@syosil.com)
+Syosil will support the researchers with education in using UVM.
+
+
+6. Resultater og vision for 
+
+The vision of the project is a highly productive method for designing and (more importantly) verification of digital systems by a combination of the modern hardware construction language Chisel/Scala with the industry standard UVM.
+7. Videnspredning
+
+The research work will be documented by publications and presented at relevant conferences (for example DATE), funded by other means, not by this project.
+
+At the end of the project we will present the method at a workshop open for Danish industry in digital system design.
+
+The new development and verification method will be used and taught in courses on digital electronics at DTU.\newpage
+
+\todo{Old stuff from a different application, drop it}
+\section{Introduction and Objectives -- Old Text}
+\label{sec:objectives}
+
+Artificial intelligence (AI) with big data is a promising technology to solve several
+seemingly unrelated problems, such as object recognition in images used for
+fruit sorting or obstacle detection in self-driving cars, voice recognition and
+natural language processing used in smartphones, or diagnostics in health care.
+Some applications of AI use embedded systems where resources are
+constraint and the AI must deliver a classification within a given deadline.
+
+The proposed project targets development of {\bf AI for embedded real-time systems},
+which includes also ``Internet of Things'' (IoT) devices.
+We target the AI based classification in the embedded devices with timing constraints.
+We will use artificial neural networks (ANN) as the technology for classification.
+Training is usually not associated with time constraints, and we envision that
+the training is performed in the cloud, and not in the embedded device.
+
+Real-time systems need to deliver their results within a deadline. We will explore ANN
+in the context of real-time systems. Therefore, we need to make those ANN implementations
+time-predictable and be able to compute the {\bf worst-case execution time
+(WCET) of the classification}.
+We will explore time-predictable ANN implemented
+in software on Patmos~\cite{patmos:rts2018} and the T-CREST~\cite{t-crest:2015}
+multicore platform and supporting hardware accelerators connected to the
+multicore processor.
+
+Embedded systems are often resource and energy constraint (e.g., in hearing aids).
+Therefore, we will also explore low-cost and low-power hardware implementations.
+One idea is to use only weights where 1, 2, or 3 bits are set, which we call
+\emph{power-of-2} weights. In that case, the multiplication of the input values with the weights
+can be reduced to shift operations, and one to three add operations. Shifts by a constant
+are free in hardware, as this is only renaming of wires.
+
+The objective of the RTAI project is to research on and build ANN systems that
+are time-predictable and can be used in (safety-critical) real-time systems.
+Furthermore, we aim for a low resource solution to increase the application
+areas for ANN.
+We will evaluate the research outcome by an implementation in a field-programmable
+gate array (FPGA), developing an ANN for real-time {\bf packet inspection in a real-time
+Ethernet switch}, and perform the {\bf WCET analysis of that use case}.
+We will develop the use case together with TTTech, a company that develops and sells
+real-time Ethernet switches for safety-critical applications. The WCET analysis
+will be performed together with TU Vienna.
+
+\section{Background and State-of-the-Art}
+\label{sec:background}
+
+
+\paragraph{Artificial Neural Networks}
+
+There is a demand for smarter decision making processes inside industrial automation system.
+For example, camera-based image-recognition is becoming common in fruit sorting and grading mechanisms~\cite{vibhute2012applications,AutomaticFruitAndVegetableClassificationFromImages}, where the image processing can be performed by a variety of machine learning techniques.
+One of the most promising and actively researched branches of AI systems is provided through
+ANNs.
+These systems attempt to imitate the neurological processes that occur in the human brain~\cite{bishop1995neural}, by modeling biological neurons and their interconnections.
+
+%\begin{figure}
+%	\centering
+%	\input{fig/mlp-ann.tex}
+%	\caption{An example multi layer perceptron made from artificial neurons. \label{fig:mlp-ann}}
+%\end{figure}
+%
+%\begin{figure}
+%	\centering
+%	\input{fig/neuron.tex}
+%	\caption{A model of an artificial neuron. \label{fig:artificial-neuron}}
+%\end{figure}
+
+Initial ANNs, such as the Perceptron~\cite{theperceptron58}, consisted usually of just
+input and output layers and maximal one hidden layer.
+Figure~\ref{fig:mlp-ann} shows an ANN with three layers: (1) the input layer, (2)
+the hidden layer, and (3) the output layer. All neurons are fully connected to their
+predecessor and the successor layer.
+Figure~\ref{fig:artificial-neuron} shows a single artificial neuron. The inputs $x_n$
+are multiplied with their individual weights $w_n$ and summed up. A bias $b$ is added
+to the sum that is transformed by the activation function $f$ to produce the output $y$.
+An ANN with more than one hidden layer is called a ``deep'' learning network.
+
+Initial implementations of ANNs used general purpose processors. Accelerating ANNs started
+with using graphic-processing units, but various forms of hardware based accelerators
+have been explored~\cite{Wang:2019:DNN,Sze2017a,Moons2019}. To reduce the large computational
+complexity, many implementations try to sacrifice a little accuracy in return for a
+significant reduction of the hardware cost. Techniques used for this include approximate
+computing \cite{Moons2016a}, reduced number range for the weights with binary weihghts
+being the most extreme \cite{Moons2018a}, pruning away connections with near-zero
+weights \cite{Zhu2017}, and not representing connections with zero-weights (resulting in
+sparsely connected structures \cite{Mao2017,narang2017b}). The RTAI project will explore
+such techniques.  
+
+ANNs were originally proposed to mimic the functioning of biological neural networks~\cite{bishop1995neural,kohonen1988introduction}, which produce recurrent
+spatio-temporal patterns~\cite{rolston2007precisely}.
+In essence, biological neurons participate with one another using real-world timed activity~\cite{bullock1994neural, moore1989adaptively}.
+However, most ANNs do not model biological activity so precisely,
+as it makes them more challenging to use, implement, and train.
+Instead, common types of ANNs rely on simpler networks which can be considered as
+\emph{un-timed non-linear} functions.
+To address this gap, Roop et. al~\cite{syncnn:roop:2018} proposed the use of synchronous semantics for timed compositions of neural networks and controllers
+for cyber-physical systems.
+Within the RTAI project, we will develop ANNs where the WCET
+can be statically analyzed.
+
+
+
+\paragraph{Real-Time Embedded Systems}
+
+Real-time systems are systems where the system must react within a given
+deadline~\cite{rts:stankovic:1988}. A classic real-time system is for example
+the autopilot of an airplane. However, also new developments like autonomous
+driving or autonomous drones are also real-time systems.
+
+Sometimes those systems are also safety-critical
+and need certification. One certification criteria is WCET analysis~\cite{tecs:wcet:overview}
+to statically prove that the system will meet all deadlines.
+%
+To enable static WCET analysis, the architecture on which programs are executed
+need to be time-predictable~\cite{journals/tcad/WilhelmGRSPF09}.
+Research on those real-time processor include PRET architectures~\cite{pret:dac2007}
+and a timing-predictable pipelined processor core~\cite{sic:rtss:2018}.
+
+We have developed a time-predictable processor called Patmos~\cite{patmos:rts2018}.
+The compiler for Patmos includes an open-source WCET analysis tool~~\cite{compiler:platin:kps15}.
+To increase the performance we also developed the multicore platform
+T-CREST~\cite{t-crest:2015} where several Patmos cores are connected
+to a real-time network-on-chip~\cite{t-crest:argo:tvlsi2015} for communication
+between cores. We will use T-CREST as a starting point for executing software
+and hardware implementations of ANNs.
+
+\paragraph{Real-Time Networking}
+
+The use case for this project involves a real-time Ethernet switch. Ethernet has been
+considered for real-time systems in various versions~\cite{rtethernet:2005}.
+TTEthernet~\cite{noc:tte} is an extension of Ethernet that promises known maximum
+end-to-end latency and small bounded jitter in order to provide real-time guarantees.
+Within the RTAI project, we consider a TTEthernet switch for exploring machine learning
+for real-time classification of network traffic.
+
+
+%\paragraph{Previous Research}
+%
+%At DTU Compute we have been the technical lead in the EU FP7 project
+%T-CREST~\cite{t-crest:dasia:2014,t-crest:2015}.\footnote{\url{http://www.t-crest.org/}}
+%The T-CREST project covers the development of a real-time multicore system
+%including compiler and WCET analysis support.
+%We are currently executing the FTP funded PREDICT project,\footnote{\url{http://predict.compute.dtu.dk/}}
+%which explores multicore architectures in FPGAs for drones.
+%The RTAI project will use the T-CREST and PREDICT project results as
+%a solid starting point.
+
+
+
+
+\section{Research Plan}
+
+We will implement a time-predictable ANN on top of the T-CREST multicore in two
+versions: (1) a software implementation that explores multiple cores and
+the network-on-chip and (2) different hardware implementations in an FPGA
+as a coprocessor unit for T-CREST.
+
+The project aims for time-predictable classification of ANN. The training
+of the network is not considered time-critical.
+% and can be run on a standard
+%personal computer or in the Cloud.
+We will use TensorFlow\footnote{\url{https://github.com/tensorflow/tensorflow}} (TF)
+for the training of the ANN. TF is open source and we can adapt it for our needs.
+We will continuously test and evaluate our ANN development with
+standard ANN training data.
+
+%The research will be carried out mainly by a NN PhD and the postdoc
+%Hammond Pearce. The PI and Jens Spars{\o} from DTU Compute
+%will contribute to the project as well.
+
+\paragraph{Real-Time Code Generation}
+
+As an initial step to execute an ANN on an embedded platform, we need to
+generate code. We will use the training results from TF
+(ANN architecture and weights) to generate C code.
+It is of particular importance that the embedded system can execute
+the generated code (e.g., avoiding expensive floating point operations) and
+being WCET analysis friendly (e.g., only bounded loops, avoiding recursion,
+and avoiding function pointers.)
+
+\paragraph{Multicore Execution}
+
+Multicores can be used to increase processing power.
+ANNs with those many nodes
+are an excellent candidate for parallel execution. However, we still need
+to take into account the real-time behavior of the ANN.
+This includes WCET analysis of the computation \emph{and} the communication
+between the cores.
+For performance and WCET analysis reasons we shall avoid any
+communication between core on the shared main memory.
+For the communication we will explore on-chip solutions such as
+network-on-chip~\cite{t-crest:argo:tvlsi2015} and various forms of
+on-chip memories~\cite{t-crest:ownspm}.
+
+\paragraph{Hardware Accelerators}
+
+As an initial hardware accelerator we will develop parallel multiply
+and accumulate units, connected to our multicore by the network-on-chip.
+We will use fix-point operations for efficient ANN computations.
+The challenge is to feed data fast enough to
+the accelerator.
+
+A second approach is to build direct hardware
+for the ANN (or at least part of it). To fit reasonable sized ANN into
+an FPGA, we need to find a very efficient implementation of the neuron.
+We envision to use for the weights a fix-point number format where
+only 1, 2, or 3 bits are set.
+We call this format a \emph{power-of-2} format.
+This format reduces the expensive multiplication operation to merely 1 to
+3 adders and shifts. Shifts with a constant are practically
+free in hardware. %, as it only involves renaming of wires.
+As this is \emph{generation} of hardware descriptions we will
+explore the power of the hardware construction language Chisel~\cite{chisel:dac2012}.
+
+%\paragraph{Learning for Power-of-2 Weights}
+
+TF can train for ANNs with different number
+representations. However, our power-of-2 format is not part of the
+standard distribution of TF.
+Therefore, we will adapt TF to use our new power-of-2 format for weights
+during training and optimizing for the minimal number of bits set to one.
+
+
+\paragraph{Worst-Case Execution Time Analysis}
+
+A central feature of the RTAI project is the real-time classification with ANNs.
+For real-time systems we need to perform static WCET analysis~\cite{tecs:wcet:overview}.
+For software executing on Patmos we have an open-source WCET analysis tool,
+called platin~\cite{compiler:platin:kps15} that can analyze single tasks
+executing on a single core.
+
+For multicore execution, hardware acceleration, hardware ANN implementation
+we need to extend the WCET analysis. We need to model the communication
+between tasks via a network-on-chip or shared on-chip memory for the WCET
+analysis of multicores.
+
+Execution time on hardware is usually more predictable and analyzable then
+software executing on a processor. Nevertheless, we need to extend platin or
+develop a new tool to perform the WCET analysis for hardware accelerators
+and direct hardware implementation of the ANN.
+
+For the WCET analysis we will collaborate with Peter Puschner from TU Vienna.
+Hammond and Martin will spend time in Vienna as well as Peter will visit
+us at DTU.
+
+\paragraph{Real-Time Ethernet Switch Use Case}
+
+We will explore the real-time neural networks with a use case on real-time
+packet inspection for anomalies (e.g., intruders) in a time-triggered Ethernet switch.
+As an initial step, the switch can route packets to an internal port that is connected
+to a softcore processor, which executes the ANN classification.
+However, this solution will be too slow for a real switch implementation.
+Therefore, in the second step, a hardware ANN will be connected directly
+into the switch pipeline. We will evaluate the design by an implementation
+in an FPGA.
+
+For the real-time packet inspection we will collaborate with TTTech in Vienna, Austria.
+The PhD student will stay at TTTech for up to six months, exploring integration of the
+ANN packet inspection into a TTEthernet\footnote{\url{https://www.tttech.com/products/aerospace-space/flight-rugged-hardware/switches/}}
+or TSN switch from TTTech.
+
+%The voice command interface for a hearing aid has soft real-time requirements.
+%A delayed response may be annoying to the user, but no further harm is made.
+%However, hearing aids are extreme resource constraints with respect to computing
+%power, memory, and energy. This use case will explore how to implement a resource
+%and energy efficient ANN.
+
+%\note{RTS: what about packet inspection for anomaly detection in a network router? Could Thomas have an application? Maybe he would even like to join.
+%
+%Low power: voice command interface for a hearing aid. This is a big industry in DK, even if Oticon is not partner, we can have this as use case.}
+
+\paragraph*{Dissemination and Publication}
+
+Scientific results will be published and presented at international
+conferences (ICML, DATE, RTAS, ICTAI, RTSS, NeurIPS) and in relevant scientific journals.
+We expect that most tasks will result in at least one publication.
+One PhD theses will publish the results from the project.
+We aim to publish in open access, to a large extent in the gold open access model.
+However, publishers such as ACM also allow publishing in green open access
+at no additional cost, where a pre-print version of a paper can be uploaded,
+for example, to ArXiv.
+
+The results from the project will be available as open-source under the
+industry-friendly BSD license.
+%Open-source research projects attract
+%other researchers, developers, and industrial partners
+%to use and build on the results of the project.
+A project web site will host the project documentation, the published papers, and the
+source code of the design.
+
+
+
+\section{Practical Feasibility}
+
+%The Embedded Systems Engineering section at DTU Compute provides
+%the intellectual environment and the infrastructure (e.g., regression test server...) that we need for an ambitious research project.
+%Furthermore, DTU Compute provides the infrastructure (e.g., an automatic test
+%environment for regressions tests, web server).
+
+\paragraph*{Internationalization}
+
+TU Vienna and TTTech are partners in the project. %, both located in Vienna, Austria.
+Hammond will stay for 6 months
+at TU Vienna to develop WCET analysis of ANN software and hardware
+implementations. Furthermore, Martin Schoeberl and Peter Puschner will both visit each other
+for about four weeks.
+%will join this effort, and we plan that Martin
+%will spend four weeks at TU Vienna and Peter Puschner will spend four weeks at DTU.
+For the implementation of the TTEthernet switch use case, the PhD student will spend
+6 months at TTTech in Vienna.
+%
+The attraction of Hammond form New Zealand to this project contributes to the {\bf internationalization
+of Danish research}. We have worked with Hammond~\cite{FasterFunctionBlocks}, and therefore
+know that he will be a very good fit for our research group.
+Furthermore, Hammond plans an academic career, and strongly considers applying
+for a post at DTU after the project.
+
+\paragraph*{Industrial Cooperation}
+
+TTTech, the company providing real-time networking platforms and solutions to improve
+the safety and reliability in the industrial and transportation sectors is a partner in the RTAI
+project. We will cooperate with TTTech by bringing an ANN into a network switch from TTTech
+for the detection of anomalies in network traffic.
+
+
+\paragraph*{Human Resources}
+
+For the RTAI project we
+request funding of the PhD student (NN) and postdoc (Hammond Pearce).
+Each of the senior researchers will contribute to the RTAI research project.
+
+%We intend to build a group with one PhD student, one postdoc, and
+%two senior researchers at DTU.
+
+%Quoted from the Diversity and Gender statement at DTU:
+%``Diversity, equal treatment, and equality are integral to DTU, being an international
+%university in scope and standard, and are fundamental principles underlying DTU's
+%expectations of respect and equality''.
+As the already named researchers are all male, we will actively search
+for a female researcher for the PhD position.
+However, the PhD position will be announced openly and men and women
+will have equal opportunities for applying.
+
+
+  {\bf Martin Schoeberl (MS)} is associate professor at DTU Compute and is the PI.
+   His research interest is in computer architecture for real-time systems. During his work at Coin,
+   he has developed an ANN system to detect different welding parts using
+   properties, such as area, circumference, and momentum, for classification.
+   Martin has worked on bringing machine learning to an embedded Java processor~\cite{pedersen:2006-64}, including a multicore
+   version~\cite{jop:cmpsvn}, and exploring the WCET analysis~\cite{jop:wcet:spe}.
+   
+    {\bf Jens Spars{\o} (JS)} is professor at DTU Compute. His research expertise is in asynchronous
+    circuits and in network-on-chip for the communication structure for real-time multicore processors.
+    
+    {\bf Peter Puschner (PP)} is associate professor at TU Vienna. His research expertise is
+    in WCET analysis. He is interested in extending the WCET analysis
+    for ANN implemented in hardware.
+    
+    {\bf Wilfried Steiner (WS)} is a corporate scientist at TTTech Computertechnik AG.
+    His research area is in TTEthernet and generation of schedules for time-triggered Ethernet.
+    
+    {\bf Hammond Pearce (HP)} will be employed as postdoc in the RTAI project. During his PhD
+    project he explored synchronous languages for real-time systems. He extended
+    this work towards using neural networks in cyber-physical systems~\cite{syncnn:roop:2018}.
+    Therefore, he is a perfect fit for the RTAI project.
+    
+    {\bf PhD student (PhD)} with background in hardware design and real-time systems or AI.
+    
+%\subsection*{Experimental Facilities}
+%
+%Development and simulation of the RTAI hardware can be
+%performed on standard desktop PCs.
+%For evaluation of individual design components small and cheap FPGA
+%boards, that are already available, can be used. For the evaluation of the
+%full system design of a switches with ANNs, we intend to buy three high-performance
+%FPGA boards.
+%%
+%The needed software (e.g., VHDL simulation, FPGA compilation) is freely available.
+
+
+%\vspace{-2mm}
+\begin{table*}% [h!]
+{\small
+  \begin{center}
+    \begin{tabular}{lccp{110mm}l}
+      \toprule
+      Task          & PM  & Person &  Description \\
+      \midrule
+      Recruiting  & 1 & MS and JS & Recruiting of the NN PhD \\
+      \midrule
+      WcetCode     &  9      & HP     & Generation of WCET analyzable code out of TF training results.\\
+      MultiCore     &  6      & HP     & Speedup with mulitcore generated code using a network-on-chip and
+      a shared scratchpad memory.\\
+      Accelerator    &  9      & HP     & Design of a hardware accelerator and integrate with the multicore.\\
+      WcetAcc     &  6      & HP     & WCET analysis of the software and accelerator implementations.\\
+      \midrule
+      SOA  & 3      & PhD1     &  Explore state of the art in hardware implementation of an ANN. \\
+      HardNeurals  & 6      & PhD1     &  Implement hardware generators for ANN with power-of-2 weights. \\
+      TFLearn  & 6      & PhD1     &  Adapt TF learning to us power-of-2 weights. \\
+      WcetNeurals  & 3      & PhD1     &  WCET analysis of the hardware ANN. \\
+      Switch  & 6      & PhD1     &  Implement ANN hardware in a real-time Ethernet switch. \\
+      \midrule
+      Explore   &    2x6 & PhD1/HP    &  Explore multicore, hardware accelerator, and ANN in hardware.\\
+      Eval & 2x6 & PhD1/HP & Evaluation of the results collected with the real-time Ethernet switch. \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+%  \caption{Work packages}\label{tab:packages}
+}
+\end{table*}
+
+%\vspace{-5mm}
+\paragraph*{Tasks, Milestones, and Timetable}
+
+The project is divided into several tasks.
+%A researcher will be
+%assigned to each task as its main developer.
+%A cooperative
+%working style will be encouraged so, that the experience and
+%knowledge of the different team members will optimally be utilized.
+For each task, the time is given in person months (PM). The Gantt chart shows
+the project schedule.
+For an assessment of the project's success we plan following milestones:
+
+\textbf{M1} (Month 6): The PhD student is selected and employed.
+
+\textbf{M2} (Month 15): Two versions of ANN are implemented: multicore and the
+hardware generator.
+
+\textbf{M3} (Month 30): All development has been finished and the different versions
+can be used for exploration and evaluation of the results with the real-time switch.
+
+\textbf{M4} (Month 42): The project has finished and a PhD thesis has been handed in.
+
+%\vspace{-5mm}
+\begin{figure*}[h!]
+\centering
+\begin{ganttchart}[vgrid,hgrid,bar/.style={fill=gray},
+x unit=3.5mm, % horizontal squeezing
+%y unit chart=5mm, % vertical squeezing
+y unit title=8mm,y unit chart=4.5mm, milestone top shift=.15, milestone height=.2mm, % very tight format
+title label font=\footnotesize,
+bar label font=\footnotesize,
+milestone label font=\footnotesize,
+]{1}{42}
+% labels
+%\gantttitle{\textbf{\normalsize{RTAI Gantt chart}}}{42} \\
+\gantttitlelist{1,...,42}{1} \\
+% tasks, groups and milestones
+\ganttbar[name=r1]{Recruting}{1}{6} \\
+\ganttmilestone[name=m1]{Milestone 1}{6} \\
+\ganttbar[name=t1]{WcetCode}{1}{9} \\
+\ganttbar[name=t2]{MultiCore}{10}{15} \\
+\ganttbar[name=t3]{Accelerator}{16}{24} \\
+\ganttmilestone[name=m2]{Milestone 2}{15} \\
+\ganttbar[name=t4]{WcetAcc}{25}{30} \\
+\ganttbar[name=t5]{SOA}{7}{9} \\
+\ganttbar[name=t6]{HardNeurals}{10}{15} \\
+\ganttbar[name=t7]{TFLearn}{16}{21} \\
+\ganttbar[name=t8]{WcetNeurals}{22}{24} \\
+\ganttbar[name=t9]{Switch}{25}{30} \\
+\ganttmilestone[name=m3]{Milestone 3}{30} \\
+\ganttbar[name=t10]{Explore}{31}{36} \\
+\ganttbar[name=t11]{Eval}{37}{42} \\
+\ganttmilestone[name=m4]{Milestone 4}{42}
+
+% relations
+\ganttlink{r1}{m1}
+\ganttlink{t1}{t2}
+\ganttlink{t2}{m2}
+\ganttlink{m2}{t3}
+\ganttlink{t3}{t4}
+\ganttlink{t4}{m3}
+
+\ganttlink{m1}{t5}
+\ganttlink{t5}{t6}
+\ganttlink{t6}{m2}
+\ganttlink{m2}{t7}
+\ganttlink{t7}{t8}
+\ganttlink{t8}{t9}
+\ganttlink{t9}{m3}
+\ganttlink{m3}{t10}
+\ganttlink{t10}{t11}
+\ganttlink{t11}{m4}
+
+\end{ganttchart}
+
+\caption{The Gantt chart of RTAI}\label{fig:gantt}
+\end{figure*}
+
+
+
+
+%\vspace{2mm}
+
+\newpage
+\small
+\bibliographystyle{abbrv}
+%\bibliography{myown,jsp,noc,misc,msbib}
+\bibliography{msbib}
+
+\end{document}

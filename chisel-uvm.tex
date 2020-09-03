@@ -210,11 +210,29 @@ Chisel is solely a Hardware Construction Language, and thus all valid Chisel cod
 
 \martin{This is just a starting point, way more is needed.}
 
+
 \subsection{ChiselTest}
 
 To drive the simulation we use ChiselTest~\cite{chisel:tester2}.
 
 \martin{Richard should write}
+
+While Chisel ultimately produces Verilog, which can be tested with industry standard tools and processes, those generally force the user to pick between simple but limited (eg, Verilog testbenches) or complex but powerful (eg, UVM).
+ChiselTest, a nonsynthesizable testing framework for Chisel, instead emphasises usability and simplicity while providing ways to scale up complexity.
+
+Fundamentally, ChiselTest is a Scala library that provides access into the simulator through operations like poke (write value into circuit), peek (read value from circuit, into the test framework), and step (advance time).
+As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
+This takes all the stuff from SW w/o reinventing the wheel (but worse) like UVM does
+Abstraction via functions w/o this excessive OO nonsense
+
+Inspired by SW test practices
+Unit testing
+Clarity & cleanliness
+Tests as documentation
+
+Work in progress
+Start from the low end, then scale up
+
 
 \subsection{Simulators}
 
@@ -222,6 +240,14 @@ To drive the simulation we use ChiselTest~\cite{chisel:tester2}.
 
 \martin{Maybe a few words from Richard on Treadle, Simon on Verilator?}
 
+Obv chisel designs can be tested w/ Verilator / your favority expensive simulator
+Ground truth accuracy, but also real costs, eg compilation, IPC
+Treadle: FIRRTL interpreter
+Operates at the FIRRTL IR level
+Don't need to generate verilog
+Don't need to compile
+Overall possibly longer cycle time, less IPC + spin up cost
+Faster tests, agile tests.
 
 
 \subsection{Scala}

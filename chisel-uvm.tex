@@ -59,11 +59,11 @@
 \title{Towards an Open-Source Verification Method with\\
 Chisel and Scala}
 
-\author{\IEEEauthorblockN{Martin Schoeberl, Simon Thye Andersen,\\ Kasper Juul Hesse Rasmussen, Jan Madsen}
+\author{\IEEEauthorblockN{Martin Schoeberl, Simon Thye Andersen,\\ Kasper Juul Hesse Rasmussen}
 \IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
 \textit{Technical University of Denmark}\\
 Lyngby, Denmark \\
-masca@dtu.dk, simon.thye@gmail.com,\\ s183735@student.dtu.dk, jama@dtu.dk}
+masca@dtu.dk, simon.thye@gmail.com,\\ s183735@student.dtu.dk}
 \and
 \IEEEauthorblockN{Richard Lin}
 \IEEEauthorblockA{\textit{Department of Electrical Engineering and Computer Sciences} \\
@@ -92,7 +92,13 @@ agile hardware development.
 
 This paper presents a combination of open-source tools for verifying
 circuits described in mixed languages. It builds on top of the Chisel
-hardware construction language and uses Scala to drive the verification. It also explores the testing strategy used in the Universal Verification Methodology, UVM. \kasper{I feel that we should also mention UVM somewhere / why we're interested in exploring what if offers (because it's the industry "standard"?)?}
+hardware construction language and uses Scala to drive the verification. 
+We also explore the testing strategy used in the Universal Verification Methodology
+(UVM) in the context of verifying hardware described in Chisel.
+
+\kasper{I feel that we should also mention UVM somewhere / why we're interested in exploring what if offers (because it's the industry "standard"?)?}
+\martin{Agree.}
+
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -120,7 +126,7 @@ modern languages for software development. \ducky{Why? What is great (and what d
 
 Recent advances with SystemVerilog and Chisel have brought object-oriented programming
 into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non-synthesizable verification code.
-Chisel is a "Hardware Construction Language", embedded in Scala, to describe digital circuits.
+Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
 Circuits described in Chisel can be tested and verified with a Chisel testing
 framework and tests written in Scala.
 Scala/Chisel brings object-oriented and functional programming into the world of

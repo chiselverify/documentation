@@ -30,10 +30,11 @@
 \newcommand{\kasper}[1]{{\color{purple} Kasper: #1}}
 
 % uncomment following for final submission
-%\renewcommand{\todo}[1]{}
-%\renewcommand{\martin}[1]{}
-%\renewcommand{\author2}[1]{}
-%\renewcommand{\kasper}[1]{}
+\renewcommand{\todo}[1]{}
+\renewcommand{\martin}[1]{}
+\renewcommand{\simon}[1]{}
+\renewcommand{\kasper}[1]{}
+\renewcommand{\ducky}[1]{}
 
 
 %%Uncomment the following when you want to add copyright notice and not use any space	 (IEEE only)
@@ -118,13 +119,13 @@ is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
 Furthermore, the production of a chip is very expensive. Therefore, it is important to get the design right at the first tape-out. Thorough testing and verification of the design is mandatory.
 
 To efficiently develop and verify those accelerators we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
-We believe that we need agile hardware development~\cite{henn-patt:turing:2019}.
+We believe that for the road ahead we need to adapt to agile hardware development~\cite{henn-patt:turing:2019}.
 
 Until a few years, the two main design languages Verilog and VHDL dominated the
 design and testing of digital circuits. However, both languages are decades behind
 modern languages for software development. \ducky{Why? What is great (and what do we want to bring over) from SW dev? Remember that SW is cheap and easy to change (so it's worth it to have bugs but ship faster), so it's not necessarily an apples-to-apples comparison.}
 
-Recent advances with SystemVerilog and Chisel have brought object-oriented programming
+Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have brought object-oriented programming
 into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non-synthesizable verification code.
 Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
 Circuits described in Chisel can be tested and verified with a Chisel testing
@@ -136,7 +137,8 @@ digital design.
 \martin{Feel free to add those arguments.}
 \kasper{I tried to add a little bit below}
 
-One of Chisel's primary benefits is its reliance on object-oriented principles for hardware description. By defining a base class, other classes may inherit from this but with different implementations, such as adding floating point operations to an ALU. As both the basic ALU and the FP-enabled ALU derive from the same base class, they can be used interchangeably. This allows for parametrized hardware generation, as seen in e.g. the RISC-V Rocket Chip \cite{Asanovic2016}, and is also used in the Chisel test described in section \ref{sec:verif-chisel}. While VHDL supports configurations and multiple architecture definitions, these require the designer to start from scratch when defining a new architecture, instead of simply improving or adding onto the existing architecture. \kasper{Do we need more than this? Does Verilog have a similar concept?}
+One of Chisel's primary benefits is its reliance on object-oriented principles for hardware description. By defining a base class, other classes may inherit from this but with different implementations, such as adding floating point operations to an ALU. As both the basic ALU and the FP-enabled ALU derive from the same base class, they can be used interchangeably. This allows for parametrized hardware generation,
+as seen in e.g. the RISC-V Rocket Chip~\cite{Asanovic2016}, and is also used in the Chisel test described in Section~\ref{sec:verif-chisel}. While VHDL supports configurations and multiple architecture definitions, these require the designer to start from scratch when defining a new architecture, instead of simply improving or adding onto the existing architecture. \kasper{Do we need more than this? Does Verilog have a similar concept?}
 
 This paper describes a research project that aims at building a testing framework
 in Scala that takes the best methods from the Universal Verification Methodology (UVM) and from decades of experience
@@ -149,14 +151,18 @@ with a small example design. We are able to verify digital designs written in mi
 languages such as Verilog, VHDL, and Chisel and simulate all of them in a tool-flow
 consisting of open-source tools only.
 
-This paper is organized in N sections: The following section presents related work.
-Section~\ref{sec:related} provides background on the Universal Verification Methodology ...
-Section X and Y 
-Section~\ref{sec:eval} evaluates...
+This paper is organized in six sections: % The following section presents related work.
+Section~\ref{sec:related} provides background on the Universal Verification Methodology.
+Section~\ref{sec:tools} describes the open-source tools that we use in out project.
+Section~\ref{sec:legacy} describes how to integrate legacy components written in Verilog and VHDL.
+Section~\ref{sec:eval} evaluates our approach with a small design example written in Chisel, VHDL,
+and Verilog.
 Section~\ref{sec:conclusion} concludes.
 
 
-\section{Overview of the Universal Verification Methodology}
+
+
+\section{The Universal Verification Methodology}
 \label{sec:related}
 
 
@@ -164,13 +170,13 @@ Section~\ref{sec:conclusion} concludes.
 
 \todo{reference for UVM}
 
-The Universal Verification Methodology (UVM) is a methodology for testing and verification of digital circuits, introduced in 2011. Previously, verification methodologies were vendor-specific, forcing users to stay with one tool, or to spend a lot of time and money transitioning to a new tool. UVM is unique in the fact it is an Accellera standard developed together with all of the major EDA vendors such as Questa, Cadence and Synopsys. As of 2017 it has also been standardized as IEEE 1800.2. Although SystemVerilog and UVM are IEEE standards, the standards are freely available through the IEEE Get program \cite{IEEE:18002}.
+The Universal Verification Methodology (UVM) is a methodology for testing and verification of digital circuits, introduced in 2011. Previously, verification methodologies were vendor-specific, forcing users to stay with one tool, or to spend a lot of time and money transitioning to a new tool. UVM is unique in the fact it is an Accellera standard developed together with all of the major EDA vendors such as Questa, Cadence, and Synopsys. As of 2017 it has also been standardized as IEEE 1800.2. Although SystemVerilog and UVM are IEEE standards, the standards are freely available through the IEEE Get program \cite{IEEE:18002}.
 
 UVM is implemented as a SystemVerilog library, and utilizes the fact that SystemVerilog uses object-oriented programming (OOP) when designing testbenches. By using OOP patterns such as inheritance and polymorphism the verification engineer is able to design generic components that can be extended and modified to provide application-specific functionality. 
 
 \subsection{A UVM Testbench}
-UVM Testbenches consist of several distinct components, as seen in Figure~\ref{fig:uvm_testbench}. Each component performs only one task in the testbench, allowing the engineer to make changes to some components without affecting others. 
-For example, the sequencer is the component responsible for generating transactions for the DUT, whereas the driver is responsible for converting the transaction into pin-level wiggles, i.e. generating correct start/stop conditions as well as driving signals. If a new sequence of transactions is to be generated, only the sequencer is affected. Likewise, the sequencer does not care in what way the transactions are converted into pin-level signals - this is the sole responsibility of the driver. This makes for more structured testbench design as there are fewer dependencies. 
+UVM Testbenches consist of several distinct components, as shown in Figure~\ref{fig:uvm_testbench}. Each component performs only one task in the testbench, allowing the engineer to make changes to some components without affecting others. 
+For example, the sequencer is the component responsible for generating transactions for the DUT, whereas the driver is responsible for converting the transaction into pin-level wiggles, i.e., generating correct start/stop conditions as well as driving signals. If a new sequence of transactions is to be generated, only the sequencer is affected. Likewise, the sequencer does not care in what way the transactions are converted into pin-level signals---this is the sole responsibility of the driver. This distinction into several components results in a more structured testbench design as there are fewer dependencies. 
 
 \begin{figure}
     \centering
@@ -187,56 +193,78 @@ The main components of a UVM testbench are as follows:
 %\ducky{I think what this really needs (if this is needed at all) is an example that explains how all the parts work together, and what role they play in a whole testbench. The general argument for this is separation of concerns - it's not a great fit for small-scale testbenches like a single ALU, but makes more sense when working with complex systems and protocol buses. In a sense, it makes hard things easier, and easy things unnecessarily cumbersome - so does not scale down gracefully.}
 %\kasper{Good point. Perhaps referencing the "First Experiments" with UVM at this point would help? Definitely agree that we should include the fact that UVM is mostly for large-scale testbenches, and doesn't make sense for a small-scale test such as a simple ALU}
 
-    \textit{Sequence(r):} Sequences define the order of transactions necessary for a given purpose, e.g. a synchronisation or reset sequence. The sequencer is responsible for transferring the transactions, defined by the sequence, to the driver\\
-    \textit{Driver:} Converts transactions into pin-level signals and drives these signals onto the DUT.\\
-    \textit{Interface:} Interfaces are a SystemVerilog construct which allow the user to group related signals. A DUT may have several interfaces attached. The interface is used to avoid hooking directly into the DUT, making it easier to test multiple versions of a DUT. \\
-    \textit{Monitor:} Monitors all traffic on the interface, converting pin-level signals into transaction-level objects that can be operated on by other components, such as a coverage collector or scoreboard. \\
-    \textit{Agent:} Encapsulates monitor, sequencer and driver, setting configuration values. Agents may be set active or passive (with or without a driver and sequencer). Useful when it is necessary to have multiple instances of the same components, e.g. when a 4-port network switch needs four identical drivers with different configurations.\\
-    \textit{Scoreboard:} Is used to check whether correct functionality is achieved. Usually does so by use of a "golden model" / co-simulation via the SystemVerilog Direct Programming Interface.\\
-    \textit{Environment:} The environment is used to configure and instantiate all child components. Environments are typically application-specific, and may be modified by the test.\\
+    \textit{Sequence(r):} Sequences define the order of transactions necessary for a given purpose, e.g. a synchronisation or reset sequence. The sequencer is responsible for transferring the transactions, defined by the sequence, to the driver.
+    
+    \textit{Driver:} Converts transactions into pin-level signals and drives these signals onto the DUT.
+    
+    \textit{Interface:} Interfaces are a SystemVerilog construct which allow the user to group related signals. A DUT may have several interfaces attached. The interface is used to avoid hooking directly into the DUT, making it easier to test multiple versions of a DUT.
+    
+    \textit{Monitor:} Monitors all traffic on the interface, converting pin-level signals into transaction-level objects that can be operated on by other components, such as a coverage collector or scoreboard.
+    
+    \textit{Agent:} Encapsulates monitor, sequencer and driver, setting configuration values. Agents may be set active or passive (with or without a driver and sequencer). An agent is useful when it is necessary to have multiple instances of the same components, e.g. when a 4-port network switch needs four identical drivers with different configurations.
+    
+    \textit{Scoreboard:} Is used to check whether correct functionality is achieved. Usually does so by using a ``golden model'' for co-simulation via the SystemVerilog direct programming Interface.
+    
+    \textit{Environment:} The environment is used to configure and instantiate all child components. Environments are typically application-specific, and may be modified by the test.
+    
     \textit{Test:} The test is the top-level verification component. The test designer may choose to perform factory overrides of classes and set configuration values here, which modify the child components.
 
-As can be seen above, even a "Hello, World" example using the UVM requires that the user understands how and why each of the different UVM components should be used. This causes UVM to have a very steep learning curve which may discourage adoption. This also means that UVM is not the proper testing methodology for small designs or one-off tests due to the initial workload. For large and complex designs however, once the initial setup of the testbench is finished, generating new tests becomes easier.
+As can be seen above, even a ``Hello, World'' example using the UVM requires that the user understands how and why each of the different UVM components should be used. This causes UVM to have a very steep learning curve, which may discourage adoption. This also means that UVM is not the proper testing methodology for small designs or one-off tests due to the initial workload. For large and complex designs however, once the initial setup of the testbench is finished, generating new tests becomes easier.
 
 %\martin{Does BluseSpec Verilog has something to offer?}
 %\ducky{BSV is a higher-level design abstraction around guarded atomic actions - so relevant in terms of raising the level of design for digital logic, but a different approach than Chisel. My understanding (which may be outdated / wrong) is that BSV is propreitary, which is one reason it does not have significant traction. Earlier versions were heavily Haskell-based, which also does not help with perceived usability, supposedly that is why they're now branded "Bluespec SystemVerilog".}
 
-\section{The Open-Source Tools}
+\section{Open-Source Tools}
+\label{sec:tools}
+
+In our project we plan to use mainly open-source tools, as we believe that only
+the open-source movement can lead to tools for agile hardware development and
+open libraries for IPs and verification components.
 
 \subsection{Chisel}
 
-Chisel is a hardware construction language in Scala.~\cite{chisel:dac2012}.
-Chisel allows the user to write hardware generators in Scala, which itself is an object-oriented and functional language. For hardware generation and testing, the full Scala language and Java
-libraries are available. For example, we read in the string based TDM
-schedules~\footnote{available at: \url{https://github.com/t-crest/s4noc/tree/master/noc/vhdl/generated}}
+Chisel is a hardware construction language embedded in Scala~\cite{chisel:dac2012}.
+Chisel allows the user to write hardware generators in Scala, which itself is an object-oriented and functional language. For hardware generation and testing, the full Scala language and Scala and Java
+libraries are available.
+For example, we read in the string based schedules for a network-on-chip
+%\footnote{available at: \url{https://github.com/t-crest/s4noc/tree/master/noc/vhdl/generated}}
 and convert them with a few lines of Scala code into a hardware table to
-drive the multiplexer of the router and the NI. \kasper{I don't quite understand this one - I don't see any Scala code in the directory. Is it the Java code in noc/src ?}
+drive the multiplexer of the router and the network interface.
 
-Chisel is solely a Hardware Construction Language, and thus all valid Chisel code maps to synthesizable hardware. By separating the hardware construction and hardware verification languages, it becomes impossible to write un-synthesizable hardware and in turn speeds up the design process. As the full power of Scala and Java is available to the verification engineer, the verifcation process is also made more efficient.
+\kasper{I don't quite understand this one - I don't see any Scala code in the directory. Is it the Java code in noc/src ?}
+\martin{Maybe I should drop this, as the Scala code is in a different repo.}
+
+Chisel is solely a hardware \emph{construction} language, and thus all valid Chisel code
+maps to synthesizable hardware.
+By separating the hardware construction and hardware verification languages,
+it becomes impossible to write non-synthesizable hardware and in turn speeds up the design process.
+As the full power of Scala and Java is available to the verification engineer,
+the verification process is also made more efficient.
 
 \martin{This is just a starting point, way more is needed.}
 \kasper{Maybe take some of the points from the Introduction and move them here? We don't have that much space though, so I think it's fine.}
 
 \subsection{ChiselTest}
 
-While Chisel ultimately produces Verilog, which can be tested with industry standard tools and processes, those generally force the user to pick between simple but limited (eg, Verilog testbenches) or complex but powerful (eg, UVM).\\
-ChiselTest~\cite{chisel:tester2}, a nonsynthesizable testing framework for Chisel, instead emphasises usability and simplicity while providing ways to scale up complexity.
+While Chisel ultimately produces Verilog, which can be tested with industry standard tools and processes, those generally force the user to pick between simple but limited (e.g., Verilog testbenches) or complex but powerful (e.g., UVM testbenches).
+
+ChiselTest~\cite{chisel:tester2}, a nonsynthesizable testing framework for Chisel, instead emphasizes on usability and simplicity while providing ways to scale up complexity.
 
 Fundamentally, ChiselTest is a Scala library that provides access into the simulator through operations like poke (write value into circuit), peek (read value from circuit, into the test framework), and step (advance time).
 As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
-This structure makes use of the latest programming langauges developments that have been implemented into Scala and provides a clean and concise interface, unlike approaches that attempt to reinvent the wheel like UVM.
+This structure makes use of the latest programming languages developments that have been implemented into Scala and provides a clean and concise interface, unlike approaches that attempt to reinvent the wheel like UVM.
 
 Furthermore, ChiselTest tries to enable testing best practices from software engineering.
 Its lightweight syntax encourages writing targeted unit tests, by making small tests easy.
-Furthermore, clear and clean tests code also enable the test-as-documentation pattern, which demonstrates the behavior of a module from a temporal perspective.
+Furthermore, clear and clean test code also enable the test-as-documentation pattern, which demonstrates the behavior of a module from a temporal perspective.
 
 
 \subsection{Simulators}
 
 While Chisel designs can be simulated with any simulator that accepts Verilog input, there are trade-offs involved in choosing simulators.
 Commercial simulators require expensive licenses, while the open-source Verilator has a high time cost for compilation despite being efficient per-cycle.
-On the other hand, Treadle~\cite{treadle} is a simulator that operates at the level of Chisel's intermediate representation, FIRRTL`\cite{firrtl}.
-Simulators like this avoid the step of generating and compiling from Verilog, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
+On the other hand, Treadle\footnote{\url{https://github.com/freechipsproject/treadle}} is a simulator that operates at the level of Chisel's intermediate representation, FIRRTL\footnote{\url{https://github.com/freechipsproject/firrtl}}.
+Simulators like Treadle avoid the step of generating Verilog code and compiling from Verilog, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
 
 \todo{Verilator?}
 
@@ -251,12 +279,15 @@ If you need a tool, e.g., an ELF file reader to load a binary, there will be a J
 library available for it.
 
 Furthermore, we can use all the testing libraries that have been developed for
-software development. A popular library is ScalaTest. A Chisel tester can be embedded
+software development. A popular library is ScalaTest.\footnote{\url{https://www.scalatest.org/}}
+A Chisel tester can be embedded
 in a ScalaTest component and a simple \code{sbt test} will execute all the tests.
 
 \todo{Check what ScalaCheck can offer.}
 
 \section{Integrating Legacy Languages}
+\label{sec:legacy}
+
 \kasper{I tried to polish this section as I felt it was a bit clunky. The original version is commented out below}
 \begin{comment}
 A verification method is only usable when it can handle mixed-source designs.
@@ -294,19 +325,26 @@ VHDL, and SystemVerilog.
 
 Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
 Therefore, it is relatively easy to integrate Verilog components when wrapped into a black box.
-However, this forces Chisel to use Verilator instead of Treadle to run the simulation, which impacts performance.
+However, this forces Chisel to use Verilator instead of Treadle to run the simulation, which impacts
+startup time.
 
-Chisel does not not fully support VHDL. It can support VHDL using VCS, but there is no
-open-source solution available for VHDL simulation. For companies that have a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow. All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same amount of functionality.
+Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
+open-source solution available for VHDL simulation. For companies that have a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow. All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provides the same amount of functionality.
 
-To alleviate this issue, the open-source Yosys \simon{ref} synthesis suite can be used. Yosys is an open-source digital hardware synthesis suite for Verilog. Yosys also supports a variety of plugins, one of these being GHDL \simon{ref}, an open-source VHDL simulator. By using Yosys in conjunction with GHDL, VHDL files can be synthezised into a gate-level netlist, from which it is possible to generate a Verilog description of the circuit \simon{(From Kasper:) Is this correct? From what you showed on Tuesday, it seems that Yosys/GHDL doesn't use the gate-level implementation, but works at the RTL level}. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002 and a subset of 2008.  
+\simon{Refs for Yosys and GHDL are missing}
 
-Thus, by using Yosys together with GHDL, it is possible to transpile VHDL to Verilog and then use a BlackBox to instantiate the generated Verilog code. This allows for an entirely open-source simulation toolchain no matter the HDL originally used.
+\martin{Simon, the latest version does not really use a gate list, but something other. Can you elaborate?}
+\kasper{From what you showed on Tuesday, it seems that Yosys/GHDL doesn't use the gate-level implementation, but works at the RTL level}
 
-Testing
+To alleviate this issue, the open-source Yosys synthesis suite can be used. Yosys is an open-source digital hardware synthesis suite for Verilog. Yosys also supports a variety of plugins, one of these being GHDL, an open-source VHDL simulator. By using Yosys in conjunction with GHDL, VHDL files can be synthezised into a gate-level netlist, from which it is possible to generate a Verilog description of the circuit. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002 and a subset of 2008.  
+
+Thus, by using Yosys together with GHDL, it is possible to transpile VHDL to Verilog and then use a BlackBox to instantiate the generated Verilog code. This allows for an entirely open-source simulation toolchain no matter which HDL has originally been used.
+
 \simon{Insert small image that depicts the workflow for this.}
 
 \section{First Experiments}
+\label{sec:eval}
+
 
 Although this is a work-in-progress report, we have started with an evaluation.
 We used an ALU with an accumulator from the Leros processor~\cite{leros:arcs2019}
@@ -332,7 +370,7 @@ An important issue is that the modules and port names in the generated Verilog c
 
 A UVM testbench has been designed to test the various implementations of the reference design, the simple ALU from the Leros project. Constrained-random verification is performed by generating random stimulus as well as edge-case stimulus, and functional coverage is collected. In addition, a scoreboard is used to verify the functionality of the DUT. The reference model is described in SystemVerilog.
 
-As a SystemVerilog interface is used to connect the DUT to the testbench, no details about the DUT are exposed to the driver and monitor. This makes it easy to replace the DUT with an alternative implementation, e.g. in another HDL, and verify its functionality. It is only necessary to instantiate the new DUT and connect it to the interface, after which the test can be run.
+As a SystemVerilog interface is used to connect the DUT to the testbench, no details about the DUT are exposed to the driver and monitor. This makes it easy to replace the DUT with an alternative implementation, e.g., in another HDL, and verify its functionality. It is only necessary to instantiate the new DUT and connect it to the interface, after which the test can be run.
 
 The UVM testbench has been run on the Verilog description generated by Chisel, as well as a VHDL version of the ALU. Using the VHDL version required more manual work to make the mixed-language simulation work, whereas the Verilog version was very fast to implement. Generating Verilog with Chisel and testing with UVM then proves to be a suitable workflow. However, no open-source SystemVerilog simulator with UVM support is known of. Verilator primarily supports synthesizable constructs and does not have support for UVM, though this is on their roadmap \cite{Snyder2019}.
 
@@ -345,7 +383,7 @@ design. From Chisel we can generate Verilog, which we can test with UVM.
 VCS and ModelSim support mixed languages simulation (SystemVerilog and VHDL,
 but not Chisel). Therefore, this was straight forward.
 
-However, for the open-source tool-flow we started from the Chisel implementation.
+However, for the open-source tool-flow we start from the Chisel implementation.
 We wrote a test in Scala generating constraint random values and comparing the output
 of the DUT with the output of a simulation written in Scala.
 The Chisel/Sala version can execute in Treadle for  quick startup time or in Verilator
@@ -383,7 +421,7 @@ This setup consists of open-source tools only.
 
 This work-in-progress paper is a first sketch of the ideas to combine SystemVerilog/UVM
 with Chisel/Scala for a productive design and verification of future digital circuits.
-We will explore all combinations with a few small examples, provided by our industrial
+We will explore all combinations with a few more examples, provided by our industrial
 partners.
 From that we will bootstrap adding constraint-random verification methods to Chisel
 testers and collecting coverage metrics within FIRRTL.
@@ -392,7 +430,7 @@ testers and collecting coverage metrics within FIRRTL.
 
 As the project is on exploring open-source tools for digital circuits design
 and verification, we provide all examples, including this paper in open-source
-on GitHub:\\ \url{https://github.com/chisel-uvm/chisel-uvm}.
+on GitHub:\\ \url{https://github.com/chisel-uvm}.
 
 
 \section{Conclusion}
@@ -400,8 +438,8 @@ on GitHub:\\ \url{https://github.com/chisel-uvm/chisel-uvm}.
 
 This work-in-progress paper is a first sketch of the ideas to combine SystemVerilog/UVM
 with Chisel/Scala for a productive design and verification of future digital circuits.
-We will explore all combinations with a few small examples, provided by our industrial
-partners.
+We will explore all combinations with examples provided by our industrial partners.
+
 
 
 \subsection*{Acknowledgment}
@@ -425,7 +463,7 @@ This work has been performed as part of the
 % They get lost when I 'generate' is again (see Makefile)
 \bibliography{chisel-uvm,msbib}
 
-%\end{document}
+\end{document}
 ~
 \newpage
 ~

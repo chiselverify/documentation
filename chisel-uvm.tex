@@ -227,18 +227,14 @@ Furthermore, clear and clean tests code also enable the test-as-documentation pa
 
 \subsection{Simulators}
 
-\todo{On Treadle and Verilator}
+While Chisel designs can be simulated with any simulator that accepts Verilog input, there are trade-offs involved in choosing simulators.
+Commercial simulators require expensive licenses, while the open-source Verilator has a high time cost for compilation despite being efficient per-cycle.
+On the other hand, Treadle~\cite{treadle} is a simulator that operates at the level of Chisel's intermediate representation, FIRRTL`\cite{firrtl}.
+Simulators like this avoids the step of generating and compiling from Verilog, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
+
+\todo{Verilator?}
 
 \martin{Maybe a few words from Richard on Treadle, Simon on Verilator?}
-
-Obv chisel designs can be tested w/ Verilator / your favority expensive simulator
-Ground truth accuracy, but also real costs, eg compilation, IPC
-Treadle: FIRRTL interpreter
-Operates at the FIRRTL IR level
-Don't need to generate verilog
-Don't need to compile
-Overall possibly longer cycle time, less IPC + spin up cost
-Faster tests, agile tests.
 
 
 \subsection{Scala}

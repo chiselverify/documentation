@@ -275,7 +275,7 @@ Commercial simulators require expensive licenses, while the open-source Verilato
 On the other hand, Treadle\footnote{\url{https://github.com/freechipsproject/treadle}} is a simulator that operates at the level of Chisel's intermediate representation, FIRRTL\footnote{\url{https://github.com/freechipsproject/firrtl}}.
 Simulators like Treadle avoid the step of generating Verilog code and compiling from Verilog, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
 
-Verilator has the benefit of compiling the Verilog code before simulating it. This is much faster compared to event-driven simulators but also limits the capabilites, as it only works on synchronous designs. Verilator claims to be on par or faster than the "Big 3" simulators on single thread. However, it also supports multi-threaded simulation, which can greatly improve simulation times for large designs \cite{verilator}.
+Verilator has the benefit of compiling the Verilog code before simulating it. This is much faster compared to event-driven simulators but also limits the capabilities, as it only works on synchronous designs. Verilator claims to be on par or faster than the ``Big 3'' simulators on single thread. However, it also supports multi-threaded simulation, which can greatly improve simulation times for large designs~\cite{verilator}.
 
 \martin{Maybe a few words from Richard on Treadle, Simon on Verilator?}
 

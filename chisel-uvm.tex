@@ -143,7 +143,7 @@ Other classes may inherit this but with different implementations by defining a 
 As both the basic ALU and the FP-enabled ALU derive from the same base class, they can be used interchangeably. The object-oriented programming approach in Chisel allows for easy parametrized hardware generation,
 as seen in e.g., the RISC-V Rocket Chip~\cite{Asanovic2016}, and is also used in the Chisel test described in Section~\ref{sec:verif-chisel}. While VHDL supports configurations and multiple architecture definitions, these require the designer to start from scratch when defining a new architecture, instead of simply improving or adding onto the existing architecture. \kasper{Do we need more than this? Does Verilog have a similar concept?}
 
-his paper describes a research project that aims to build a testing framework in Scala
+This paper describes a research project that aims to build a testing framework in Scala
 that takes the best methods from the Universal Verification Methodology (UVM) and
 decades of experience in software testing.
 Furthermore, we aim to build on open-source projects only. Therefore, our
@@ -275,7 +275,7 @@ Commercial simulators require expensive licenses, while the open-source Verilato
 On the other hand, Treadle\footnote{\url{https://github.com/freechipsproject/treadle}} is a simulator that operates at the level of Chisel's intermediate representation, FIRRTL\footnote{\url{https://github.com/freechipsproject/firrtl}}.
 Simulators like Treadle avoid the step of generating Verilog code and compiling from Verilog, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
 
-\todo{Verilator?}
+Verilator has the benefit of compiling the Verilog code before simulating it. This is much faster compared to event-driven simulators but also limits the capabilites, as it only works on synchronous designs. Verilator claims to be on par or faster than the "Big 3" simulators on single thread. However, it also supports multi-threaded simulation, which can greatly improve simulation times for large designs \cite{verilator}.
 
 \martin{Maybe a few words from Richard on Treadle, Simon on Verilator?}
 
@@ -317,9 +317,9 @@ this is not an issue for the implementation part. But for open-source testing, i
 
 A solution for this is based on the principle of using synthesis tools to analyze the VHDL RTL code and synthesize a behavioral description for the component.
 These synthesis tools can often output a Verilog-based netlist.
-A free solution for this would be the Yosys \simon{ref} synthesis suite, which is an open-source digital hardware synthesis suite for Verilog code.
+A free solution for this would be the Yosys \cite{Yosys} synthesis suite, which is an open-source digital hardware synthesis suite for Verilog code.
 Yosys has support for VHDL by using Verific as a front-end, which requires a license.
-For an alternative solution, we can use GHDL \simon{ref}.
+For an alternative solution, we can use GHDL \cite{ghdl}.
 GHDL is an open source simulator for VHDL that can also be used as a plugin for Yosys.
 This allows Yosys to analyze VHDL files using GHDL and then synthesize a circuit.
 The gate-level netlist can then be saved as a Verilog file, which can be used for the simulation system.
@@ -346,11 +346,18 @@ All major commercial simulation and synthesis tools support mixed-language desig
 \martin{Simon, the latest version does not really use a gate list, but something other. Can you elaborate?}
 \kasper{From what you showed on Tuesday, it seems that Yosys/GHDL doesn't use the gate-level implementation, but works at the RTL level}
 
-To alleviate this issue, the open-source Yosys synthesis suite can be used. Yosys is an open-source digital hardware synthesis suite for Verilog. Yosys also supports a variety of plugins, one of these being GHDL, an open-source VHDL simulator. By using Yosys in conjunction with GHDL, VHDL files can be synthesized into a gate-level netlist, from which it is possible to generate a Verilog description of the circuit. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008.  
+To alleviate this issue, the open-source Yosys synthesis suite \cite{Yosys} can be used. Yosys is an open-source digital hardware synthesis suite for Verilog. Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl}, an open-source VHDL simulator. By using Yosys in conjunction with GHDL, VHDL files are compiled to an RTL-based intermediate representation, which is then written to a Verilog file using Yosys. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008. The workflow can be seen in Figure \ref{fig:VHDL2Verilog}. A working solution named VHDL2Verilog has been made for this, which has been tested with certain simple VHDL designs \cite{vhdl2verilog}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{VHDL2Verilog.pdf}
+    \caption{VHDL2Verilog workflow}
+    \label{fig:VHDL2Verilog}
+\end{figure}
 
 Thus, using Yosys together with GHDL, it is possible to transpile VHDL to Verilog and then use a BlackBox to instantiate the generated Verilog code. This allows for an entirely open-source simulation toolchain, no matter which HDL has been initially used.
 
-\simon{Insert small image that depicts the workflow for this.}
+
 
 \section{First Experiments}
 \label{sec:eval}
@@ -404,7 +411,7 @@ for higher performance.
 A Verilog implementation can be used in the Chisel setup by wrapping the DUT
 into a so-called \code{BlackBox}. When mixing Chisel with Verilog code, we need
 to use Verilator as a simulation engine.
-To reuse that Scala test with our VHDL implementation of the DUT, we use Yosys
+To reuse that Scala test with our VHDL implementation of the DUT, we use VHDL2Verilog
 to convert the VHDL version of the DUT to Verilog and wrap it into a BlackBox.
 
 To reuse the test for two different implementations, we use the object-oriented features

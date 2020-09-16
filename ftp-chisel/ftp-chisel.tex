@@ -60,6 +60,33 @@
 \acrodef{SANN}{Synchronous Artificial Neural Network}
 \acrodef{WCRT}{Worst Case Reaction Time}
 
+
+%%% ZF
+\usepackage{listings}
+\lstset{
+	columns=fullflexible,
+	%        basicstyle=\ttfamily\footnotesize,
+	basicstyle=\ttfamily\small,      
+	%columns=fullflexible, keepspaces=true,
+	numbers=left,    
+	numberblanklines=false,
+	captionpos=b,
+	%	breaklines=true,
+	escapeinside={@}{@},
+	numbersep=5pt,
+	language=C,
+	tabsize=2,
+	breakatwhitespace=true,
+	breaklines=true,
+	deletekeywords={for},
+	%        keywordstyle=\ttfamily
+	numbersep=5pt,
+	xleftmargin=.10in,
+	%xrightmargin=.25in
+}
+
+
+
 \begin{document}
 % Empirically this seems to match MS Word's idea of 1.5 line spacing.
 % DO NOT CHANGE
@@ -268,20 +295,168 @@ work is in open-source as well.
 \label{sec:background}
 
 
-\paragraph{Hardware Verification}
+\subsection{Hardware Verification}
 
 
 
 
-\paragraph{Software Testing Methods}
+%%%ZF
+\subsection{Software Testing Methods}
+Testing is crucial for making software reliable. The higher
+expectation of software quality and shrinking development cycle have
+driven programming language researchers and software engineers to
+develop a spectrum of \emph{automated testing} techniques. For example,
+Continuous Integration~\cite{duvall2007continuous} implements an agile
+method based on expert-written unit tests. It runs the tests
+automatically during software evolution to avoid regression.  However, continuous integration automates only execution
+of tests, not their generation. To deal with the later,
+state-of-the-art automated testing research addresses
+the following two challenges.
+
+
+\paragraph{Challenge 1.}
+The first challenge is how to determine the expected code behavior, or
+called \emph{specification}.  Software developers document such
+specification or encode them within the software in the form of a
+contract. \emph{Property-based testing} provides a convenient way in
+formulating specification as constraints expressed in a
+domain-specific language~\cite{DBLP:conf/icfp/ClaessenH00}.  For
+example, developers in Scala can specify a property, such as $n^2>0$
+for all integers, in the property-based testing library
+ScalaCheck~\cite{nilsson2014scalacheck} as follows:
+\begin{lstlisting}[numbers=none]
+val propSquare = forAll {(n: Int) => n * n > 0}
+\end{lstlisting}
+
+Another way to generate specification is to use \emph{sanitizers} in
+compilers. Sanitizers are a common compiler feature that automatically
+injects run-time checks to capture certain failure
+conditions~\cite{DBLP:conf/usenix/SerebryanyBPV12}. For example,
+Google's undefined behavior sanitizer UBSAN checks whether a
+floating-point variable equals 0 before a division by it; Google's
+address sanitizer ASAN targets illegal memory access. While sanitizers
+do not deal with functional correctness as unit tests do, they check
+low-level, sometimes security-related properties, such as
+use-after-free, array-index-out-of-bound, or race conditions.
+
+\paragraph{Challenge 2}
+The other challenge is how to generate interesting tests inputs.  The
+state-of-the-practice  uses
+\emph{fuzzing}~\cite{takanen2018fuzzing}. Property-based testing~\cite{DBLP:conf/icfp/ClaessenH00},
+for example, uses random data generation, a form of plain fuzzing.  By
+invoking {\tt propSquare.check} on a with ScalaCheck, where {\tt
+  propSquare} is the constraint of $n^2>0$ defined above, we can
+immediate get an input that falsifies the constraint:
+
+\begin{lstlisting}[numbers=none]
+scala> propSquare.check
+       ! Falsified after 1 passed tests.
+      > ARG_0: 0
+      > ARG_0_ORIGINAL: 1083860448
+\end{lstlisting}
+ ScalaCheck first finds that n = 1083860448 produces an overflow
+ wrapped to a negative (thus $n^2>0$ fails). The input is then
+ "shrunk" (in the terminology of property-based testing) to a smaller
+ one, 0 in this case.  Modern fuzzers can be more efficient by
+ including a feedback loop to improve their randomly generated
+ data. For example, they monitor runtime statistics and improve input
+ data by optimizing code
+ coverage~\cite{DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
+
+
 
 
 
 
 \section{Research Plan}
 
-\paragraph{xxx}
 
+%%%ZF
+Our workpackages (WPs) follow.
+\subsection{WP1} 
+As a starting point, we will use ScalaCheck, an implementation of
+property-based testing in Scala, for hardware testing. We will invite
+hardware developers to write properties as constraints (like
+propSquare above), and then we will use ScalaCheck to validate those
+constraints. Property-based testing has seen notable
+successes previously, such as locating a long-standing concurrency bug
+in the Erlang database server; it was also used by Volvo to test car
+communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
+
+\paragraph{MS1.} The milestone in this WP is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing on two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, of which our approach should  pass without raising  warnings. 
+
+\subsection{WP2} 
+We can then consider to generate specification automatically, \`a la
+sanitizers used in the compiler techniques. This WP focuses on
+low-level properties derived from the program syntax, {\em, e.g.},
+accessing an array should be within a bound, or performing an
+arithmetic calculation should not overflow.
+
+
+
+\paragraph{MS2.} The milestone in this WP is to develop a program transformer
+that injects in the software source, or its binary form, a list of
+low-level specifications.
+
+Related to this WP, our project collaborator Zhoulai Fu (together with
+a hired security hacker) used sanitizers to find more than 200 bugs in
+the Robot Operating System
+(ROS)~\cite{web:ros-sanitizer-logs}. Besides, Zhoulai Fu has developed
+several program transformers previously for testing floating-point
+computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
+
+
+\subsection{WP3}   we will also  consider to generate specification from  previous known bug patterns.  We will collaborate with our hardware engineers to explore a
+history of hardware issues triggered by software defects, and get
+patterns from winch we generate specification. Such patterns will be
+similar to those in the widely used pattern-based software analysis
+tools such as FindBug~\cite{DBLP:conf/paste/AyewahPMPZ07} or
+Scalafix~\cite{web:scalafix}. Some examples of the bug patterns in
+java can be found in \cite{web:findbugs_bugs}. Compared with WP2, this
+step will  generate specification in a syntax-driven way, but
+unlike sanitizers, it will produce a different kind that  relates
+to expected functional behavior of the hardware.
+
+%Related to this WP3, Zhoulai Fu worked on a project, "Historical bug
+%patterns in robot operating system" where the purpose was to find new
+%bugs by learning from historical ones.
+
+
+
+\paragraph{MS3.} The milestone for WP3 is a database of bug patterns. Similar to MS2,
+a program transformer will be implemented to convert the bug patterns
+into code specification. The generated specification for our benchmark
+should be validated by our hardware developers, with which a refinement
+step can be introduced to improve the database.
+
+
+Related to this WP, our collaborator Zhoulai Fu has worked on a comprehensive study of developing bug finders by learning from history bug patterns in the Robot Operating System~\cite{nielsenFSW2020dependencybugs} .
+
+
+
+\subsection{WP4} Once we have tools to instrument the software under test with user-written
+specification (as in WP1) or automatically generated specification (as
+in WP3 and WP4), we will be in a position of using fuzzing techniques
+to validate those specifications. To this end, we will need to work
+with our industrial collaborators to get access to driver programs
+that runs the software under test. 
+
+\paragraph{MS4.} The milestone in this WP is to have a list of bugs reported, and a detailed case study (whether the bugs are
+trivial, false alarms, for example) Besides, coverage statistics will  be
+collected to measure comprehensiveness of our tests. 
+
+\subsection{WP5} We plan to deploy our automated testing solution  in a continuous
+integration service, presumably on the cloud, such as Jenkins or
+Travis~\cite{DBLP:journals/tse/GallabaM20}. For each code commit, the
+service will automatically generate the specification as implemented
+in WP2 and WP3, and then will generate test data with a fuzzing engine
+as in WP4.
+
+\paragraph{MS5.} The milestone is to have the server established that implements
+the workflow. It should produce a detailed status report for each
+commit.  A similar kind of status report can be found in Google's
+OSS-Fuzz (Continuous Fuzzing for Open Source
+Software)~\cite{web:oss-fuzz} for example.
 
 
 \paragraph*{Dissemination and Publication}
@@ -478,6 +653,6 @@ milestone label font=\footnotesize,
 \small
 \bibliographystyle{abbrv}
 %\bibliography{myown,jsp,noc,misc,msbib}
-\bibliography{../msbib}
+\bibliography{../msbib,testing}
 
 \end{document}

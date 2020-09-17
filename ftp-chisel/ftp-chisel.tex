@@ -119,7 +119,9 @@ hardware construction language and uses Scala to drive the verification.
 We will explore the testing strategy used in the Universal Verification Methodology
 (UVM) in the context of verifying hardware described in Chisel.
 
-
+\begin{itemize}
+\item xxx
+\end{itemize}
 
 \section{Introduction and Objectives -- A Start}
 \label{sec:objectives}
@@ -154,14 +156,33 @@ in software testing.
 Furthermore, our aim is to build on open-source projects only. Therefore, our
 work is in open-source as well.
 
+\begin{itemize}
+\item See for arguments: \url{https://cacm.acm.org/magazines/2020/7/245701-domain-specific-hardware-accelerators/fulltext}
+\item Have a measurable objective (LoC UVM vs Scala, SystemVerilog vs Chisel)
+\item Rise level of tooling, not necessarily level of abstraction in HW description
+\item IDE
+\item Namespace with packets make it easier to combine IPs
+\item With Maven it is easy to combine open-source IPs
+\item Industry issue is verification: how from Chisel to VHDL/Verilog
+\item How much ASIC design is done in DK? Revenue numbers?
+\item There are not enough HW designers and verification engineers available, so they shall be more productive
+\item Or we can attract SW developer with Chisel to do HW design
+\item Future cloud server will include FPGA for application speedup, how to program them
+\end{itemize}
 
 \section{Background and State-of-the-Art}
 \label{sec:background}
 
 
-\subsection{Hardware Verification}
+\subsection{Hardware Design and Verification}
 
-
+\begin{itemize}
+\item Verification (check what is current praxis)
+\item In classic HDL tooling (language, IDE, test infrastructure) is very bad
+\item SV as language has 250 keywords!
+\item Related workL \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
+\item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
+\end{itemize}
 
 
 %%%ZF
@@ -236,7 +257,24 @@ scala> propSquare.check
 
 
 %%%ZF
-Our workpackages (WPs) follow.
+Our work packages (WPs) follow.
+
+\todo{WPs on the Chisel/UVM side are missing.}
+
+\begin{itemize}
+\item One use case for evaluation: cosimulation of a RISC-V simulator (Tommy) with an OS RISC-V HW (Chisel, VHDL, Verilog)
+\item On coverage and cover points in proposal
+\item assertions during simulation
+\item Hw/sw co-verification with Scala and so on, e.g., run an application on a SW processor model exploring some hardware artifacts (could be S4NOC)
+\item Bus functional models
+\item Use industry partners use cases
+\item Still talk about a small example taking it through all variations
+\item Integration of C/C++ based models in the verification with Scala
+\item Java/Scala in UVM
+\item WP on VHDL generation from Chisel for better verification
+\item Chisel design and verification workshops including hands-on tutorial in DK, at IDA, have an ok letter from them
+\end{itemize}
+
 \subsection{WP1} 
 As a starting point, we will use ScalaCheck, an implementation of
 property-based testing in Scala, for hardware testing. We will invite
@@ -382,9 +420,20 @@ will have equal opportunities for applying.
 
 {\bf Martin Schoeberl (MS)} is associate professor at DTU Compute and is the PI.
 His research interest is in computer architecture for real-time systems. During his stay
-at UCB ...
-   
+at UCB ... Martin has written the Chisel textbook~\cite{chisel:book}, which has been translated
+to Chinese and Japanese.
+
 \todo{fill in stuff}
+
+{\bf Jan Madsen (JM)} 
+
+{\bf Kasper (KH)} 
+
+
+{\bf NN PhD (NN1)} 
+
+
+
 %\subsection*{Experimental Facilities}
 %
 %Development and simulation of the RTAI hardware can be
@@ -518,50 +567,37 @@ milestone label font=\footnotesize,
 
 \newpage
 
-\section{Ideas and Questions}
+\section{Ideas, Questions, TODOs}
+
+
 
 \begin{itemize}
-\item Rise level of tooling, not necessarily level of abstraction in HW description
-\item IDE
-\item Namespace with packets make it easier to combine IPs
-\item With Maven it is easy to combine open-source IPs
-\item In classic HDL tooling (language, IDE, test infrastructure) is very bad
-\item SV as language has 250 keywords!
+\item Include proposal from Jesper Birch (in Word document)
 \item Take material from workshop paper
-\item Related workL \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
-\item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
+\item Look at the TODO list in infinit project
 \item Widex is interested in Chisel, may join a DFF proposal
 \item Peter Syst + microsoft cloud into Chisel project
 \item DeepSpec or DeepSp?? end-to-end for Chisel
-\item WP on VHDL generation from Chisel for better verification
-\item Verification (check what is current praxis)
-\item Industry issue is verification: how from Chisel to VHDL/Verilog
-\item How much ASIC design is done in DK? Revenue numbers?
-\item There are not enough HW designers and verification engineers available, so they shall be more productive
-\item Or we can attract SW developer with Chisel to do HW design
-\item Future cloud server will include FPGA for application speedup, how to program them
 \item Support letter from UCB
 \item External stay at UCB
 \item Richard should be part of it
 \item One PhD at ITU and PhD or postdoc (Lefteris at DTU)
 \item Kasper n hours per week plus maybe part time Torur
-\item Chisel workshop including hands-on tutorial in DK, at IDA, have an ok letter from them
 \item Thomas from Microsemi on board
 \item Konstantin Vinogradov <const.vin@gmail.com> from Widex is interested in a (industrial) PhD, might be a named candidate
-\item See for arguments: \url{https://cacm.acm.org/magazines/2020/7/245701-domain-specific-hardware-accelerators/fulltext}
 \item Teledyn is interested
 \end{itemize}
 
 \subsection{Contacts}
 
-Jesper Birch <jb@napatech.com> sent a word document and is interested.
-
-Teledyne:
-
-"Rytter, Morten (INT)" <Morten.Rytter@Teledyne.com>
-
-simon.andersen@teledyne.com
-
+%Jesper Birch <jb@napatech.com> sent a word document and is interested.
+%
+%Teledyne:
+%
+%"Rytter, Morten (INT)" <Morten.Rytter@Teledyne.com>
+%
+%simon.andersen@teledyne.com
+%
 
 
 One option would be for us to deliver test cases and discussions of what is needed for our company. 

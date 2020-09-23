@@ -111,50 +111,66 @@ is by building domain-specific hardware accelerators.
 To efficiently design and verify those domain-specific accelerators, we need
 agile hardware development.
 
-\todo{more to the project point.}
 
-This project aims for a combination of open-source tools for verifying
+This project aims for developing a method and concrete tools for agile
+hardware development.
+We will use tools, languages, and development and testing methods
+from the last decades in the software development and apply them
+to hardware design.
+Our aim is to rise the tooling level for digital design to increase
+the productivity.
+Time for verifying (testing) of digital systems is about double the time
+of developing them in the first place.
+Therefore, a main focus of this project is on applying testing methods
+from the software development to hardware development.
+
+\section{Introduction and Objectives}
+\label{sec:objectives}
+
+\todo{Deside on wording (HW, digital, testing, verification.)}
+
+
+We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
+Performance increase with general-purpose processors has come to a halt.
+The only way to achieve higher performance or lower energy consumption
+is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
+Furthermore, the production of a chip is costly. Therefore, it is essential to get the design right at the first tape-out. Thorough testing and verification of the design is mandatory.
+
+To efficiently develop and verify those accelerators, we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
+We believe that for the road ahead, we need to adapt to agile hardware development~\cite{henn-patt:turing:2019}.
+
+Until a few years, the two main design languages Verilog and VHDL, dominated the
+design and testing of digital circuits. However, both languages are decades behind
+modern languages for software development.
+
+Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have brought object-oriented programming
+into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non synthesizable verification code.
+Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
+Circuits described in Chisel can be tested and verified with a Chisel testing framework and Scala tests.
+Scala/Chisel brings object-oriented and functional programming into the world of
+digital design.
+
+
+\emph{Focus on and highlight: Out aim is to rise the tooling level for digital design to increase
+the productivity.}
+
+\todo{does the following fit? taken from the abstract}
+We will build a combination of open-source tools for verifying
 circuits described in mixed languages. It builds on top of the Chisel
 hardware construction language and uses Scala to drive the verification. 
 We will explore the testing strategy used in the Universal Verification Methodology
 (UVM) in the context of verifying hardware described in Chisel.
 
-\begin{itemize}
-\item xxx
-\end{itemize}
 
-\section{Introduction and Objectives -- A Start}
-\label{sec:objectives}
 
-We cannot longer depend on Moor's Law to increase computing performance~\cite{dark-silicon:2011}.
-Performance increase with general-purpose processors came to a halt.
-The only way to achieve higher performance or lower energy consumption
-is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
-Furthermore, the production of a chip is very expensive. Therefore, it is important to get the design right
-at the first tape-out. Throughout testing and verification of the design is mandatory.
-
-To efficient develop and verify those accelerators we can learn from software development trends
-such as agile software development~\cite{agile:manifesto}.
-We need agile hardware development~\cite{henn-patt:turing:2019}.
-
-Until a few years, the two main design languages Verilog and VHDL dominated the
-design and testing of digital circuits. However, both languages are decades behind
-modern languages for software development.
-
-Resent advances with SystemVerilog and Chisel bring object-oriented programming
-into the digital design and verification process. SystemVerilog, as an extension of Verilog,
-adds object-oriented concepts for the non-synthesizable verification code.
-Chisel is a language, embedded in Scala, to describe digital circuits.
-Circuits described in Chisel can be tested and verified with a Chisel testing
-framework and tests written in Scala.
-Scala/Chisel brings object-oriented and functional programming into the world of
-digital design.
 
 This project proposes a research project that aims at building a testing framework
 in Scala that takes the best methods from UVM and from decades of experience
 in software testing.
-Furthermore, our aim is to build on open-source projects only. Therefore, our
-work is in open-source as well.
+The developed framework shall support mixed languages (VHDL, SystemVerilog, and Chisel)
+to be able to integrate legacy code.
+Furthermore, our aim is to build on open-source projects. Therefore, our
+work will be in open-source as well.
 
 \begin{itemize}
 \item See for arguments: \url{https://cacm.acm.org/magazines/2020/7/245701-domain-specific-hardware-accelerators/fulltext}

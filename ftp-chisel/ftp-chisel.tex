@@ -175,6 +175,7 @@ work will be in open-source as well.
 \begin{itemize}
 \item See for arguments: \url{https://cacm.acm.org/magazines/2020/7/245701-domain-specific-hardware-accelerators/fulltext}
 \item Have a measurable objective (LoC UVM vs Scala, SystemVerilog vs Chisel)
+\item Chisel has all the Scala/Java tooling and libraries available, SystemVerilog is a niche language
 \item Rise level of tooling, not necessarily level of abstraction in HW description
 \item IDE
 \item Namespace with packets make it easier to combine IPs
@@ -196,7 +197,7 @@ work will be in open-source as well.
 \item Verification (check what is current praxis)
 \item In classic HDL tooling (language, IDE, test infrastructure) is very bad
 \item SV as language has 250 keywords!
-\item Related workL \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
+\item Related work \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
 \item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
 \end{itemize}
 
@@ -279,7 +280,7 @@ Our work packages (WPs) follow.
 
 \begin{itemize}
 \item One use case for evaluation: cosimulation of a RISC-V simulator (Tommy) with an OS RISC-V HW (Chisel, VHDL, Verilog)
-\item On coverage and cover points in proposal
+\item On coverage and cover points in proposal (coverage of the RTL hardware, but also on the generator (Jack's comment, see \url{https://gitter.im/freechipsproject/chisel3?at=5f63c878603d0b37f43b67f3})
 \item assertions during simulation
 \item Hw/sw co-verification with Scala and so on, e.g., run an application on a SW processor model exploring some hardware artifacts (could be S4NOC)
 \item Bus functional models
@@ -443,11 +444,17 @@ to Chinese and Japanese.
 
 {\bf Jan Madsen (JM)} 
 
-{\bf Kasper (KH)} 
+{\bf Kasper Hesse (KH)} is student at DTU with a strong background in digital design.
+He has already some knowledge in UVM and can therefore help the project to be productive
+from day one.
 
+{\bf Zhoulai Fu (ZF)} 
+
+{\bf Peter Sestoft (PS)} 
 
 {\bf NN PhD (NN1)} 
 
+{\bf NN PhD (NN2)} 
 
 
 %\subsection*{Experimental Facilities}

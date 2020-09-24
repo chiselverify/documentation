@@ -132,6 +132,13 @@ Until a few years, the two main design languages Verilog and VHDL, dominated the
 design and testing of digital circuits. However, both languages are decades behind
 modern languages for software development.
 
+Compared to software development and testing, digital design and testing methods
+and tools lack several decades of development. Within this project we plan to
+leverage software development and testing methods for digital design.
+This project explores the hardware construction language Chisel with Scala
+and the Universal Verification Method (UVM) with SystemVerilog for
+design and test of digital systems.
+
 Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have brought object-oriented programming
 into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non synthesizable verification code.
 Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
@@ -539,22 +546,22 @@ For an assessment of the project's success we plan following milestones:
 \textbf{M3} (Month 30): All development has been finished and the different versions
 can be used for exploration and evaluation of the results ...
 
-\textbf{M4} (Month 48): The project has finished and a PhD thesis has been handed in.
+\textbf{M4} (Month 48): The project has finished and two PhD theses have been handed in.
 
 %\vspace{-5mm}
 \begin{figure*}[h!]
 \centering
 \begin{ganttchart}[vgrid,hgrid,bar/.style={fill=gray},
-x unit=3.5mm, % horizontal squeezing
+x unit=3mm, % horizontal squeezing
 %y unit chart=5mm, % vertical squeezing
 y unit title=8mm,y unit chart=4.5mm, milestone top shift=.15, milestone height=.2mm, % very tight format
 title label font=\footnotesize,
 bar label font=\footnotesize,
 milestone label font=\footnotesize,
-]{1}{42}
+]{1}{48}
 % labels
 %\gantttitle{\textbf{\normalsize{RTAI Gantt chart}}}{42} \\
-\gantttitlelist{1,...,42}{1} \\
+\gantttitlelist{1,...,48}{1} \\
 % tasks, groups and milestones
 \ganttbar[name=r1]{Recruting}{1}{6} \\
 \ganttmilestone[name=m1]{Milestone 1}{6} \\
@@ -571,7 +578,8 @@ milestone label font=\footnotesize,
 \ganttmilestone[name=m3]{Milestone 3}{30} \\
 \ganttbar[name=t10]{Explore}{31}{36} \\
 \ganttbar[name=t11]{Eval}{37}{42} \\
-\ganttmilestone[name=m4]{Milestone 4}{42}
+\ganttbar[name=t12]{Thesis}{40}{48} \\
+\ganttmilestone[name=m4]{Milestone 4}{48}
 
 % relations
 \ganttlink{r1}{m1}
@@ -591,6 +599,7 @@ milestone label font=\footnotesize,
 \ganttlink{m3}{t10}
 \ganttlink{t10}{t11}
 \ganttlink{t11}{m4}
+\ganttlink{t12}{m4}
 
 \end{ganttchart}
 

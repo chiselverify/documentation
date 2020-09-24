@@ -104,25 +104,10 @@
 
 \section{Abstract for the application -- do not include in this document}
 %
-Performance increase with general-purpose processors has come to a halt.
-We can no longer depend on Moore's Law to increase computing performance.
-The only way to achieve higher performance or lower energy consumption
-is by building domain-specific hardware accelerators.
-To efficiently design and verify those domain-specific accelerators, we need
-agile hardware development.
+Performance increase with general-purpose processors has come to a halt. We can no longer depend on Moore's Law to increase computing performance. The only way to achieve higher performance or lower energy consumption is by building domain-specific hardware accelerators. To efficiently design and verify those domain-specific accelerators, we need agile hardware development.
 
 
-This project aims for developing a method and concrete tools for agile
-hardware development.
-We will use tools, languages, and development and testing methods
-from the last decades in the software development and apply them
-to hardware design.
-Our aim is to rise the tooling level for digital design to increase
-the productivity.
-Time for verifying (testing) of digital systems is about double the time
-of developing them in the first place.
-Therefore, a main focus of this project is on applying testing methods
-from the software development to hardware development.
+This project aims for developing a method and concrete tools for agile hardware development. We will use tools, languages, and development and testing methods from the last decades in the software development and apply them to hardware design. Our aim is to rise the tooling level for digital design to increase the productivity. Time for verifying (testing) of digital systems is about double the time of developing them in the first place. Therefore, a main focus of this project is on applying testing methods from the software development to hardware development.
 
 \section{Introduction and Objectives}
 \label{sec:objectives}
@@ -415,11 +400,16 @@ source code of the design.
 \paragraph*{Industrial Cooperation}
 
 
+\paragraph*{Use Cases}
+
+We will have several non-trivial use cases from industry and from our own development to verify
+our development. \todo{Industry first}
+From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
+to explore concurrent, transaction based verification.
 
 \paragraph*{Human Resources}
 
-For the SDH project we
-request funding of the PhD student (NN) and postdoc (???).
+For the SDH project we request funding of two PhD students and a student researcher.
 Each of the senior researchers will contribute to the SDH research project.
 
 %We intend to build a group with one PhD student, one postdoc, and
@@ -430,14 +420,15 @@ Each of the senior researchers will contribute to the SDH research project.
 %university in scope and standard, and are fundamental principles underlying DTU's
 %expectations of respect and equality''.
 As the already named researchers are all male, we will actively search
-for a female researcher for the PhD position.
+for female researchers for the PhD positions.
 However, the PhD position will be announced openly and men and women
 will have equal opportunities for applying.
 
 
 {\bf Martin Schoeberl (MS)} is associate professor at DTU Compute and is the PI.
 His research interest is in computer architecture for real-time systems. During his stay
-at UCB ... Martin has written the Chisel textbook~\cite{chisel:book}, which has been translated
+at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
+Martin has written the Chisel textbook~\cite{chisel:book}, which has been translated
 to Chinese and Japanese.
 
 \todo{fill in stuff}
@@ -479,7 +470,7 @@ from day one.
       \midrule
       Recruiting  & 1 & MS and NN & Recruiting of the NN PhD \\
       \midrule
-      xxx     &  9      & HP     & yyy.\\
+      uvm     &  9      & KH     & Develop a UVM verification example on a complex multicore device, a network-on-chip.\\
       xxx     &  6      & HP     & .\\
       xxx    &  9      & HP     & .\\
       xxx     &  6      & HP     & .\\

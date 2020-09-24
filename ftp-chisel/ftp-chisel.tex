@@ -277,7 +277,16 @@ Our work packages (WPs) follow.
 \item Chisel design and verification workshops including hands-on tutorial in DK, at IDA, have an ok letter from them
 \end{itemize}
 
-\subsection{WP1} 
+\subsection{WP1}
+Students involved in this project will learn about related work and
+tools involved in the project. On the software side, the students will learn
+about the basics of Scala programming language, and ScalaCheck (a
+Scala implementation of the property-based testing, as mentioned
+above). On the hardware side, the students will need to get familiar with UVM
+and hands-on experiences on Chisel.
+
+
+\subsection{WP2} 
 As a starting point, we will use ScalaCheck, an implementation of
 property-based testing in Scala, for hardware testing. We will invite
 hardware developers to write properties as constraints (like
@@ -287,30 +296,31 @@ successes previously, such as locating a long-standing concurrency bug
 in the Erlang database server; it was also used by Volvo to test car
 communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 
-\paragraph{MS1.} The milestone in this WP is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing on two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, of which our approach should  pass without raising  warnings. 
+\paragraph{MS2.} The milestone in this WP is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing on two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, of which our approach should  pass without raising  warnings. 
 
-\subsection{WP2} 
-We can then consider to generate specification automatically, \`a la
-sanitizers used in the compiler techniques. This WP focuses on
-low-level properties derived from the program syntax, {\em, e.g.},
-accessing an array should be within a bound, or performing an
-arithmetic calculation should not overflow.
-
-
-
-\paragraph{MS2.} The milestone in this WP is to develop a program transformer
-that injects in the software source, or its binary form, a list of
-low-level specifications.
-
-Related to this WP, our project collaborator Zhoulai Fu (together with
-a hired security hacker) used sanitizers to find more than 200 bugs in
-the Robot Operating System
-(ROS)~\cite{web:ros-sanitizer-logs}. Besides, Zhoulai Fu has developed
-several program transformers previously for testing floating-point
-computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
+%% Let us consider this one below as a bonus WP in our backyard.
+%% \subsection{WP2} 
+%% We can then consider to generate specification automatically, \`a la
+%% sanitizers used in the compiler techniques. This WP focuses on
+%% low-level properties derived from the program syntax, {\em, e.g.},
+%% accessing an array should be within a bound, or performing an
+%% arithmetic calculation should not overflow.
 
 
-\subsection{WP3}   we will also  consider to generate specification from  previous known bug patterns.  We will collaborate with our hardware engineers to explore a
+
+%% \paragraph{MS2.} The milestone in this WP is to develop a program transformer
+%% that injects in the software source, or its binary form, a list of
+%% low-level specifications.
+
+%% Related to this WP, our project collaborator Zhoulai Fu (together with
+%% a hired security hacker) used sanitizers to find more than 200 bugs in
+%% the Robot Operating System
+%% (ROS)~\cite{web:ros-sanitizer-logs}. Besides, Zhoulai Fu has developed
+%% several program transformers previously for testing floating-point
+%% computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
+
+
+\subsection{WP3}   we will  consider generating specification from  previous known bug patterns.  We will collaborate with our hardware engineers to explore a
 history of hardware issues triggered by software defects, and get
 patterns from winch we generate specification. Such patterns will be
 similar to those in the widely used pattern-based software analysis
@@ -339,28 +349,30 @@ Related to this WP, our collaborator Zhoulai Fu has worked on a comprehensive st
 
 
 \subsection{WP4} Once we have tools to instrument the software under test with user-written
-specification (as in WP1) or automatically generated specification (as
+specification (as in WP2) or automatically generated specification (as
 in WP3 and WP4), we will be in a position of using fuzzing techniques
 to validate those specifications. To this end, we will need to work
 with our industrial collaborators to get access to driver programs
-that runs the software under test. 
+that runs the software under test.
 
 \paragraph{MS4.} The milestone in this WP is to have a list of bugs reported, and a detailed case study (whether the bugs are
-trivial, false alarms, for example) Besides, coverage statistics will  be
-collected to measure comprehensiveness of our tests. 
+trivial, false alarms, for example) Besides, coverage statistics will
+be collected to measure comprehensiveness of our tests.
 
-\subsection{WP5} We plan to deploy our automated testing solution  in a continuous
-integration service, presumably on the cloud, such as Jenkins or
-Travis~\cite{DBLP:journals/tse/GallabaM20}. For each code commit, the
-service will automatically generate the specification as implemented
-in WP2 and WP3, and then will generate test data with a fuzzing engine
-as in WP4.
 
-\paragraph{MS5.} The milestone is to have the server established that implements
-the workflow. It should produce a detailed status report for each
-commit.  A similar kind of status report can be found in Google's
-OSS-Fuzz (Continuous Fuzzing for Open Source
-Software)~\cite{web:oss-fuzz} for example.
+%% Let us consider this as another backyard WP.
+%% \subsection{WP5} We plan to deploy our automated testing solution  in a continuous
+%% integration service, presumably on the cloud, such as Jenkins or
+%% Travis~\cite{DBLP:journals/tse/GallabaM20}. For each code commit, the
+%% service will automatically generate the specification as implemented
+%% in WP2 and WP3, and then will generate test data with a fuzzing engine
+%% as in WP4.
+
+%% \paragraph{MS5.} The milestone is to have the server established that implements
+%% the workflow. It should produce a detailed status report for each
+%% commit.  A similar kind of status report can be found in Google's
+%% OSS-Fuzz (Continuous Fuzzing for Open Source
+%% Software)~\cite{web:oss-fuzz} for example.
 
 
 \paragraph*{Dissemination and Publication}
@@ -439,7 +451,11 @@ to Chinese and Japanese.
 He has already some knowledge in UVM and can therefore help the project to be productive
 from day one.
 
-{\bf Zhoulai Fu (ZF)} 
+{\bf Zhoulai Fu (ZF)} is an assistant professor at ITU. His research
+spans programming language theory and software engineering
+techniques. Related to this project, he worked on developing
+constraint solving and automated testing techniques in achieving high
+coverage and finding overflow in numerical programs.
 
 {\bf Peter Sestoft (PS)} 
 

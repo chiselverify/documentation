@@ -1,0 +1,200 @@
+\documentclass[%draft,
+    a4paper,
+    11pt, % use explicit paper size
+    headinclude, footexclude,
+    notitlepage,
+    headsepline,
+    pointlessnumbers,
+    ]{scrartcl}
+\usepackage{pslatex} % -- times instead of computer modern
+
+\typearea{14}
+\usepackage{scrpage2} % for headers
+ \setkomafont{pagehead}{\scshape\small}
+ \setkomafont{pagenumber}{\scshape\small}
+ \ihead[]{Martin Schoeberl}
+ \ohead[]{Publications}
+
+% \ofoot[]{} \cfoot[]{} \ifoot[]{}
+
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{dcolumn}
+\newcommand{\cc}[1]{\multicolumn{1}{c}{#1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+\usepackage{boxedminipage}
+
+\newcommand{\excelwidth}{\columnwidth}
+
+\newcommand{\code}[1]{{\textsf{#1}}}
+
+
+\begin{document}
+
+\pagestyle{scrheadings}
+
+\begin{center}
+\vspace{3cm}
+{\usekomafont{title}\huge Publications Martin Schoeberl}\\
+\bigskip
+\bigskip
+\end{center}
+
+I have published four books, 27 journal articles, one book chapter, one patent, and 150
+papers in peer reviewed conferences and workshops; 74 of the publications
+as main author (38 of the 74 as single author).
+According to Google Scholar,\footnote{Google profile at
+\url{http://scholar.google.com/citations?user=wiRNmwUAAAAJ&hl=en&oi=ao}
+}
+my papers are cited 4176 times and my h index is 36.
+% The first article (JSA 2008) was the \textbf{most cited article at JSA} of articles published in the last five years.\footnote{\url{http://www.elsevier.com/wps/find/journaldescription.cws_home/505616/description}}
+
+\subsection*{Five Most Important Publications}
+
+\begin{itemize}
+
+\item Martin Schoeberl. A Java processor architecture for
+embedded real-time systems. {\em Journal of Systems
+Architecture}, 54/1--2:265--286, 2008.
+
+This article summarizes my PhD work on a time-predictable Java processor
+(called JOP). This article was the \textbf{most cited article at JSA} of articles
+published in the last five years for several years (it is now out of the 5 year
+window.) Its citation count is 248.
+
+\item Martin Schoeberl, Wolfgang Puffitsch, Rasmus~Ulslev
+    Pedersen, and Benedikt Huber. Worst-case execution time
+  analysis for a {Java} processor. {\em Software: Practice and
+  Experience}, 40/6:507--542, 2010.
+  
+This article presents the worst-cases execution time (WCET) analysis tool for
+the Java processor JOP.
+The hardware design of JOP together with this tool is currently the only
+solution for embedded Java where the worst-case execution time can
+be predicted statically.
+
+\item Martin Schoeberl. Time-predictable computer architecture.
+    {\em EURASIP Journal on Embedded Systems}, vol. 2009, Article
+    ID 758480:17 pages, 2009.
+    
+This article take the basic ideas from the JOP design on time-predictable
+computer architecture towards general purpose processors. This article was
+the main article for my habilitation thesis, where I {\bf establish time-predictable
+computer architecture as a research direction}.
+Furthermore, the T-CREST project was based on the ideas presented in this article.
+   
+%\item Martin Schoeberl. A time predictable instruction cache for
+%    a {J}ava processor. In {\em On the Move to Meaningful
+%    Internet Systems 2004: Workshop on {J}ava Technologies for
+%  Real-Time and Embedded Systems (JTRES 2004)}, volume 3292 of
+%  {\em LNCS}, pages 371--382, Agia Napa, Cyprus, October 2004.
+%  Springer.
+%
+%This paper presents one of my first time-predictable features for a processor,
+%the so called method cache, to simplify WCET analysis. This idea has been further
+%explored by a whole PhD thesis by Stefan Metzlaff in Augsburg.
+
+\item Christof Pitter and Martin Schoeberl.
+A real-time {Java} chip-multiprocessor.
+{\em ACM Trans. Embed. Comput. Syst.}, 10(1):9:1--34, 2010.
+
+Together with my first PhD student Christof Pitter we built a time-predictable
+chip-multiprocessor based on time-predictable memory arbitration and
+several Java processors. To the best of my knowledge this was the first multicore
+processor that was WCET analyzable and supported by a WCET analysis
+tool.
+
+\item Martin Schoeberl, Sahar Abbaspour, Benny Akesson, Neil Audsley, Raffaele Capasso, Jamie Garside, Kees Goossens, Sven Goossens, Scott Hansen, Reinhold Heckmann, Stefan Hepp, Benedikt Huber, Alexander Jordan, Evangelia Kasapaki, Jens Knoop, Yonghui Li, Daniel Prokesch, Wolfgang Puffitsch, Peter Puschner, Andr\'{e} Rocha, Cl\'{a}udio Silva, Jens Spars{\o}, and Alessandro Tocchi.
+ T-CREST: Time-predictable Multi-Core Architecture for Embedded Systems.
+ \emph{Journal of Systems Architecture} 61(9):449--471, 2015.
+ 
+ 
+This article summarizes the research and development work within the EC funded
+project T-CREST.
+ 
+\end{itemize}
+
+\subsection*{Books}
+
+\begin{enumerate}
+
+\item Martin Schoeberl. {\em Digital Design with Chisel}.
+Number ISBN 9781689336031. Kindle Direct Publishing, August 2019. 
+
+\item Martin Schoeberl. {\em JOP Reference Handbook: Building
+    Embedded Systems with a Java Processor}. Number ISBN
+978-1438239699. CreateSpace, August 2009.
+
+\item Martin Schoeberl. {\em JOP: A Java Optimized Processor for
+    Embedded Real-Time Systems}. Number ISBN 978-3-8364-8086-4.
+    VDM Verlag Dr. M{\"u}ller, July 2008.
+
+\item Doug Locke, B.~Scott Andersen, Ben Brosgol, Mike Fulton, Thomas Henties,
+  James~J. Hunt, Johan~Olm\"{u}tz Nielsen, Kelvin Nilsen, Martin Schoeberl,
+  Joyce Tokar, Jan Vitek, and Andy Wellings.
+ Safety-critical {Java} technology specification, public draft, 2011.
+
+\end{enumerate}
+
+\subsection*{Book Chapter}
+
+\begin{enumerate}
+
+\item Martin Schoeberl.
+ Hardware support for embedded {Java}.
+ In M.~Teresa Higuera-Toledano and Andy~J. Wellings, editors, {\em
+  Distributed, Embedded and Real-time {Java} Systems}, pages 159--176. Springer
+  US, 2012.
+\end{enumerate}
+
+\subsection*{Patent}
+
+\begin{enumerate}
+
+\item Martin Schoeberl. Instruction Cache f\"ur Echtzeitsysteme,
+    April 2006. Austrian patent AT 500.858.
+\end{enumerate}
+
+
+\subsection*{Theses}
+
+\begin{enumerate}
+
+\item Martin Schoeberl.
+ Time-predictable computer architecture.
+ Habilitation thesis, Institut for Computer Engineering, Vienna
+  University of Technology, September 2009.
+
+\item Martin Schoeberl. {\em JOP: A Java Optimized Processor for
+    Embedded Real-Time Systems}. PhD thesis, Vienna University of
+    Technology, 2005.
+\end{enumerate}
+
+
+\input{pub.tex}
+  
+\subsection*{Technical Reports}
+
+\begin{enumerate}
+
+\item Jack Whitham and Martin Schoeberl.
+ The limits of TDMA based memory access scheduling.
+ Technical Report YCS-2011-470, University of York, 2011.
+
+\item Martin Schoeberl, Benedikt Huber, Walter Binder, Wolfgang Puffitsch, and Alex
+  Villazon.
+ Object cache evaluation.
+ Technical report, Technical University of Denmark, 2010.
+
+\item Martin Schoeberl, Hiren D. Patel, and Edward A. Lee. Fun
+    with a deadline instruction. Technical Report
+UCB/EECS-2009-149, EECS Department, University of
+  California, Berkeley, Oct 2009.
+ 
+
+\end{enumerate}
+
+
+\end{document}

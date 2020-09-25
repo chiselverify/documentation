@@ -104,7 +104,7 @@
 
 %\section{Abstract for the application -- do not include in this document}
 %
-%Performance increase with general-purpose processors has come to a halt. We can no longer depend on Moore's Law to increase computing performance. The only way to achieve higher performance or lower energy consumption is by building domain-specific hardware accelerators. To efficiently design and verify those domain-specific accelerators, we need agile hardware development.
+%Performance increase with general-purpose processors has come to a halt. We can no longer depend on Moore's Law to increase computing performance. The only way to achieve higher performance or lower energy consumption is by building domain-specific hardware accelerators. These accelerators can be built in ASICs or in FPGAs in the cloud. To efficiently design and verify those domain-specific accelerators, we need agile hardware development.
 %
 %
 %This project aims to develop a method and concrete tools for agile hardware development. We will use tools, languages, development, and testing methods from the last decades in software development and apply them to hardware design. We aim to raise the tooling level for a digital design to increase productivity. Time for verifying (testing) of digital systems is about double the time of developing them in the first place. Therefore, this project's central focus is on applying software development testing methods to hardware development.
@@ -123,10 +123,14 @@ We can no longer depend on Moore's Law to increase computing performance~\cite{d
 Performance increase with general-purpose processors has come to a halt.
 The only way to achieve higher performance or lower energy consumption
 is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
-Furthermore, the production of a chip is costly. Therefore, it is essential to get the design right at the first tape-out. Thorough testing and verification of the design is mandatory.
+These accelerators can be built in chips or in FPGAs in the cloud.
+The production of a chip is costly. Therefore, it is essential to get
+the design right at the first tape-out. Thorough testing and verification of the design is mandatory.
 
 To efficiently develop and verify those accelerators, we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
 We believe that for the road ahead, we need to adapt to agile hardware development~\cite{henn-patt:turing:2019}.
+
+\todo{Get the SW people in here or later}
 
 Until a few years, the two main design languages Verilog and VHDL, dominated the
 design and testing of digital circuits. However, both languages are decades behind

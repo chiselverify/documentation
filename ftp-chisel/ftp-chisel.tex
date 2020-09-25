@@ -215,6 +215,18 @@ work will be in open-source as well.
 \item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
 \end{itemize}
 
+The SystemVerilog DPI / Direct Programming Interface allows the programmer to call
+C functions from inside of a SystemVerilog (UVM) testbench.
+This enables co-simulation via eg. a "golden model" written in C and the
+testbench verifying the DUT.
+
+The Java JNI (Java Native Interface) allows for a similar functionality in Java programs,
+allowing them to call C functions and use their functionality.
+By using Scala, which is built on Java, it is our hope to use the JNI together with Scala's test frameworks.
+The aim is to develop a framework for co-simulation with Scala/Chisel testers and a
+C-based golden model. This should allow companies to keep their existing C models,
+but move their simulation workflow into Scala/Chisel testers.
+
 
 %%%ZF
 \subsection{Software Testing Methods}

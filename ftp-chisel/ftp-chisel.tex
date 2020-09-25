@@ -285,29 +285,16 @@ scala> propSquare.check
 %%%ZF
 Our work packages (WPs) follow.
 
-\todo{WPs on the Chisel/UVM side are missing.}
 
-\begin{itemize}
-\item One use case for evaluation: cosimulation of a RISC-V simulator (Tommy) with an OS RISC-V HW (Chisel, VHDL, Verilog)
-\item On coverage and cover points in proposal (coverage of the RTL hardware, but also on the generator (Jack's comment, see \url{https://gitter.im/freechipsproject/chisel3?at=5f63c878603d0b37f43b67f3})
-\item assertions during simulation
-\item Hw/sw co-verification with Scala and so on, e.g., run an application on a SW processor model exploring some hardware artifacts (could be S4NOC)
-\item Bus functional models
-\item Use industry partners use cases
-\item Still talk about a small example taking it through all variations
-\item Integration of C/C++ based models in the verification with Scala
-\item Java/Scala in UVM
-\item WP on VHDL generation from Chisel for better verification
-\item Chisel design and verification workshops including hands-on tutorial in DK, at IDA, have an ok letter from them
-\end{itemize}
+
 
 %\subsection{WP1}
 Students involved in this project will first learn about related work and
 tools involved in the project. On the software side, the students will learn
 about the basics of Scala programming language, and ScalaCheck (a
 Scala implementation of the property-based testing, as mentioned
-above). On the hardware side, the students will need to get familiar with UVM
-and hands-on experiences on Chisel.
+above). On the hardware side, the students will need to get familiar with Chisel,
+SystemVerilog and UVM.
 
 
 
@@ -323,6 +310,57 @@ Erlang database server; it was also used by Volvo to test car
 communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 
 \paragraph{MS1.} The milestone in this is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing on two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, of which our approach should  pass without raising  warnings. 
+
+\paragraph{Co-simulation.}
+
+\todo{A figure would be nice.}
+
+\begin{itemize}
+\item One use case for evaluation: cosimulation of a RISC-V simulator (Tommy) with an OS RISC-V HW 
+\item Ptolemy~\cite{ptolemyII-book} can be used to co-simulate the environment, supporting a model based design.
+\item Integration of C/C++ based models in the verification with Scala
+\item Java/Scala in UVM
+\item Hw/sw co-verification with Scala and so on, e.g., run an application on a SW processor model exploring some hardware artifacts (could be S4NOC)
+\item Model based design (Jan) with co-simulation
+\end{itemize}
+
+\paragraph{Assertions.}
+
+\begin{itemize}
+\item assertions during simulation
+\item Assertion ave been long part in SW, begin of C, but seldom used in HW and more complex assertions are interesting, such as when req is asserted, an ack has to become active within 5 clock cycles
+\end{itemize}
+
+\paragraph{Constraint Random Testing.}
+
+\begin{itemize}
+\item xxx
+\end{itemize}
+
+
+\paragraph{Test Coverage.}
+
+\begin{itemize}
+\item xxx
+\item On coverage and cover points in proposal (coverage of the RTL hardware, but also on the generator (Jack's comment, see \url{https://gitter.im/freechipsproject/chisel3?at=5f63c878603d0b37f43b67f3})
+\end{itemize}
+
+\paragraph{Framework.}
+
+\begin{itemize}
+\item Bus functional models
+\item Multiple languages
+\item Still talk about a small example taking it through all variations
+\item WP on VHDL generation from Chisel for better verification
+\item p69: HDL models are SW projects
+
+\end{itemize}
+
+\begin{itemize}
+\item xxx
+\end{itemize}
+
+
 
 %% Let us consider this one below as a bonus WP in our backyard.
 %% \subsection{WP2} 
@@ -425,6 +463,11 @@ industry-friendly BSD license.
 A project web site will host the project documentation, the published papers, and the
 source code of the design.
 
+\begin{itemize}
+\item Chisel design and verification workshops including hands-on tutorial in DK, at IDA, have an ok letter from them
+\end{itemize}
+
+
 \emph{From the call: DFF finds it important to strengthen the societal effect of research by ensuring unrestricted and cost free digital access}
 
 
@@ -441,6 +484,10 @@ source code of the design.
 
 
 \paragraph*{Industrial Cooperation}
+
+\begin{itemize}
+\item Use industry partners use cases
+\end{itemize}
 
 
 \paragraph*{Use Cases}
@@ -472,7 +519,8 @@ will have equal opportunities for applying.
 His research interest is in computer architecture for real-time systems. During his stay
 at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
 Martin has written the Chisel textbook~\cite{chisel:book}, which has been translated
-to Chinese and Japanese.
+to Chinese and Japanese. Martin is member of the Technical Advisory Committee for
+Chisel and therefore keeps the work of SDH in sync with the Chisel main development.
 
 \todo{fill in stuff}
 
@@ -527,9 +575,13 @@ coverage and detecting bugs in numerical programs.
       xxx  & 6      & PhD1     &  . \\
       xxx  & 3      & PhD1     &  . \\
       xxx  & 6      & PhD1     &  Implement . \\
+      xxx  & 6      & PhD1     &  Implement . \\
       \midrule
-      Explore   &    2x6 & PhD1/HP    &  .\\
-      Eval & 2x6 & PhD1/HP & Evaluation of the results collected with. \\
+      Explore   &    2x6 & PhD1/2    &  .\\
+      Eval & 2x6 & PhD1/2 & Evaluation of the results collected with. \\
+      Thesis & x & PhD1/2 & Thesis writing und submission.\\
+      \midrule
+      Chapter & 2 & MS & Adding a chapter on verification to the Chisel book~\cite{chisel:book}. \\
       \bottomrule
     \end{tabular}
   \end{center}
@@ -590,6 +642,7 @@ milestone label font=\footnotesize,
 \ganttbar[name=t10]{Explore}{31}{36} \\
 \ganttbar[name=t11]{Eval}{37}{42} \\
 \ganttbar[name=t12]{Thesis}{40}{48} \\
+\ganttbar[name=t13]{Chapter}{40}{46} \\
 \ganttmilestone[name=m4]{Milestone 4}{48}
 
 % relations
@@ -611,6 +664,7 @@ milestone label font=\footnotesize,
 \ganttlink{t10}{t11}
 \ganttlink{t11}{m4}
 \ganttlink{t12}{m4}
+\ganttlink{t13}{m4}
 
 \end{ganttchart}
 

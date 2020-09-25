@@ -301,8 +301,8 @@ Our work packages (WPs) follow.
 \item Chisel design and verification workshops including hands-on tutorial in DK, at IDA, have an ok letter from them
 \end{itemize}
 
-\subsection{WP1}
-Students involved in this project will learn about related work and
+%\subsection{WP1}
+Students involved in this project will first learn about related work and
 tools involved in the project. On the software side, the students will learn
 about the basics of Scala programming language, and ScalaCheck (a
 Scala implementation of the property-based testing, as mentioned
@@ -310,17 +310,19 @@ above). On the hardware side, the students will need to get familiar with UVM
 and hands-on experiences on Chisel.
 
 
-\subsection{WP2} 
+
+%\subsection{WP2}
+\paragraph{Property-based Testing.}
 As a starting point, we will use ScalaCheck, an implementation of
 property-based testing in Scala, for hardware testing. We will invite
 hardware developers to write properties as constraints (like
 propSquare above), and then we will use ScalaCheck to validate those
-constraints. Property-based testing has seen notable
-successes previously, such as locating a long-standing concurrency bug
-in the Erlang database server; it was also used by Volvo to test car
+constraints. Property-based testing has seen notable successes
+previously, such as locating a long-standing concurrency bug in the
+Erlang database server; it was also used by Volvo to test car
 communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 
-\paragraph{MS2.} The milestone in this WP is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing on two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, of which our approach should  pass without raising  warnings. 
+\paragraph{MS1.} The milestone in this is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing on two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, of which our approach should  pass without raising  warnings. 
 
 %% Let us consider this one below as a bonus WP in our backyard.
 %% \subsection{WP2} 
@@ -344,16 +346,18 @@ communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 %% computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
 
 
-\subsection{WP3}   we will  consider generating specification from  previous known bug patterns.  We will collaborate with our hardware engineers to explore a
-history of hardware issues triggered by software defects, and get
+
+\paragraph{Learning Specification from Historical Bug Patterns.}
+we will consider generating specification from previous known bug
+patterns.  We will collaborate with our hardware engineers to explore
+a history of hardware issues triggered by software defects, and get
 patterns from winch we generate specification. Such patterns will be
 similar to those in the widely used pattern-based software analysis
 tools such as FindBug~\cite{DBLP:conf/paste/AyewahPMPZ07} or
 Scalafix~\cite{web:scalafix}. Some examples of the bug patterns in
-java can be found in \cite{web:findbugs_bugs}. Compared with WP2, this
-step will  generate specification in a syntax-driven way, but
-unlike sanitizers, it will produce a different kind that  relates
-to expected functional behavior of the hardware.
+java can be found in \cite{web:findbugs_bugs}. This step will generate
+specification in a syntax-driven way, relating to expected functional
+behavior of the hardware.
 
 %Related to this WP3, Zhoulai Fu worked on a project, "Historical bug
 %patterns in robot operating system" where the purpose was to find new
@@ -361,25 +365,28 @@ to expected functional behavior of the hardware.
 
 
 
-\paragraph{MS3.} The milestone for WP3 is a database of bug patterns. Similar to MS2,
-a program transformer will be implemented to convert the bug patterns
+\paragraph{MS2.} We will create  a database from historical  bug patterns. A program transformer will be implemented to convert the bug patterns
 into code specification. The generated specification for our benchmark
-should be validated by our hardware developers, with which a refinement
-step can be introduced to improve the database.
+should be validated by our hardware developers, with which a
+refinement step can be introduced to improve the database.
 
 
-Related to this WP, our collaborator Zhoulai Fu has worked on a comprehensive study of developing bug finders by learning from history bug patterns in the Robot Operating System~\cite{nielsenFSW2020dependencybugs} .
+%% Related to this, our collaborator Zhoulai Fu has worked on a
+%% comprehensive study of developing bug finders by learning from history
+%% bug patterns in the Robot Operating
+%% System~\cite{nielsenFSW2020dependencybugs} .
 
 
 
-\subsection{WP4} Once we have tools to instrument the software under test with user-written
+\paragraph{Automated Testing.}
+Once we have tools to instrument the software under test with user-written
 specification (as in WP2) or automatically generated specification (as
 in WP3 and WP4), we will be in a position of using fuzzing techniques
 to validate those specifications. To this end, we will need to work
 with our industrial collaborators to get access to driver programs
 that runs the software under test.
 
-\paragraph{MS4.} The milestone in this WP is to have a list of bugs reported, and a detailed case study (whether the bugs are
+\paragraph{MS3.} The milestone in this WP is to have a list of bugs reported, and a detailed case study (whether the bugs are
 trivial, false alarms, for example) Besides, coverage statistics will
 be collected to measure comprehensiveness of our tests.
 

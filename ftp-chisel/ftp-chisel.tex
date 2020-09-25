@@ -154,7 +154,7 @@ Scala/Chisel brings object-oriented and functional programming into the world of
 digital design.
 
 
-\emph{Focus on and highlight: Out aim is to rise the tooling level for digital design to increase
+\emph{Focus on and highlight: Our aim is to rise the tooling level for digital design to increase
 the productivity.}
 
 This project aims to develop a method and concrete tools for agile hardware development.
@@ -346,7 +346,9 @@ communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 \paragraph{Test Coverage.}
 
 \begin{itemize}
-\item xxx
+\item Code coverage can be a very useful tool when it comes to the verification of digital systems, since it allows one to see which parts of their design have actually been tested correctly. 
+This has lead us to want to implement coverage inside of the FIRRTL execution engine Treadle using a technique presented by Ira. D. Baxter in the paper entitled “Branch Coverage for Arbitrary Languages Made Easy" (\url{http://www.semdesigns.com/Company/Publications/TestCoverage.pdf}). Treadle, at the start, did not contain any tools pertaining to test coverage, but now we have added branch coverage to it so that one can see which lines of LoFIRRTL code (the intermediate representation used inside of Treadle) were covered by a series of tests and then know, using that information, which multiplexer paths were tested. 
+The idea now would be to map the results obtained with LoFIRRTL code back to the source Chisel description. This mapping can be done using treadle’s internal “source trackers” that associate some FIRRTL lines back to their chisel source. Once that is done, it could be interesting to move from branch coverage to functional coverage, which would require a way to define \textit{functional coverage points} also known as \textit{coverage groups} in SystemVerilog.
 \item On coverage and cover points in proposal (coverage of the RTL hardware, but also on the generator (Jack's comment, see \url{https://gitter.im/freechipsproject/chisel3?at=5f63c878603d0b37f43b67f3})
 \end{itemize}
 

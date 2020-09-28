@@ -130,7 +130,9 @@ the design right at the first tape-out. Thorough testing and verification of the
 To efficiently develop and verify those accelerators, we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
 We believe that for the road ahead, we need to adapt to agile hardware development~\cite{henn-patt:turing:2019}.
 
-\todo{Get the SW people in here or later}
+Furthermore, with FPGAs in the cloud, software developers may need to port their algorithms
+to FPGAs for further speedup. Therefore, this project aims to make the field of hardware design
+accessable to software designers.
 
 \todo{Jan's comment: I think that it could be a good idea to link to FPGA's - we need to show that many will need this, not just a few exotic companies doing advanced ASIC. 
 I my view, an important contribution is to make this field accessible to software designers and not just making hardware designers adapt SW development methods! Maybe this could be my angle/contribution to the project?}
@@ -608,17 +610,18 @@ with an interest in digital design and programming languages.
       \midrule
       Recruiting  & 1 & MS and ZF & Recruiting of the two PhDs \\
       \midrule
-      uvm     &  9      & KH     & Develop a UVM verification example on a complex multicore device, a network-on-chip.\\
-      xxx     &  6      & HP     & .\\
-      xxx    &  9      & HP     & .\\
-      xxx     &  6      & HP     & .\\
+      UVM     &  3      & KH     & Develop a UVM verification example on a complex multicore device, a network-on-chip.\\
+      Prepare  & 3      & PhD1     &  Exploring related work and learning Chisel, SystemVerilog, and UVM. \\
+      xxx     &  6      & PhD1     & .\\
+      xxx    &  9      & PhD1     & .\\
+      xxx     &  6      & PhD1     & .\\
       \midrule
-      SOA  & 3      & PhD1     &  . \\
-      xxx  & 6      & PhD1     &  . \\
-      xxx  & 6      & PhD1     &  . \\
-      xxx  & 3      & PhD1     &  . \\
-      xxx  & 6      & PhD1     &  Implement . \\
-      xxx  & 6      & PhD1     &  Implement . \\
+      SOA  & 3      & PhD2     &  Exploring related work and learning the tools. \\
+      xxx  & 6      & PhD2     &  . \\
+      xxx  & 6      & PhD2     &  . \\
+      xxx  & 3      & PhD2     &  . \\
+      xxx  & 6      & PhD2     &  Implement. \\
+      xxx  & 6      & PhD2     &  Implement. \\
       \midrule
       Explore   &    2x6 & PhD1/2    &  .\\
       Eval & 2x6 & PhD1/2 & Evaluation of the results collected with. \\
@@ -669,7 +672,7 @@ milestone label font=\footnotesize,
 %\gantttitle{\textbf{\normalsize{RTAI Gantt chart}}}{42} \\
 \gantttitlelist{1,...,48}{1} \\
 % tasks, groups and milestones
-\ganttbar[name=r1]{Recruting}{1}{6} \\
+\ganttbar[name=r1]{Recruiting}{1}{6} \\
 \ganttmilestone[name=m1]{Milestone 1}{6} \\
 \ganttbar[name=t1]{xxx}{1}{9} \\
 \ganttbar[name=t2]{xxx}{10}{15} \\

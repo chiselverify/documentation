@@ -234,48 +234,69 @@ but move their simulation workflow into Scala/Chisel testers.
 Testing is crucial for making software reliable. The higher
 expectation of software quality and shrinking development cycle have
 driven programming language researchers and software engineers to
-develop a spectrum of \emph{automated testing} techniques. For example,
-Continuous Integration~\cite{duvall2007continuous} implements an agile
-method based on expert-written unit tests. It runs the tests
-automatically during software evolution to avoid regression.  However, continuous integration automates only execution
-of tests, not their generation. To deal with the later,
-state-of-the-art automated testing research addresses
-the following two challenges.
+develop a spectrum of \emph{automated testing} techniques. For
+example, continuous integration~\cite{duvall2007continuous} implements
+an agile method that runs manually written tests automatically during
+software evolution.  State-of-the-art research in software engineering
+and programming languages addresses the following two challenges to
+achieve fully test automation.
 
-
-\paragraph{Challenge 1.}
-The first challenge is how to determine the expected code behavior, or
-called \emph{specification}.  Software developers document such
-specification or encode them within the software in the form of a
-contract. \emph{Property-based testing} provides a convenient way in
-formulating specification as constraints expressed in a
-domain-specific language~\cite{DBLP:conf/icfp/ClaessenH00}.  For
-example, developers in Scala can specify a property, such as $n^2>0$
-for all integers, in the property-based testing library
-ScalaCheck~\cite{nilsson2014scalacheck} as follows:
+\paragraph{Determining Specification.}
+The first challenge is how to determine the expected code outcome, or
+called \emph{specification}.  Software developers often document
+specification within software itself.  \emph{Property-based testing}
+provides a convenient way in formulating specification as constraints
+expressed in a domain-specific
+language~\cite{DBLP:conf/icfp/ClaessenH00}.  For example, developers
+in the Scala language can specify ``$n^2>0$ for all integers'' in the
+property-based testing library ScalaCheck~\cite{nilsson2014scalacheck}
+as follows:
 \begin{lstlisting}[numbers=none]
 val propSquare = forAll {(n: Int) => n * n > 0}
 \end{lstlisting}
+An efficient approach to obtain such specification is to learn from
+historical bug patterns. Such patterns are gathered in pattern-based
+software analysis tools, {\em e.g.}, in
+FindBug~\cite{DBLP:conf/paste/AyewahPMPZ07} or
+Scalafix~\cite{web:scalafix}.  Recently, specification for robotic
+software is obtained by studying bugs fixed on the GitHub of Robot
+Operating System~\cite{nielsenFSW2020dependencybugs}.
 
-Another way to generate specification is to use \emph{sanitizers} in
-compilers. Sanitizers are a common compiler feature that automatically
-injects run-time checks to capture certain failure
-conditions~\cite{DBLP:conf/usenix/SerebryanyBPV12}. For example,
-Google's undefined behavior sanitizer UBSAN checks whether a
-floating-point variable equals 0 before a division by it; Google's
-address sanitizer ASAN targets illegal memory access. While sanitizers
-do not deal with functional correctness as unit tests do, they check
-low-level, sometimes security-related properties, such as
-use-after-free, array-index-out-of-bound, or race conditions.
 
-\paragraph{Challenge 2}
-The other challenge is how to generate interesting tests inputs.  The
-state-of-the-practice  uses
-\emph{fuzzing}~\cite{takanen2018fuzzing}. Property-based testing~\cite{DBLP:conf/icfp/ClaessenH00},
-for example, uses random data generation, a form of plain fuzzing.  By
-invoking {\tt propSquare.check} on a with ScalaCheck, where {\tt
-  propSquare} is the constraint of $n^2>0$ defined above, we can
-immediate get an input that falsifies the constraint:
+
+
+
+%% ZF. This is commeented out because we have decided to not write on
+%% the WP related to sanitizers.
+
+%% Another way to generate specification is to use \emph{sanitizers}
+%% in compilers. Sanitizers are a common compiler feature that
+%% automatically injects run-time checks to capture certain failure
+%% conditions~\cite{DBLP:conf/usenix/SerebryanyBPV12}. For example,
+%% Google's undefined behavior sanitizer UBSAN checks whether a
+%% floating-point variable equals 0 before a division by it; Google's
+%% address sanitizer ASAN targets illegal memory access. While
+%% sanitizers do not deal with functional correctness as unit tests
+%% do, they check low-level, sometimes security-related properties,
+%% such as use-after-free, array-index-out-of-bound, or race
+%% conditions.
+
+\paragraph{Generating Test Inputs.}
+The second challenge is how to generate interesting tests inputs.  The
+state-of-the-practice uses \emph{fuzzing}, which has emerged as one of
+the most effective testing techniques for discovering reliability
+issues in software~\cite{takanen2018fuzzing}.  Google's OSS-Fuzz
+project, for example, has filed over 20 000 bugs in 300 open-source
+projects (as of June 2020)~\cite{web:oss-fuzz}.  Fuzzing techniques
+generate random inputs and improve them based on observed code status,
+\emph{e.g.}, crashes or code
+coverage~\cite{DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
+Property-based testing~\cite{DBLP:conf/icfp/ClaessenH00}, which is
+initially designed for testing functional programming languages, uses
+random data generation, a form of plain fuzzing. For example, by
+invoking {\tt propSquare.check} with ScalaCheck (mentioned above), where {\tt
+  propSquare} is the constraint $n^2>0$ for all integers $n$, we can
+immediately get an input $n$ that falsifies the constraint:
 
 \begin{lstlisting}[numbers=none]
 scala> propSquare.check
@@ -285,12 +306,9 @@ scala> propSquare.check
 \end{lstlisting}
  ScalaCheck first finds that n = 1083860448 produces an overflow
  wrapped to a negative (thus $n^2>0$ fails). The input is then
- "shrunk" (in the terminology of property-based testing) to a smaller
- one, 0 in this case.  Modern fuzzers can be more efficient by
- including a feedback loop to improve their randomly generated
- data. For example, they monitor runtime statistics and improve input
- data by optimizing code
- coverage~\cite{DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
+ "shrunk", in the terminology of property-based testing, to a smaller
+ one, namely 0 in this case.
+
 
 
 
@@ -307,12 +325,13 @@ scala> propSquare.check
 
 
 %\subsection{WP1}
-Students involved in this project will first learn about related work and
-tools involved in the project. On the software side, the students will learn
-about the basics of Scala programming language, and ScalaCheck (a
-Scala implementation of the property-based testing, as mentioned
-above). On the hardware side, the students will need to get familiar with Chisel,
-SystemVerilog and UVM.
+As prerequisites, students involved in this project will need to learn
+about tools involved in the project and related work in the state of
+the art. On the software side, they will learn about the 
+Scala programming language, and ScalaCheck (a Scala implementation of
+the property-based testing). On the hardware side,
+the students will need to get familiar with Chisel, SystemVerilog and
+UVM.
 
 
 
@@ -321,13 +340,13 @@ SystemVerilog and UVM.
 As a starting point, we will use ScalaCheck, an implementation of
 property-based testing in Scala, for hardware testing. We will invite
 hardware developers to write properties as constraints (like
-propSquare above), and then we will use ScalaCheck to validate those
-constraints. Property-based testing has seen notable successes
-previously, such as locating a long-standing concurrency bug in the
-Erlang database server; it was also used by Volvo to test car
+propSquare above), and then we will use ScalaCheck to validate or
+refute those constraints. Property-based testing has seen notable
+successes previously, such as in locating a long-standing concurrency bug
+in the Erlang database server; it was also used by Volvo to test car
 communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 
-\paragraph{MS1.} The milestone in this is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing on two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, of which our approach should  pass without raising  warnings. 
+\paragraph{MS1.} The milestone is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing  two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, on which our approach should  pass without raising  warnings. 
 
 \paragraph{Co-simulation.}
 
@@ -358,10 +377,20 @@ communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 
 \paragraph{Test Coverage.}
 
+Code coverage can be a very useful tool when it comes to the verification of digital systems, since it allows one to see which parts of their design have actually been tested correctly. 
+
+This has lead us to want to implement coverage inside of the FIRRTL execution engine Treadle using a technique
+presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}. Treadle, at the start, did not contain any tools
+pertaining to test coverage, but now we have added branch coverage to it so that one can see which lines of
+LoFIRRTL code (the intermediate representation used inside of Treadle) were covered by a series of tests
+and then know, using that information, which multiplexer paths were tested. 
+The idea now would be to map the results obtained with LoFIRRTL code back to the source Chisel description.
+This mapping can be done using treadle's internal ``source trackers'' that associate some FIRRTL lines back
+to their chisel source. Once that is done, it could be interesting to move from branch coverage to functional
+coverage, which would require a way to define \textit{functional coverage points} also known as
+\textit{coverage groups} in SystemVerilog.
+
 \begin{itemize}
-\item Code coverage can be a very useful tool when it comes to the verification of digital systems, since it allows one to see which parts of their design have actually been tested correctly. 
-This has lead us to want to implement coverage inside of the FIRRTL execution engine Treadle using a technique presented by Ira. D. Baxter in the paper entitled ``Branch Coverage for Arbitrary Languages Made Easy'' (\url{http://www.semdesigns.com/Company/Publications/TestCoverage.pdf}). Treadle, at the start, did not contain any tools pertaining to test coverage, but now we have added branch coverage to it so that one can see which lines of LoFIRRTL code (the intermediate representation used inside of Treadle) were covered by a series of tests and then know, using that information, which multiplexer paths were tested. 
-The idea now would be to map the results obtained with LoFIRRTL code back to the source Chisel description. This mapping can be done using treadle's internal ``ource trackers'' that associate some FIRRTL lines back to their chisel source. Once that is done, it could be interesting to move from branch coverage to functional coverage, which would require a way to define \textit{functional coverage points} also known as \textit{coverage groups} in SystemVerilog.
 \item On coverage and cover points in proposal (coverage of the RTL hardware, but also on the generator (Jack's comment, see \url{https://gitter.im/freechipsproject/chisel3?at=5f63c878603d0b37f43b67f3})
 \item Also have range coverage on individual signals and the matrix of 2 or more (see UVM example).
 \end{itemize}
@@ -410,17 +439,11 @@ The idea now would be to map the results obtained with LoFIRRTL code back to the
 we will consider generating specification from previous known bug
 patterns.  We will collaborate with our hardware engineers to explore
 a history of hardware issues triggered by software defects, and get
-patterns from winch we generate specification. Such patterns will be
-similar to those in the widely used pattern-based software analysis
-tools such as FindBug~\cite{DBLP:conf/paste/AyewahPMPZ07} or
-Scalafix~\cite{web:scalafix}. Some examples of the bug patterns in
-java can be found in \cite{web:findbugs_bugs}. This step will generate
-specification in a syntax-driven way, relating to expected functional
-behavior of the hardware.
+patterns from winch we generate specification.  Such bug patterns in
+Java, for example, can be found in \cite{web:findbugs_bugs}.  This
+step will generate specification in a syntax-driven way, relating to
+expected functional behavior of the hardware.
 
-%Related to this WP3, Zhoulai Fu worked on a project, "Historical bug
-%patterns in robot operating system" where the purpose was to find new
-%bugs by learning from historical ones.
 
 
 

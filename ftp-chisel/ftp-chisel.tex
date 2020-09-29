@@ -166,14 +166,11 @@ them in the first place.
 Therefore, this project's central focus is on applying software development
 testing methods to hardware development.
 
-
-\todo{does the following fit? taken from the (paper) abstract} 
 We will build a combination of open-source tools for verifying
 circuits described in mixed languages. It builds on top of the Chisel
 hardware construction language and uses Scala to drive the verification. 
 We will explore the testing strategy used in the Universal Verification Methodology
 (UVM) in the context of verifying hardware described in Chisel.
-
 
 This project proposes a research project that aims at building a testing framework
 in Scala that takes the best methods from UVM and from decades of experience
@@ -220,7 +217,7 @@ work will be in open-source as well.
 The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
 C functions from inside of a SystemVerilog (UVM) testbench.
 This enables co-simulation with a ``golden model'' written in C and the
-testbench verifying the DUT.
+testbench verifying the device under test (DUT).
 
 The Java JNI (Java Native Interface) allows for a similar functionality in Java programs,
 allowing them to call C functions and use their functionality.
@@ -326,12 +323,12 @@ scala> propSquare.check
 
 
 %\subsection{WP1}
-As prerequisites, students involved in this project will need to learn
-about tools involved in the project and related work in the state of
+As prerequisites, all researchers involved in this project will need to learn
+languages and tools involved in the project and related work in the state of
 the art. On the software side, they will learn about the 
 Scala programming language, and ScalaCheck (a Scala implementation of
 the property-based testing). On the hardware side,
-the students will need to get familiar with Chisel, SystemVerilog, and
+the researchers need to get familiar with Chisel, SystemVerilog, and
 UVM.
 
 
@@ -347,7 +344,6 @@ successes previously, such as in locating a long-standing concurrency bug
 in the Erlang database server; it was also used by Volvo to test car
 communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 
-\paragraph{MS1.} The milestone is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing  two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, on which our approach should  pass without raising  warnings. 
 
 \paragraph{Co-simulation.}
 
@@ -376,19 +372,19 @@ We will add support for constrain random testing to ChiselTest~\cite{chisel:test
 test framework for Chisel.
 Once we have tools to instrument the hardware under test with user-written
 specification or automatically generated specification, we will be in a position of using fuzzing techniques
-to validate those specifications. To this end, we will need to work
-with our industrial collaborators to get access to driver programs
-that runs the hardware under test.
+to validate those specifications. To this end, we will work
+with our industrial collaborators to get access use cases serving
+as the DUT.
 
 \paragraph{Test Coverage.}
 
 Code coverage can be a very useful tool when it comes to the verification of digital systems,
 since it allows one to see which parts of their design have actually been tested correctly. 
-We will implement coverage inside of the FIRRTL execution engine Treadle using a technique
+We will implement coverage inside of the execution engine of the Chisel simulator Treadle using a technique
 presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}.
 Treadle, which is a simulation engine for Chisel, does not contain support for measuring code coverage.
 We will added branch coverage to Treadle so that one can see which lines of
-LoFIRRTL code (the intermediate representation used inside of Treadle) were covered by a series of tests
+LoFIRRTL code, the intermediate representation used inside of Treadle, were covered by a series of tests
 and then know, using that information, which multiplexer paths were tested. 
 Furthermore, we plan to map the results obtained with LoFIRRTL code back to the source Chisel description.
 This mapping can be done using treadle's internal ``source trackers'' that associate some FIRRTL lines back
@@ -486,26 +482,10 @@ expected functional behavior of the hardware.
 
 
 
-
-\paragraph{MS2.} We will create  a database from historical  bug patterns.
-A program transformer will be implemented to convert the bug patterns
-into code specification. The generated specification for our benchmark
-should be validated by our hardware developers, with which a
-refinement step can be introduced to improve the database.
-
-
 %% Related to this, our collaborator Zhoulai Fu has worked on a
 %% comprehensive study of developing bug finders by learning from history
 %% bug patterns in the Robot Operating
-%% System~\cite{nielsenFSW2020dependencybugs} .
-
-
-
-
-
-\paragraph{MS3.} The milestone  is to have a list of bugs reported, and a detailed case study (whether the bugs are
-trivial, false alarms, for example) Besides, coverage statistics will
-be collected to measure comprehensiveness of our tests.
+%% System~\cite{nielsenFSW2020dependencybugs} 
 
 
 %% Let us consider this as another backyard WP.
@@ -541,15 +521,13 @@ industry-friendly BSD license.
 %to use and build on the results of the project.
 A project web site will host the project documentation, the published papers, and the
 source code of the design.
+We will provide unrestricted and cost free digital access to all research and development results.
 
-\begin{itemize}
-\item Chisel design and verification workshops including hands-on tutorial in DK, at IDA, have an ok letter from them
-\end{itemize}
-
-
-\emph{From the call: DFF finds it important to strengthen the societal effect of research by ensuring unrestricted and cost free digital access}
-
-
+We will use the developed method and tools to train a new generation of HW/SW engineers
+at DTU and ITU.
+At the middle of the project we will have a coordination workshop with the project partners.
+At the end we will organize a design and verification workshops including hands-on tutorial
+open all interested companies and students form DTU and ITU.
 
 \section{Practical Feasibility}
 
@@ -575,11 +553,14 @@ We are in contact with several companies that are interested in the SDH project 
 Teledyne is interested in exploring Chisel for development and testing with compatibility of VHDL and Verilog.
 Microchip, a semiconductor company, is interested in using Chisel to improve the design throughput.
 Microchip provides us with a hardware use case to sort Ethernet packets according to their deadlines.
-Synopsis, one of the three big EDA  companies, provides tool support for the SDH project.
+Synopsys, one of the three big EDA  companies, provides tool support for the SDH project.
 WSA provides a use case a decimation filter written in VHDL that we plan to verify with our
-Chisel/Scala  verification framework.
+Chisel/Scala  verification framework. Napatech will follow the project and provide use cases and
+challenges for the project.
+Syosil will provide consulting and training in connection with any questions related to functional verification,
+UVM and CRV for the project.
 
-\todo{Add contributions from WSA, Syosil.}
+\todo{Waiting for letter from WSA (Ketil) and Syosil.}
 
 \paragraph*{Use Cases}
 
@@ -636,7 +617,7 @@ His research focus is programming languages, and especially functional, parallel
 and declarative languages, their description, formal modelling, analysis, transformation and implementation.
 Most of his books have appeared with leading international academic publishers.
 
-{\bf NN PhD (NN1/2)} we are looking for two PhDs with a background in computer engineering
+{\bf PhD1/2} we are looking for two PhD candidates with a background in computer engineering
 with an interest in digital design and programming languages.
 
 %\subsection*{Experimental Facilities}
@@ -676,8 +657,9 @@ with an interest in digital design and programming languages.
       Implement              & 6   & PhD2      & Implement a user-friendly tool for automating the testing process.                            \\
       \midrule
       Explore                & 2x6 & PhD1/2    & Detect bugs with the implemented tool; report them back to hardware developers and incorporate their feedback into a detailed
-      emprical bug study                                                                                                                       \\
+      empirical bug study                                                                                                                       \\
       Eval                   & 2x6 & PhD1/2    & Evaluation of the results collected with.                                                     \\
+      Teach                 &  2  & JM            & Make Chisel and its design methods accessible for software designers \\
       Thesis                 & x   & PhD1/2    & Thesis writing und submission.                                                                \\
       \midrule
       Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
@@ -694,6 +676,22 @@ with an interest in digital design and programming languages.
 
 %\vspace{-5mm}
 \paragraph*{Tasks, Milestones, and Timetable}
+
+\todo{merge and simplify}
+
+\paragraph{MS1.} The milestone is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing  two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, on which our approach should  pass without raising  warnings. 
+
+
+\paragraph{MS2.} We will create  a database from historical  bug patterns.
+A program transformer will be implemented to convert the bug patterns
+into code specification. The generated specification for our benchmark
+should be validated by our hardware developers, with which a
+refinement step can be introduced to improve the database.
+
+\paragraph{MS3.} The milestone  is to have a list of bugs reported, and a detailed case study (whether the bugs are
+trivial, false alarms, for example) Besides, coverage statistics will
+be collected to measure comprehensiveness of our tests.
+
 
 The project is divided into several tasks.
 %A researcher will be
@@ -796,7 +794,7 @@ milestone label font=\footnotesize,
 \item Take material from workshop paper
 \item Look at the TODO list in infinit project
 \item Widex is interested in Chisel, may join a DFF proposal
-\item Peter Syst + microsoft cloud into Chisel project
+\item Peter Sestoft + microsoft cloud into Chisel project
 \item DeepSpec or DeepSp?? end-to-end for Chisel
 \item Support letter from UCB
 \item External stay at UCB

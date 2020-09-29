@@ -116,9 +116,6 @@
 \section{Introduction and Objectives}
 \label{sec:objectives}
 
-\todo{Decide on wording (HW, digital, testing, verification.)}
-
-
 We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
 Performance increase with general-purpose processors has come to a halt.
 The only way to achieve higher performance or lower energy consumption
@@ -146,16 +143,21 @@ This project explores the hardware construction language Chisel with Scala
 and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
 design and test of digital systems.
 
-Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have brought object-oriented programming
-into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non synthesizable verification code.
+Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have
+brought object-oriented programming into the digital design and verification process.
+SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non synthesizable verification code.
 Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
 Circuits described in Chisel can be tested and verified with a Chisel testing framework and Scala tests.
 Scala/Chisel brings object-oriented and functional programming into the world of
 digital design.
 
-
-\emph{Focus on and highlight: Our aim is to rise the tooling level for digital design to increase
-the productivity.}
+Chisel and Scala are executing on the Java virtual machine and therefore have a very good
+interoperability with Java. Therefore, we can leverage a large pool of Java libraries for
+hardware design and  verification.
+Furthermore, the name space of packets in Scala/Java simplifies integration of
+external components.
+Open source hardware components in Chisel can be organized like software
+libraries at Maven servers.
 
 This project aims to develop a method and concrete tools for agile hardware development.
 We will use tools, languages, development, and testing methods from the last decades in
@@ -193,8 +195,6 @@ work will be in open-source as well.
 \item Industry issue is verification: how from Chisel to VHDL/Verilog
 \item How much ASIC design is done in DK? Revenue numbers?
 \item There are not enough HW designers and verification engineers available, so they shall be more productive
-\item Or we can attract SW developer with Chisel to do HW design
-\item Future cloud server will include FPGA for application speedup, how to program them
 \end{itemize}
 
 \section{Background and State-of-the-Art}
@@ -206,13 +206,42 @@ work will be in open-source as well.
 \begin{itemize}
 \item Verification (check what is current praxis)
 \item cocotb
-\item ChiselTest~\cite{chisel:tester2}
 \item See pull request for ref to constraint random generation
-\item In classic HDL tooling (language, IDE, test infrastructure) is very bad
-\item SV as language has 250 keywords!
 \item Related work \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
 \item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
 \end{itemize}
+
+\paragraph{Digital Design.}
+VHDL and Verilog are the classic hardware description languages, first appeared in the 1980s.
+SystemVerilog~\cite{SystemVerilog}, as a extension to Verilog, adds features from VHDL
+for the hardware description and object-oriented features for verification.
+On open source collection of SystemVerilog classes build the Universal Verification Method,
+which is becoming popular in industry.
+SystemVerilog has become a complex language with more than 250 keywords, and it is unclear
+which tools support which language constructs for hardware description.
+In contrast with Chisel, when the program compiles it is synthesizable hardware.
+Chisel is a small language, where the cheat sheet fits on two pages.
+The power of Chisel comes from the embedding in Scala.
+Furthermore, as classic hardware description languages are niche products, not
+many tools or libraries are available. 
+With Chisel on Scala we have the choice of different integrated development environments (IDE),
+testing infrastructure (e.g., ScalaTest), and many free libraries.
+
+Chisel is a hardware construction language embedded in Scala~\cite{chisel:dac2012}.
+Chisel allows the user to write hardware generators in Scala, an object-oriented and functional language.
+For hardware generation and testing, the full Scala language and Scala and Java
+libraries are available.
+For example, we read in the string based schedules for a network-on-chip
+%\footnote{available at: \url{https://github.com/t-crest/s4noc/tree/master/noc/vhdl/generated}}
+and convert them with a few lines of Scala code into a hardware table to
+drive the multiplexer of the router and the network interface.
+
+Chisel is solely a hardware \emph{construction} language, and thus all valid Chisel code
+maps to synthesizable hardware.
+By separating the hardware construction and hardware verification languages,
+it becomes impossible to write non-synthesizable hardware and in turn, speeds up the design process.
+As Scala and Java's full power is available to the verification engineer,
+the verification process is also made more efficient.
 
 The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
 C functions from inside of a SystemVerilog (UVM) testbench.
@@ -226,10 +255,23 @@ The aim is to develop a framework for co-simulation with Scala/Chisel testers an
 C-based golden model. This should allow companies to keep their existing C models,
 but move their simulation workflow into Scala/Chisel testers.
 
+ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel,
+emphasizes on usability and simplicity while providing ways to scale up complexity.
+
+Fundamentally, ChiselTest is a Scala library that provides access into the simulator through
+operations like poke (write value into circuit), peek (read value from circuit, into the test framework), and step (advance time).
+As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
+This structure uses the latest programming language developments that have been implemented into Scala and provides a clean and concise interface, unlike approaches that attempt to reinvent the wheel like UVM.
+
+Furthermore, ChiselTest tries to enable testing best practices from software engineering.
+Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
+Furthermore, a clear and clean test code also enables the test-as-documentation pattern,
+demonstrating a module's behavior from a temporal perspective.
+
 
 %%%ZF
-\subsection{Software Testing Methods}
-Testing is crucial for making software reliable. The higher
+\paragraph{Testing Methods.}
+Testing is crucial for making software and hardware reliable. The higher
 expectation of software quality and shrinking development cycle have
 driven programming language researchers and software engineers to
 develop a spectrum of \emph{automated testing} techniques. For
@@ -317,11 +359,6 @@ scala> propSquare.check
 
 
 %%%ZF
-
-
-
-
-
 %\subsection{WP1}
 As prerequisites, all researchers involved in this project will need to learn
 languages and tools involved in the project and related work in the state of
@@ -536,9 +573,9 @@ open all interested companies and students form DTU and ITU.
 %Furthermore, DTU Compute provides the infrastructure (e.g., an automatic test
 %environment for regressions tests, web server).
 
-\paragraph*{Internationalization}
-
-\todo{Still waiting from SiFive for an ok for a stay.}
+%\paragraph*{Internationalization}
+%
+%\todo{Still waiting from SiFive for an ok for a stay.}
 
 
 
@@ -549,27 +586,28 @@ test benches written in VHDL and Verilog to a verification methods based on cons
 test generation with tools such as UVM. Therefore, the SDH project is just-in-time to support this
 transition.
 
-We are in contact with several companies that are interested in the SDH project and support it.
+We are in contact with several companies that are interested in the SDH project and support it
+with non-trivial use cases.
 Teledyne is interested in exploring Chisel for development and testing with compatibility of VHDL and Verilog.
 Microchip, a semiconductor company, is interested in using Chisel to improve the design throughput.
 Microchip provides us with a hardware use case to sort Ethernet packets according to their deadlines.
 Synopsys, one of the three big EDA  companies, provides tool support for the SDH project.
-WSA provides a use case a decimation filter written in VHDL that we plan to verify with our
-Chisel/Scala  verification framework. Napatech will follow the project and provide use cases and
-challenges for the project.
+WSA provides as use case a decimation filter written in VHDL that we plan to verify with our
+Chisel/Scala  verification framework.
+Napatech will follow the project and provide use cases and challenges for the project.
 Syosil will provide consulting and training in connection with any questions related to functional verification,
 UVM and CRV for the project.
 
 \todo{Waiting for letter from WSA (Ketil) and Syosil.}
 
-\paragraph*{Use Cases}
-
-We will have several non-trivial use cases from industry and from our own development to verify
-our development.
-Microchip provides the specification of a hardware sorting algorithm.
-From WSA we will use a decimation filter written in VHDL.
-From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
-to explore concurrent, transaction based verification.
+%\paragraph*{Use Cases}
+%
+%We will have several non-trivial use cases from industry and from our own development to verify
+%our development.
+%Microchip provides the specification of a hardware sorting algorithm.
+%From WSA we will use a decimation filter written in VHDL.
+%From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
+%to explore concurrent, transaction based verification.
 
 \paragraph*{Human Resources}
 
@@ -595,6 +633,9 @@ at UCB in 2012 he picked up Chisel and brought it to DTU in research and teachin
 Martin has written the Chisel textbook~\cite{chisel:book}, which has been translated
 to Chinese and Japanese. Martin is member of the Technical Advisory Committee for
 Chisel and therefore keeps the work of SDH in sync with the Chisel main development.
+Martin is part of the regular Chisel developer meeting and a meeting on verification with
+UC Berkeley researchers and developers from SiFive, a startup in silicon valley.
+
 
 {\bf Jan Madsen (JM)} is professor and deputy director of department of Applied Mathematics
 and Computer Science at the Technical University of Denmark. His research spans methods
@@ -660,7 +701,7 @@ with an interest in digital design and programming languages.
       empirical bug study                                                                                                                       \\
       Eval                   & 2x6 & PhD1/2    & Evaluation of the results collected with.                                                     \\
       Teach                 &  2  & JM            & Make Chisel and its design methods accessible for software designers \\
-      Thesis                 & x   & PhD1/2    & Thesis writing und submission.                                                                \\
+      Thesis                 & 4   & PhD1/2    & Thesis writing und submission.                                                                \\
       \midrule
       Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
       \bottomrule

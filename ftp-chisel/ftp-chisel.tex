@@ -251,7 +251,7 @@ specification within software itself.  \emph{Property-based testing}
 provides a convenient way in formulating specification as constraints
 expressed in a domain-specific
 language~\cite{DBLP:conf/icfp/ClaessenH00}.  For example, developers
-in the Scala language can specify ``$n^2>0$ for all integers'' in the
+in the Scala language can specify ``$n^2>0$ for all integer $n$'' in the
 property-based testing library ScalaCheck~\cite{nilsson2014scalacheck}
 as follows:
 \begin{lstlisting}[numbers=none]
@@ -657,34 +657,40 @@ with an interest in digital design and programming languages.
   \begin{center}
     \begin{tabular}{lccp{110mm}l}
       \toprule
-      Task          & PM  & Person &  Description \\
+      Task                   & PM  & Person    & Description                                                                                   \\
       \midrule
-      Recruiting  & 1 & MS and ZF & Recruiting of the two PhDs \\
+      Recruiting             & 1   & MS and ZF & Recruiting of the two PhDs                                                                    \\
       \midrule
-      UVM     &  3      & KH     & Develop a UVM verification example on a complex multicore device, a network-on-chip.\\
-      Prepare  & 3      & PhD1     &  Exploring related work and learning Chisel, SystemVerilog, and UVM. \\
-      Cover    &  6      & PhD1     & Adding constraint random testing and coverage measurements to ChiselTest.\\
-      Generate     &  6      & PhD1     & Developing a hardware generator methodology by using functional programming in Scala.\\
-      Framework    &  9      & PhD1     & Development of an object-oriented and functional frame work for testing.\\
+      UVM                    & 3   & KH        & Develop a UVM verification example on a complex multicore device, a network-on-chip.          \\
+      Prepare                & 3   & PhD1      & Exploring related work and learning Chisel, SystemVerilog, and UVM.                           \\
+      Cover                  & 6   & PhD1      & Adding constraint random testing and coverage measurements to ChiselTest.                     \\
+      Generate               & 6   & PhD1      & Developing a hardware generator methodology by using functional programming in Scala.         \\
+      Framework              & 9   & PhD1      & Development of an object-oriented and functional frame work for testing.                      \\
       \midrule
-      SOA  & 3      & PhD2     &  Exploring related work and learning the tools. \\
-      xxx  & 6      & PhD2     &  . \\
-      xxx  & 6      & PhD2     &  . \\
-      xxx  & 3      & PhD2     &  . \\
-      xxx  & 6      & PhD2     &  Implement. \\
-      xxx  & 6      & PhD2     &  Implement. \\
+      SOA                    & 3   & PhD2      & Explore related work on property-based testing and learn to use ScalaCheck.                   \\
+      Specification          & 6   & PhD2      & Collaborate with hardware developers to manually inject both valid and faulty specifications. \\
+      Property-based testing & 6   & PhD2      & Test the specifications with ScalaCheck.                                                      \\
+      Bug database           & 3   & PhD2      & Create a database from historical bug patterns during hardware development.                   \\
+      Implement              & 6   & PhD2      & implement a program transformer to convert the bug patterns into %
+  additional, meaningful  specification in code (\`a la FindBugs or ScalaFix).                                                                 \\
+      Implement              & 6   & PhD2      & Implement a user-friendly tool for automating the testing process.                            \\
       \midrule
-      Explore   &    2x6 & PhD1/2    &  .\\
-      Eval & 2x6 & PhD1/2 & Evaluation of the results collected with. \\
-      Thesis & x & PhD1/2 & Thesis writing und submission.\\
+      Explore                & 2x6 & PhD1/2    & Detect bugs with the implemented tool; report them back to hardware developers and incorporate their feedback into a detailed
+      emprical bug study                                                                                                                       \\
+      Eval                   & 2x6 & PhD1/2    & Evaluation of the results collected with.                                                     \\
+      Thesis                 & x   & PhD1/2    & Thesis writing und submission.                                                                \\
       \midrule
-      Chapter & 2 & MS & Adding a chapter on verification to the Chisel book~\cite{chisel:book}. \\
+      Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
       \bottomrule
     \end{tabular}
   \end{center}
 %  \caption{Work packages}\label{tab:packages}
 }
 \end{table*}
+
+
+
+
 
 %\vspace{-5mm}
 \paragraph*{Tasks, Milestones, and Timetable}

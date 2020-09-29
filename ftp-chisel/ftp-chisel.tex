@@ -182,38 +182,34 @@ to be able to integrate legacy code.
 Furthermore, our aim is to build on open-source projects. Therefore, our
 work will be in open-source as well.
 
-\begin{itemize}
-\item See for arguments: \url{https://cacm.acm.org/magazines/2020/7/245701-domain-specific-hardware-accelerators/fulltext}
-\item Maybe more ideas: \url{https://www.youtube.com/watch?v=dbOi_Gboi_0}, \url{https://www.youtube.com/watch?v=4FCZLrauDcE}
-\item Higher-Order Hardware Design, meta-programming language and the actual hardware construction language are the same, usually Python or Perl scripts with strings
-\item Have a measurable objective (LoC UVM vs Scala, SystemVerilog vs Chisel)
-\item Chisel has all the Scala/Java tooling and libraries available, SystemVerilog is a niche language
-\item Rise level of tooling, not necessarily level of abstraction in HW description
-\item IDE
-\item Namespace with packets make it easier to combine IPs
-\item With Maven it is easy to combine open-source IPs
-\item Industry issue is verification: how from Chisel to VHDL/Verilog
-\item How much ASIC design is done in DK? Revenue numbers?
-\item There are not enough HW designers and verification engineers available, so they shall be more productive
-\end{itemize}
+%\begin{itemize}
+%\item Maybe more ideas: \url{https://www.youtube.com/watch?v=dbOi_Gboi_0}, \url{https://www.youtube.com/watch?v=4FCZLrauDcE}
+%\item Higher-Order Hardware Design, meta-programming language and the actual hardware construction language are the same, usually Python or Perl scripts with strings
+%\item Have a measurable objective (LoC UVM vs Scala, SystemVerilog vs Chisel)
+%\item Chisel has all the Scala/Java tooling and libraries available, SystemVerilog is a niche language
+%\item Rise level of tooling, not necessarily level of abstraction in HW description
+%\item IDE
+%\item Namespace with packets make it easier to combine IPs
+%\item Industry issue is verification: how from Chisel to VHDL/Verilog
+%\item How much ASIC design is done in DK? Revenue numbers?
+%\item There are not enough HW designers and verification engineers available, so they shall be more productive
+%\end{itemize}
 
 \section{Background and State-of-the-Art}
 \label{sec:background}
 
 
-\subsection{Hardware Design and Verification}
-
-\begin{itemize}
-\item Verification (check what is current praxis)
-\item cocotb
-\item See pull request for ref to constraint random generation
-\item Related work \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
-\item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
-\end{itemize}
+%\begin{itemize}
+%\item Verification (check what is current praxis)
+%\item cocotb
+%\item See pull request for ref to constraint random generation
+%\item Related work \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
+%\item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
+%\end{itemize}
 
 \paragraph{Digital Design.}
 VHDL and Verilog are the classic hardware description languages, first appeared in the 1980s.
-SystemVerilog~\cite{SystemVerilog}, as a extension to Verilog, adds features from VHDL
+SystemVerilog~\cite{SystemVerilog}, as an extension to Verilog, adds features from VHDL
 for the hardware description and object-oriented features for verification.
 On open source collection of SystemVerilog classes build the Universal Verification Method,
 which is becoming popular in industry.
@@ -243,6 +239,21 @@ it becomes impossible to write non-synthesizable hardware and in turn, speeds up
 As Scala and Java's full power is available to the verification engineer,
 the verification process is also made more efficient.
 
+
+
+
+%%%ZF
+\paragraph{Testing Methods.}
+Testing is crucial for making software and hardware reliable. The higher
+expectation of software quality and shrinking development cycle have
+driven programming language researchers and software engineers to
+develop a spectrum of \emph{automated testing} techniques. For
+example, continuous integration~\cite{duvall2007continuous} implements
+an agile method that runs manually written tests automatically during
+software evolution.  State-of-the-art research in software engineering
+and programming languages addresses the following two challenges to
+achieve fully test automation.
+
 The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
 C functions from inside of a SystemVerilog (UVM) testbench.
 This enables co-simulation with a ``golden model'' written in C and the
@@ -267,19 +278,6 @@ Furthermore, ChiselTest tries to enable testing best practices from software eng
 Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
 Furthermore, a clear and clean test code also enables the test-as-documentation pattern,
 demonstrating a module's behavior from a temporal perspective.
-
-
-%%%ZF
-\paragraph{Testing Methods.}
-Testing is crucial for making software and hardware reliable. The higher
-expectation of software quality and shrinking development cycle have
-driven programming language researchers and software engineers to
-develop a spectrum of \emph{automated testing} techniques. For
-example, continuous integration~\cite{duvall2007continuous} implements
-an agile method that runs manually written tests automatically during
-software evolution.  State-of-the-art research in software engineering
-and programming languages addresses the following two challenges to
-achieve fully test automation.
 
 \paragraph{Determining Specification.}
 The first challenge is how to determine the expected code outcome, or
@@ -369,6 +367,14 @@ the researchers need to get familiar with Chisel, SystemVerilog, and
 UVM.
 
 
+\paragraph{Hardware Generators.}
+
+The productivity of hardware design can be greatly increased by developing so-called
+hardware generators. A hardware generator is a program that can generate configurable
+hardware description.
+Scala with functional programming is a good basis to develop a methodology for the
+development of such hardware generators.
+
 
 %\subsection{WP2}
 \paragraph{Property-based Testing.}
@@ -382,25 +388,25 @@ in the Erlang database server; it was also used by Volvo to test car
 communications protocols~\cite{DBLP:conf/icse/HughesNSA16}.
 
 
-\paragraph{Co-simulation.}
-
-\todo{A figure would be nice.}
-
-\begin{itemize}
-\item One use case for evaluation: cosimulation of a RISC-V simulator (Tommy) with an OS RISC-V HW 
-\item Ptolemy~\cite{ptolemyII-book} can be used to co-simulate the environment, supporting a model based design.
-\item Integration of C/C++ based models in the verification with Scala
-\item Java/Scala in UVM
-\item Hw/sw co-verification with Scala and so on, e.g., run an application on a SW processor model exploring some hardware artifacts (could be S4NOC)
-\item Model based design (Jan) with co-simulation
-\end{itemize}
-
-\paragraph{Assertions.}
-
-\begin{itemize}
-\item assertions during simulation
-\item Assertion ave been long part in SW, begin of C, but seldom used in HW and more complex assertions are interesting, such as when req is asserted, an ack has to become active within 5 clock cycles
-\end{itemize}
+%\paragraph{Co-simulation.}
+%
+%\todo{A figure would be nice.}
+%
+%\begin{itemize}
+%\item One use case for evaluation: cosimulation of a RISC-V simulator (Tommy) with an OS RISC-V HW 
+%\item Ptolemy~\cite{ptolemyII-book} can be used to co-simulate the environment, supporting a model based design.
+%\item Integration of C/C++ based models in the verification with Scala
+%\item Java/Scala in UVM
+%\item Hw/sw co-verification with Scala and so on, e.g., run an application on a SW processor model exploring some hardware artifacts (could be S4NOC)
+%\item Model based design (Jan) with co-simulation
+%\end{itemize}
+%
+%\paragraph{Assertions.}
+%
+%\begin{itemize}
+%\item assertions during simulation
+%\item Assertion ave been long part in SW, begin of C, but seldom used in HW and more complex assertions are interesting, such as when req is asserted, an ack has to become active within 5 clock cycles
+%\end{itemize}
 
 \paragraph{Constraint Random Testing and Fuzzing Techniques.}
 
@@ -429,15 +435,12 @@ to their chisel source. Once that is done, it will be interesting to move from b
 coverage, which would require a way to define \textit{functional coverage points} also known as
 \textit{coverage groups} in SystemVerilog.
 
-\begin{itemize}
-\item On coverage and cover points in proposal (coverage of the RTL hardware, but also on the generator (Jack's comment, see \url{https://gitter.im/freechipsproject/chisel3?at=5f63c878603d0b37f43b67f3})
-\item Also have range coverage on individual signals and the matrix of 2 or more (see UVM example).
-\end{itemize}
+%\begin{itemize}
+%\item On coverage and cover points in proposal (coverage of the RTL hardware, but also on the generator (Jack's comment, see \url{https://gitter.im/freechipsproject/chisel3?at=5f63c878603d0b37f43b67f3})
+%\item Also have range coverage on individual signals and the matrix of 2 or more (see UVM example).
+%\end{itemize}
+%
 
-
-\paragraph{Hardware Generators.}
-
-Developing a hardware generator methodology by using functional programming in Scala.
 
 \paragraph{Verification Framework.}
 
@@ -470,18 +473,13 @@ To alleviate this issue, the open-source Yosys synthesis suite \cite{Yosys} can 
 
 
 
-\begin{itemize}
-\item Bus functional models
-\item Multiple languages
-\item Still talk about a small example taking it through all variations
-\item WP on VHDL generation from Chisel for better verification
-\item p69: HDL models are SW projects
-
-\end{itemize}
-
-\begin{itemize}
-\item xxx
-\end{itemize}
+%\begin{itemize}
+%\item Bus functional models
+%\item Multiple languages
+%\item Still talk about a small example taking it through all variations
+%\item WP on VHDL generation from Chisel for better verification
+%\item p69: HDL models are SW projects
+%\end{itemize}
 
 
 
@@ -509,7 +507,7 @@ To alleviate this issue, the open-source Yosys synthesis suite \cite{Yosys} can 
 
 
 \paragraph{Learning Specification from Historical Bug Patterns.}
-we will consider generating specification from previous known bug
+We will consider generating specification from previous known bug
 patterns.  We will collaborate with our hardware engineers to explore
 a history of hardware issues triggered by software defects, and get
 patterns from winch we generate specification.  Such bug patterns in
@@ -598,7 +596,6 @@ Napatech will follow the project and provide use cases and challenges for the pr
 Syosil will provide consulting and training in connection with any questions related to functional verification,
 UVM and CRV for the project.
 
-\todo{Waiting for letter from WSA (Ketil) and Syosil.}
 
 %\paragraph*{Use Cases}
 %
@@ -683,26 +680,26 @@ with an interest in digital design and programming languages.
       \midrule
       Recruiting             & 1   & MS and ZF & Recruiting of the two PhDs                                                                    \\
       \midrule
-      UVM                    & 3   & KH        & Develop a UVM verification example on a complex multicore device, a network-on-chip.          \\
-      Prepare                & 3   & PhD1      & Exploring related work and learning Chisel, SystemVerilog, and UVM.                           \\
-      Cover                  & 6   & PhD1      & Adding constraint random testing and coverage measurements to ChiselTest.                     \\
+      UVM                    & 3   & KH        & Develop a UVM verification example on a complex multicore device.          \\
+      Prepare1                & 3   & PhD1      & Exploring related work and learning Chisel, SystemVerilog, and UVM.                           \\
+      Cover                  & 6   & PhD1      & Adding constraint random testing and coverage to ChiselTest.                     \\
       Generate               & 6   & PhD1      & Developing a hardware generator methodology by using functional programming in Scala.         \\
-      Framework              & 9   & PhD1      & Development of an object-oriented and functional frame work for testing.                      \\
+      Framework              & 9   & PhD1      & Development of an object-oriented and functional testing framework.                      \\
       \midrule
-      SOA                    & 3   & PhD2      & Explore related work on property-based testing and learn to use ScalaCheck.                   \\
-      Specification          & 6   & PhD2      & Collaborate with hardware developers to manually inject both valid and faulty specifications. \\
-      Property-based testing & 6   & PhD2      & Test the specifications with ScalaCheck.                                                      \\
-      Bug database           & 3   & PhD2      & Create a database from historical bug patterns during hardware development.                   \\
-      Implement              & 6   & PhD2      & implement a program transformer to convert the bug patterns into %
+      Prepare2                    & 3   & PhD2      & Explore related work on property-based testing and ScalaCheck.                   \\
+      Spec          & 6   & PhD2      & Collaborate with hardware developers to manually inject both valid and faulty specifications. \\
+      Property & 6   & PhD2      & Develop property-based testing the specifications with ScalaCheck.                                                      \\
+      Bugbase           & 3   & PhD2      & Create a database from historical bug patterns from hardware development.                   \\
+      Implement              & 6   & PhD2      & Implement a program transformer to convert the bug patterns into %
   additional, meaningful  specification in code (\`a la FindBugs or ScalaFix).                                                                 \\
-      Implement              & 6   & PhD2      & Implement a user-friendly tool for automating the testing process.                            \\
+%      Implement              & 6   & PhD2      & Implement a user-friendly tool for automating the testing process.                            \\
       \midrule
-      Explore                & 2x6 & PhD1/2    & Detect bugs with the implemented tool; report them back to hardware developers and incorporate their feedback into a detailed
+      Explore                & 2x4 & PhD1/2    & Detect and report bugs with the implemented tool and incorporate their feedback into a detailed
       empirical bug study                                                                                                                       \\
-      Eval                   & 2x6 & PhD1/2    & Evaluation of the results collected with.                                                     \\
-      Teach                 &  2  & JM            & Make Chisel and its design methods accessible for software designers \\
+      Eval                   & 2x4 & PhD1/2    & Evaluation of the results collected with the industry use cases.                                                     \\
       Thesis                 & 4   & PhD1/2    & Thesis writing und submission.                                                                \\
       \midrule
+      TeachSW                 &  2  & JM            & Make Chisel and its design methods accessible for software designers. \\
       Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
       \bottomrule
     \end{tabular}
@@ -718,20 +715,19 @@ with an interest in digital design and programming languages.
 %\vspace{-5mm}
 \paragraph*{Tasks, Milestones, and Timetable}
 
-\todo{merge and simplify}
 
-\paragraph{MS1.} The milestone is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing  two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, on which our approach should  pass without raising  warnings. 
-
-
-\paragraph{MS2.} We will create  a database from historical  bug patterns.
-A program transformer will be implemented to convert the bug patterns
-into code specification. The generated specification for our benchmark
-should be validated by our hardware developers, with which a
-refinement step can be introduced to improve the database.
-
-\paragraph{MS3.} The milestone  is to have a list of bugs reported, and a detailed case study (whether the bugs are
-trivial, false alarms, for example) Besides, coverage statistics will
-be collected to measure comprehensiveness of our tests.
+%\paragraph{MS1.} The milestone is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing  two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, on which our approach should  pass without raising  warnings. 
+%
+%
+%\paragraph{MS2.} We will create  a database from historical  bug patterns.
+%A program transformer will be implemented to convert the bug patterns
+%into code specification. The generated specification for our benchmark
+%should be validated by our hardware developers, with which a
+%refinement step can be introduced to improve the database.
+%
+%\paragraph{MS3.} The milestone  is to have a list of bugs reported, and a detailed case study (whether the bugs are
+%trivial, false alarms, for example) Besides, coverage statistics will
+%be collected to measure comprehensiveness of our tests.
 
 
 The project is divided into several tasks.
@@ -744,12 +740,12 @@ For each task, the time is given in person months (PM). The Gantt chart shows
 the project schedule.
 For an assessment of the project's success we plan following milestones:
 
-\textbf{M1} (Month 6): The PhD student is selected and employed.
+\textbf{M1} (Month 6): The PhD students are selected and employed.
 
-\textbf{M2} (Month 15): Two versions ...
+\textbf{M2} (Month 15): Tools have been learned and first artifacts have been developed.
 
-\textbf{M3} (Month 30): All development has been finished and the different versions
-can be used for exploration and evaluation of the results ...
+\textbf{M3} (Month 30): All development has been finished and the different components
+can be used for exploration and evaluation of the results with the industrial use cases.
 
 \textbf{M4} (Month 48): The project has finished and two PhD theses have been handed in.
 
@@ -770,30 +766,34 @@ milestone label font=\footnotesize,
 % tasks, groups and milestones
 \ganttbar[name=r1]{Recruiting}{1}{6} \\
 \ganttmilestone[name=m1]{Milestone 1}{6} \\
-\ganttbar[name=t1]{xxx}{1}{9} \\
-\ganttbar[name=t2]{xxx}{10}{15} \\
-\ganttbar[name=t3]{xxx}{16}{24} \\
+\ganttbar[name=t1]{UVM}{1}{9} \\
+\ganttbar[name=t2]{Prepare1}{7}{9} \\
+\ganttbar[name=t3]{Cover}{10}{15} \\
 \ganttmilestone[name=m2]{Milestone 2}{15} \\
-\ganttbar[name=t4]{xxx}{25}{30} \\
-\ganttbar[name=t5]{SOA}{7}{9} \\
-\ganttbar[name=t6]{vvv}{10}{15} \\
-\ganttbar[name=t7]{vvv}{16}{21} \\
-\ganttbar[name=t8]{vvv}{22}{24} \\
-\ganttbar[name=t9]{vvv}{25}{30} \\
+\ganttbar[name=t4]{Generate}{16}{21} \\
+\ganttbar[name=t41]{Framework}{22}{30} \\
+\ganttbar[name=t5]{Perpare1}{7}{9} \\
+\ganttbar[name=t6]{Spec}{10}{15} \\
+\ganttbar[name=t7]{Property}{16}{21} \\
+\ganttbar[name=t8]{Bugbase}{22}{24} \\
+\ganttbar[name=t9]{Implements}{25}{30} \\
 \ganttmilestone[name=m3]{Milestone 3}{30} \\
-\ganttbar[name=t10]{Explore}{31}{36} \\
-\ganttbar[name=t11]{Eval}{37}{42} \\
+\ganttbar[name=t10]{Explore}{31}{34} \\
+\ganttbar[name=t11]{Eval}{35}{39} \\
 \ganttbar[name=t12]{Thesis}{40}{48} \\
-\ganttbar[name=t13]{Chapter}{40}{46} \\
+\ganttbar[name=t13]{TeachSW}{40}{46} \\
+\ganttbar[name=t14]{Chapter}{40}{46} \\
 \ganttmilestone[name=m4]{Milestone 4}{48}
 
 % relations
 \ganttlink{r1}{m1}
-\ganttlink{t1}{t2}
-\ganttlink{t2}{m2}
-\ganttlink{m2}{t3}
-\ganttlink{t3}{t4}
-\ganttlink{t4}{m3}
+\ganttlink{m1}{t2}
+\ganttlink{t1}{m2}
+\ganttlink{t2}{t3}
+\ganttlink{t3}{m2}
+\ganttlink{m2}{t4}
+\ganttlink{t4}{t41}
+\ganttlink{t41}{m3}
 
 \ganttlink{m1}{t5}
 \ganttlink{t5}{t6}
@@ -823,6 +823,8 @@ milestone label font=\footnotesize,
 \bibliographystyle{abbrv}
 %\bibliography{myown,jsp,noc,misc,msbib}
 \bibliography{../msbib,testing,../chisel-uvm}
+
+\end{document}
 
 \newpage
 

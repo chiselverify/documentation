@@ -468,8 +468,8 @@ combination of object-oriented programming with functional programming.
 Within our verification framework, we will support mixed language verification.
 Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
 we will use ChiselTest as a driver for the open-source Verilog simulator Verlator.
-We plan the open-source Yosys synthesis suite~\cite{Yosys} with the GHDL~\cite{ghdl}
-to translate VHDL into Verilog.
+With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
+we will translate VHDL into Verilog.
 
 %A verification method is only usable when it can handle mixed-source designs.
 %This means a Scala driven method must be able to test components written in Verilog,
@@ -599,14 +599,15 @@ test benches written in VHDL and Verilog to a verification method based on const
 test generation with tools such as UVM. Therefore, the SDH project is just-in-time to support this
 transition.
 
-Several companies are interested in the SDH project and support it with non-trivial use cases.
+Following {\bf seven companies are interested in the SDH project} and support it with use cases.
 Teledyne is interested in exploring Chisel for development and testing with the compatibility of VHDL and Verilog.
 Microchip is interested in using Chisel to improve the design throughput and
 provides a hardware use case to sort Ethernet packets according to their deadlines.
 Synopsys provides tool support for the project.
-WSA provides a decimation filter use case for our verification framework.
+WSAudiology provides a decimation filter use case for our verification framework.
 Napatech will follow the project and offer challenges to the project.
 Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
+Comcores is interested in improving the throughput with SDH.
 
 
 %\paragraph*{Use Cases}
@@ -640,9 +641,9 @@ for female researchers for the PhD positions.
 %His research interest is in computer architecture for real-time systems.
 During his stay
 at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
-Martin has written the Chisel textbook~\cite{chisel:book}, which has been translated
-into Chinese and Japanese. Martin is a member of the Technical Advisory Committee for
-Chisel and therefore keeps the work of SDH in sync with the Chisel main development.
+Martin has {\bf written the Chisel textbook}~\cite{chisel:book}, which has been translated
+into Chinese and Japanese. Martin is a {\bf member of the Technical Advisory Committee for
+Chisel} and therefore keeps the work of SDH in sync with the Chisel main development.
 Martin is part of the regular Chisel developer meeting and a meeting on verification with
 UC Berkeley researchers and developers from SiFive, a startup in silicon valley.
 
@@ -785,7 +786,7 @@ milestone label font=\footnotesize,
 \ganttmilestone[name=m2]{Milestone 2}{15} \\
 \ganttbar[name=t4]{Generate}{16}{21} \\
 \ganttbar[name=t41]{Framework}{22}{30} \\
-\ganttbar[name=t5]{Perpare1}{7}{9} \\
+\ganttbar[name=t5]{Perpare2}{7}{9} \\
 \ganttbar[name=t6]{Spec}{10}{15} \\
 \ganttbar[name=t7]{Testing}{16}{21} \\
 \ganttbar[name=t8]{Bugbase}{22}{24} \\

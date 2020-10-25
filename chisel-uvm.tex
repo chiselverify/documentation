@@ -154,13 +154,13 @@ with a small example design. We can verify digital designs written in mixed
 languages such as Verilog, VHDL, and Chisel and simulate all of them in a tool-flow
 consisting of open-source tools only.
 
-This paper is organized in six sections: % The following section presents related work.
-Section~\ref{sec:related} provides background on the Universal Verification Methodology.
-Section~\ref{sec:tools} describes the open-source tools that we use in our project.
-Section~\ref{sec:legacy} describes how to integrate legacy components written in Verilog and VHDL.
-Section~\ref{sec:eval} evaluates our approach with a small design example written in Chisel, VHDL,
-and Verilog.
-Section~\ref{sec:conclusion} concludes.
+%This paper is organized in six sections: % The following section presents related work.
+%Section~\ref{sec:related} provides background on the Universal Verification Methodology.
+%Section~\ref{sec:tools} describes the open-source tools that we use in our project.
+%Section~\ref{sec:legacy} describes how to integrate legacy components written in Verilog and VHDL.
+%Section~\ref{sec:eval} evaluates our approach with a small design example written in Chisel, VHDL,
+%and Verilog.
+%Section~\ref{sec:conclusion} concludes.
 
 
 
@@ -185,7 +185,7 @@ driving signals. If a new sequence of transactions is to be generated, only the 
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.35\textwidth]{uvm-tb_Pedro-Araujo.png}
+    \includegraphics[width=0.3\textwidth]{uvm-tb_Pedro-Araujo.png}
     \caption{Representation of a simple UVM testbench. By Pedro Araújo / colorlesscube.com}
     \label{fig:uvm_testbench}
 \end{figure}
@@ -452,12 +452,12 @@ and verification, we provide all examples, including this paper, in open-source
 on GitHub:\\ \url{https://github.com/chisel-uvm}.
 
 
-\section{Conclusion}
-\label{sec:conclusion}
-
-This work-in-progress paper is a first sketch of the ideas to combine SystemVerilog/UVM
-with Chisel/Scala for a productive design and verification of future digital circuits.
-We will explore all combinations with examples provided by our industrial partners.
+%\section{Conclusion}
+%\label{sec:conclusion}
+%
+%This work-in-progress paper is a first sketch of the ideas to combine SystemVerilog/UVM
+%with Chisel/Scala for a productive design and verification of future digital circuits.
+%We will explore all combinations with examples provided by our industrial partners.
 
 
 
@@ -540,10 +540,6 @@ with the generated Verilog code}
 
 \todo{with C/C++/Java/Scala/Phyton, ....}
 \ducky{Should be tons of this already. CoCoTb is a Python cosimulation environment. Rocket-chip uses C++ cosimulation in their RTL tests.}
-Given the complexity of UVM and SystemVerilog combined with the need for proprietary development tools, the industry is lacking and continuously seeking for verification engineers that have experience in the universal verification methodology. For these reasons, alternative solutions inspired by the UVM methodology were born. This section contains a list of projects that aim to achieve functional verification of a design in a more accessible way.
-\subsection{CoCoTb}
-CoCoTb (COroutine based COsimulationTestBench) is a python library that aims to provide an environment for verifying VHDL and SystemVerilog RTL designs. Following the philosophy of UVM, CoCoTb seeks design reusability and constrained randomization tests. In contrast with UVM, test benches are written directly in python, which lowers the time spent in verification and development. CoCoTbe leverages the VPI (Verilog Programming Interface) or VHPI (VHDL Programming Interface) to communicate with the most common RTL simulators. Through this standard set of API, CoCotb can communicate with the kernel of the simulator and control events and signal values during a simulation. \cite{cocotb2020Sep}
-Moreover, given the flexibility of the Python language and the large amount of library available for it, it is easy to integrate regression tests of digital design in a CI/CD environment. A remarkable extension of CoCoTb is python-uvm, which is a complete port of UVM 1.2 to python \cite{tpoikela2020Oct}.
 
 
 

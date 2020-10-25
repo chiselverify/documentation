@@ -1,0 +1,5 @@
+*.pdf
+*.gz
+*.aux
+*minted*
+!coverage.pdf

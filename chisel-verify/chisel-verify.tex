@@ -8,6 +8,7 @@
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{comment}
+\usepackage{listings}
 %\usepackage{flushend} % even out the last page, but use only at the end when there is a bibliography
 
 \newcommand{\code}[1]{{\small{\texttt{#1}}}}
@@ -345,10 +346,31 @@ The solution that was used to implement line coverage was based off of a method 
 \item The multiplexer path coverage percentage.
 \item A modified version of the FIRRTL code of the DUT containing prefixes for each line telling us whether it was covered by a test or not.
 \end{itemize}
-It is important to note that this information needs to be interpreted correctly to be of any use. A more interesting result would be if the FIRRTL line coverage would be mapped to the original Chisel source. This is possible but challenging, since Treadle only has access to the original source code through \textit{Source locators} which map certain FIRRTL lines (only those that don't contain multiplexers) back to Chisel. This means that the code can only be partly mapped and the remainder will have to be reconstructed using some smart guessing.\\
+\begin{verbatim}
+COVERAGE: 50.0% of multiplexer paths tested
+COVERAGE REPORT:
 
-\paragraph{Code Coverage with Verilator}
-TODO\\
++ circuit Test_1 :
++   module Test_1 :
++     input in$a : UInt<1>
++     input in$b$0 : UInt<2>
++     input in$b$1 : UInt<2>
++     input clock : Clock
++     output io_cov_valid_0 : UInt<1>
++     output io_cov_valid_1 : UInt<1>
++     output out : UInt<2>
++   
++     io_cov_valid_0 <= in$a
+-     io_cov_valid_1 <= not(in$a)
++     out <= mux(in$a, in$b$0, in$b$1)
+\end{verbatim}
+The example above is taken for a simple test, where we are only testing the path where \texttt{in\_a} is 1. This means that, since we only have a single multiplexer, only half of our branches have been tested and we would thus want to add a test for the case where \texttt{in\_a} is 0. The report can thus be interpreted as follows:  
+\begin{itemize}
+\item "\texttt{+}" before a line, means that it was executed in at least one of the tests in the test suite.
+\item "\texttt{-}" before a line, means that it wasn't executed in any of the tests in the test suite.\\
+\end{itemize}
+
+Treadle thus allows us to obtain coverage at the FIRRTL level. A more interesting result would be if the FIRRTL line coverage would be mapped to the original Chisel source. This is possible but challenging, since Treadle only has access to the original source code through \textit{Source locators} which map some of the FIRRTL lines back to Chisel. This means that the code can only be partially mapped and the remainder will have to be reconstructed using some smart guessing.\\
 
 \paragraph{Functional Coverage directly in Scala}
 Functional Coverage is on the principal tools used during the verification process, since it allows one to have a measurement of \textit{"how much of the specification has been implemented correctly"}. A verification framework would thus not be complete without constructs allowing one to define a verification plan and retrieve a functional coverage report. The main language used for functional coverage is \textit{SystemVerilog}, which is why our solution is based on the same syntax. There are three main components to defining a verification plan: 
@@ -366,6 +388,43 @@ In order to implement said elements in Scala we needed to be able to do the foll
 \item Compile all of the results into a comprehensible Coverage Report.
 \end{itemize}
 Implementing these elements was done using a structure where we had a top-level element, known as our \texttt{Coverage Reporter} which allows the verification engineer to define a verification plan using the \texttt{register} method, which itself stores the \texttt{coverpoint} to \texttt{bin} mappings inside of our \texttt{CoverageDB}. Once the verification plan is defined, we can sample our ports using the \texttt{sample} method, which is done by hooking into \textit{Chisel Testers2} in order to use its peeking capabilities. At the end of the test suite a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
+\begin{lstlisting}[language=scala]
+val cr = new CoverageReporter
+cr.register(
+    //Declare CoverPoints
+    //CoverPoint 1
+    CoverPoint(dut.io.accu , "accu",
+        Bins("lo10", 0 to 10)::
+        Bins("First100", 0 to 100)
+        ::Nil)::
+    //CoverPoint 2
+    CoverPoint(dut.io.test, "test", 
+        Bins("testLo10", 0 to 10)
+        ::Nil)::
+    Nil,
+    //Declare cross points
+    Cross("accuAndTest", "accu", "test",
+        CrossBin("both1", 1 to 1, 1 to 1)
+        ::Nil)::
+    Nil)
+\end{lstlisting}
+The above code snippet is an example of how to define a verification plan using our coverage framework. The concepts are directly taken from \texttt{SystemVerilog}, so it should be accessible to anyone coming from there. One concept, that is used in the example verification plan, which we haven't presented yet is the idea of \textit{Cross Coverage} defined using the \texttt{Cross} construct. \textit{Cross Coverage} allows one to specify coverage relations between CoverPoints. This means that a cross defined between, let's say, \texttt{coverpoint a} and \texttt{coverpoint b} will be used to gather information about when \texttt{a} and \texttt{b} had certain values simultaneously. Thus in example verification plan we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.\\
+Once our verification plan is defined, we need to decide when we want to sample our cover points. This means that at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. This can be done, in our example, simply by calling \texttt{cr.sample()} when we are ready to sample our points. Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()} which results in the following coverage report: 
+\begin{verbatim}
+============== COVERAGE REPORT ==============
+================ GROUP ID: 1 ================
+COVER_POINT PORT NAME: accu
+BIN lo10 COVERING Range 0 to 10 HAS 8 HIT(S)
+BIN First100 COVERING Range 0 to 100 HAS 9 HIT(S)
+============================================
+COVER_POINT PORT NAME: test
+BIN testLo10 COVERING Range 0 to 10 HAS 8 HIT(S)
+============================================
+CROSS_POINT accuAndTest FOR POINTS accu AND test
+BIN both1 COVERING Range 1 to 1 CROSS Range 1 to 1 
+HAS 1 HIT(S)
+============================================
+\end{verbatim}
 
 \section{Research Plan}
 

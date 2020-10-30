@@ -15,7 +15,12 @@
 	tabsize=3
 }
 \setminted[C]{
-	tabsize=3
+	tabsize=3,
+	breaklines
+}
+\setminted[scala]{
+	tabsize=3,
+	breaklines
 }
 \usepackage{xspace}		% For using \SV with trailing spaces
 \usepackage{cleveref}	% Needed for correctly referencing listings
@@ -651,16 +656,44 @@ to explore concurrent, transaction based verification.
 The purpose of this document is to outline my (Kasper) findings during the course of the Chisel-UVM project. It should serve as a reference on what the UVM can do, how it works, and how some of this (namely the SystemVerilog Direct Programming Interface (DPI)) may be implemented in a Scala based testing framework.
 
 \section{UVM}
-The Universal Verification Methodology (UVM) is a testing framework built on top of the testing capabilities of SystemVerilog. In that respect, there is nothing you can do in the UVM that you cannot also do in plain SystemVerilog. The main purpose of UVM was to standardize testing the testing framework used across EDA vendors, making it easier for users to use their testbenches across different software suites.
+The Universal Verification Methodology (UVM) is a verification framework built on top of the testing capabilities of SystemVerilog. Prior to the introduction of the UVM, the major EDA simulation vendors supported diferent frameworks / methodologies. This meant that a verification environment designed for one simulator might not run under another simulator. The main purpose of the UVM was to standardize the testing framework used across EDA vendors, making it easier for users to use their testbenches across different software suites.
 
-The testbench in the UVM is built up around two key components. The \textbf{scoreboard} and \textbf{coverage collector}. Together, these components check whether the DUT operates as expected, and whether the verification procedure can be thought to be finished.
+%% The below is taken from our chisel-uvm paper
+The testbench in the UVM is built up around a number of components.
+Each component performs only one task in the testbench, allowing the engineer to make changes to some components without affecting others. 
+For example, the sequencer is the component responsible for generating transactions for the DUT, whereas the driver is responsible for converting the transaction into pin-level wiggles, i.e., generating correct start/stop conditions and
+driving signals. If a new sequence of transactions is to be generated, only the sequencer is affected. Likewise, the sequencer does not care how the transactions are converted into pin-level signals---this is the sole responsibility of the driver. This separation into several components results in a more structured testbench design as there are fewer dependencies than in a monolithic testbench.
 
-\subsection{Scoreboard}
-The purpose of the scoreboard is to ensure that the DUT matches specification. When using directed tests, this may be as simple as constructing a list of output values and checking these in order. When using randomized testing, the scoreboard is usually implemented as a software model (sometimes called a golden model) which is defined to be correct. The software model should mimic the functionality of the DUT, and thus provide the same outputs given the same inputs. 
+The main components of a UVM testbench are as follows:
 
-The scoreboard may be implemented purely in SystemVerilog. Being a combined HDL and HVL, SystemVerilog supports procedural and object-oriented paradigms for testbench design. One of the benefits that \SV adds to the table is the ability to interface with C-code through the use of the \SV Direct Programming Interface (DPI). This is an interface which allows C code to be called from inside the \SV testbench, and likewise allows for \SV code to be called from inside of a C program. Programming low-level simulations of hardware is most likely easier in C than in plain \SV. In listing \ref{lst:dpi} is shown a simple example of some SystemVerilog code calling C code through the \SV DPI.
+    A \textit{Sequence(r):} defines the order of transactions necessary for a given purpose, e.g., synchronization or reset sequence. The sequencer is responsible for transferring the transactions, defined by the sequence, to the driver.
+    
+    A \textit{Driver} converts transactions into pin-level signals and drives these signals onto the DUT.
+    
+    An \textit{Interface} is a SystemVerilog construct which allows the user to group related signals. A DUT may have several interfaces attached.
+    The interface is used to avoid hooking directly into the DUT, making it easier to test multiple DUT versions.
+    
+    A \textit{Monitor} monitors all traffic on the interface, converting pin-level signals into transaction-level objects that can be operated on by other components, such as a coverage collector or scoreboard.
+    
+    An \textit{Agent} encapsulates monitor, sequencer and driver, setting configuration values. Agents may be set active or passive (with or without a driver and sequencer). An agent is useful when it is necessary to have multiple instances of the same components, e.g., when a 4-port network switch needs four identical drivers with different configurations.
+    
+    A \textit{Scoreboard} is used to check whether correct functionality is achieved. Usually does so by using a ``golden model'' for co-simulation via the SystemVerilog direct programming Interface.
+    
+    The \textit{Environment} is used to configure and instantiate all child components. Environments are typically application-specific and may be modified by the test.
+    
+    The \textit{Test} is the top-level verification component. The test designer may choose to perform factory overrides of classes and set configuration values here, which modify the child components.
 
-A scoreboard doesn't necessarily "rate"\, the performance of the DUT by comparing it to other modules, as one might expect from the name. A better name might simply be "checker". 
+As shown above, even a ``Hello, World'' example using the UVM requires that the user understands how and why each of the different UVM components should be used. The use of so many components causes UVM to have a very steep learning curve, which may discourage adoption. This also means that UVM is not the proper testing methodology for small designs or one-off tests due to the initial workload.
+However, once the initial setup of the testbench is finished for large and complex designs, generating new tests becomes easier.
+
+\subsection{Scoreboard and DPI}
+The purpose of the scoreboard is to ensure that the DUT matches specification. When using directed tests (i.e. hand-written tests meant to test a single part of the specification), this may be as simple as constructing a list of input/output values and checking these in order. When using randomized testing, the scoreboard is usually implemented as a software model (sometimes called a golden model) which is defined to be correct. The software model should exactly mimic the functionality of the DUT, and thus provide the same outputs given the same inputs. 
+
+The scoreboard may be implemented purely in SystemVerilog, or it may be implemented in a C-like language (C, C++ or SystemC). One of the benefits that \SV adds to the verification environment is the ability to interface with C-code through the use of the \SV Direct Programming Interface (DPI). This is an interface which allows C code to be called from inside the \SV testbench, and likewise allows for \SV code to be called from inside of a C program. Programming low-level simulations of hardware is most likely easier in C than in plain \SV. In listing \ref{lst:dpi} is shown a simple example of some SystemVerilog code calling C code through the \SV DPI. 
+
+Notice the inclusion of the header file \texttt{svdpi.h}, which contains the definitions necessary for interoperability. Once this is done, the function must be imported in \SV by use of the \texttt{import "DPI-C"} statement, after which the function may be called as any other \SV function. Using the DPI is surprisingly simple and painless, and makes it very simple to integrate a C model in the testbench.
+
+It should be noted that a scoreboard doesn't necessarily "rate"\, the performance of the DUT by comparing it to other modules, as one might expect from the name. The DUT is only compared against the reference model, and the "rating" is how many assertions pass/fail in a given test.
 
 \begin{listing}[htbp]
 \begin{minted}{C}
@@ -694,42 +727,21 @@ endmodule
 
 Most UVM testbenches employ "Constrained Random Verification"\, (CRV) for generating test stimulus. This is as opposed to using directed testing, where input vectors are predefined to test a certain behaviour. With CRV, random test stimuli are generated. The "Constrained" part of CRV implies that these values aren't entirely random, but are chosen to fulfill a series of criteria. If eg. the DUT is an ALU with a 5-bit opcode field of which only 20 bit-patterns are used, it would be prudent to only generate the 20 valid opcodes for most test purposes. Specific tests could then be written to ensure proper operation if an invalid opcode was asserted.
 
-An example of a class with randomized variables is seen in listing \ref{lst:crv}. The keyword \texttt{constraint} is used to constrain a variable defined with the \texttt{rand} keyword.
+An example of a class with randomized variables is seen in listing \ref{lst:crv}. 
 
-One randomized variable, \texttt{bcd}, is a 4-bit field which only takes on values in the range 0 and 9. The field \texttt{value} has a $1/3$ chance of being 0, $1/3$ of being 255 and $1/3$ of being any other value. The fields \texttt{a,b,c} must satisfy $0<a<b<c$. The field \texttt{op} has no constraints, and will thus randomly toggle between  0, 1, 2 and 3, the only values it can take on.
+The keyword \texttt{constraint} is used to constrain a variable defined with the \texttt{rand} keyword.
+One randomized variable, \texttt{bcd}, is a 4-bit field which only takes on values in the range 0 and 9. 
+The field \texttt{value} has a $1/3$ chance of being 0, $1/3$ of being 255 and $1/3$ of being any other value. 
+The fields \texttt{a,b,c} must satisfy $0<a<b<c$. 
+The field \texttt{op} has no constraints, and will thus randomly toggle between  0, 1, 2 and 3, the only values it can take on.
 
 \begin{listing}[htbp]
-\begin{minted}{systemverilog}
-//Myclass.svh
-class Myclass;
-rand logic [3:0] bcd;
-rand logic [7:0] value;
-rand logic [3:0] a, b, c;
-rand logic [1:0] op;
-
-constraint c_BCD {
-	bcd inside {[0:9]};
-}
-constraint c_value {
-	value dist {
-		0:/1,
-		[1:254]:/1,
-		255:/1
-	};
-}
-constraint c_abc {
-	0 < a;
-	a < b;
-	b < c;
-}
-// op isn't constrained, but is randomized
-endclass: Myclass
-\end{minted}
+\inputminted{systemverilog}{snippets/Myclass.svh}
 \caption{Example SystemVerilog code showing how different values are constrained.}
 \label{lst:crv}
 \end{listing}
 
-In listing \ref{lst:usingcrv}, an object of type \texttt{Myclass} is instantiated and randomized using the \texttt{mc.randomize()} command. Finally, the \SV function \texttt{\$display} is used to print the value of the BCD field.
+In listing \ref{lst:usingcrv}, an object of type \texttt{Myclass} is instantiated and randomized using the \texttt{mc.randomize()} command. Finally, the \SV function \texttt{\$display} is used to print the value of the BCD field. The \texttt{randomize} keyword is a \SV construct which will try to randomize all random fields of given class.
 
 \begin{listing}[htbp]
 \begin{minted}{systemverilog}
@@ -743,30 +755,34 @@ module top;
 	 $display(mc.bcd);
   end
 endmodule
+//Outputs a random value in the range [0:9]
 \end{minted}
 \caption{Example SystemVerilog code showing how to instantiate and randomize a class with random fields.}
 \label{lst:usingcrv}
 \end{listing}
 
 \subsection{Coverage collection}
-The purpose of coverage collection is to check whether all "interesting"\, (as defined by the verification engineer) input combinations have been generated. For the ALU mentioned above, it might be interesting to check whether all opcodes work correctly when asserted after a reset, and whether over/underflow flags are correctly set when performing arithmetic operations. 
-
-An example of coverage collection is seen in listing \ref{lst:cov} where the randomized values from before are covered. A \textit{covergroup} is a label used to collect relevant values under the same heading. A \textit{coverpoint} is a directive instructing the simulator that the given value should be monitored for changes. In the declaration of the coverpoint, several \textit{bins} are generated. These bins correspond to the bins of a histogram. Every time an event occurs which matches the declaration inside a bin, the counter associated with that bin is incremented by one. An event may cause multiple bins to increment at the same time.
+The purpose of coverage collection, in this case functional coverage collection, is to check whether all "necessary"\, (as defined by the verification engineer) input combinations have been generated. For the ALU mentioned above, it might be interesting to check whether all opcodes work correctly when asserted after a reset, and whether over/underflow flags are correctly set when performing arithmetic operations. In general, functional coverage is concerned with evaluating whether all functionality of a device has been tested. This is opposed to line coverage, which evaluates which lines of code were run during a simulation.
 
 \begin{listing}[htbp]
-\inputminted{systemverilog}{snippets/Cover.svh}
-\caption{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}
-\label{lst:cov}
+	\inputminted{systemverilog}{snippets/Cover.svh}
+	\caption{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}
+	\label{lst:cov}
 \end{listing}
 
-In the coverage declarations shown in listing \ref{lst:cov}, the covergroup \texttt{cg\_bcd} only covers one field, \texttt{bcd}. The bin is labeled by prepepending \texttt{BCD:} in front of the name. 10 bins are generated which each sample the values 0-9, and the remaining values 10-15 are sampled into the default bin \texttt{others}. 
+An example of functional coverage collection is seen in listing \ref{lst:cov} where the randomized values from before are covered. A \textit{covergroup} is a label used to collect relevant values under the same heading. A \textit{coverpoint} is a directive instructing the simulator that the given value should be monitored for changes. In the declaration of the coverpoint, several \textit{bins} are generated. These bins correspond to the bins of a histogram. Every time an event occurs which matches the declaration inside a bin, the counter associated with that bin is incremented by one. An event may cause multiple bins to increment at the same time.
 
-In the covergroup \texttt{cg\_others} three coverpoints are set up. The \texttt{VAL} coverpoint only explicitly samples 3 ranges of values. The \texttt{A} coverpoint auto-generates one bin for each possible value it may take on, 16 bins in total, since no bins are explicitly declared. The coverpoint \texttt{OP} has one bin, \texttt{toggle} which only increments when \texttt{mode} toggles from \texttt{0x0} to \texttt{0x1}. Finally, the \texttt{cross} statement implements cross coverage. Cross coverage tracks what values were sampled at multiple coverpoints at the same time.
+
+
+In the coverage declarations shown in listing \ref{lst:cov}, the covergroup \texttt{cg\_bcd} only covers one field, \texttt{bcd}. The bin is labeled by prepepending \texttt{BCD:} in front of the \textit{coverpoint} directive. 10 bins are generated which each sample the values 0-9, and the remaining values 10-15 are sampled into the default bin \texttt{others}. 
+
+In the covergroup \texttt{cg\_others} three coverpoints are set up. The \texttt{VAL} coverpoint samples 3 ranges of values. Any value in the range \texttt{[0:20]}will cause the counter on bin \texttt{low} to increment by one. Likewise for the other bins in that coverpoint. The \texttt{A} coverpoint auto-generates one bin for each possible value it may take on, 16 bins in total, since no bins are explicitly declared. The coverpoint \texttt{OP} has one bin, \texttt{toggle} which only increments when \texttt{mode} toggles from \texttt{0x0} to \texttt{0x1}. Finally, the \texttt{cross} statement implements cross coverage. Cross coverage tracks what values were sampled at multiple coverpoints at the same time.
 
 Using the cross of \texttt{A} and \texttt{OP}, it may be possible to have 100\% coverage on both coverpoints (ie. all bins have been hit at least once), but the cross coverage may not be at 100\% if eg. \texttt{OP} never toggled while \texttt{A} was 1. Increasing the number of random samples that are generated may alleviate this problem. If it doesn't, it may be indicative that something is wrong in the structure of the testbench or DUT.
 
 In listing \ref{lst:usingcov}, the module from \cref{lst:usingcrv} has been expanded to also use the coverage collector.
-\begin{listing}
+
+\begin{listing}[htbp]
 	\inputminted{systemverilog}{snippets/top.sv}
 	\caption{Showcasing how multiple random values are generated and sampled by the coverage collector.}
 	\label{lst:usingcov}
@@ -774,13 +790,51 @@ In listing \ref{lst:usingcov}, the module from \cref{lst:usingcrv} has been expa
 
 In figure \ref{fig:coverage}, the result of running the 20 iterations is seen for coverpoints \texttt{BCD, A, VAL}. 
 
-\begin{figure}
+\begin{figure}[htbp]
 	\centering
 	\includegraphics[width=\columnwidth]{coverage.pdf}
 	%Figure generated by 'graphs.m'
-	\caption{Coverage bins generated by running the code in listings \ref{lst:usingcov} and \ref{lst:usingcrv}.}
+	\caption{Coverage bins generated by running the code in listing \ref{lst:usingcov}}
 \label{fig:coverage}
 \end{figure}
+
+\subsection{C integration in Scala}
+The \SV DPI is a great addition to the verification workflow, as it allows the designer to easily implement a C model into the \SV testbench.
+Similar functionality is available in Scala by leveraging the Java Native Interface (JNI). This is an interface which allows Java / Scala programs to call native code, i.e. code compiled for the specific CPU it is running on. This is typically encountered as .DLL files on Windows or .so files on linux.
+
+When using Chisel and other external libraries, it is recommended to use the Scala Build Tool (sbt) to manage the build. However, doing this makes it more difficult to use the default JNI integration in Scala. This can be alleviated by use of the plugin \texttt{sbt-jni} by Jakob Odersky. 
+
+In listing \ref{lst:jni-scala} is shown an example of a Scala file with a native function.
+
+\begin{listing}[htbp]
+\inputminted{scala}{snippets/Myclass.scala}
+\caption{Example Scala code showing how to integrate native code in Scala.}
+\label{lst:jni-scala}
+\end{listing}
+
+The annotation \texttt{@native} informs the Scala compiler that the function should be found in native code. The annotation \texttt{@nativeLoader} is necessary for use with the plugin. The name "native0"\, is the name of the current SBT project, appended with a 0.
+
+Once the above file has been written, the corresponding C header file is generated by running \texttt{sbt javah}. The contents of the generated header file should then be copied into a C code file, where the functions can be implemented. In this case, it may look like the contents of listing \ref{lst:jni-c}.
+
+\begin{listing}[htbp]
+\inputminted{C}{snippets/Myclass.c}
+\caption{C implementation of the methods declared in Myclass in listing \ref{lst:jni-scala}.}
+\label{lst:jni-c}
+\end{listing}
+
+Notice that primitives such as \texttt{int} can be autocast from a \texttt{jint}, whereas a string must be obtained used using the function pointers defined in the \texttt{JNIEnv} structure. Once this is done, a CMake makefile is generated by running \texttt{sbt "nativeInit cmake"}, and the C files are compiled using \texttt{sbt nativeCompile}. If all goes well, the code can then be run with \texttt{sbt run}. 
+
+If changes are made to any of the function definitions or Scala file, no other steps are necessary than running \texttt{sbt run} again. This will also invoke the CMake script generation and compilation steps if necessary. If new native methods are added to the Scala file, \texttt{sbt javah} must be run again to generate new C headers.
+
+For more information regarding the plugin setup, see the \href{https://github.com/jodersky/sbt-jni}{plugin page on Github} or the file HowToJni.md in the \href{https://github.com/chisel-uvm/documentation}{documentation repository}.
+
+% *Explain what CRV is
+% *Explain what coverage is, how it works
+% *Show an example of a coverage histogram.
+% TODO Explain the basics of UVM testbenches
+% TODO Explain how the SV DPI works
+% Explain how the java JNI works
+% Collect it all together
 
 \section{From InfinIT}
 

@@ -3,3 +3,5 @@
 *.aux
 *minted*
 !coverage.pdf
+!QueueControlStateDiagram.pdf
+!HeapifierStateDiagram.pdf

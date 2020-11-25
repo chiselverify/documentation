@@ -352,6 +352,93 @@ scala> propSquare.check
  one, namely 0 in this case.
 
 
+\section{Constraint Random Verification}
+The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ”direct”
+testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming.
+Constraint programming (CP) is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic
+programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
+With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user’s
+perspective. A subset of these problems is the so-called Constraint Satisfaction Problems (CSP), which are mathematical problems defined as a
+set of objects such that their state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous
+collection of constraints.
+
+\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}, style={verilog-style}]
+typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
+
+class frame_t;
+    rand pkt_type ptype;
+    rand integer len;
+    rand bit  [7:0] payload [];
+    constraint common {
+        payload.size() == len;
+    }
+    // Constraint the members
+    constraint unicast {
+        len <= 2;
+        ptype == UNICAST;
+    }
+    // Constraint the members
+    constraint multicast {
+        len >= 3;
+        len <= 4;
+        ptype == MULTICAST;
+    }
+endclass
+\end{lstlisting}
+Listing \ref{lst:randobjsysv} shows a class named "frame\_t". It uses the "rand" keyword for variables "len", "ptype", and payload.
+Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the “common,” "unicast,"
+and "multicast" constraint groups. Each class in SystemVerilog has an intrinsic method called "randomize()," which causes new values to be selected
+for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
+“rand” variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
+paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. In the research process, a
+CSP solver was implemented in Scala based on the method described in \cite{wolf2006object}. The implementation is composed of two main components.
+The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems.
+The second component is a small DSL, which allows users to declare and randomize objects.
+
+\begin{lstlisting}[language=scala, caption={Random object in Scala}, label={lst:randobjscala}]
+
+object pktType extends SVEnumeration {
+    val UNICAST: Value = Value(11)
+    val MULTICAST: Value = Value(0)
+    val BROADCAST: Value = Value(1)
+    
+    val domainValues = {
+      values.map(x => x.id).toList
+    }
+
+}
+class Frame extends Random {
+  import pktType._
+  var pType: RandInt = 
+        rand(pType, pktType.domainValues())
+  var len: RandInt = 
+        rand(len, 0 to 10 toList)
+  var noRepeat: RandCInt = 
+        randc( noRepeat, 0 to 1 toList)
+  var payload: RandInt =
+        rand(payload, 0 to 7 toList)
+
+  val common = constraintBlock (
+    binary ((len, payload) => len == payload)
+  )
+
+  val unicast = constraintBlock(
+    unary (len => len <= 2),
+    unary (pType => pType == UNICAST.id)
+  )
+
+  val multicast = constraintBlock(
+    unary (len => len >= 3),
+    unary (len => len <= 4),
+    unary (pType => pType == MULTICAST.id)
+  )
+}
+\end{lstlisting}
+
+Listing \ref{lst:randobjscala}, shows an example of random a object. Contrary to SystemVerilog, to declare a random object, the user has to extend
+the class from the Random base-class provided by the library. After that each random variable has to be declared of type "RandInt" and initialized
+with the "rand" macro. Finally, like for SystemVerilog, in Scala inheriting the Random base class exposes the method "random" which assigns random
+values to the random fields of the class.
 
 \section{Coverage in Chisel}
 One of the main tools used in verification is Test Coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: Code coverage and Functional coverage. Code Coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution would give the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.\\

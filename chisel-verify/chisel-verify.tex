@@ -362,7 +362,9 @@ perspective. A subset of these problems is the so-called Constraint Satisfaction
 set of objects such that their state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous
 collection of constraints.
 
-\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}, style={verilog-style}]
+% MS: verilog does not work on my Latex
+%\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}, style={verilog-style}]
+\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}]
 typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
 
 class frame_t;
@@ -881,7 +883,9 @@ being saved in a register. The achieved best and worst case insertion as well as
 		Tail removal & 3 cycles\\
 		Normal removal & \begin{tabular}{c}min 12 cycles + search time\\ max $13+3\cdot \mathrm{log}_k(N)$ + search time \end{tabular}
 	\end{tabular}
-	\caption{Best and worst case insertion and removal times\\\scriptsize{($N=$ queued elements, $k=$ number of child elements per node)}}
+	\caption{Best and worst case insertion and removal times}
+	% MS: Some issue with this line
+	%\\ \scriptsize{($N=$ queued elements, $k=$ number of child elements per node)}}
 	\label{tab:pq_timings}
 \end{table}
 

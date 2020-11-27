@@ -48,11 +48,11 @@
 \newcommand{\kasper}[1]{{\color{purple} Kasper: #1}}
 
 % uncomment following for final submission
-\renewcommand{\todo}[1]{}
-\renewcommand{\martin}[1]{}
-\renewcommand{\simon}[1]{}
-\renewcommand{\kasper}[1]{}
-\renewcommand{\ducky}[1]{}
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\simon}[1]{}
+%\renewcommand{\kasper}[1]{}
+%\renewcommand{\ducky}[1]{}
 
 
 \title{An Open-Source Verification Method with
@@ -112,6 +112,8 @@ digital design, verification, object-oriented programming
 \section{Introduction and Objectives}
 \label{sec:objectives}
 
+\martin{Need to rewrite this to be a paper and not a funding application.}
+
 We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
 Performance increase with general-purpose processors has come to a halt.
 The only way to achieve higher performance or lower energy consumption
@@ -121,7 +123,7 @@ The production of a chip is costly. Therefore, it is essential to get
 the design right at the first tape-out. Thorough testing and verification of the design is mandatory.
 
 To efficiently develop and verify those accelerators, we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
-We believe that {\bf we need to adapt to agile hardware development}~\cite{henn-patt:turing:2019}.
+We believe that we need to adapt to agile hardware development~\cite{henn-patt:turing:2019}.
 
 Furthermore, as accelerators become part of the cloud service, i.e., FPGAs in the cloud,
 software developers will increasingly need to adapt critical algorithms to FPGAs to enhance performance.
@@ -135,7 +137,7 @@ design and testing of digital circuits.
 %modern languages for software development.
 However, compared to software development and testing, digital design and testing methods
 and tools lack several decades of development. Within this project, we plan to
-{\bf leverage software development and testing methods for digital design.}
+leverage software development and testing methods for digital design.
 This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
 and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
 the design and test of digital systems.
@@ -143,11 +145,11 @@ the design and test of digital systems.
 This project aims to develop a method and concrete tools for agile hardware development.
 We will use tools, languages, development, and testing methods from the last decades in
 software development and apply them to hardware design.
-We aim to {\bf raise the tooling level for a digital design to increase productivity}.
+We aim to raise the tooling level for a digital design to increase productivity.
 Time for verifying (testing) of digital systems is about double the time of developing
 them in the first place.
-Therefore, this project's central focus is on {\bf applying software
-testing methods for hardware testing}.
+Therefore, this project's central focus is on applying software
+testing methods for hardware testing.
 
 We will build a combination of open-source tools for verifying
 circuits described in mixed languages (VHDL, SystemVerilog, and Chisel).
@@ -173,6 +175,8 @@ work will be in open-source as well.
 \item Industry issue is verification: how from Chisel to VHDL/Verilog
 \item How much ASIC design is done in DK? Revenue numbers?
 \item There are not enough HW designers and verification engineers available, so they shall be more productive
+\item Maybe this use case would be nice in the future:~\cite{s4noc:nocarc2019}
+\item Maybe also talk about teaching verification
 \end{itemize}
 
 \section{Background and State-of-the-Art}
@@ -604,6 +608,9 @@ with our industrial collaborators to get access use cases serving
 as the DUT.
 
 \paragraph{Test Coverage.}
+
+\martin{We are missing the bib file for those references.}
+
 Tests of the hardware model are traditionally done by ``directly'' validating the features listed in the specifications. As shown in \cite{spear2008systemverilog}, this methodology increases linearly with the complexity of the design. Opposite to direct testing, is random testing. Random testing focus on validating the design on a purely random set of inputs which may or may not detect all the corner cases \cite{mehta2017a}. An alternative approach is to constrain the randomization of input of the test to reduce the design validation time. By combining test coverage (pargraph \ref{test-coverage}) and constrained random stimuli, it is possible to narrow down the corner cases by focusing the test on areas where coverage is lacking. Currently, Hardware verification languages such as SystemC, System Verilog and ``e'' integrate a special syntax to enable this validation technique. However, given their relative old design, such features are hard to extend \cite{haedicke2012crave} \cite{le2015boosting}. On the contrary, new programming languages like Python and Chisel provide a more extensible syntax and builtin package managers that easily allows the integration and extension of a similar feature in the language. Random constraints are modelled base on top of an ``Random'' data type objects that contain random variables and user-defined constraints.  The combination of the constraints applied to a ``Random'' object determines the possible values that can be assigned to the random variables. This approach allows the user to build generic reusable objects that can be later extended or constrained based on the specifications \cite{cieplucha2016new}\cite{mehta2017a}. As for now, solution like cocotb \cite{rosser2018cocotb}\cite{cocotb2020Sep} have already extensions library that combine Constraint Random Verification and Test Coverage \cite{mciepluc2020Sep}. In the cocotb implementation, the constraint random verification module leverage the general-purpose library python-constraint \cite{python-constraint2020Sep} to solve constrained constraint satisfaction problem (CSP) and create the ``Random'' objects. A similar result can also be achieved in Chisel by combining general-purpose constraint problem solver libraries like \cite{chocoteam2020Sep} or \cite{BibEntry2020Sep}.
 
 Code coverage is a useful tool for verifying digital designs
@@ -755,55 +762,8 @@ In the middle of the project, we will have a coordination workshop with the proj
 In the end, we will organize a design and verification workshop, including a hands-on tutorial,
 open to all interested companies, and students from DTU and ITU.
 
-\section{Practical Feasibility}
-
-The Embedded Systems Engineering section at DTU Compute provides
-the intellectual environment and the infrastructure (e.g., regression test server...) that we need for an ambitious research project.
-Furthermore, DTU Compute provides the infrastructure (e.g., an automatic test
-environment for regressions tests, web server).
 
 
-
-
-
-
-
-\paragraph*{Use Cases}
-
-We will have several non-trivial use cases from industry and from our own development to verify
-our development.
-Microchip provides the specification of a hardware sorting algorithm.
-From WSA we will use a decimation filter written in VHDL.
-From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
-to explore concurrent, transaction based verification.
-
-
-
-
-
-%\vspace{-5mm}
-\paragraph*{Tasks, Milestones, and Timetable}
-
-
-
-
-
-\bibliographystyle{abbrv}
-%\bibliography{myown,jsp,noc,misc,msbib}
-\bibliography{../msbib,testing,../chisel-uvm}
-
-
-\section{Ideas, Questions, TODOs}
-
-
-
-\begin{itemize}
-\item Look at the TODO list in infinit project
-\item DeepSpec or DeepSp?? end-to-end for Chisel
-\end{itemize}
-
-
-\subsection{TODO}
 
 
 \section{Use Case: Hardware sorting}
@@ -1091,82 +1051,21 @@ For more information regarding the plugin setup, see the \href{https://github.co
 % Explain how the java JNI works
 % Collect it all together
 
-\section{From InfinIT}
-
-Digital systems are already an integral part of our life. These systems are built out of microprocessors, application specific integrated circuits (ASICs), and field-programmable gate arrays (FPGAs). Several companies in Denmark are building digital systems. To increase competitivity of those companies, we need tools and methods to increase the productivity in designing and especially testing digital systems. Compared to software development and testing, digital design and testing methods and tools lack several decades of development. Within this project we plan to leverage software development and testing methods for digital design. This project explores the hardware construction language Chisel with Scala and the Universal Verification Method (UVM) with SystemVerilog for design and test of digital systems.
 
 
-
-UVM is becoming an industry standard for design verification. On the other hand there is an active development on a new hardware construction language, called Chisel. Chisel is embedded in Scala to write so-called hardware generators. Chisel is also called: software defined hardware. Another feature of the Chisel/Scala combination is to write models of the environment of the hardware design in Scala. As an example take a network interface (e.g., Ethernet) written as a high-level model in Scala connected to a microprocessor written in Chisel. With this example we are able to develop and test network code on the microprocessor, which is our digital design under test.
-
-
-
-As a first step we will explore and compare the two approaches: UVM/SystemVerilog and Chisel/Scala. When we generate hardware from Chisel, we generate a Verilog description of the digital circuit. This Verilog description can further be tested within UVM (plain Verilog is valid SystemVerilog). As a next step, we will explore how test, simulation, and verification code written in Scala to develop the Chisel description of the digital circuit can be reused at the UVM level to test the generated Verilog description of the circuit.
+\bibliographystyle{abbrv}
+%\bibliography{myown,jsp,noc,misc,msbib}
+\bibliography{../msbib,testing,../chisel-uvm}
 
 
-Modern software techniques can be applied on testing where plausible. For example, fuzzing is a mature solution for producing random and yet meaningful inputs to trigger program failures. Symbolic execution explores program paths systematically via constraint solving.
+\section{Ideas, Questions, TODOs}
 
 
 
-We are in contact with the developers of Chisel at the University of California in Berkeley, and especially with Richard Lin, who is developing the new testing framework for Chisel. Richard is interested in this project and the integration with UVM. Therefore, we agreed to have a cooperation meeting during the project at UC Berkeley.
+\begin{itemize}
+\item Look at the TODO list in infinit project
+\item DeepSpec or DeepSp?? end-to-end for Chisel
+\end{itemize}
 
-
-
-The project fits into the Infinit topic of IoT. The things of IoT are digital systems, often small and application specific systems. Application specific systems are built out of digital systems either with a dedicated ASIC or an FPGA.
-
-
-
-This mini-project will be executed in close cooperation with Microchip, WSA, Synopsys, and Syosil. 
-
-
-
-The students involved in the research project well then be well educated future engineers for digital system design and verification.
-
-
-
-3. Aktiviteter (beskriv) 1. Learning and exploring SystemVerilog/UVM (with Synopsys)
-2. Learning and exploring Chisel/Scala
-3. Defining two use cases together with Microchip
-4. Developing the two use-cases in Chisel and SystemVerilog with a comparison
-5. Developing the verification environment including high-level models of the environment in UVM and Chisel/Scala with a comparison
-6. Application of the UVM verification of the Chisel generated Verilog code
-7. Scala based testing and verification on top of UVM
-8. Develop an open course on verification of digital systems for DTU and use in industry
-
-
-
-
-4. MilestonesKnowledge of the tools30/4/2020Definitions of the use cases31/5/2020Use cases developed30/7/2020Verification and high-level models developed31/8/2020Cross verification from Scala to UVM functional, course material finalize31/10/2020
-
-5. Deltagere
-
-
-
-DTU, CVR-nr. 30 06 09 46, Martin Schoeberl (project lead) (masca@dtu.dk) and Jan Madsen (jama@dtu.dk)
-DTU will develop the use cases and the verification environment with UVM and Chisel/Scala. DTU will transfer knowledge on Chisel to Microchip and WSA.
-ITU, CVR-nr. 29 05 77 53, Peter Sestoft (sestoft@itu.dk) and Zhoulai Fu (zhfu@itu.dk)
-ITU will apply methods from software testing to digital hardware verification.
-Aarhus Universitet, CVR-nr: 31119103, Farshad Moradi (moradi@eng.au.dk)
-AU will explore UVM verification of Chisel generated Verilog code.
-Microchip Semiconductor Corp. A/S, CVR-nr. 24224694, Thomas Aakjer (Thomas.Aakjer@microchip.com)
-Microchip will provide use cases for the research in design and verification where DTU can explore Chisel with Scala.
-WS Audiology Denmark A/S, CVR-nr. 40296638, Ketil Julsgaard (ketil.julsgaard@wsa.com)
-WSA will provide digital-signal processing use cases for cosimulation of a Chisel description with a high-level description.
-Synopsys, CVR-nr. 25600568, Martine Chegaray (Martine.Chegaray@synopsys.com)
-Synopsis will provide the tools for UVM for the project and guide the usage.
-Syosil Aps, CVR-nr. 29399417, Jacob Sander Andersen (jacob@syosil.com)
-Syosil will support the researchers with education in using UVM.
-
-
-6. Resultater og vision for 
-
-The vision of the project is a highly productive method for designing and (more importantly) verification of digital systems by a combination of the modern hardware construction language Chisel/Scala with the industry standard UVM.
-7. Videnspredning
-
-The research work will be documented by publications and presented at relevant conferences (for example DATE), funded by other means, not by this project.
-
-At the end of the project we will present the method at a workshop open for Danish industry in digital system design.
-
-The new development and verification method will be used and taught in courses on digital electronics at DTU.
 
 \end{document}

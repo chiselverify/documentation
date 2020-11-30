@@ -165,6 +165,7 @@ Furthermore, our aim is to build on open-source projects. Therefore, our
 work will be in open-source as well.
 
 \begin{itemize}
+\item Get Hans' work into this paper
 \item Maybe more ideas: \url{https://www.youtube.com/watch?v=dbOi_Gboi_0}, \url{https://www.youtube.com/watch?v=4FCZLrauDcE}
 \item Higher-Order Hardware Design, meta-programming language and the actual hardware construction language are the same, usually Python or Perl scripts with strings
 \item Have a measurable objective (LoC UVM vs Scala, SystemVerilog vs Chisel)
@@ -191,7 +192,6 @@ work will be in open-source as well.
 \item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
 \end{itemize}
 
-\paragraph{Digital Design.}
 VHDL and Verilog are the classic hardware description languages, first appeared in the 1980s.
 SystemVerilog~\cite{SystemVerilog}, as an extension to Verilog, adds features from VHDL
 for the hardware description and object-oriented features for verification.
@@ -246,18 +246,6 @@ libraries at Maven servers.
 
 
 
-%%%ZF
-\paragraph{Testing Methods.}
-Testing is crucial for making software and hardware reliable. The higher
-expectation of software quality and shrinking development cycle have
-driven programming language researchers and software engineers to
-develop a spectrum of \emph{automated testing} techniques.
-For example, continuous integration~\cite{duvall2007continuous} 
-implements an agile method that automatically runs manually written
-%State-of-the-art research in software engineering
-%and programming languages address the following two challenges to
-%achieve full test automation.
-
 SystemVerilog adds object-oriented concepts for the non-synthesizable verification code.
 The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
 C functions inside a SystemVerilog (UVM) testbench.
@@ -287,81 +275,14 @@ Its lightweight syntax encourages writing targeted unit tests by making small te
 A clear and clean test code also enables the test-as-documentation pattern,
 demonstrating a module's behavior from a temporal perspective.
 
-\paragraph{Determining Specification.}
-The first challenge is how to determine the expected code outcome, or
-called \emph{specification}.  Software developers often document
-specifications within the software itself.  \emph{Property-based testing}
-provides a convenient way of formulating specification as constraints
-expressed in a domain-specific
-language~\cite{DBLP:conf/icfp/ClaessenH00}.  For example, developers
-in the Scala language can specify ``$n^2>0$ for all integer $n$'' in the
-property-based testing library ScalaCheck~\cite{nilsson2014scalacheck}
-as follows:
-\begin{lstlisting}[numbers=none]
-val propSquare = forAll {(n: Int) => n * n > 0}
-\end{lstlisting}
-An efficient approach to obtaining such specifications is to learn from
-historical bug patterns. Such patterns are gathered in pattern-based
-software analysis tools, e.g., in
-FindBug~\cite{DBLP:conf/paste/AyewahPMPZ07} or
-Scalafix~\cite{web:scalafix}.  Recently, a specification for robotic
-software is obtained by studying bugs fixed on the Robot
-Operating System~\cite{nielsenFSW2020dependencybugs}.
-
-
-
-
-
-%% ZF. This is commeented out because we have decided to not write on
-%% the WP related to sanitizers.
-
-%% Another way to generate specification is to use \emph{sanitizers}
-%% in compilers. Sanitizers are a common compiler feature that
-%% automatically injects run-time checks to capture certain failure
-%% conditions~\cite{DBLP:conf/usenix/SerebryanyBPV12}. For example,
-%% Google's undefined behavior sanitizer UBSAN checks whether a
-%% floating-point variable equals 0 before a division by it; Google's
-%% address sanitizer ASAN targets illegal memory access. While
-%% sanitizers do not deal with functional correctness as unit tests
-%% do, they check low-level, sometimes security-related properties,
-%% such as use-after-free, array-index-out-of-bound, or race
-%% conditions.
-
-\paragraph{Generating Test Inputs.}
-The second challenge is how to generate interesting test inputs.  The
-state-of-the-practice uses \emph{fuzzing}, which has emerged as one of
-the most effective testing techniques for discovering reliability
-issues in software~\cite{takanen2018fuzzing}.  Google's OSS-Fuzz
-project, for example, has filed over 20 000 bugs in 300 open-source
-projects (as of June 2020)~\cite{web:oss-fuzz}.  Fuzzing techniques
-generate random inputs and improve them based on observed code status,
-e.g., crashes or code
-coverage~\cite{DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
-Property-based testing~\cite{DBLP:conf/icfp/ClaessenH00}, which is
-initially designed for testing functional programming languages, uses
-random data generation, a form of plain fuzzing. For example, by
-invoking {\tt propSquare.check} with ScalaCheck (mentioned above), where {\tt
-  propSquare} is the constraint $n^2>0$ for all integers $n$, we can
-immediately get an input $n$ that falsifies the constraint:
-
-\begin{lstlisting}[numbers=none]
-scala> propSquare.check
-       ! Falsified after 1 passed tests.
-      > ARG_0: 0
-      > ARG_0_ORIGINAL: 1083860448
-\end{lstlisting}
- ScalaCheck first finds that n = 1083860448 produces an overflow
- wrapped to a negative (thus $n^2>0$ fails). The input is then
- ``shrunk'', in the terminology of property-based testing, to a smaller
- one, namely 0 in this case.
 
 
 \section{Constraint Random Verification}
-The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ”direct”
+The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct''
 testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming.
 Constraint programming (CP) is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic
 programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
-With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user’s
+With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user's
 perspective. A subset of these problems is the so-called Constraint Satisfaction Problems (CSP), which are mathematical problems defined as a
 set of objects such that their state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous
 collection of constraints.
@@ -392,10 +313,10 @@ class frame_t;
 endclass
 \end{lstlisting}
 Listing \ref{lst:randobjsysv} shows a class named "frame\_t". It uses the "rand" keyword for variables "len", "ptype", and payload.
-Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the “common,” "unicast,"
+Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the ``common'' "unicast,"
 and "multicast" constraint groups. Each class in SystemVerilog has an intrinsic method called "randomize()," which causes new values to be selected
 for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
-“rand” variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
+``rand'' variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
 paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. In the research process, a
 CSP solver was implemented in Scala based on the method described in \cite{wolf2006object}. The implementation is composed of two main components.
 The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems.
@@ -542,6 +463,9 @@ HAS 1 HIT(S)
 
 \section{Research Plan}
 
+\martin{shall rewrite this as it is from the FTP proposal and does not
+fit in its current form.}
+
 
 %%%ZF
 %\subsection{WP1}
@@ -562,19 +486,6 @@ hardware description.
 Scala with functional programming is an excellent basis for developing a methodology for the
 development of such hardware generators.
 
-
-%\subsection{WP2}
-\paragraph{Property-based Testing.}
-As a starting point, we will use ScalaCheck, an implementation of
-property-based testing in Scala, for hardware testing. We will invite
-hardware developers to write properties as constraints (like
-propSquare above), and then we will use ScalaCheck to validate or
-refute those constraints. Property-based testing has seen notable
-successes previously, such as in locating a long-standing concurrency
-bug in the Erlang database server~\cite{DBLP:conf/erlang/HughesB11};
-it was also used by Ericsson to test its media
-proxy~\cite{DBLP:conf/erlang/ArtsHJW06}, by Volvo to test car
-communications protocols~\cite{DBLP:conf/icst/ArtsHNS15}.
 
 
 \paragraph{Co-simulation.}
@@ -681,86 +592,15 @@ To alleviate this issue, the open-source Yosys synthesis suite \cite{Yosys} can 
 
 
 
-%% Let us consider this one below as a bonus WP in our backyard.
-%% \subsection{WP2} 
-%% We can then consider to generate specification automatically, \`a la
-%% sanitizers used in the compiler techniques. This WP focuses on
-%% low-level properties derived from the program syntax, {\em, e.g.},
-%% accessing an array should be within a bound, or performing an
-%% arithmetic calculation should not overflow.
 
 
 
-%% \paragraph{MS2.} The milestone in this WP is to develop a program transformer
-%% that injects in the software source, or its binary form, a list of
-%% low-level specifications.
-
-%% Related to this WP, our project collaborator Zhoulai Fu (together with
-%% a hired security hacker) used sanitizers to find more than 200 bugs in
-%% the Robot Operating System
-%% (ROS)~\cite{web:ros-sanitizer-logs}. Besides, Zhoulai Fu has developed
-%% several program transformers previously for testing floating-point
-%% computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
 
 
 
-\paragraph{Learning Specification from Historical Bug Patterns.}
-We will consider generating specifications from previously known bug
-patterns.  We will collaborate with our hardware engineers to explore
-a history of hardware issues triggered by software defects and get
-patterns from which we generate specification.  Such bug patterns in
-Java, for example, can be found in \cite{web:findbugs_bugs}.  This
-step will generate specification in a syntax-driven way, relating to
-the expected functional behavior of the hardware.
 
 
 
-%% Related to this, our collaborator Zhoulai Fu has worked on a
-%% comprehensive study of developing bug finders by learning from history
-%% bug patterns in the Robot Operating
-%% System~\cite{nielsenFSW2020dependencybugs} 
-
-
-%% Let us consider this as another backyard WP.
-%% \subsection{WP5} We plan to deploy our automated testing solution  in a continuous
-%% integration service, presumably on the cloud, such as Jenkins or
-%% Travis~\cite{DBLP:journals/tse/GallabaM20}. For each code commit, the
-%% service will automatically generate the specification as implemented
-%% in WP2 and WP3, and then will generate test data with a fuzzing engine
-%% as in WP4.
-
-%% \paragraph{MS5.} The milestone is to have the server established that implements
-%% the workflow. It should produce a detailed status report for each
-%% commit.  A similar kind of status report can be found in Google's
-%% OSS-Fuzz (Continuous Fuzzing for Open Source
-%% Software)~\cite{web:oss-fuzz} for example.
-
-
-\paragraph*{Dissemination and Publication}
-
-Scientific results will be published and presented at international
-conferences (e.g., DATE, DAC, CAV, FPL, ISCAS, FPGA) and in relevant scientific journals
-and two PhD theses.
-%We expect that most tasks will result in at least one publication.
-%One PhD theses will publish the results from the project.
-We aim to publish in open access, to a large extent, in the gold open access model.
-However, publishers such as ACM also allow publishing in green open access
-at no additional cost, where a pre-print version of a paper can be uploaded,
-for example, to ArXiv.
-
-The results from the project will be available as open-source under the
-industry-friendly BSD license.
-Open-source research projects attract
-other researchers, developers, and industrial partners
-to use and build on the results of the project.
-A project web site will host the project documentation, the published papers, and the design's source code.
-We will provide unrestricted and cost-free digital access to all research and development results.
-
-We will use the developed method and tools to train a new generation of HW/SW engineers
-at DTU and ITU.
-In the middle of the project, we will have a coordination workshop with the project partners.
-In the end, we will organize a design and verification workshop, including a hands-on tutorial,
-open to all interested companies, and students from DTU and ITU.
 
 
 

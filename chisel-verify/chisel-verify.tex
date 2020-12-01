@@ -460,6 +460,15 @@ BIN both1 COVERING Range 1 to 1 CROSS Range 1 to 1
 HAS 1 HIT(S)
 ============================================
 \end{verbatim}
+An other option would be, for example if we want to do automated constraint modifications depending on the current coverage, to generate the coverage as a Scala \texttt{case class} and then to use it's \texttt{binNcases} method to get numerical and reusable coverage results.  
+  
+One final element that our framework offers is the possibility to gater delayed coverage relationships between two coverage points. The idea is similar to how a \texttt{Cross} works, but this time rather than sampling both points in the same cycle, we rather look at the relation between one point at the starting cycle and an other point sampled a given number of cycles later. This number of cycles is called the \texttt{delay} and there are currently three different ways to specify it:  
+\begin{itemize}
+ \item \texttt{Exactly} delay, means that a hit will only be considered if the second point is sampled in its range a given number of cycles after the first point was.
+ \item \texttt{Eventually} delay, means that a hit will be considered if the second point is sampled in its range at any point within the following given number of cycles after the first point was.  
+ \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
+\end{itemize}
+
 
 \section{Research Plan}
 

@@ -10,19 +10,18 @@
 \usepackage{comment}
 \usepackage{listings}
 %\usepackage{flushend} % even out the last page, but use only at the end when there is a bibliography
-\usepackage{listings}	% For inserting code
-\usepackage{minted}		% For inserting code
-\setminted[systemverilog]{
-	tabsize=3
-}
-\setminted[C]{
-	tabsize=3,
-	breaklines
-}
-\setminted[scala]{
-	tabsize=3,
-	breaklines
-}
+%\usepackage{minted}		% For inserting code
+%\setminted[systemverilog]{
+%	tabsize=3
+%}
+%\setminted[C]{
+%	tabsize=3,
+%	breaklines
+%}
+%\setminted[scala]{
+%	tabsize=3,
+%	breaklines
+%}
 \usepackage{xspace}		% For using \SV with trailing spaces
 \usepackage{cleveref}	% Needed for correctly referencing listings
 
@@ -35,8 +34,6 @@
 % another TT, suggested by Alex
 % \usepackage{inconsolata}
 % \usepackage[T1]{fontenc} % needed as well?
-
-\usepackage{listings}
 
 %\newcommand{\todo}[1]{{\emph{TODO: #1}}}
 \newcommand{\todo}[1]{{\color{olive} TODO: #1}}
@@ -54,9 +51,6 @@
 %\renewcommand{\kasper}[1]{}
 %\renewcommand{\ducky}[1]{}
 
-
-\title{An Open-Source Verification Method with
-Chisel and Scala}
 
 
 %%% ZF
@@ -82,6 +76,11 @@ Chisel and Scala}
 	xleftmargin=.10in,
 	%xrightmargin=.25in
 }
+
+\newcommand{\longlist}[3]{{\lstinputlisting[float, caption={#2}, label={#3}, frame=tb, captionpos=b]{#1}}}
+
+\title{An Open-Source Verification Method with
+Chisel and Scala}
 
 
 
@@ -772,19 +771,16 @@ Notice the inclusion of the header file \texttt{svdpi.h}, which contains the def
 
 It should be noted that a scoreboard doesn't necessarily "rate"\, the performance of the DUT by comparing it to other modules, as one might expect from the name. The DUT is only compared against the reference model, and the "rating" is how many assertions pass/fail in a given test.
 
-\begin{listing}[htbp]
-\begin{minted}{C}
-//hello.c
+\begin{lstlisting}
+// hello.c
 #include "svdpi.h"
 #include <stdlib.h>
 
 void c_hello(char* name) {
 	printf("Hello from C, %s", name);
 }
-\end{minted}
-\begin{minted}[breaklines]{systemverilog}
 
-//hello.sv
+// hello.sv
 module tb;
 import "DPI-C" function void c_hello(string name);
 
@@ -795,10 +791,9 @@ import "DPI-C" function void c_hello(string name);
 endmodule
 
 // Outputs: "Hello from C, SystemVerilog"
-\end{minted}
 \caption{Short example showing how to use the \SV DPI to execute C-code from within \SV.}
 \label{lst:dpi}
-\end{listing}
+\end{lstlisting}
 
 \subsection{Constrained random verification}
 
@@ -812,16 +807,17 @@ The field \texttt{value} has a $1/3$ chance of being 0, $1/3$ of being 255 and $
 The fields \texttt{a,b,c} must satisfy $0<a<b<c$. 
 The field \texttt{op} has no constraints, and will thus randomly toggle between  0, 1, 2 and 3, the only values it can take on.
 
-\begin{listing}[htbp]
-\inputminted{systemverilog}{snippets/Myclass.svh}
-\caption{Example SystemVerilog code showing how different values are constrained.}
-\label{lst:crv}
-\end{listing}
+\longlist{snippets/Myclass.svh}{Example SystemVerilog code showing how different values are constrained.}{lst:crvlst}
+
+%\begin{lstlisting}
+%\inputminted{systemverilog}{snippets/Myclass.svh}
+%\caption{Example SystemVerilog code showing how different values are constrained.}
+%\label{lst:crv}
+%\end{listing}
 
 In listing \ref{lst:usingcrv}, an object of type \texttt{Myclass} is instantiated and randomized using the \texttt{mc.randomize()} command. Finally, the \SV function \texttt{\$display} is used to print the value of the BCD field. The \texttt{randomize} keyword is a \SV construct which will try to randomize all random fields of given class.
 
-\begin{listing}[htbp]
-\begin{minted}{systemverilog}
+\begin{lstlisting}
 //top.sv
 `include "Myclass.svh"
 module top;
@@ -833,19 +829,20 @@ module top;
   end
 endmodule
 //Outputs a random value in the range [0:9]
-\end{minted}
 \caption{Example SystemVerilog code showing how to instantiate and randomize a class with random fields.}
 \label{lst:usingcrv}
-\end{listing}
+\end{lstlisting}
 
 \subsection{Coverage collection}
 The purpose of coverage collection, in this case functional coverage collection, is to check whether all "necessary"\, (as defined by the verification engineer) input combinations have been generated. For the ALU mentioned above, it might be interesting to check whether all opcodes work correctly when asserted after a reset, and whether over/underflow flags are correctly set when performing arithmetic operations. In general, functional coverage is concerned with evaluating whether all functionality of a device has been tested. This is opposed to line coverage, which evaluates which lines of code were run during a simulation.
 
-\begin{listing}[htbp]
-	\inputminted{systemverilog}{snippets/Cover.svh}
-	\caption{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}
-	\label{lst:cov}
-\end{listing}
+\longlist{snippets/Cover.svh}{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}{lst:cov}
+
+%\begin{lstlisting}
+%	\inputminted{systemverilog}{snippets/Cover.svh}
+%	\caption{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}
+%	\label{lst:cov}
+%\end{lstlisting}
 
 An example of functional coverage collection is seen in listing \ref{lst:cov} where the randomized values from before are covered. A \textit{covergroup} is a label used to collect relevant values under the same heading. A \textit{coverpoint} is a directive instructing the simulator that the given value should be monitored for changes. In the declaration of the coverpoint, several \textit{bins} are generated. These bins correspond to the bins of a histogram. Every time an event occurs which matches the declaration inside a bin, the counter associated with that bin is incremented by one. An event may cause multiple bins to increment at the same time.
 
@@ -859,11 +856,13 @@ Using the cross of \texttt{A} and \texttt{OP}, it may be possible to have 100\% 
 
 In listing \ref{lst:usingcov}, the module from \cref{lst:usingcrv} has been expanded to also use the coverage collector.
 
-\begin{listing}[htbp]
-	\inputminted{systemverilog}{snippets/top.sv}
-	\caption{Showcasing how multiple random values are generated and sampled by the coverage collector.}
-	\label{lst:usingcov}
-\end{listing}
+\longlist{snippets/top.sv}{Showcasing how multiple random values are generated and sampled by the coverage collector.}{lst:usingcov}
+
+%\begin{lstlisting}
+%	\inputminted{systemverilog}{snippets/top.sv}
+%	\caption{Showcasing how multiple random values are generated and sampled by the coverage collector.}
+%	\label{lst:usingcov}
+%\end{lstlisting}
 
 In figure \ref{fig:coverage}, the result of running the 20 iterations is seen for coverpoints \texttt{BCD, A, VAL}. 
 
@@ -883,21 +882,25 @@ When using Chisel and other external libraries, it is recommended to use the Sca
 
 In listing \ref{lst:jni-scala} is shown an example of a Scala file with a native function.
 
-\begin{listing}[htbp]
-\inputminted{scala}{snippets/Myclass.scala}
-\caption{Example Scala code showing how to integrate native code in Scala.}
-\label{lst:jni-scala}
-\end{listing}
+\longlist{snippets/Myclass.scala}{Example Scala code showing how to integrate native code in Scala.}{lst:jni-scala}
+
+%\begin{lstlisting}
+%\inputminted{scala}{snippets/Myclass.scala}
+%\caption{Example Scala code showing how to integrate native code in Scala.}
+%\label{lst:jni-scala}
+%\end{lstlisting}
 
 The annotation \texttt{@native} informs the Scala compiler that the function should be found in native code. The annotation \texttt{@nativeLoader} is necessary for use with the plugin. The name "native0"\, is the name of the current SBT project, appended with a 0.
 
 Once the above file has been written, the corresponding C header file is generated by running \texttt{sbt javah}. The contents of the generated header file should then be copied into a C code file, where the functions can be implemented. In this case, it may look like the contents of listing \ref{lst:jni-c}.
 
-\begin{listing}[htbp]
-\inputminted{C}{snippets/Myclass.c}
-\caption{C implementation of the methods declared in Myclass in listing \ref{lst:jni-scala}.}
-\label{lst:jni-c}
-\end{listing}
+\longlist{snippets/Myclass.c}{C implementation of the methods declared in Myclass in listing \ref{lst:jni-scala}.}{lst:jni-c}
+
+%\begin{lstlisting}
+%\inputminted{C}{snippets/Myclass.c}
+%\caption{C implementation of the methods declared in Myclass in listing \ref{lst:jni-scala}.}
+%\label{lst:jni-c}
+%\end{lstlisting}
 
 Notice that primitives such as \texttt{int} can be autocast from a \texttt{jint}, whereas a string must be obtained used using the function pointers defined in the \texttt{JNIEnv} structure. Once this is done, a CMake makefile is generated by running \texttt{sbt "nativeInit cmake"}, and the C files are compiled using \texttt{sbt nativeCompile}. If all goes well, the code can then be run with \texttt{sbt run}. 
 
@@ -917,7 +920,7 @@ For more information regarding the plugin setup, see the \href{https://github.co
 
 \bibliographystyle{abbrv}
 %\bibliography{myown,jsp,noc,misc,msbib}
-\bibliography{../msbib,testing,../chisel-uvm}
+\bibliography{../msbib,../chisel-uvm,testing}
 
 
 \section{Ideas, Questions, TODOs}

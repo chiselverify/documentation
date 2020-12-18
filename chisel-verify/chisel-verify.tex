@@ -460,6 +460,15 @@ BIN both1 COVERING Range 1 to 1 CROSS Range 1 to 1
 HAS 1 HIT(S)
 ============================================
 \end{verbatim}
+An other option would be, for example if we want to do automated constraint modifications depending on the current coverage, to generate the coverage as a Scala \texttt{case class} and then to use it's \texttt{binNcases} method to get numerical and reusable coverage results.  
+  
+One final element that our framework offers is the possibility to gater delayed coverage relationships between two coverage points. The idea is similar to how a \texttt{Cross} works, but this time rather than sampling both points in the same cycle, we rather look at the relation between one point at the starting cycle and an other point sampled a given number of cycles later. This number of cycles is called the \texttt{delay} and there are currently three different ways to specify it:  
+\begin{itemize}
+ \item \texttt{Exactly} delay, means that a hit will only be considered if the second point is sampled in its range a given number of cycles after the first point was.
+ \item \texttt{Eventually} delay, means that a hit will be considered if the second point is sampled in its range at any point within the following given number of cycles after the first point was.  
+ \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
+\end{itemize}
+
 
 \section{Research Plan}
 
@@ -681,12 +690,24 @@ being saved in a register. The achieved best and worst case insertion as well as
 		Normal insertion & min 7 cycles and max $5+3\cdot \mathrm{log}_k(N)$\\
 		Head removal & min 8 cycles and max $6+3\cdot \mathrm{log}_k(N)$\\
 		Tail removal & 3 cycles\\
-		Normal removal & \begin{tabular}{c}min 12 cycles + search time\\ max $13+3\cdot \mathrm{log}_k(N)$ + search time \end{tabular}
+    Normal removal & \begin{tabular}{c}min 12 cycles + search time\\ max $13+3\cdot \mathrm{log}_k(N)$ + search time \end{tabular} \\
+    \multicolumn{2}{c}{\scriptsize{($N=$ queued elements, $k=$ number of child elements per node)}}
 	\end{tabular}
 	\caption{Best and worst case insertion and removal times}
-	% MS: Some issue with this line
-	%\\ \scriptsize{($N=$ queued elements, $k=$ number of child elements per node)}}
 	\label{tab:pq_timings}
+\end{table}
+\begin{table}[]
+  \centering
+  \begin{tabular}{l|cccc}
+      Size &$k=2$&$k=4$&$k=8$&$k=16$\\\hline
+      16+1 & 9.38/14.56&7.86/11.51&7.47/10.42&-\\
+      32+1 & 9.9/15.15&7.96/12.29&7.34/11.22&7.54/11.00\\
+      64+1 & 9.79/16.34&8.01/13.80&7.41/12.38&7.32/11.18\\
+      128+1 & 9.96/17.37&8.14/14.47&7.54/13.14&7.26/11.62\\
+      256+1 & 9.73/17.39&8.15/15.54&7.53/14.21&7.34/12.89
+  \end{tabular}
+  \label{tab:pq_simres}
+  \caption{Simulated insertion/removal times.}
 \end{table}
 
 
@@ -703,7 +724,8 @@ operation based level when writing tests.
 In the test of the priority queue, purely random pokes are produced. In order to evaluate how well these pokes were spread over the spectrum 
 of possible or interesting input combinations, the developed functional coverage feature is used. This allows to evaluate whether interesting 
 or important edge cases are reached by the random input sequence. Furthermore, metrics on how many of the generated pokes actually are valid 
-operations, are collected.
+operations, are collected. The average insertion and removal times measured under a random test run are shown in table \ref{tab:pq_simres}.
+These numbers are of course heavily dependent on access patterns and are as such only representative for the completely random test case used here.
 The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
 
 

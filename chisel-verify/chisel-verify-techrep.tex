@@ -317,7 +317,7 @@ and "multicast" constraint groups. Each class in SystemVerilog has an intrinsic 
 for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
 ``rand'' variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
 paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. In the research process, a
-CSP solver was implemented in Scala based on the method described in \cite{wolf2006object}. The implementation is composed of two main components.
+CSP solver was implemented in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components.
 The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems.
 The second component is a small DSL, which allows users to declare and randomize objects.
 
@@ -920,7 +920,7 @@ For more information regarding the plugin setup, see the \href{https://github.co
 
 \bibliographystyle{abbrv}
 %\bibliography{myown,jsp,noc,misc,msbib}
-\bibliography{../msbib,../chisel-uvm,testing}
+\bibliography{../msbib,../chisel-uvm,../ftp-chisel/testing}
 
 
 \section{Ideas, Questions, TODOs}

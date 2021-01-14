@@ -79,10 +79,16 @@
 
 \newcommand{\longlist}[3]{{\lstinputlisting[float, caption={#2}, label={#3}, frame=tb, captionpos=b]{#1}}}
 
-\title{An Open-Source Verification Method with
+\title{ChiselVerify: An Open-Source Verification Method with
 Chisel and Scala}
 
-
+%Need to add Authors
+\author{\IEEEauthorblockN{Kasper Juul Hesse Rasmussen, Tjark Petersen, Enrico Tolotto, Andrew Dobis, Martin Schoeberl}\\
+\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+\textit{Technical University of Denmark}\\
+Lyngby, Denmark \\\\
+s183735@student.dtu.dk, s186083@student.dtu.dk, s190057@student.dtu.dk,\\ andrew.dobis@alumni.epfl.ch, masca@dtu.dk}
+}
 
 \begin{document}
 
@@ -95,17 +101,26 @@ We can no longer depend on Moore's Law to increase computing performance.
 The only way to achieve higher performance or lower energy consumption
 is by building domain-specific hardware accelerators.
 To efficiently design and verify those domain-specific accelerators, we need
-agile hardware development.
+agile hardware development. One of the main obstacles when proposing such a modern method
+is the lack of modern tools to attack it. To be able to verify a design in such a time-constrained development
+method, one needs to have efficient tools both for design and verification.
 
-This paper presents a combination of open-source tools for verifying
-circuits described in mixed languages. It builds on top of the Chisel
-hardware construction language and uses Scala to drive the verification. 
-We also explore the testing strategy used in the Universal Verification Methodology
-(UVM) in the context of verifying hardware described in Chisel.
+This paper thus proposes ChiselVerify, an open-source tool for verifying
+circuits described in any Hardware Description Language. It builds on top of the Chisel
+hardware construction language and uses Scala to drive the verification using a testing strategy 
+inspired by the Universal Verification Methodology (UVM) and adapted for designs described in Chisel.
+ChiselVerify is created based on three key ideas.
+First, our solution highly increases the productivity of the verification engineer, by allowing hardware testing to be done in a modern high-level programming environment.
+Second, the framework functions with any hardware description language thanks to the flexibility of Chisel blackboxes.
+Finally, the solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
+
+We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
+functional coverage, constrained-random verification, bus functional models, transaction-level modelling and much more
+during the verification process of a design in a contemporary high-level programming ecosystem.
 \end{abstract}
 
 \begin{IEEEkeywords}
-digital design, verification, object-oriented programming
+digital design, verification, Chisel, Scala
 \end{IEEEkeywords}
 
 \section{Introduction and Objectives}
@@ -124,18 +139,18 @@ the design right at the first tape-out. Thorough testing and verification of the
 To efficiently develop and verify those accelerators, we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
 We believe that we need to adapt to agile hardware development~\cite{henn-patt:turing:2019}.
 
-Furthermore, as accelerators become part of the cloud service, i.e., FPGAs in the cloud,
+Furthermore, as accelerators become part of the cloud service, i.e. FPGAs in the cloud,
 software developers will increasingly need to adapt critical algorithms to FPGAs to enhance performance.
 Hence, it is imperative to make accelerator design accessible for software developers.
 By adapting hardware accelerator design to the methods and tools of contemporary software design,
 it is possible to bridge both domains catering for a more uniform hardware/software development process.
 
-Until a few years, the two main design languages Verilog and VHDL dominated the
+Up until a few years ago, the two main design languages, Verilog and VHDL, dominated the
 design and testing of digital circuits.
 %However, both languages are decades behind
 %modern languages for software development.
-However, compared to software development and testing, digital design and testing methods
-and tools lack several decades of development. Within this project, we plan to
+However, compared to software development and testing, digital design and testing methods/tools 
+lack several decades of development. Within this project, we plan to
 leverage software development and testing methods for digital design.
 This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
 and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
@@ -367,13 +382,13 @@ with the "rand" macro. Finally, like for SystemVerilog, in Scala inheriting the 
 values to the random fields of the class.
 
 \section{Coverage in Chisel}
-One of the main tools used in verification is Test Coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: Code coverage and Functional coverage. Code Coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution would give the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.\\
+One of the main tools used in verification is Test Coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: Code coverage and Functional coverage. Code Coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.\\
 
 \paragraph{Code Coverage with Treadle}  
 The first part of our solution is about code coverage, more specifically line coverage that was added to the Treadle FIRRTL execution engine. Treadle is a common FIRRTL execution engine used to simulate designs implemented in Chisel. This engine runs on the FIRRTL intermediate representation code generated by a given Chisel implementation and allows one to run user-defined tests on the design using frameworks like \textit{iotesters} or the more recent \textit{testers2}. In our pursuit of creating a verification framework, we found that one way to obtain line coverage would be to have our framework run on an extended version of Treadle that was capable of keeping track of said information.\\\\
 The solution that was used to implement line coverage was based off of a method presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}. The idea is to add additional outputs for each multiplexer in the design. These new ports, which we will call \textit{Coverage Validators}, are set depending on the paths taken by each multiplexer and that information is then gathered at the end of each test and maintained throughout a test suite. Once the testing is done, we used the outputs gathered from the \textit{Coverage Validators} to check wether or not a certain multiplexer path was taken during the test, all of this resulting in a branch coverage percentage. \\
 
-This was implemented in Treadle by creating a custom pass of the FIRRTL compiler that traverses the AST (\textit{Abstract Syntax Tree}) and adds the wanted outputs and coverage expressions into the source tree. Once that is done, the \texttt{TreadleTester} samples those additional outputs every time the \texttt{expect} method is called and keeps track of their values throughout a test suite. Finally it generates a Scala \texttt{case class} containing the following coverage information:
+This was implemented in Treadle by creating a custom pass of the FIRRTL compiler that traverses the Abstract Syntax Tree (\textit{AST}) and adds the wanted outputs and coverage expressions into the source tree. Once that is done, the \texttt{TreadleTester} samples those additional outputs every time the \texttt{expect} method is called and keeps track of their values throughout a test suite. Finally it generates a Scala \texttt{case class} containing the following coverage information:
 \begin{itemize}
 \item The multiplexer path coverage percentage.
 \item The coverage Validator lines that were covered by a test.
@@ -469,7 +484,7 @@ One final element that our framework offers is the possibility to gater delayed 
 \end{itemize}
 
 
-\section{Research Plan}
+\section{Research Plan} %Maybe this section should be something like "Background" and should come right after the Intro?
 
 \martin{shall rewrite this as it is from the FTP proposal and does not
 fit in its current form.}
@@ -526,7 +541,7 @@ to validate those specifications. To this end, we will work
 with our industrial collaborators to get access use cases serving
 as the DUT.
 
-\paragraph{Test Coverage.}
+\paragraph{Test Coverage.} %This can probably be removed entirely or greatly reduced
 
 \martin{We are missing the bib file for those references.}
 

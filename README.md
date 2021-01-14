@@ -20,6 +20,6 @@ This repo contains documentation, mostly in Latex. A workshop paper, a reserach 
 - Design, Automation & Test in Europe Conference & Exhibition
   - https://www.date-conference.com/ (deadline missed)
 - International Conference on Innovative Computing, Information and Control
-  - http://www.icicconference.org/ (dealine 
+  - http://www.icicconference.org/
 - Desing Automation Conference
   - https://www.dac.com/topic-area/verificationvalidation (deadline missed)

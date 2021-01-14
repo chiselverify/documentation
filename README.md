@@ -3,7 +3,8 @@
 This repo contains documentation, mostly in Latex. A workshop paper, a reserach proposal, and more to come.
 
 
-## List of possible conferences
+## List of possible conferences  
+### Missed Deadlines  
 - Design and verification DVCON India/Europe/United States
   - https://dvcon-europe.org/ (deadline missed)
   - https://2021.dvcon.org/ (deadline missed)
@@ -19,7 +20,11 @@ This repo contains documentation, mostly in Latex. A workshop paper, a reserach 
   - http://www.splconf.org/ (deadline missed)
 - Design, Automation & Test in Europe Conference & Exhibition
   - https://www.date-conference.com/ (deadline missed)
+- Desing Automation Conference
+  - https://www.dac.com/topic-area/verificationvalidation (deadline missed)  
+  
+### Valid  
 - International Conference on Innovative Computing, Information and Control
   - http://www.icicconference.org/
-- Desing Automation Conference
-  - https://www.dac.com/topic-area/verificationvalidation (deadline missed)
+- International Conference on Computer-Aided Verification  
+  - http://i-cav.org/2021/call-for-papers/

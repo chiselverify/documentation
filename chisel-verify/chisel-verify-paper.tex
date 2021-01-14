@@ -82,11 +82,16 @@
 \title{ChiselVerify: An Open-Source Verification Method with
 Chisel and Scala}
 
-\author{\IEEEauthorblockN{Enrico Tolotto, Tjark Petersen, Kasper Juul Hesse Rasmussen, Andrew Dobis, Martin Schoeberl}\\
+\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, \\
+Enrico Tolotto, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
 \IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
 \textit{Technical University of Denmark}\\
 Lyngby, Denmark \\\\
-s190057@student.dtu.dk, s186083@student.dtu.dk, s183735@student.dtu.dk,\\ andrew.dobis@alumni.epfl.ch, masca@dtu.dk}
+\textit{Department of Electrical Engineering and Computer Sciences} \\
+\textit{UC Berkeley}\\
+Berkeley, CA \\\\
+andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, \\
+s190057@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
 }
 
 \begin{document}
@@ -341,8 +346,6 @@ with our industrial collaborators to get access use cases serving
 as the DUT.
 
 \paragraph{Test Coverage.} %This can probably be removed entirely or greatly reduced
-
-\martin{We are missing the bib file for those references.}
 
 Tests of the hardware model are traditionally done by ``directly'' validating the features listed in the specifications. As shown in \cite{spear2008systemverilog}, this methodology increases linearly with the complexity of the design. Opposite to direct testing, is random testing. Random testing focus on validating the design on a purely random set of inputs which may or may not detect all the corner cases \cite{mehta2017a}. An alternative approach is to constrain the randomization of input of the test to reduce the design validation time. By combining test coverage (pargraph \ref{test-coverage}) and constrained random stimuli, it is possible to narrow down the corner cases by focusing the test on areas where coverage is lacking. Currently, Hardware verification languages such as SystemC, System Verilog and ``e'' integrate a special syntax to enable this validation technique. However, given their relative old design, such features are hard to extend \cite{haedicke2012crave} \cite{le2015boosting}. On the contrary, new programming languages like Python and Chisel provide a more extensible syntax and builtin package managers that easily allows the integration and extension of a similar feature in the language. Random constraints are modelled base on top of an ``Random'' data type objects that contain random variables and user-defined constraints.  The combination of the constraints applied to a ``Random'' object determines the possible values that can be assigned to the random variables. This approach allows the user to build generic reusable objects that can be later extended or constrained based on the specifications \cite{cieplucha2016new}\cite{mehta2017a}. As for now, solution like cocotb \cite{rosser2018cocotb}\cite{cocotb2020Sep} have already extensions library that combine Constraint Random Verification and Test Coverage \cite{mciepluc2020Sep}. In the cocotb implementation, the constraint random verification module leverage the general-purpose library python-constraint \cite{python-constraint2020Sep} to solve constrained constraint satisfaction problem (CSP) and create the ``Random'' objects. A similar result can also be achieved in Chisel by combining general-purpose constraint problem solver libraries like \cite{chocoteam2020Sep} or \cite{BibEntry2020Sep}.
 
@@ -915,7 +918,6 @@ In this paper, we introduced ChiselVerify, an open-source solution that should i
 \section{Acknowledgements}
 
 \bibliographystyle{abbrv}
-%\bibliography{myown,jsp,noc,misc,msbib}
 \bibliography{../msbib,../chisel-uvm,../ftp-chisel/testing}
 
 

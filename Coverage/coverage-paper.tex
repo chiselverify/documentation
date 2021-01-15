@@ -61,6 +61,8 @@
 
 \newcommand{\longlist}[3]{{\lstinputlisting[float, caption={#2}, label={#3}, frame=tb, captionpos=b]{#1}}}
 
+\bibliography{./coverage}
+
 \title{Improving the Verification Efficiency of Chisel Designs with Multi-Level Code Coverage}
 
 \author{\IEEEauthorblockN{Andrew Dobis, Enrico Tolotto, Hans Jakob Damsgaard, Martin Schoeberl}\\
@@ -77,17 +79,24 @@ andrew.dobis@alumni.epfl.ch, s190057@student.dtu.dk, s163915@student.dtu.dk, mas
 
 
 \begin{abstract}
-\todo{abstract}
+Ever-increasing performance demands are pushing hardware designers towards the use of domain-specific accelerators. This means that more and more hardware must be designed from scratch in an ever shortening amount of time. We must thus find a way to improve the overall efficiency of the hardware design and verification cycles. The design efficiency was improved with the introduction of Chisel, however we still need to improve the verification efficiency. That is why we propose, in this paper, multiple solutions for adding one of the most important verification tools there is: code coverage. 
+
+We explored and created methods to be able to obtain Statement coverage of a Chisel design at multiple levels of abstraction: at the Verilog, FIRRTL and Scala levels. The Verilog statement coverage is obtained by hooking into verilator and extracting the coverage results. The FIRRTL statement coverage is done by modifying the Treadle execution engine and running a custom FIRRTL compiler pass that adds coverage-gathering outputs to the generated AST in order to obtain information about the executed paths. Finally the Scala coverage is obtained using software coverage gathering tools found in the ScalaTest library. After exploring the potential statement coverage solutions, we move on to presenting our own Scala-implemented solution for gathering functional coverage on a Chisel design.  
+
+We then finish off by presenting an industry-provided use case that illustrates the efficiency of our coverage tools. These solutions give the verification engineer ample ways to gather coverage on a Chisel design at any abstraction level. Note that a discussion could be had on the usefulness of coverage information at certain levels of abstraction (i.e. high-level coverage might not be interesting when using hardware generators), but for now this is left up for the reader to decide.
 \end{abstract}
 
 \begin{IEEEkeywords}
-
+hardware verification, code coverage, SystemVerilog, Chisel, Scala, FIRRTL
 \end{IEEEkeywords}
 
 \section{Introduction and Objectives}
 \label{sec:objectives}
-One of the main tools used in verification is Test Coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: Code coverage and Functional coverage. Code Coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.\\
-\todo{add intro}
+As time passes, contemporary hardware design is met with tighter and tighter time constraints. This is added to the fact that, with the halting of Moore's law, hardware designers are turning to domain-specific accelerators in order to keep up with the ever-increasing performance demands~\cite{henn-patt:turing:2019}. This means that more and more hardware must be designed from scratch in shorter and shorter time periods~\cite{domain-hw-acc:2020}. However, the most widely used hardware description languages (i.e. VHDL and Verilog) are completely outdated and inefficient. To solve said problem, researchers at the University of California in Berkeley proposed Chisel~\cite{chisel:dac2012}, a Scala embedded high-level hardware construction language.
+
+This solution is great, but is still lacking in verification functionalities and one of the main tools needed for the verification of digital systems is Code Coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into multiple distinct categories, but we will focus on the following two: Statement and Functional coverage. Statement Coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}~\cite{spear2008systemverilog}.
+
+In this paper we will propose three different methods for obtaining statement coverage, each at different levels of abstraction. We will present these methods in a bottom-up fashion: first off we will talk about obtaining statement coverage of the Verilog description generated by Chisel, secondly we will show our solution for getting statement coverage of the FIRRTL intermediate representation and finally we will talk about getting coverage directly at the Scala level. Once that is done we will also present our solution for gathering functional code coverage of the Chisel design directly in Scala. In the following section we take a brief look at the Chisel hardware construction language, FIRRTL and gather the knowledge needed to fully appreciate our solutions.
 
 \section{Background and State-of-the-Art}
 \label{sec:background}
@@ -203,7 +212,7 @@ One final element that our framework offers is the possibility to gater delayed 
 \todo{Maybe add a bit on Tjark's use case?}
 
 \section{Related work}
-\todo{Talk about the Cover Construct from Chisel and maybe a bit on coverage with systemVerilog}
+\todo{Talk about the Cover Construct from Chisel, maybe a bit on coverage with SystemVerilog and ofc link the work to ChiselVerify}
 
 \section{Conclusion}
 \todo{conclude}
@@ -211,7 +220,7 @@ One final element that our framework offers is the possibility to gater delayed 
 \section{Acknowledgements}
 
 \bibliographystyle{abbrv}
-\bibliography{../msbib,../chisel-uvm,../ftp-chisel/testing}
+\bibliography{coverage}
 
 
 \end{document}

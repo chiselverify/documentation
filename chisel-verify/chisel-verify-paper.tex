@@ -511,16 +511,43 @@ the class from the Random base-class provided by the library. After that each ra
 with the "rand" macro. Finally, like for SystemVerilog, in Scala inheriting the Random base class exposes the method "random" which assigns random
 values to the random fields of the class.
 
-\section{Verification of AXI Interfaced Components}
-Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces -- this also enables greater reuse. One of such standard interfaces is AXI -- an open standard by ARM \cite{}, which is used in particular to connect processor nodes to memories over an unspecified interconnect (i.e., one is allowed to choose between a bus or a NoC). As such, most available synthesis tools, including Xilinx' Vivado, provides IP generators whose output IP blocks are equipped with AXI interfaces along with optional verification structures written in (System-)Verilog \cite{}. Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel -- hence, why we include an example BFM in our framework.
+\section{Verification of AXI4 Interfaced Components}
+Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces -- this also enables greater reuse. One of such standard interfaces is AXI4 -- an open standard by ARM \cite{}, which is used in particular to connect processor nodes to memories. As such, most available synthesis tools, including Xilinx' Vivado, provide IP generators whose output IP blocks are equipped with AXI interfaces along with optional verification structures written in (System-)Verilog \cite{}. \\
 
-\subsection{Introduction to AXI}
+Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel -- hence, why we include an example BFM based around ChiselTest in our framework.
 
+\subsection{Introduction to AXI4}
+The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five separate channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The five channels are:
+\begin{itemize}
+  \item \textit{Write Address} for transferring transaction attributes from master to slave
+  \item \textit{Write Data} for transferring write data and strobe from master to slave
+  \item \textit{Write Response} for transferring transaction status of a writes from slave to master
+  \item \textit{Read Address} same as \textit{Write Address}, but for reads
+  \item \textit{Read Data} for transferring read data from slave to master
+\end{itemize}
 
-\subsection{Implemented Framework}
+Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address, burst length, and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. %Similarly, the master may provide several more addresses while transferring data in relation to the first address -- granted that the slave is capable of multiple outstanding transactions.
 
+\subsection{Implementation}
+Our implementation includes bundles definining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and of course the BFM itself; the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends the slave class and provides a simple, transaction level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx} which do exactly as their names indicate; create and enqueue write and read transactions. \\
 
-\todo{Get Hans to add his stuff here} \hjd{On it!}
+Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the aforementioned methods (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. As such, when, for example, a write transaction is enqueued and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
+
+\subsection{A Simple Example}
+Returning to the example used before, using the BFM to test a module called \texttt{Memory} is as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction -- but beware that due to the BFM's parallel execution style, the channels are indeed independent. As such, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+\begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
+class MemoryTester extends FlatSpec with ChiselScalatestTester with Matchers {
+  behavior of "My Memory module"
+  it should "write and read" in {
+    test(new Memory()) {
+      dut =>
+        val bfm = new FunctionalMaster(dut)
+        master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
+        master.createReadTrx(0, len = 15, size = 2)
+    }
+  }
+}
+\end{lstlisting}
 
 \section{Coverage in Chisel}
 One of the main tools used in verification is Test Coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: Code coverage and Functional coverage. Code Coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.\\

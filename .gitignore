@@ -1,5 +1,6 @@
-*.pdf
 *.gz
+.DS_Store
+*/.DS_Store
 *.aux
 *minted*
 !coverage.pdf

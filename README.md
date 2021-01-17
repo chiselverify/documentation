@@ -5,12 +5,12 @@ This repo contains documentation, mostly in Latex. A workshop paper, a reserach 
 
 ## List of possible conferences  
 ### Valid  
+- International Conference on Computer-Aided Verification  
+  - http://i-cav.org/2021/call-for-papers/   (Probably our best bet => Deadline: 28/01/21)
 - International Conference on Quantitative Evaluation of SysTems  
-  - https://www.qest.org/qest2021/cfp.html  (Probably our best bet)
+  - https://www.qest.org/qest2021/cfp.html  
 - International Conference on Innovative Computing, Information and Control
   - http://www.icicconference.org/
-- International Conference on Computer-Aided Verification  
-  - http://i-cav.org/2021/call-for-papers/  
   
 ### Missed Deadlines  
 - Design and verification DVCON India/Europe/United States

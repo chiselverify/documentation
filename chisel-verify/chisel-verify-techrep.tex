@@ -79,15 +79,18 @@
 
 \newcommand{\longlist}[3]{{\lstinputlisting[float, caption={#2}, label={#3}, frame=tb, captionpos=b]{#1}}}
 
-\title{ChiselVerify: An Open-Source Verification Method with
-Chisel and Scala}
+\title{Open-Source Verification with Chisel and Scala}
 
-%Need to add Authors
-\author{\IEEEauthorblockN{Kasper Juul Hesse Rasmussen, Tjark Petersen, Enrico Tolotto, Andrew Dobis, Martin Schoeberl}\\
+\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
+Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
 \IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
 \textit{Technical University of Denmark}\\
 Lyngby, Denmark \\\\
-s183735@student.dtu.dk, s186083@student.dtu.dk, s190057@student.dtu.dk,\\ andrew.dobis@alumni.epfl.ch, masca@dtu.dk}
+\textit{Department of Electrical Engineering and Computer Sciences} \\
+\textit{UC Berkeley}\\
+Berkeley, CA \\\\
+andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, s190057@student.dtu.dk, \\
+s163915@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
 }
 
 \begin{document}
@@ -115,7 +118,7 @@ Second, the framework functions with any hardware description language thanks to
 Finally, the solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
 
 We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
-functional coverage, constrained-random verification, bus functional models, transaction-level modelling and much more
+functional coverage, constrained-random verification, bus functional models, transaction-level modeling and much more
 during the verification process of a design in a contemporary high-level programming ecosystem.
 \end{abstract}
 
@@ -156,6 +159,8 @@ This project explores the hardware construction language Chisel~\cite{chisel:dac
 and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
 the design and test of digital systems.
 
+\martin{shall rewrite that stuff, it is from a research proposal.}
+
 This project aims to develop a method and concrete tools for agile hardware development.
 We will use tools, languages, development, and testing methods from the last decades in
 software development and apply them to hardware design.
@@ -176,7 +181,9 @@ in software testing.
 The developed framework shall support mixed languages (VHDL, SystemVerilog, and Chisel)
 to be able to integrate legacy code.
 Furthermore, our aim is to build on open-source projects. Therefore, our
-work will be in open-source as well.
+work is in open-source as well.
+
+This paper is an extension of \cite{verify:chisel:2020}.
 
 \begin{itemize}
 \item Get Hans' work into this paper
@@ -542,8 +549,6 @@ with our industrial collaborators to get access use cases serving
 as the DUT.
 
 \paragraph{Test Coverage.} %This can probably be removed entirely or greatly reduced
-
-\martin{We are missing the bib file for those references.}
 
 Tests of the hardware model are traditionally done by ``directly'' validating the features listed in the specifications. As shown in \cite{spear2008systemverilog}, this methodology increases linearly with the complexity of the design. Opposite to direct testing, is random testing. Random testing focus on validating the design on a purely random set of inputs which may or may not detect all the corner cases \cite{mehta2017a}. An alternative approach is to constrain the randomization of input of the test to reduce the design validation time. By combining test coverage (pargraph \ref{test-coverage}) and constrained random stimuli, it is possible to narrow down the corner cases by focusing the test on areas where coverage is lacking. Currently, Hardware verification languages such as SystemC, System Verilog and ``e'' integrate a special syntax to enable this validation technique. However, given their relative old design, such features are hard to extend \cite{haedicke2012crave} \cite{le2015boosting}. On the contrary, new programming languages like Python and Chisel provide a more extensible syntax and builtin package managers that easily allows the integration and extension of a similar feature in the language. Random constraints are modelled base on top of an ``Random'' data type objects that contain random variables and user-defined constraints.  The combination of the constraints applied to a ``Random'' object determines the possible values that can be assigned to the random variables. This approach allows the user to build generic reusable objects that can be later extended or constrained based on the specifications \cite{cieplucha2016new}\cite{mehta2017a}. As for now, solution like cocotb \cite{rosser2018cocotb}\cite{cocotb2020Sep} have already extensions library that combine Constraint Random Verification and Test Coverage \cite{mciepluc2020Sep}. In the cocotb implementation, the constraint random verification module leverage the general-purpose library python-constraint \cite{python-constraint2020Sep} to solve constrained constraint satisfaction problem (CSP) and create the ``Random'' objects. A similar result can also be achieved in Chisel by combining general-purpose constraint problem solver libraries like \cite{chocoteam2020Sep} or \cite{BibEntry2020Sep}.
 
@@ -931,7 +936,15 @@ For more information regarding the plugin setup, see the \href{https://github.co
 % Explain how the java JNI works
 % Collect it all together
 
+\section{Conclusion}
 
+In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought functional coverage, statement coverage, constraint random verification and transactional modelling to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
+
+\subsection*{Acknowledgment}
+
+This work has been performed as part of the
+``InfinIT -- Innovationsnetv{\ae}rk for IT'', UFM case no. 1363-00036B,
+``High-Level Design and Verification of Digital Systems''.
 
 \bibliographystyle{abbrv}
 %\bibliography{myown,jsp,noc,misc,msbib}

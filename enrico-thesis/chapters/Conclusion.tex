@@ -1,0 +1,63 @@
+%% This is free and unencumbered software released into the public domain.
+
+%% Anyone is free to copy, modify, publish, use, compile, sell, or
+%% distribute this software, either in source code form or as a compiled
+%% binary, for any purpose, commercial or non-commercial, and by any
+%% means.
+
+%% In jurisdictions that recognize copyright laws, the author or authors
+%% of this software dedicate any and all copyright interest in the
+%% software to the public domain. We make this dedication for the benefit
+%% of the public at large and to the detriment of our heirs and
+%% successors. We intend this dedication to be an overt act of
+%% relinquishment in perpetuity of all present and future rights to this
+%% software under copyright law.
+
+%% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+%% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+%% MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+%% IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+%% OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+%% ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+%% OTHER DEALINGS IN THE SOFTWARE.
+
+%% For more information, please refer to <https://unlicense.org>
+%%
+\chapter{Conclusion}\label{conclusion}
+This thesis presents the work of implementing a library for random constraint
+verification for Chisel. After introducing the concept of functional
+verification, its main advantages and comparing it to the traditional
+techniques, the document focuses on the constraint random verification branch of
+functional verification. Here, the concept of constraint programming and the
+theory behind it is introduced and explained. Subsequently, F-CSP is introduced
+as a Scala functional library for constraint random verification. This library,
+developed from the ground up, showed its limitations, and it was abandoned
+during the course of the project. Learned from the implementation mistakes of
+F-CSP, Chisel-CRV was the outcome of the combination between JaCoP, a library
+for constraint programming written in Java, and a DSL layer for specifying
+constraint in a verification environment. This library, inspired mainly by
+SystemVerilog constraint API, successfully implements most of them. Finally, the
+last part of the document describes the library's usage by functionally verify
+the Leros ALU using coverage driven verification.
+
+
+To conclude, this thesis shows how ductile is the Chisel language and how it can
+be quickly extended to add functionalities that until now were provided only by
+proprietary tools. Moreover, with the Leros ALU verification, this thesis shows
+that the new functionalities added are, thanks to the Scala malleability, more
+elegant and produced less boilerplate code compared to a similar verification in
+SystemVerilog.
+
+What is currently missing for Chisel is a more consistent environment where
+these open-source tools are developed following a set of shared interfaces and
+standards to make them reusable with other development tools. From the author's
+perspective, the online community must agree on standardizing the functional
+verification libraries of Chisel and unify the development efforts to accelerate
+this hardware description language's verification capabilities.
+
+Other than language directives like constraint programming or functional
+coverage, currently, what Chisel is currently missing are tools that help
+verification engineers reason about functional verification. One of the
+significant strengths of proprietary development environments is tools that can
+automatically generate coverage reports or collect the coverage and express it
+in terms of verification quality, which are critical for large-sized projects.

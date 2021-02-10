@@ -1,0 +1,66 @@
+%% This is free and unencumbered software released into the public domain.
+
+%% Anyone is free to copy, modify, publish, use, compile, sell, or
+%% distribute this software, either in source code form or as a compiled
+%% binary, for any purpose, commercial or non-commercial, and by any
+%% means.
+
+%% In jurisdictions that recognize copyright laws, the author or authors
+%% of this software dedicate any and all copyright interest in the
+%% software to the public domain. We make this dedication for the benefit
+%% of the public at large and to the detriment of our heirs and
+%% successors. We intend this dedication to be an overt act of
+%% relinquishment in perpetuity of all present and future rights to this
+%% software under copyright law.
+
+%% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+%% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+%% MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+%% IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+%% OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+%% ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+%% OTHER DEALINGS IN THE SOFTWARE.
+
+%% For more information, please refer to <https://unlicense.org>
+%%
+\chapter{Abstract}
+In recent years, the slow down of Moore's Law and the end of Dennard Scaling,
+forced the chip industry to reduce reliance on the scaling of silicon-based
+technologies and focus more on incorporating hardware accelerators into their
+design to increase the hardware energy efficiency. Simultaneously, the time to
+market for new hardware decreases each year, pressuring companies to adapt to
+this fast delivery pace by moving away from a strict waterfall developing model
+to more fluid, agile methodologies. To allow this shift in methodology, new
+Hardware Description Languages (HDL) were developed. These HDLs enable designers
+and architects to rapidly explore alternative system microarchitectures by
+quickly wiring up different hardware accelerators together.
+
+Even though the design process received a boost in productivity by using new
+HDL, the manufacturing cycle continues to be hampered by the verification
+process bottleneck. Most new HDLs lack a reliable verification environment which
+forces verification engineers to use legacy tools, slowing down the overall
+development process. For the verification of hardware models, Constrained Random
+Verification (CRV) plays a significant role. CRV allows verification engineers
+to automatically generate a set of random stimuli limited by a group of
+constraints. Therefore, such stimuli are more likely to trigger device behavior
+not envisioned by the verification engineer.
+
+ This thesis presents Chisel-CRV, a constrained random verification environment
+ for Chisel, a newly born hardware description language. At the time of writing
+ this thesis, there is no such feature for Chisel. This project was developed in
+ coordination with a DTU research project, resulting in "chiselverify," a novel
+ verification framework for Chisel. The framework aims to lower the barrier
+ between the design and the functional verification process by providing a set
+ of tools and utilities inspired by traditional verification tools like UVM and
+ SystemVerilog.
+
+
+%In recent years, the slow down of Moore's Law forced the chip industry to reduce reliance on the scaling of silicon-based technologies and focus more on incorporating hardware accelerators into their design to increase the hardware energy efficiency. Simultaneously, the time to market for new hardware decreases each year, pressuring companies to adapt to this fast delivery pace by moving away from a strict waterfall developing model to more fluid, agile methodologies. Embracing continuous delivery and late changes in the development process exposed a gap between hardware designers' traditional tools and the necessity of reusability, integration, and fast delivery required by the agile practices.
+
+%Over the last few years, new Hardware Description Languages (HDL) were developed to bridge this disparity with the promise of incorporating modern software concepts as library management, unit-testing, and high-level abstractions to the hardware world. These new tools enable designers and architects to rapidly explore alternative system microarchitectures by quickly wiring up different hardware accelerators distributed in the form of libraries and packages. Even though the design process received a boost in productivity by incorporating high-level software tools, the manufacturing cycle continues to be bottle-necked by the verification process.
+
+%Most of the new HDLs lack a reliable verification environment that forces verification engineers to use legacy tools. In the verification domain, SystemVerilog and UVM are the leading technologies. Born approximately a decade ago, UVM, a verification library for SystemVerilog, aims to standardize the verification process by providing a set of tools and utilities that can be reused across different projects. While these two technologies mix traditional HDL principles with more modern object-oriented ones, they also increase the complexity and the learning curve associated with them.
+
+%Given the lack of open source development tools for SystemVerilog and the complexity of the language, hardware designers often choose to use a different HDL for their design, increasing the communication barrier between them and the verification engineers and slowing down the functional verification of new designs. The clear answer to shorten the verification process is to enable verification tools inside modern HDLs. Having a unified toolbox for designing, simulating, and verifying new hardware will reduce the learning curve, simplify the development environment, and reduce the overall developing time.
+
+%For the verification of hardware models, Constrained Random Verification (CRV) plays a significant role. CRV allows to automatically generate a set of random stimuli bunded by a group of constraints. Therefore, such stimuli are much more likely to trigger device behavior not envisioned by the verification engineer. At the time of writing this thesis, there are no constrained random verification libraries for Chisel. This thesis presents Chisel-CRV, a constrained random verification environment for Chisel, and was developed in coordination with a DTU research project, resulting in "chiselverify," a novel verification framework for Chisel. The framework aims to lower the barrier between the design and the functional verification process by providing a set of tools and utilities inspired by UVM and SystemVerilog.

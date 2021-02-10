@@ -1,0 +1,582 @@
+%% This is free and unencumbered software released into the public domain.
+
+%% Anyone is free to copy, modify, publish, use, compile, sell, or
+%% distribute this software, either in source code form or as a compiled
+%% binary, for any purpose, commercial or non-commercial, and by any
+%% means.
+
+%% In jurisdictions that recognize copyright laws, the author or authors
+%% of this software dedicate any and all copyright interest in the
+%% software to the public domain. We make this dedication for the benefit
+%% of the public at large and to the detriment of our heirs and
+%% successors. We intend this dedication to be an overt act of
+%% relinquishment in perpetuity of all present and future rights to this
+%% software under copyright law.
+
+%% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+%% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+%% MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+%% IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+%% OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+%% ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+%% OTHER DEALINGS IN THE SOFTWARE.
+
+%% For more information, please refer to <https://unlicense.org>
+%%
+\chapter{Verification of Leros ALU}\label{verificationalu}
+
+This section shows the technique illustrated in the previous chapters for
+functionally verify the ALU of Leros \cite{online:leros}. The ALU showed in this
+section is a slightly modified Leros ALU taken from the Github ``chiselverify"
+repository \cite{github:chiselverify} in which the ``io" port of the ALU was
+replaced by ``input" and ``output" ones by using a \mints{MultiIOModule} instead
+of a normal \mints{Module} and using a word size of 16-bits. The Verilog version
+of this ALU was already functionally verified in SystemVerilog/UVM by Kasper
+Hesse, and the source code used for the SystemVerilog verification can be found
+in \cite{github:chiselverify}.
+
+The Leros ALU is a more advanced but still functionally simple ALU compared to
+the one used in the previous chapters. This ALU is an accumulator based ALU that
+supports eight types of operations. As for the input ports, the ALU has an
+operation input called ``op," a data input called ``din," and an enable bit
+called ``ena." For the output ports, the ALU has only one port called ``accu."
+This output port is the result of the operation ``op," between the current
+``din" input and the accumulator value if the ``ena" bit is enabled. Otherwise,
+the output is the value stored into the accumulator itself. While the data input
+and output width is variable and depends on the overall design specifications
+(in this case 16-bits), the operation input and enable bit are fixed to 4 bits
+and 1 bit, respectively. The ALU is a sequential circuit in which all the
+operations take precisely one cycle, and the state is saved in the accumulator.
+The operations supported are displayed in table \ref{table:leros:op}.
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+ \textbf{nop} & \textbf{add} & \textbf{sub} & \textbf{and} & \textbf{or} & \textbf{xor} & \textbf{ld} & \textbf{shr}\\
+ \hline
+no-operation & addition & subtraction & and & or & xor & load & shift-right\\
+\end{tabular}
+\caption{Leros ALU opcodes.}
+\label{table:leros:op}
+\end{table}
+
+
+The paragraph above can be considered the functional specification document for
+the Leros ALU. From these specifications, it is possible to extract all the
+features that need to be tested to functionally verify this ALU. From the
+specifications, and assuming that the ``din" and ``accu" ports' width of the ALU
+are $n$-bits, the total state space of this design is:
+
+\begin{equation*}
+   S_T = \text{inputs} \cdot \text{outputs} \cdot \text{internal states} =  2^{n} \cdot 2^1 \cdot 2^8 \cdot 2^n \cdot 2^n = 2^{3n + 9}.
+\end{equation*}
+
+Luckily, not all the states of the state space are reachable. For example, if
+the ``ena" bit is set to false, all the other input parameters do not influence
+the output. Thus, the amount of the state space is reduced by a large factor.
+
+Nonetheless, this shows that even for simple design, the total state space can
+be vast and hard to traverse completely. Since verifying all the combinations of
+inputs for the current design is time-consuming and unnecessary for this design,
+the verification plan will list only the high priority features. From the
+specifications, the most critical features to verify are all eight types of
+operations. These operations need to be checked for both the ``ena" bit high and
+low. Secondly, all the operations have to be checked for a variety of input
+values. Table \ref{table:verificationplan} shows the verification plan for this
+specific ALU.
+
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{l|l|l}
+\textbf{Section} & \textbf{Description} & \textbf{Coverage Type}\\
+\hline
+\textbf{nop} Reuslts & Check correctness of the nop operation & Test reuslts\\
+\textbf{add} Reuslts & Check correctness of the add operation & Test reuslts\\
+\textbf{sub} Reuslts & Check correctness of the sub operation & Test reuslts\\
+\textbf{and} Reuslts & Check correctness of the and operation & Test reuslts\\
+\textbf{or} Reuslts & Check correctness of the or operation & Test reuslts\\
+\textbf{xor} Reuslts & Check correctness of the xor operation & Test reuslts\\
+\textbf{ld} Reuslts & Check correctness of the ld operation & Test reuslts\\
+\textbf{shr} Reuslts & Check correctness of the shr operation & Test reuslts\\
+\textbf{op} Types & All the operations are executed & CoverPoint\\
+\textbf{ena} port & Check enable/disable functionality & CoverPoint\\
+\textbf{din} input & Check din with values between 0 to 0xF & CoverPoint\\
+\textbf{din} input & Check din with values between 0xF to 0xFF & CoverPoint\\
+\textbf{din} input & Check din with values between 0xFF to 0xFFF & CoverPoint\\
+\textbf{din} input & Check din with values between 0xFFF to 0xFFFF & CoverPoint\\
+\end{tabular}
+\caption{Verification plan for the Leros ALU.}
+\label{table:verificationplan}
+\end{table}
+
+
+After creating the verification plan, it is possible to proceed with the
+creation of the testbench. The testbench will be based around the concept of
+Coverage Driven Verification, in which the machine can automatically generate
+tests, and the testbench automatically collects the coverage data for each test
+created. To automatically create new tests, the machine needs to have an input
+that distinguishes one test from the other. In this specific case, a list of
+seeds will be passed to the machine, and for each seed in the list, the machine
+will generate a new test. Since the machine will use the seeds in the list to
+randomize the input data, each test's result is entirely reproducible.
+
+As explained in the previous chapters, when the Coverage Driven Verification and
+Constrained Random Verification are used, the testbench needs to generate a
+sequence of meaningful transactions for the current device under test. From the
+author's perspective, and considering the Chisel and ChiselTest capabilities, a
+transaction is better expressed as a Chisel literal \mints{Bundle}. This choice
+was deliberately made to take advantage of the more advanced Chisel
+functionalities and reduce the overall verification code. This is also why the
+ALU was modified and represented as a \mints{MultiIOModule} instead of a simple
+\mints{Module} as shown in listing \ref{listing:example:multiIOleros}.
+
+\begin{code}
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]
+{scala}
+class AluAccuInput(val size: Int) extends Bundle{
+  val op = UInt(3.W)
+  val din = UInt(size.W)
+  val ena = Bool()
+}
+
+class AluAccuOut(val size: Int) extends Bundle {
+  val accu = UInt(size.W)
+}
+
+abstract class AluAccuMutliIO(sizen: Int) extends MultiIOModule {
+  val input = IO(Input(new AluAccuInput(sizen)))
+  val output = IO(Output(new AluAccuOut(sizen)))
+}
+
+\end{minted}
+\caption{Leros ALU with MultiIO interface.}
+\label{listing:example:multiIOleros}
+\end{code}
+
+Other than taking advantage these advanced features of Chisel and ChiselTest,
+modeling transactions as literal \mints{Bundles} implies that each transaction
+carries information about the width used for the ``din" port, which will be
+useful when designing the reference model.
+
+After deciding how to represent a transaction, it is possible to create the
+random class that models this transaction and randomizes it. For this specific
+example, it was decided to extend the class \mints{RandObj} instead of using the
+more experimental \mints{RandBundle} class. The object that captures a random
+transaction is called \mints{AluTransaction}. This object, like in the ALU
+specifications, has three random fields, ``din," ``op," ``ena," and one
+constructor argument that represents the size of the ALU. After having modeled
+the random object, and since the testbench uses a literal \mints{Bundle} as
+transactions, the object defines a method called \mints{toBundle}, which, as the
+name says, converts the randomized fields of the object into a randomized
+transaction.
+
+As it is, the random object captures all the possible input values for the Leros
+ALU. However, this implies that a randomized transaction has the same
+probability of having the ``ena" bit enabled or disabled, thus leading to the
+creation of a sequence of transactions that are not very meaningful from a
+functional verification point of view. To avoid repetitive sequence of
+transactions with the enable bit set to low, it is possible to add a dist
+constraint to the \mints{AluTransaction} class, limiting the transaction with
+the ``ena" bit set to low for only 1\% of the overall random transactions. The
+same process can be applied to the operation input ``op" and the ``nop"
+operation. Since this operation does not produce meaningful results, it is
+possible to limit the probability of producing such an operation in a random
+transaction by assigning a probability of 10\% compared to the other type of
+transactions.
+
+\begin{code}
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]
+{scala}
+class AluTransaction(seed: Int, size: Int) extends RandObj {
+  currentModel = new Model(seed)
+  val max = pow(2, size).toInt
+  val op = new Rand("op", 0, 7)
+  val din = new Rand("din", 0, max)
+  val ena = new Rand("ena", 0, 1)
+
+  def toBundle: AluAccuInput = {
+    new AluAccuInputPort(size).Lit(_.op -> op.value().U,
+        _.din -> din.value().U,
+        _.ena -> ena.value().B)
+  }
+  
+  val values = din dist (
+    0 to 0xF := 1,
+    0xF to 0xFF := 1,
+    0xFF to 0xFFF := 1,
+    0xFFF to 0xFFFF := 1,
+  )
+
+  val onlyHigh = din dist (
+    0xFF to 0xFFF := 1,
+    0xFFF to 0xFFFF := 10,
+  )
+  
+  val fewNops = op dist (
+    0 := 10,
+    (1 to 7) := 90,
+  )
+
+  val enaHigh = ena dist (
+    1 := 99,
+    0 := 1
+  )
+
+  onlyHigh.disable()
+}
+\end{minted}
+\caption{Random Transaction Object for Leros ALU Verification.}
+\label{listing:example:randobj}
+\end{code}
+
+After laying out a random transaction definition, it is necessary to create a
+component that can generate these transactions. Generally speaking, in the
+verification/UVM jargon, this component takes the name of the sequencer. Given
+the extensive standard library provided by the Scala language, the sequencer
+functionalities can be easily replaced in Scala by functions like \mints{map} or
+\mints{foreach} shown in listing \ref{listing:example:sequencer}.
+
+\begin{code}
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]
+{scala}
+val lenght = 5000
+val masterT = new AluTransaction(seed, size)
+val transactions: Seq[AluAccuInputPort] = (0 to lenght) map { _ =>
+  masterT.randomize
+  masterT.toBundle
+}
+\end{minted}
+\caption{Random Transaction generator.}
+\label{listing:example:sequencer}
+\end{code}
+As was said before, each transaction list is randomized using a seed passed as
+an argument to the current test, making them reproducible.
+
+After having set the infrastructure for generating random transactions, it is
+possible to design the reference model. Since Chisel is hosted on top of the
+Scala language, the natural choice is to develop the reference model in the
+hosting language itself. Another important consideration before developing the
+model is that this specific ALU lends itself to a sequential type of testing,
+where an input is sent to it, and after a clock cycle, the output is computed.
+Following these considerations, the reference model was developed as a singleton
+object containing five different functions listed in
+\ref{listing:referencemodel}. The essential functions of this model are
+\mints{compare} and \mints{generateTransactions}. This last function has a
+signature of type:
+\begin{code}
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]
+{scala}
+def generateTransactions(listT: List[AluAccuInputPort], accu: AluAccumulator):
+List[AluAccuOutPort]
+\end{minted}
+\caption{generateTransactions signature.}
+\label{listing:gentransactionsinga}
+\end{code}
+
+Here \mints{AluAccumulator} is a case class with only one field \mints{value}
+representing the current value of the accumulator. As shown by its signature,
+this function takes a list of input transactions and an accumulator and
+generates a list of output transactions. As an example, if the reset value of
+the ALU accumulator is zero, it is possible to simulate its behavior by calling
+the \mints{generatedTransactions} method with parameters the list of
+transactions to test and the \mints{Accumulator(0)}. Modeling the golden-model
+and the accumulator as two distinct entities allows the separation of the data
+from the functionality, and thus it allows the creation of a ``pure" functional
+golden-model that can be used in parallel tests.
+
+\begin{code}
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]
+{scala}
+object AluGoldenModel {
+  def genNextState(transaction: AluAccuInputPort, accu: AluAccumulator):
+  AluAccumulator
+
+  def genOutputStates(listT: List[AluAccuInputPort], accu: AluAccumulator):
+  List[AluAccumulator]
+  
+  def serializeAccu(accu: AluAccumulator, size: Int): AluAccuOutPort
+
+  def generateAluAccuTransactions(listT: List[AluAccuInputPort],
+    accu: AluAccumulator): List[AluAccuOutPort]
+
+  def compareSingle(transaction: (AluAccuOutPort, AluAccuOutPort)): Boolean
+
+  def compare(transactions: List[(AluAccuOutPort, AluAccuOutPort)]): List[Boolean]
+}
+\end{minted}
+\caption{Leros ALU reference model.}
+\label{listing:referencemodel}
+\end{code}
+
+
+The list of transactions generated by the golden-model can then be compared to
+the list of transactions generated by the ALU itself using the \mints{compare}
+method provided by the \mints{AluGoldenModel} object. The \mints{compare} method
+uses the API offered by ScalaTest to compare the value produced by the ALU and
+the golden-model. Also, it is essential to note that by using this method, the
+ALU is tested for all the transactions in the test, and it does not merely stop
+the test at the first miscomputed result.
+
+
+When the golden-model is completed, it is time to create the testbench itself.
+Given the power of Scala and ScalaTest, the testbench can be modeled in
+different ways and shapes. For this functional verification, and based on the
+author's preferences, the testbench was modeled by creating a trait containing
+the behavior functionality of the ALU. Compared to the traditional testbench
+written in ChiselTest, this testbench allows the creation of a specific test
+result for each seed used in the testing. The trait called \mints{ALUBehaviour}
+contains a function called \mints{compute}. The function has three parameters.
+The first one is the name of the test. The name is needed because, since each
+time we call the function \mints{compute}, ScalaTest generates a new test, it is
+a requirement that the name of the test be unique, so in this case, each test is
+differentiated by the value of the seed with which it is executed. The second
+parameter is the size of the current ALU to test, and the last one is the list
+of random transactions to test. As the name says, the function simulates the
+ALU, collects the list of transactions generated by it, and compares them to the
+one generated by the golden-model.
+
+\begin{code}
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]
+{scala}
+trait AluBehavior {
+  this: FlatSpec with ChiselScalatestTester =>
+
+  def compute(seed: Int, size: Int, inputT: List[AluAccuInputPort]): Unit = {
+    it should s"test alu with seed = $seed" in {
+      test(new AluAccuMultiChisel(size)) { dut =>
+        val computedTransactions: List[AluAccuOutPort] = inputT.map { T =>
+          dut.input.poke(T)
+          dut.clock.step()
+          dut.output.peek
+        }
+        val goldenTransactions =
+            AluGoldenModel.generateAluAccuTransactions(inputT, AluAccumulator(0))
+        AluGoldenModel.compare((computedTransactions zip goldenTransactions))
+      }
+    }
+  }
+}
+\end{minted}
+\caption{ALU Behavior trait.}
+\label{listing:alubehaviourtrait}
+\end{code}
+
+
+After completing the testbench, the last step is to insert the coverage probe to
+collect the various test executions' coverage data. The first test probe to be
+inserted from the verification plan is a \mints{CoverPoint} for collecting the
+data from the operation input. Furthermore, it is essential to check that all
+the operations work correctly with both the ``ena" bit high or low. For this
+reason, a \mints{CrossPoint} between the ``ena" bit and the operation mode was
+added as a functional probe. Lastly, it is necessary to check that the ALU works
+for all ranges of values, from the lower values to 0xFFFF. In this case, no
+internal probe for the accu register was added because this type of probe is not
+supported in the current version of ``chiselverify." It was decided to add a
+coverage probe to the ALU's output even though the result is directly related to
+the input values of the ALU and checked during testing with the golden-model.
+Listing \ref{listing:aluprobes} shows how the functional coverage probe are
+declared inside the testbench.
+\begin{code}
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]
+{scala}
+
+val cr = new CoverageReporter(dut)
+cr.register(
+  List(
+  CoverPoint(dut.input.op , "op")(
+    List(
+      Bins("nop", 0 to 0), Bins("add", 1 to 1),
+      Bins("sub", 2 to 2), Bins("and", 3 to 3),
+      Bins("or", 4 to 4), Bins("xor", 5 to 5),
+      Bins("ld", 6 to 6), Bins("shr", 7 to 7))),
+    [...]
+    [...]
+    CrossPoint("operations cross enable", "op", "ena")(
+      List(
+        CrossBin("operation enable", 0 to 7, 1 to 1),
+        CrossBin("operation disabled", 0 to 7, 0 to 0),
+    )))
+)
+\end{minted}
+\caption{Functional coverage probes for the Leros ALU.}
+\label{listing:aluprobes}
+\end{code}
+
+After inserting all the coverage probes into the testbench, it is possible to
+let the testbench run until the coverage quality is reached by adding new seeds
+to the seed list. After adding twelve seeds and inserting a new type of test
+that tests only values between 0xFF and 0xFFFF, the result of the coverage
+report 100\% for all the CoverPoints as shown in listing
+\ref{listing:alureport}. In total, the testbench executed 24 tests generated by
+12 different seed ($2 \times 12$) with 5000 transactions each for a total of
+120000 random transactions.
+
+\begin{code}
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]
+{bash}
+============ COVERAGE REPORT ============
+============== GROUP ID: 1 ==============
+COVER_POINT PORT NAME: op
+BIN nop COVERING Range 0 to 0 HAS 24 HIT(S) = 100.00%
+BIN add COVERING Range 1 to 1 HAS 24 HIT(S) = 100.00%
+BIN sub COVERING Range 2 to 2 HAS 24 HIT(S) = 100.00%
+BIN and COVERING Range 3 to 3 HAS 24 HIT(S) = 100.00%
+BIN or COVERING Range 4 to 4 HAS 24 HIT(S) = 100.00%
+BIN xor COVERING Range 5 to 5 HAS 24 HIT(S) = 100.00%
+BIN ld COVERING Range 6 to 6 HAS 24 HIT(S) = 100.00%
+BIN shr COVERING Range 7 to 7 HAS 24 HIT(S) = 100.00%
+=========================================
+COVER_POINT PORT NAME: din
+BIN 0xF COVERING Range 0 to 15 HAS 180 HIT(S) = 100.00%
+BIN 0xFF COVERING Range 15 to 255 HAS 2868 HIT(S) = 100.00%
+BIN 0xFFF COVERING Range 255 to 4095 HAS 17970 HIT(S) = 100.00%
+BIN 0xFFFF COVERING Range 4095 to 65535 HAS 67555 HIT(S) = 100.00%
+=========================================
+COVER_POINT PORT NAME: accu
+BIN 0xF COVERING Range 0 to 15 HAS 300 HIT(S) = 100.00%
+BIN 0xFF COVERING Range 15 to 255 HAS 3033 HIT(S) = 100.00%
+BIN 0xFFF COVERING Range 255 to 4095 HAS 14288 HIT(S) = 100.00%
+BIN 0xFFFF COVERING Range 4095 to 65535 HAS 66163 HIT(S) = 100.00%
+=========================================
+COVER_POINT PORT NAME: ena
+BIN disabled COVERING Range 0 to 0 HAS 24 HIT(S) = 100.00%
+BIN enabled COVERING Range 1 to 1 HAS 24 HIT(S) = 100.00%
+=========================================
+CROSS_POINT operations cross enable FOR POINTS op AND ena
+BIN operation enable COVERING Range 0 to 7 CROSS Range 1 to 1 HAS 192 HIT(S)
+                                                                        = 100.00%
+BIN operation disabled COVERING Range 0 to 7 CROSS Range 0 to 0 HAS 192 HIT(S)
+                                                                        = 100.00%
+=========================================
+=========================================
+[info] AluVerification:
+[info] AluAccumulator
+[info] - should test alu with seed = 30, and normal values
+[info] - should test alu with seed = 104, and normal values
+[info] - should test alu with seed = 60, and normal values
+[info] - should test alu with seed = 90, and normal values
+[info] - should test alu with seed = 200, and normal values
+[info] - should test alu with seed = 50, and normal values
+[info] - should test alu with seed = 22, and normal values
+[info] - should test alu with seed = 2000, and normal values
+[info] - should test alu with seed = 40, and normal values
+[info] - should test alu with seed = 900, and normal values
+[info] - should test alu with seed = 70, and normal values
+[info] - should test alu with seed = 23, and normal values
+[info] - should test alu with seed = 30, and high values
+[info] - should test alu with seed = 104, and high values
+[info] - should test alu with seed = 60, and high values
+[info] - should test alu with seed = 90, and high values
+[info] - should test alu with seed = 200, and high values
+[info] - should test alu with seed = 50, and high values
+[info] - should test alu with seed = 22, and high values
+[info] - should test alu with seed = 2000, and high values
+[info] - should test alu with seed = 40, and high values
+[info] - should test alu with seed = 900, and high values
+[info] - should test alu with seed = 70, and high values
+[info] - should test alu with seed = 23, and high values
+\end{minted}
+\caption{Coverage report of Leros ALU.}
+\label{listing:alureport}
+\end{code}
+
+\section{Discussion}
+As explained in the previous chapters, functional coverage is not the only type
+of coverage to be considered when verifying a model. The verification quality
+needs to include code coverage, state machine coverage, and so on, which are
+currently not provided by the ``chiselverify" library. Another critical remark
+is about not throwing away the coverage metrics collected during the
+verification process. Currently, in ``chiselverify" the coverage metrics are
+only contained and accessible in the test suite, thus making it harder to rely
+on the library for more significant projects.
+ 
+Accelera has an open specification for the Unified Coverage Interoperability
+Standard (UCIS) \cite{coveragedatabaseucis}. UCIS, as the name says, is an open
+standard for storing the coverage results and is currently used by the leading
+proprietary tools. Integrating this standard into the library will allow the
+cooperation between proprietary tools and Chisel and, more importantly, store
+the various tests' coverage results to be further analyzed or as a historical
+reference.
+
+
+\subsection{Future Work}
+As for now, the library with the JaCoP backend implements most of the constraint
+syntax and language present in SystemVerilog. The \mints{RandObj} class is
+reliable, and the JaCoP solver offers equivalent performance compared to the
+ones offered by proprietary tools. Compared to SystemVerilog, the JaCoP backend
+is missing ``soft" constraint and constraint evaluation order. These two
+features are useful but not essential, as shown by the Github research.
+
+From the author's perspective, this library represents a starting point for
+experimenting with more advanced features of Chisel and Constraint Random
+Verification. A possible addition to the library would be to extend the
+library's capabilities to create reliably nontrivial random literal
+\mints{Bundles} and move these features from the ``experimental" package to the
+JaCoP one. Moreover, it would be relevant and practical to implement
+\mints{RandObj} and \mints{RandBulde}, random class translator, to Minizinc
+\cite{nethercote2007minizinc} problems and solve them with one of the many
+minizinc solvers.
+
+Another possible future development would be to improve the interface by masking
+the various backends' limitations. For example, for the JaCoP backend, the
+interface should be implemented so that random fields with a bit-width of more
+than 29 are automatically split into two random variables. While modifying it,
+the interface should also be refactored into a more ``agnostic" design to allow
+runtime switching between different backends.

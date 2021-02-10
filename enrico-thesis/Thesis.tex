@@ -1,0 +1,46 @@
+% Copied from
+% https://bitbucket.org/_laursen/laursens-xelatex-thesis-template/src/master/
+%
+\input{preamble/static}
+\input{preamble/general}
+\input{preamble/fonts}
+\input{preamble/etc}
+
+\addbibresource{bibliography/Bibliography.bib}
+
+
+\begin{document}
+\prefrontmatter
+\include{prefrontmatter/titlepage}
+\cleartoevenpage
+\include{prefrontmatter/colophon}
+\clearforchapter
+
+\frontmatter
+\include{frontmatter/Abstract}
+\include{frontmatter/Preface}
+\include{frontmatter/Acknowledgements}
+\clearforchapter
+\tableofcontents
+\clearpage
+\listoffigures
+\clearforchapter
+
+
+\mainmatter
+\include{chapters/Introduction}
+\include{chapters/State_of_the_art}
+\include{chapters/Functional_verification}
+\include{chapters/Constraint_random_testing}
+\include{chapters/F-CSP}
+\include{chapters/Chisel-CRV}
+\include{chapters/Verification_of_Leros_ALU}
+\include{chapters/Conclusion}
+
+\appendix
+\include{appendices/A_visual_verification_report_for_ChiselTest} 
+
+\backmatter
+\Urlmuskip=0mu plus 1mu\relax
+\printbibliography
+\end{document}

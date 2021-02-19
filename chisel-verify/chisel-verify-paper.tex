@@ -170,8 +170,46 @@ them in the first place.
 Using the power and flexibility of Chisel Blackboxes, our tool can be used to verify
 designs implemented in any of the major hardware description languages (i.e. VHDL or Verilog)
 with little overhead. Furthermore, golden models described in any programming language can be
-used using the Java JNI (explored in Section II). Our work builds upon existing open-source projects and 
-is thus also open-source. 
+used using the Java JNI. Our work builds upon existing open-source projects and 
+is thus also open-source.
+
+We developed an object-oriented and functional framework for verification in Scala.
+This framework is inspired by UVM, but leverages Scala's conciseness with the
+combination of object-oriented programming with functional programming.
+An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
+showed the that a test written with UVM was about 800 lines of code, where a Scala based
+test was around 80 lines of code~\cite{verify:chisel:2020}.
+However, UVM supports more functionality that a plain ChiselTest in Scala.
+
+Within our verification framework, we support mixed language verification.
+Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
+we use ChiselTest as a driver for the open-source Verilog simulator Verlator.
+With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
+we can translate VHDL into Verilog.
+
+A verification method is only usable when it can handle mixed-source designs.
+This means a Scala driven method must be able to test components written in Verilog,
+VHDL, and SystemVerilog.
+
+Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
+Therefore, it is relatively easy to integrate Verilog components when wrapped into a black box.
+However, this forces Chisel to use Verilator instead of Treadle to run the simulation, impacting
+startup time.
+
+Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
+open-source solution available for VHDL simulation. For companies with a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow.
+All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
+
+To alleviate this issue, we use the open-source Yosys synthesis suite \cite{Yosys}.
+Yosys is an open-source digital hardware synthesis suite for Verilog.
+Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl},
+an open-source VHDL simulator. By using Yosys in conjunction with GHDL,
+VHDL files are compiled to an RTL-based intermediate representation,
+which is then written to a Verilog file using Yosys.
+GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008.
+A working solution named VHDL2Verilog has been made for this, which has been
+tested with certain simple VHDL designs \cite{vhdl2verilog}.
+
 
 This paper is an extension of \cite{verify:chisel:2020}.
 
@@ -182,7 +220,13 @@ In the following sections, we will explore the different backgrounds on which Ch
 \section{Background and State-of-the-Art}
 \label{sec:background}
 
-\martin{For a paper we should better have related work instead of background.}
+\martin{For a paper we should better have related work instead of background.
+Maybe also add some of Kasper's words on UVM from the technical report.}
+
+%\section{Related work}
+
+\todo{Talk about Kevin Lauefer's work and verif}
+
 
 
 
@@ -262,47 +306,6 @@ Furthermore, ChiselTest tries to enable testing best practices from software eng
 Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
 A clear and clean test code also enables the test-as-documentation pattern,
 demonstrating a module's behavior from a temporal perspective.
-\section{More Background} 
-
-
-
-
-
-\paragraph{Verification Framework.} %Maybe remove this and talk about it in the into
-
-We will develop an object-oriented and functional framework for verification in Scala.
-This framework is inspired by UVM, but will leverage Scala's conciseness with the
-combination of object-oriented programming with functional programming.
-An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
-showed the that a test written with UVM was about 800 lines of code, where a Scala based
-test was around 80 lines of code~\cite{verify:chisel:2020}.
-However, UVM supports more functionality that a plain ChiselTest in Scala.
-
-Within our verification framework, we will support mixed language verification.
-Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
-we will use ChiselTest as a driver for the open-source Verilog simulator Verlator.
-With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
-we will translate VHDL into Verilog.
-
-A verification method is only usable when it can handle mixed-source designs.
-This means a Scala driven method must be able to test components written in Verilog,
-VHDL, and SystemVerilog.
-
-Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
-Therefore, it is relatively easy to integrate Verilog components when wrapped into a black box.
-However, this forces Chisel to use Verilator instead of Treadle to run the simulation, impacting
-startup time.
-
-Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
-open-source solution available for VHDL simulation. For companies with a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow.
-All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
-
-To alleviate this issue, the open-source Yosys synthesis suite \cite{Yosys} can be used. Yosys is an open-source digital hardware synthesis suite for Verilog. Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl}, an open-source VHDL simulator. By using Yosys in conjunction with GHDL, VHDL files are compiled to an RTL-based intermediate representation, which is then written to a Verilog file using Yosys. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008. The workflow can be seen in Figure \ref{fig:VHDL2Verilog}. A working solution named VHDL2Verilog has been made for this, which has been tested with certain simple VHDL designs \cite{vhdl2verilog}.
-
-
-
-
-In the following sections, we will present the different functionalities that ChiselVerify supports and some details behind their use and implementation.
 
 
 \section{Constraint Random Verification}
@@ -396,7 +399,13 @@ with the "rand" macro. Finally, like for SystemVerilog, in Scala inheriting the 
 values to the random fields of the class.
 
 \section{Verification of AXI4 Interfaced Components}
-Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces -- this also enables greater reuse. One of such standard interfaces is AXI4 -- an open standard by ARM \cite{axi4standard}, which is used in particular to connect processor nodes to memories. As such, most available synthesis tools, including Xilinx' Vivado, provide IP generators whose output IP blocks are equipped with AXI interfaces along with optional verification structures written in (System-)Verilog \cite{axi4vip}. \\
+
+Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces,
+which enable greater reuse. One of such standard interfaces is AXI4, an open standard by ARM \cite{axi4standard},
+which is used in particular to connect processor nodes to memories.
+As such, most available synthesis tools, including Xilinx' Vivado,
+provide IP generators whose output IP blocks are equipped with AXI interfaces
+along with optional verification structures written in (System-)Verilog \cite{axi4vip}.
 
 Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel -- hence, why we include an example BFM based around ChiselTest in our framework.
 
@@ -434,11 +443,15 @@ class MemoryTester extends FlatSpec with ChiselScalatestTester with Matchers {
 \end{lstlisting}
 
 \section{Coverage in Chisel}
-One of the main tools used in verification is Test Coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: Code coverage and Functional coverage. Code Coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.\\
+
+\martin{This is probably already contained in the coverage paper and can be removed here.}
+
+One of the main tools used in verification is test coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: code coverage and functional coverage. code coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas functional coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.
 
 \paragraph{Code Coverage with Treadle}  
-The first part of our solution is about code coverage, more specifically line coverage that was added to the Treadle FIRRTL execution engine. Treadle is a common FIRRTL execution engine used to simulate designs implemented in Chisel. This engine runs on the FIRRTL intermediate representation code generated by a given Chisel implementation and allows one to run user-defined tests on the design using frameworks like \textit{iotesters} or the more recent \textit{testers2}. In our pursuit of creating a verification framework, we found that one way to obtain line coverage would be to have our framework run on an extended version of Treadle that was capable of keeping track of said information.\\\\
-The solution that was used to implement line coverage was based off of a method presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}. The idea is to add additional outputs for each multiplexer in the design. These new ports, which we will call \textit{Coverage Validators}, are set depending on the paths taken by each multiplexer and that information is then gathered at the end of each test and maintained throughout a test suite. Once the testing is done, we used the outputs gathered from the \textit{Coverage Validators} to check wether or not a certain multiplexer path was taken during the test, all of this resulting in a branch coverage percentage. \\
+The first part of our solution is about code coverage, more specifically line coverage that was added to the Treadle FIRRTL execution engine. Treadle is a common FIRRTL execution engine used to simulate designs implemented in Chisel. This engine runs on the FIRRTL intermediate representation code generated by a given Chisel implementation and allows one to run user-defined tests on the design using frameworks like \textit{iotesters} or the more recent \textit{testers2}. In our pursuit of creating a verification framework, we found that one way to obtain line coverage would be to have our framework run on an extended version of Treadle that was capable of keeping track of said information.
+
+The solution that was used to implement line coverage was based off of a method presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}. The idea is to add additional outputs for each multiplexer in the design. These new ports, which we will call \textit{Coverage Validators}, are set depending on the paths taken by each multiplexer and that information is then gathered at the end of each test and maintained throughout a test suite. Once the testing is done, we used the outputs gathered from the \textit{Coverage Validators} to check wether or not a certain multiplexer path was taken during the test, all of this resulting in a branch coverage percentage.
 
 This was implemented in Treadle by creating a custom pass of the FIRRTL compiler that traverses the Abstract Syntax Tree (\textit{AST}) and adds the wanted outputs and coverage expressions into the source tree. Once that is done, the \texttt{TreadleTester} samples those additional outputs every time the \texttt{expect} method is called and keeps track of their values throughout a test suite. Finally it generates a Scala \texttt{case class} containing the following coverage information:
 \begin{itemize}
@@ -473,7 +486,7 @@ The example above is taken for a simple test, where we are only testing the path
 
 Treadle thus allows us to obtain coverage at the FIRRTL level. A more interesting result would be if the FIRRTL line coverage would be mapped to the original Chisel source. This is possible but challenging, since Treadle only has access to the original source code through \textit{Source locators} which map some of the FIRRTL lines back to Chisel. This means that the code can only be partially mapped and the remainder will have to be reconstructed using some smart guessing.\\
 
-\paragraph{Functional Coverage directly in Scala}
+\paragraph{Functional Coverage Directly in Scala}
 Functional Coverage is on the principal tools used during the verification process, since it allows one to have a measurement of \textit{"how much of the specification has been implemented correctly"}. A verification framework would thus not be complete without constructs allowing one to define a verification plan and retrieve a functional coverage report. The main language used for functional coverage is \textit{SystemVerilog}, which is why our solution is based on the same syntax. There are three main components to defining a verification plan: 
 \begin{itemize}
 \item \texttt{Bin}: Defines a range of values that should be tested for (i.e. what values can we expect to get from a given port).
@@ -650,189 +663,7 @@ operations, are collected. The average insertion and removal times measured unde
 These numbers are of course heavily dependent on access patterns and are as such only representative for the completely random test case used here.
 The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
 
-\section{Related work}
 
-\todo{Talk about Kevin Lauefer's work and verif}
-\todo{Not quite sure if the UVM stuff fits here, maybe better off either shortened and put in the background section}
-\subsection{UVM, SystemVerilog and verification} 
-The purpose of this document is to outline my (Kasper) findings during the course of the Chisel-UVM project. It should serve as a reference on what the UVM can do, how it works, and how some of this (namely the SystemVerilog Direct Programming Interface (DPI)) may be implemented in a Scala based testing framework.
-
-\subsection{UVM}
-The Universal Verification Methodology (UVM) is a verification framework built on top of the testing capabilities of SystemVerilog. Prior to the introduction of the UVM, the major EDA simulation vendors supported diferent frameworks / methodologies. This meant that a verification environment designed for one simulator might not run under another simulator. The main purpose of the UVM was to standardize the testing framework used across EDA vendors, making it easier for users to use their testbenches across different software suites.
-
-%% The below is taken from our chisel-uvm paper
-The testbench in the UVM is built up around a number of components.
-Each component performs only one task in the testbench, allowing the engineer to make changes to some components without affecting others. 
-For example, the sequencer is the component responsible for generating transactions for the DUT, whereas the driver is responsible for converting the transaction into pin-level wiggles, i.e., generating correct start/stop conditions and
-driving signals. If a new sequence of transactions is to be generated, only the sequencer is affected. Likewise, the sequencer does not care how the transactions are converted into pin-level signals---this is the sole responsibility of the driver. This separation into several components results in a more structured testbench design as there are fewer dependencies than in a monolithic testbench.
-
-The main components of a UVM testbench are as follows:
-
-    A \textit{Sequence(r):} defines the order of transactions necessary for a given purpose, e.g., synchronization or reset sequence. The sequencer is responsible for transferring the transactions, defined by the sequence, to the driver.
-    
-    A \textit{Driver} converts transactions into pin-level signals and drives these signals onto the DUT.
-    
-    An \textit{Interface} is a SystemVerilog construct which allows the user to group related signals. A DUT may have several interfaces attached.
-    The interface is used to avoid hooking directly into the DUT, making it easier to test multiple DUT versions.
-    
-    A \textit{Monitor} monitors all traffic on the interface, converting pin-level signals into transaction-level objects that can be operated on by other components, such as a coverage collector or scoreboard.
-    
-    An \textit{Agent} encapsulates monitor, sequencer and driver, setting configuration values. Agents may be set active or passive (with or without a driver and sequencer). An agent is useful when it is necessary to have multiple instances of the same components, e.g., when a 4-port network switch needs four identical drivers with different configurations.
-    
-    A \textit{Scoreboard} is used to check whether correct functionality is achieved. Usually does so by using a ``golden model'' for co-simulation via the SystemVerilog direct programming Interface.
-    
-    The \textit{Environment} is used to configure and instantiate all child components. Environments are typically application-specific and may be modified by the test.
-    
-    The \textit{Test} is the top-level verification component. The test designer may choose to perform factory overrides of classes and set configuration values here, which modify the child components.
-
-As shown above, even a ``Hello, World'' example using the UVM requires that the user understands how and why each of the different UVM components should be used. The use of so many components causes UVM to have a very steep learning curve, which may discourage adoption. This also means that UVM is not the proper testing methodology for small designs or one-off tests due to the initial workload.
-However, once the initial setup of the testbench is finished for large and complex designs, generating new tests becomes easier.
-
-\subsubsection{Scoreboard and DPI}
-The purpose of the scoreboard is to ensure that the DUT matches specification. When using directed tests (i.e. hand-written tests meant to test a single part of the specification), this may be as simple as constructing a list of input/output values and checking these in order. When using randomized testing, the scoreboard is usually implemented as a software model (sometimes called a golden model) which is defined to be correct. The software model should exactly mimic the functionality of the DUT, and thus provide the same outputs given the same inputs. 
-
-The scoreboard may be implemented purely in SystemVerilog, or it may be implemented in a C-like language (C, C++ or SystemC). One of the benefits that \SV adds to the verification environment is the ability to interface with C-code through the use of the \SV Direct Programming Interface (DPI). This is an interface which allows C code to be called from inside the \SV testbench, and likewise allows for \SV code to be called from inside of a C program. Programming low-level simulations of hardware is most likely easier in C than in plain \SV. In listing \ref{lst:dpi} is shown a simple example of some SystemVerilog code calling C code through the \SV DPI. 
-
-Notice the inclusion of the header file \texttt{svdpi.h}, which contains the definitions necessary for interoperability. Once this is done, the function must be imported in \SV by use of the \texttt{import "DPI-C"} statement, after which the function may be called as any other \SV function. Using the DPI is surprisingly simple and painless, and makes it very simple to integrate a C model in the testbench.
-
-It should be noted that a scoreboard doesn't necessarily "rate"\, the performance of the DUT by comparing it to other modules, as one might expect from the name. The DUT is only compared against the reference model, and the "rating" is how many assertions pass/fail in a given test.
-
-\begin{lstlisting}
-// hello.c
-#include "svdpi.h"
-#include <stdlib.h>
-
-void c_hello(char* name) {
-	printf("Hello from C, %s", name);
-}
-
-// hello.sv
-module tb;
-import "DPI-C" function void c_hello(string name);
-
-	initial main();
-	task main();
-		c_hello("SystemVerilog");
-	endtask
-endmodule
-
-// Outputs: "Hello from C, SystemVerilog"
-\caption{Short example showing how to use the \SV DPI to execute C-code from within \SV.}
-\label{lst:dpi}
-\end{lstlisting}
-
-\subsubsection{Constrained random verification}
-
-Most UVM testbenches employ "Constrained Random Verification"\, (CRV) for generating test stimulus. This is as opposed to using directed testing, where input vectors are predefined to test a certain behaviour. With CRV, random test stimuli are generated. The "Constrained" part of CRV implies that these values aren't entirely random, but are chosen to fulfill a series of criteria. If eg. the DUT is an ALU with a 5-bit opcode field of which only 20 bit-patterns are used, it would be prudent to only generate the 20 valid opcodes for most test purposes. Specific tests could then be written to ensure proper operation if an invalid opcode was asserted.
-
-An example of a class with randomized variables is seen in listing \ref{lst:crv}. 
-
-The keyword \texttt{constraint} is used to constrain a variable defined with the \texttt{rand} keyword.
-One randomized variable, \texttt{bcd}, is a 4-bit field which only takes on values in the range 0 and 9. 
-The field \texttt{value} has a $1/3$ chance of being 0, $1/3$ of being 255 and $1/3$ of being any other value. 
-The fields \texttt{a,b,c} must satisfy $0<a<b<c$. 
-The field \texttt{op} has no constraints, and will thus randomly toggle between  0, 1, 2 and 3, the only values it can take on.
-
-\longlist{snippets/Myclass.svh}{Example SystemVerilog code showing how different values are constrained.}{lst:crvlst}
-
-%\begin{lstlisting}
-%\inputminted{systemverilog}{snippets/Myclass.svh}
-%\caption{Example SystemVerilog code showing how different values are constrained.}
-%\label{lst:crv}
-%\end{listing}
-
-In listing \ref{lst:usingcrv}, an object of type \texttt{Myclass} is instantiated and randomized using the \texttt{mc.randomize()} command. Finally, the \SV function \texttt{\$display} is used to print the value of the BCD field. The \texttt{randomize} keyword is a \SV construct which will try to randomize all random fields of given class.
-
-\begin{lstlisting}
-//top.sv
-`include "Myclass.svh"
-module top;
-  Myclass mc;
-  initial begin;
-    mc = new;
-    mc.randomize();
-	 $display(mc.bcd);
-  end
-endmodule
-//Outputs a random value in the range [0:9]
-\caption{Example SystemVerilog code showing how to instantiate and randomize a class with random fields.}
-\label{lst:usingcrv}
-\end{lstlisting}
-
-\subsubsection{Coverage collection}
-The purpose of coverage collection, in this case functional coverage collection, is to check whether all "necessary"\, (as defined by the verification engineer) input combinations have been generated. For the ALU mentioned above, it might be interesting to check whether all opcodes work correctly when asserted after a reset, and whether over/underflow flags are correctly set when performing arithmetic operations. In general, functional coverage is concerned with evaluating whether all functionality of a device has been tested. This is opposed to line coverage, which evaluates which lines of code were run during a simulation.
-
-\longlist{snippets/Cover.svh}{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}{lst:cov}
-
-%\begin{lstlisting}
-%	\inputminted{systemverilog}{snippets/Cover.svh}
-%	\caption{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}
-%	\label{lst:cov}
-%\end{lstlisting}
-
-An example of functional coverage collection is seen in listing \ref{lst:cov} where the randomized values from before are covered. A \textit{covergroup} is a label used to collect relevant values under the same heading. A \textit{coverpoint} is a directive instructing the simulator that the given value should be monitored for changes. In the declaration of the coverpoint, several \textit{bins} are generated. These bins correspond to the bins of a histogram. Every time an event occurs which matches the declaration inside a bin, the counter associated with that bin is incremented by one. An event may cause multiple bins to increment at the same time.
-
-
-
-In the coverage declarations shown in listing \ref{lst:cov}, the covergroup \texttt{cg\_bcd} only covers one field, \texttt{bcd}. The bin is labeled by prepepending \texttt{BCD:} in front of the \textit{coverpoint} directive. 10 bins are generated which each sample the values 0-9, and the remaining values 10-15 are sampled into the default bin \texttt{others}. 
-
-In the covergroup \texttt{cg\_others} three coverpoints are set up. The \texttt{VAL} coverpoint samples 3 ranges of values. Any value in the range \texttt{[0:20]}will cause the counter on bin \texttt{low} to increment by one. Likewise for the other bins in that coverpoint. The \texttt{A} coverpoint auto-generates one bin for each possible value it may take on, 16 bins in total, since no bins are explicitly declared. The coverpoint \texttt{OP} has one bin, \texttt{toggle} which only increments when \texttt{mode} toggles from \texttt{0x0} to \texttt{0x1}. Finally, the \texttt{cross} statement implements cross coverage. Cross coverage tracks what values were sampled at multiple coverpoints at the same time.
-
-Using the cross of \texttt{A} and \texttt{OP}, it may be possible to have 100\% coverage on both coverpoints (ie. all bins have been hit at least once), but the cross coverage may not be at 100\% if eg. \texttt{OP} never toggled while \texttt{A} was 1. Increasing the number of random samples that are generated may alleviate this problem. If it doesn't, it may be indicative that something is wrong in the structure of the testbench or DUT.
-
-In listing \ref{lst:usingcov}, the module from \cref{lst:usingcrv} has been expanded to also use the coverage collector.
-
-\longlist{snippets/top.sv}{Showcasing how multiple random values are generated and sampled by the coverage collector.}{lst:usingcov}
-
-%\begin{lstlisting}
-%	\inputminted{systemverilog}{snippets/top.sv}
-%	\caption{Showcasing how multiple random values are generated and sampled by the coverage collector.}
-%	\label{lst:usingcov}
-%\end{lstlisting}
-
-In figure \ref{fig:coverage}, the result of running the 20 iterations is seen for coverpoints \texttt{BCD, A, VAL}. 
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=\columnwidth]{coverage.pdf}
-	%Figure generated by 'graphs.m'
-	\caption{Coverage bins generated by running the code in listing \ref{lst:usingcov}}
-\label{fig:coverage}
-\end{figure}
-
-\subsection{C integration in Scala}
-The \SV DPI is a great addition to the verification workflow, as it allows the designer to easily implement a C model into the \SV testbench.
-Similar functionality is available in Scala by leveraging the Java Native Interface (JNI). This is an interface which allows Java / Scala programs to call native code, i.e. code compiled for the specific CPU it is running on. This is typically encountered as .DLL files on Windows or .so files on linux.
-
-When using Chisel and other external libraries, it is recommended to use the Scala Build Tool (sbt) to manage the build. However, doing this makes it more difficult to use the default JNI integration in Scala. This can be alleviated by use of the plugin \texttt{sbt-jni} by Jakob Odersky. 
-
-In listing \ref{lst:jni-scala} is shown an example of a Scala file with a native function.
-
-\longlist{snippets/Myclass.scala}{Example Scala code showing how to integrate native code in Scala.}{lst:jni-scala}
-
-%\begin{lstlisting}
-%\inputminted{scala}{snippets/Myclass.scala}
-%\caption{Example Scala code showing how to integrate native code in Scala.}
-%\label{lst:jni-scala}
-%\end{lstlisting}
-
-The annotation \texttt{@native} informs the Scala compiler that the function should be found in native code. The annotation \texttt{@nativeLoader} is necessary for use with the plugin. The name "native0"\, is the name of the current SBT project, appended with a 0.
-
-Once the above file has been written, the corresponding C header file is generated by running \texttt{sbt javah}. The contents of the generated header file should then be copied into a C code file, where the functions can be implemented. In this case, it may look like the contents of listing \ref{lst:jni-c}.
-
-\longlist{snippets/Myclass.c}{C implementation of the methods declared in Myclass in listing \ref{lst:jni-scala}.}{lst:jni-c}
-
-%\begin{lstlisting}
-%\inputminted{C}{snippets/Myclass.c}
-%\caption{C implementation of the methods declared in Myclass in listing \ref{lst:jni-scala}.}
-%\label{lst:jni-c}
-%\end{lstlisting}
-
-Notice that primitives such as \texttt{int} can be autocast from a \texttt{jint}, whereas a string must be obtained used using the function pointers defined in the \texttt{JNIEnv} structure. Once this is done, a CMake makefile is generated by running \texttt{sbt "nativeInit cmake"}, and the C files are compiled using \texttt{sbt nativeCompile}. If all goes well, the code can then be run with \texttt{sbt run}. 
-
-If changes are made to any of the function definitions or Scala file, no other steps are necessary than running \texttt{sbt run} again. This will also invoke the CMake script generation and compilation steps if necessary. If new native methods are added to the Scala file, \texttt{sbt javah} must be run again to generate new C headers.
-
-For more information regarding the plugin setup, see the \href{https://github.com/jodersky/sbt-jni}{plugin page on Github} or the file HowToJni.md in the \href{https://github.com/chisel-uvm/documentation}{documentation repository}.
 
 \section{Conclusion}
 In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought functional coverage, statement coverage, constraint random verification and transactional modelling to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.

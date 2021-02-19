@@ -167,8 +167,46 @@ them in the first place.
 Using the power and flexibility of Chisel Blackboxes, our tool can be used to verify
 designs implemented in any of the major hardware description languages (i.e. VHDL or Verilog)
 with little overhead. Furthermore, golden models described in any programming language can be
-used using the Java JNI (explored in Section II). Our work builds upon existing open-source projects and 
-is thus also open-source. 
+used using the Java JNI. Our work builds upon existing open-source projects and 
+is thus also open-source.
+
+We developed an object-oriented and functional framework for verification in Scala.
+This framework is inspired by UVM, but leverages Scala's conciseness with the
+combination of object-oriented programming with functional programming.
+An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
+showed the that a test written with UVM was about 800 lines of code, where a Scala based
+test was around 80 lines of code~\cite{verify:chisel:2020}.
+However, UVM supports more functionality that a plain ChiselTest in Scala.
+
+Within our verification framework, we support mixed language verification.
+Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
+we use ChiselTest as a driver for the open-source Verilog simulator Verlator.
+With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
+we can translate VHDL into Verilog.
+
+A verification method is only usable when it can handle mixed-source designs.
+This means a Scala driven method must be able to test components written in Verilog,
+VHDL, and SystemVerilog.
+
+Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
+Therefore, it is relatively easy to integrate Verilog components when wrapped into a black box.
+However, this forces Chisel to use Verilator instead of Treadle to run the simulation, impacting
+startup time.
+
+Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
+open-source solution available for VHDL simulation. For companies with a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow.
+All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
+
+To alleviate this issue, we use the open-source Yosys synthesis suite \cite{Yosys}.
+Yosys is an open-source digital hardware synthesis suite for Verilog.
+Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl},
+an open-source VHDL simulator. By using Yosys in conjunction with GHDL,
+VHDL files are compiled to an RTL-based intermediate representation,
+which is then written to a Verilog file using Yosys.
+GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008.
+A working solution named VHDL2Verilog has been made for this, which has been
+tested with certain simple VHDL designs \cite{vhdl2verilog}.
+
 
 This paper is an extension of \cite{verify:chisel:2020}.
 
@@ -348,12 +386,58 @@ the class from the Random base-class provided by the library. After that each ra
 with the "rand" macro. Finally, like for SystemVerilog, in Scala inheriting the Random base class exposes the method "random" which assigns random
 values to the random fields of the class.
 
+\section{Verification of AXI4 Interfaced Components}
+
+Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces,
+which enable greater reuse. One of such standard interfaces is AXI4, an open standard by ARM \cite{axi4standard},
+which is used in particular to connect processor nodes to memories.
+As such, most available synthesis tools, including Xilinx' Vivado,
+provide IP generators whose output IP blocks are equipped with AXI interfaces
+along with optional verification structures written in (System-)Verilog \cite{axi4vip}.
+
+Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel -- hence, why we include an example BFM based around ChiselTest in our framework.
+
+\subsection{Introduction to AXI4}
+The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five separate channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The five channels are:
+\begin{itemize}
+  \item \textit{Write Address} for transferring transaction attributes from master to slave
+  \item \textit{Write Data} for transferring write data and strobe from master to slave
+  \item \textit{Write Response} for transferring transaction status of a writes from slave to master
+  \item \textit{Read Address} same as \textit{Write Address}, but for reads
+  \item \textit{Read Data} for transferring read data from slave to master
+\end{itemize}
+
+Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address, burst length, and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}. %Similarly, the master may provide several more addresses while transferring data in relation to the first address -- granted that the slave is capable of multiple outstanding transactions.
+
+\subsection{Implementation}
+Our implementation includes bundles definining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and of course the BFM itself; the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends the slave class and provides a simple, transaction level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx} which do exactly as their names indicate; create and enqueue write and read transactions. \\
+
+Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the aforementioned methods (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. As such, when, for example, a write transaction is enqueued and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
+
+\subsection{A Simple Example}
+Returning to the example used before, using the BFM to test a module called \texttt{Memory} is as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction -- but beware that due to the BFM's parallel execution style, the channels are indeed independent. As such, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+\begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
+class MemoryTester extends FlatSpec with ChiselScalatestTester with Matchers {
+  behavior of "My Memory module"
+  it should "write and read" in {
+    test(new Memory()) {
+      dut =>
+        val bfm = new FunctionalMaster(dut)
+        master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
+        master.createReadTrx(0, len = 15, size = 2)
+    }
+  }
+}
+\end{lstlisting}
+
 \section{Coverage in Chisel}
-One of the main tools used in verification is Test Coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: Code coverage and Functional coverage. Code Coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.\\
+
+One of the main tools used in verification is test coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: code coverage and functional coverage. code coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas functional coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.
 
 \paragraph{Code Coverage with Treadle}  
-The first part of our solution is about code coverage, more specifically line coverage that was added to the Treadle FIRRTL execution engine. Treadle is a common FIRRTL execution engine used to simulate designs implemented in Chisel. This engine runs on the FIRRTL intermediate representation code generated by a given Chisel implementation and allows one to run user-defined tests on the design using frameworks like \textit{iotesters} or the more recent \textit{testers2}. In our pursuit of creating a verification framework, we found that one way to obtain line coverage would be to have our framework run on an extended version of Treadle that was capable of keeping track of said information.\\\\
-The solution that was used to implement line coverage was based off of a method presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}. The idea is to add additional outputs for each multiplexer in the design. These new ports, which we will call \textit{Coverage Validators}, are set depending on the paths taken by each multiplexer and that information is then gathered at the end of each test and maintained throughout a test suite. Once the testing is done, we used the outputs gathered from the \textit{Coverage Validators} to check wether or not a certain multiplexer path was taken during the test, all of this resulting in a branch coverage percentage. \\
+The first part of our solution is about code coverage, more specifically line coverage that was added to the Treadle FIRRTL execution engine. Treadle is a common FIRRTL execution engine used to simulate designs implemented in Chisel. This engine runs on the FIRRTL intermediate representation code generated by a given Chisel implementation and allows one to run user-defined tests on the design using frameworks like \textit{iotesters} or the more recent \textit{testers2}. In our pursuit of creating a verification framework, we found that one way to obtain line coverage would be to have our framework run on an extended version of Treadle that was capable of keeping track of said information.
+
+The solution that was used to implement line coverage was based off of a method presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}. The idea is to add additional outputs for each multiplexer in the design. These new ports, which we will call \textit{Coverage Validators}, are set depending on the paths taken by each multiplexer and that information is then gathered at the end of each test and maintained throughout a test suite. Once the testing is done, we used the outputs gathered from the \textit{Coverage Validators} to check wether or not a certain multiplexer path was taken during the test, all of this resulting in a branch coverage percentage.
 
 This was implemented in Treadle by creating a custom pass of the FIRRTL compiler that traverses the Abstract Syntax Tree (\textit{AST}) and adds the wanted outputs and coverage expressions into the source tree. Once that is done, the \texttt{TreadleTester} samples those additional outputs every time the \texttt{expect} method is called and keeps track of their values throughout a test suite. Finally it generates a Scala \texttt{case class} containing the following coverage information:
 \begin{itemize}
@@ -388,7 +472,7 @@ The example above is taken for a simple test, where we are only testing the path
 
 Treadle thus allows us to obtain coverage at the FIRRTL level. A more interesting result would be if the FIRRTL line coverage would be mapped to the original Chisel source. This is possible but challenging, since Treadle only has access to the original source code through \textit{Source locators} which map some of the FIRRTL lines back to Chisel. This means that the code can only be partially mapped and the remainder will have to be reconstructed using some smart guessing.\\
 
-\paragraph{Functional Coverage directly in Scala}
+\paragraph{Functional Coverage Directly in Scala}
 Functional Coverage is on the principal tools used during the verification process, since it allows one to have a measurement of \textit{"how much of the specification has been implemented correctly"}. A verification framework would thus not be complete without constructs allowing one to define a verification plan and retrieve a functional coverage report. The main language used for functional coverage is \textit{SystemVerilog}, which is why our solution is based on the same syntax. There are three main components to defining a verification plan: 
 \begin{itemize}
 \item \texttt{Bin}: Defines a range of values that should be tested for (i.e. what values can we expect to get from a given port).
@@ -450,42 +534,6 @@ One final element that our framework offers is the possibility to gater delayed 
  \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}
 
-
-\section{Research Plan} %Maybe this section should be something like "Background" and should come right after the Intro?
-
-
-
-
-\paragraph{Verification Framework.}
-
-We will develop an object-oriented and functional framework for verification in Scala.
-This framework is inspired by UVM, but will leverage Scala's conciseness with the
-combination of object-oriented programming with functional programming.
-An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
-showed the that a test written with UVM was about 800 lines of code, where a Scala based
-test was around 80 lines of code~\cite{verify:chisel:2020}.
-However, UVM supports more functionality that a plain ChiselTest in Scala.
-
-Within our verification framework, we will support mixed language verification.
-Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
-we will use ChiselTest as a driver for the open-source Verilog simulator Verlator.
-With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
-we will translate VHDL into Verilog.
-
-A verification method is only usable when it can handle mixed-source designs.
-This means a Scala driven method must be able to test components written in Verilog,
-VHDL, and SystemVerilog.
-
-Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
-Therefore, it is relatively easy to integrate Verilog components when wrapped into a black box.
-However, this forces Chisel to use Verilator instead of Treadle to run the simulation, impacting
-startup time.
-
-Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
-open-source solution available for VHDL simulation. For companies with a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow.
-All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
-
-To alleviate this issue, the open-source Yosys synthesis suite \cite{Yosys} can be used. Yosys is an open-source digital hardware synthesis suite for Verilog. Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl}, an open-source VHDL simulator. By using Yosys in conjunction with GHDL, VHDL files are compiled to an RTL-based intermediate representation, which is then written to a Verilog file using Yosys. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008. The workflow can be seen in Figure \ref{fig:VHDL2Verilog}. A working solution named VHDL2Verilog has been made for this, which has been tested with certain simple VHDL designs \cite{vhdl2verilog}.
 
 
 
@@ -614,11 +662,10 @@ These numbers are of course heavily dependent on access patterns and are as such
 The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
 
 
-\section{UVM, SystemVerilog and verification}
-The purpose of this document is to outline my (Kasper) findings during the course of the Chisel-UVM project. It should serve as a reference on what the UVM can do, how it works, and how some of this (namely the SystemVerilog Direct Programming Interface (DPI)) may be implemented in a Scala based testing framework.
+\section{UVM, SystemVerilog and Verification}
+This section serves as a reference on what the UVM can do, how it works, and how some of this (namely the SystemVerilog Direct Programming Interface (DPI)) may be implemented in a Scala based testing framework.
 
-\section{UVM}
-The Universal Verification Methodology (UVM) is a verification framework built on top of the testing capabilities of SystemVerilog. Prior to the introduction of the UVM, the major EDA simulation vendors supported diferent frameworks / methodologies. This meant that a verification environment designed for one simulator might not run under another simulator. The main purpose of the UVM was to standardize the testing framework used across EDA vendors, making it easier for users to use their testbenches across different software suites.
+The Universal Verification Methodology (UVM) is a verification framework built on top of the testing capabilities of SystemVerilog. Prior to the introduction of the UVM, the major EDA simulation vendors supported different frameworks / methodologies. This meant that a verification environment designed for one simulator might not run under another simulator. The main purpose of the UVM was to standardize the testing framework used across EDA vendors, making it easier for users to use their testbenches across different software suites.
 
 %% The below is taken from our chisel-uvm paper
 The testbench in the UVM is built up around a number of components.
@@ -677,11 +724,11 @@ import "DPI-C" function void c_hello(string name);
 endmodule
 
 // Outputs: "Hello from C, SystemVerilog"
-\caption{Short example showing how to use the \SV DPI to execute C-code from within \SV.}
-\label{lst:dpi}
 \end{lstlisting}
+%\caption{Short example showing how to use the \SV DPI to execute C-code from within \SV.}
+%\label{lst:dpi}
 
-\subsection{Constrained random verification}
+\subsection{Constrained Random Verification}
 
 Most UVM testbenches employ "Constrained Random Verification"\, (CRV) for generating test stimulus. This is as opposed to using directed testing, where input vectors are predefined to test a certain behaviour. With CRV, random test stimuli are generated. The "Constrained" part of CRV implies that these values aren't entirely random, but are chosen to fulfill a series of criteria. If eg. the DUT is an ALU with a 5-bit opcode field of which only 20 bit-patterns are used, it would be prudent to only generate the 20 valid opcodes for most test purposes. Specific tests could then be written to ensure proper operation if an invalid opcode was asserted.
 
@@ -724,11 +771,6 @@ The purpose of coverage collection, in this case functional coverage collection,
 
 \longlist{snippets/Cover.svh}{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}{lst:cov}
 
-%\begin{lstlisting}
-%	\inputminted{systemverilog}{snippets/Cover.svh}
-%	\caption{Examle SystemVerilog code showing how covergrups and coverpoints are organized.}
-%	\label{lst:cov}
-%\end{lstlisting}
 
 An example of functional coverage collection is seen in listing \ref{lst:cov} where the randomized values from before are covered. A \textit{covergroup} is a label used to collect relevant values under the same heading. A \textit{coverpoint} is a directive instructing the simulator that the given value should be monitored for changes. In the declaration of the coverpoint, several \textit{bins} are generated. These bins correspond to the bins of a histogram. Every time an event occurs which matches the declaration inside a bin, the counter associated with that bin is incremented by one. An event may cause multiple bins to increment at the same time.
 
@@ -744,13 +786,7 @@ In listing \ref{lst:usingcov}, the module from \cref{lst:usingcrv} has been expa
 
 \longlist{snippets/top.sv}{Showcasing how multiple random values are generated and sampled by the coverage collector.}{lst:usingcov}
 
-%\begin{lstlisting}
-%	\inputminted{systemverilog}{snippets/top.sv}
-%	\caption{Showcasing how multiple random values are generated and sampled by the coverage collector.}
-%	\label{lst:usingcov}
-%\end{lstlisting}
-
-In figure \ref{fig:coverage}, the result of running the 20 iterations is seen for coverpoints \texttt{BCD, A, VAL}. 
+In Figure \ref{fig:coverage}, the result of running the 20 iterations is seen for coverpoints \texttt{BCD, A, VAL}. 
 
 \begin{figure}[htbp]
 	\centering
@@ -760,7 +796,7 @@ In figure \ref{fig:coverage}, the result of running the 20 iterations is seen fo
 \label{fig:coverage}
 \end{figure}
 
-\subsection{C integration in Scala}
+\subsection{C Integration in Scala}
 The \SV DPI is a great addition to the verification workflow, as it allows the designer to easily implement a C model into the \SV testbench.
 Similar functionality is available in Scala by leveraging the Java Native Interface (JNI). This is an interface which allows Java / Scala programs to call native code, i.e. code compiled for the specific CPU it is running on. This is typically encountered as .DLL files on Windows or .so files on linux.
 
@@ -770,23 +806,11 @@ In listing \ref{lst:jni-scala} is shown an example of a Scala file with a native
 
 \longlist{snippets/Myclass.scala}{Example Scala code showing how to integrate native code in Scala.}{lst:jni-scala}
 
-%\begin{lstlisting}
-%\inputminted{scala}{snippets/Myclass.scala}
-%\caption{Example Scala code showing how to integrate native code in Scala.}
-%\label{lst:jni-scala}
-%\end{lstlisting}
-
 The annotation \texttt{@native} informs the Scala compiler that the function should be found in native code. The annotation \texttt{@nativeLoader} is necessary for use with the plugin. The name "native0"\, is the name of the current SBT project, appended with a 0.
 
 Once the above file has been written, the corresponding C header file is generated by running \texttt{sbt javah}. The contents of the generated header file should then be copied into a C code file, where the functions can be implemented. In this case, it may look like the contents of listing \ref{lst:jni-c}.
 
-\longlist{snippets/Myclass.c}{C implementation of the methods declared in Myclass in listing \ref{lst:jni-scala}.}{lst:jni-c}
-
-%\begin{lstlisting}
-%\inputminted{C}{snippets/Myclass.c}
-%\caption{C implementation of the methods declared in Myclass in listing \ref{lst:jni-scala}.}
-%\label{lst:jni-c}
-%\end{lstlisting}
+\longlist{snippets/Myclass.c}{C implementation of the methods declared in Myclass from listing \ref{lst:jni-scala}.}{lst:jni-c}
 
 Notice that primitives such as \texttt{int} can be autocast from a \texttt{jint}, whereas a string must be obtained used using the function pointers defined in the \texttt{JNIEnv} structure. Once this is done, a CMake makefile is generated by running \texttt{sbt "nativeInit cmake"}, and the C files are compiled using \texttt{sbt nativeCompile}. If all goes well, the code can then be run with \texttt{sbt run}. 
 
@@ -794,13 +818,6 @@ If changes are made to any of the function definitions or Scala file, no other s
 
 For more information regarding the plugin setup, see the \href{https://github.com/jodersky/sbt-jni}{plugin page on Github} or the file HowToJni.md in the \href{https://github.com/chisel-uvm/documentation}{documentation repository}.
 
-% *Explain what CRV is
-% *Explain what coverage is, how it works
-% *Show an example of a coverage histogram.
-% TODO Explain the basics of UVM testbenches
-% TODO Explain how the SV DPI works
-% Explain how the java JNI works
-% Collect it all together
 
 \section{Conclusion}
 

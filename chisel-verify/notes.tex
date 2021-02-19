@@ -1,0 +1,193 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{pslatex} % -- times instead of computer modern, especially for the plain article class
+\usepackage[colorlinks=false,bookmarks=false]{hyperref}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{comment}
+\usepackage{listings}
+%\usepackage{flushend} % even out the last page, but use only at the end when there is a bibliography
+%\usepackage{minted}		% For inserting code
+%\setminted[systemverilog]{
+%	tabsize=3
+%}
+%\setminted[C]{
+%	tabsize=3,
+%	breaklines
+%}
+%\setminted[scala]{
+%	tabsize=3,
+%	breaklines
+%}
+\usepackage{xspace}		% For using \SV with trailing spaces
+\usepackage{cleveref}	% Needed for correctly referencing listings
+
+\newcommand{\code}[1]{{\small{\texttt{#1}}}}
+\newcommand{\SV}{SystemVerilog\xspace}
+
+
+% fatter TT font
+\renewcommand*\ttdefault{txtt}
+% another TT, suggested by Alex
+% \usepackage{inconsolata}
+% \usepackage[T1]{fontenc} % needed as well?
+
+%\newcommand{\todo}[1]{{\emph{TODO: #1}}}
+\newcommand{\todo}[1]{{\color{olive} TODO: #1}}
+\newcommand{\martin}[1]{{\color{blue} Martin: #1}}
+\newcommand{\simon}[1]{{\color{green} Simon: #1}}
+\newcommand{\abcdef}[1]{{\color{red} Author2: #1}}
+\newcommand{\rewrite}[1]{{\color{red} rewrite: #1}}
+\newcommand{\ducky}[1]{{\color{orange} Richard: #1}}
+\newcommand{\kasper}[1]{{\color{purple} Kasper: #1}}
+\newcommand{\hjd}[1]{{\color{pink} Hans: #1}}
+
+% uncomment following for final submission
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\simon}[1]{}
+%\renewcommand{\kasper}[1]{}
+%\renewcommand{\ducky}[1]{}
+
+
+
+%%% ZF
+\usepackage{listings}
+\lstset{
+	columns=fullflexible,
+	%        basicstyle=\ttfamily\footnotesize,
+	basicstyle=\ttfamily\small,      
+	%columns=fullflexible, keepspaces=true,
+	numbers=left,    
+	numberblanklines=false,
+	captionpos=b,
+	%	breaklines=true,
+	escapeinside={@}{@},
+	numbersep=5pt,
+	language=C,
+	tabsize=2,
+	breakatwhitespace=true,
+	breaklines=true,
+	deletekeywords={for},
+	%        keywordstyle=\ttfamily
+	numbersep=5pt,
+	xleftmargin=.10in,
+	%xrightmargin=.25in
+}
+
+\newcommand{\longlist}[3]{{\lstinputlisting[float, caption={#2}, label={#3}, frame=tb, captionpos=b]{#1}}}
+
+\title{Further Ideas and Notes for ChiselVerify}
+
+\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
+Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
+\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+\textit{Technical University of Denmark}\\
+Lyngby, Denmark \\\\
+\textit{Department of Electrical Engineering and Computer Sciences} \\
+\textit{UC Berkeley}\\
+Berkeley, CA \\\\
+andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, s190057@student.dtu.dk, \\
+s163915@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
+}
+
+
+\begin{document}
+
+\maketitle \thispagestyle{empty}
+
+
+\begin{abstract}
+This is just a collection of notes that have been removed from the paper(s).
+\end{abstract}
+
+
+\section{Notes}
+
+
+\begin{itemize}
+\item Maybe more ideas: \url{https://www.youtube.com/watch?v=dbOi_Gboi_0}, \url{https://www.youtube.com/watch?v=4FCZLrauDcE}
+\item Higher-Order Hardware Design, meta-programming language and the actual hardware construction language are the same, usually Python or Perl scripts with strings
+\item Have a measurable objective (LoC UVM vs Scala, SystemVerilog vs Chisel)
+\item Chisel has all the Scala/Java tooling and libraries available, SystemVerilog is a niche language
+\item Rise level of tooling, not necessarily level of abstraction in HW description
+\item IDE
+\item Namespace with packets make it easier to combine IPs
+\item Industry issue is verification: how from Chisel to VHDL/Verilog
+\item How much ASIC design is done in DK? Revenue numbers?
+\item There are not enough HW designers and verification engineers available, so they shall be more productive
+\item Maybe this use case would be nice in the future:~\cite{s4noc:nocarc2019}
+\item Maybe also talk about teaching verification
+\end{itemize}
+
+\section{Background and State-of-the-Art}
+\label{sec:background}
+
+
+\begin{itemize}
+\item Verification (check what is current praxis)
+\item cocotb
+\item See pull request for ref to constraint random generation
+\item Related work \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
+\item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
+\end{itemize}
+
+\section{More Stuff to Explore}
+
+\paragraph{Co-simulation.}
+
+\todo{A figure would be nice.}
+
+\begin{itemize}
+\item One use case for evaluation: cosimulation of a RISC-V simulator (Tommy) with an OS RISC-V HW 
+\item Ptolemy~\cite{ptolemyII-book} can be used to co-simulate the environment, supporting a model based design.
+\item Integration of C/C++ based models in the verification with Scala
+\item Java/Scala in UVM
+\item Hw/sw co-verification with Scala and so on, e.g., run an application on a SW processor model exploring some hardware artifacts (could be S4NOC)
+\item Model based design (Jan) with co-simulation
+\end{itemize}
+
+\paragraph{Assertions.}
+
+\begin{itemize}
+\item assertions during simulation
+\item Assertion ave been long part in SW, begin of C, but seldom used in HW and more complex assertions are interesting, such as when req is asserted, an ack has to become active within 5 clock cycles
+\end{itemize}
+
+
+\paragraph{Test Coverage.} %This can probably be removed entirely or greatly reduced
+
+
+\begin{itemize}
+\item On coverage and cover points in proposal (coverage of the RTL hardware, but also on the generator (Jack's comment, see \url{https://gitter.im/freechipsproject/chisel3?at=5f63c878603d0b37f43b67f3})
+\item Also have range coverage on individual signals and the matrix of 2 or more (see UVM example).
+\end{itemize}
+
+
+
+\paragraph{Verification Framework.} %Maybe remove this and talk about it in the into
+
+
+
+\begin{itemize}
+\item Bus functional models
+\item Multiple languages
+\item Still talk about a small example taking it through all variations
+\item WP on VHDL generation from Chisel for better verification
+\item p69: HDL models are SW projects
+\end{itemize}
+
+
+\section{Related work}
+
+\todo{Talk about Kevin Lauefer's work and verification}
+
+
+\bibliographystyle{abbrv}
+\bibliography{../msbib,../chisel-uvm,../ftp-chisel/testing}
+
+
+\end{document}

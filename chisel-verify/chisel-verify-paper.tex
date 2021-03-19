@@ -47,11 +47,11 @@
 \newcommand{\hjd}[1]{{\color{pink} Hans: #1}}
 
 % uncomment following for final submission
-%\renewcommand{\todo}[1]{}
-%\renewcommand{\martin}[1]{}
-%\renewcommand{\simon}[1]{}
-%\renewcommand{\kasper}[1]{}
-%\renewcommand{\ducky}[1]{}
+\renewcommand{\todo}[1]{}
+\renewcommand{\martin}[1]{}
+\renewcommand{\simon}[1]{}
+\renewcommand{\kasper}[1]{}
+\renewcommand{\ducky}[1]{}
 
 
 
@@ -96,8 +96,8 @@ Martin Schoeberl\inst{1} \orcidID{0000-0003-2366-382X}}
 \institute{Technical University of Denmark\\
 Department of Applied Mathematics and Computer Science\\
 Lyngby, Denmark\\
-\email{andrew.dobis@alumni.epfl.ch}, \email{s190057@student.dtu.dk}, \email{s163915@student.dtu.dk}, \email{s183735@student.dtu.dk},\\
-\email{s186083@student.dtu.dk}, \email{masca@dtu.dk} \and
+\email{andrew.dobis@alumni.epfl.ch}, \email{s186083@student.dtu.dk}, \email{s183735@win.dtu.dk}, \email{s190057@student.dtu.dk},
+\email{s163915@student.dtu.dk}, \email{simon.thye@gmail.com}, \email{masca@dtu.dk} \and
 University of California, Berkeley\\
 Department of Electrical Engineering and Computer Sciences\\
 UC Berkeley\\
@@ -136,17 +136,16 @@ is the lack of modern tools to attack it. To be able to verify a design in such 
 method, one needs to have efficient tools both for design and verification.
 
 This paper thus proposes ChiselVerify, an open-source tool for verifying
-circuits described in any Hardware Description Language. It builds on top of the Chisel
-hardware construction language and uses Scala to drive the verification using a testing strategy 
-inspired by the Universal Verification Methodology (UVM) and adapted for designs described in Chisel.
+circuits described in Chisel. It builds on top of the Chisel
+hardware construction language and uses Scala to drive the verification process.
 ChiselVerify is created based on three key ideas.
 First, our solution highly increases the productivity of the verification engineer, by allowing hardware testing to be done in a modern high-level programming environment.
 Second, the framework functions with any hardware description language thanks to the flexibility of Chisel blackboxes.
 Finally, the solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
 
-We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
-functional coverage, constrained-random verification, bus functional models, transaction-level modelling and much more
-during the verification process of a design in a contemporary high-level programming ecosystem.
+%We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
+%functional coverage, constrained-random verification, bus functional models, transaction-level modelling and much more
+%during the verification process of a design in a contemporary high-level programming ecosystem.
 \end{abstract}
 
 \keywords{digital design \and verification \and Chisel \and Scala}
@@ -159,13 +158,13 @@ Performance increase with general-purpose processors has come to a halt.
 The only way to achieve higher performance or lower energy consumption
 is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
 These accelerators can be built in chips or in FPGAs in the cloud.
-The production of a chip is costly. Therefore, it is essential to get
-the design right at the first tape-out. Thorough testing and verification of the design is mandatory.
+%The production of a chip is costly. Therefore, it is essential to get
+%the design right at the first tape-out. Thorough testing and verification of the design is mandatory.
 
 To efficiently develop and verify those accelerators, we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
 We believe that we need to adapt to agile hardware development~\cite{henn-patt:turing:2019}.
 
-Furthermore, as accelerators become part of the cloud service, i.e. FPGAs in the cloud,
+Furthermore, as accelerators become part of the cloud service, i.e., FPGAs in the cloud,
 software developers will increasingly need to adapt critical algorithms to FPGAs to enhance performance.
 Hence, it is imperative to make accelerator design accessible for software developers.
 By adapting hardware accelerator design to the methods and tools of contemporary software design,
@@ -189,11 +188,11 @@ We aim to raise the tooling level for a digital design to increase productivity.
 The workload demanded for the verification (testing) of digital systems is about double the time of developing
 them in the first place.
 
-Using the power and flexibility of Chisel Blackboxes, our tool can be used to verify
-designs implemented in any of the major hardware description languages (i.e., VHDL or Verilog)
-with little overhead. Furthermore, golden models described in any programming language can be
-used using the Java JNI. Our work builds upon existing open-source projects and 
-is thus also open-source.
+%Using the power and flexibility of Chisel Blackboxes, our tool can be used to verify
+%designs implemented in any of the major hardware description languages (i.e., VHDL or Verilog)
+%with little overhead. Furthermore, golden models described in any programming language can be
+%used using the Java JNI. Our work builds upon existing open-source projects and 
+%is thus also open-source.
 
 We developed an object-oriented and functional framework for verification in Scala.
 This framework is inspired by UVM, but leverages Scala's conciseness with the
@@ -203,47 +202,49 @@ showed the that a test written with UVM was about 800 lines of code, where a Sca
 test was around 80 lines of code~\cite{verify:chisel:2020}.
 However, UVM supports more functionality that a plain ChiselTest in Scala.
 
-Within our verification framework, we support mixed language verification.
-Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
-we use ChiselTest as a driver for the open-source Verilog simulator Verlator.
-With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
-we can translate VHDL into Verilog.
+%Within our verification framework, we support mixed language verification.
+%Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
+%we use ChiselTest as a driver for the open-source Verilog simulator Verlator.
+%With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
+%we can translate VHDL into Verilog.
+%
+%A verification method is only usable when it can handle mixed-source designs.
+%This means a Scala driven method must be able to test components written in Verilog,
+%VHDL, and SystemVerilog.
+%
+%Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
+%Therefore, it is relatively easy to integrate Verilog components when wrapped into a black box.
+%However, this forces Chisel to use Verilator instead of Treadle to run the simulation, impacting
+%startup time.
+%
+%Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
+%open-source solution available for VHDL simulation. For companies with a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow.
+%All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
+%
+%To alleviate this issue, we use the open-source Yosys synthesis suite \cite{Yosys}.
+%Yosys is an open-source digital hardware synthesis suite for Verilog.
+%Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl},
+%an open-source VHDL simulator. By using Yosys in conjunction with GHDL,
+%VHDL files are compiled to an RTL-based intermediate representation,
+%which is then written to a Verilog file using Yosys.
+%GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008.
+%A working solution named VHDL2Verilog has been made for this, which has been
+%tested with certain simple VHDL designs \cite{vhdl2verilog}.
 
-A verification method is only usable when it can handle mixed-source designs.
-This means a Scala driven method must be able to test components written in Verilog,
-VHDL, and SystemVerilog.
+This paper is an extension of \cite{verify:chisel:2020}. Then main contributions of
+this paper is ChiselVerify, an open-source verification library for hardware designs.
 
-Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
-Therefore, it is relatively easy to integrate Verilog components when wrapped into a black box.
-However, this forces Chisel to use Verilator instead of Treadle to run the simulation, impacting
-startup time.
+The paper is organized in 7 sections.
+Section 2 describes background and related work.
+Section 3 describes our addition of constraint random verification to Chisel.
+Section 4 gives an example of a bus functional model in Chisel for AXI.
+Section 5 describes our addition of coverage to Chisel tests.
+Section 6 explores ChiselVerify on a use case from industry.
+Section 7 concludes.
 
-Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
-open-source solution available for VHDL simulation. For companies with a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow.
-All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
-
-To alleviate this issue, we use the open-source Yosys synthesis suite \cite{Yosys}.
-Yosys is an open-source digital hardware synthesis suite for Verilog.
-Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl},
-an open-source VHDL simulator. By using Yosys in conjunction with GHDL,
-VHDL files are compiled to an RTL-based intermediate representation,
-which is then written to a Verilog file using Yosys.
-GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008.
-A working solution named VHDL2Verilog has been made for this, which has been
-tested with certain simple VHDL designs \cite{vhdl2verilog}.
-
-
-This paper is an extension of \cite{verify:chisel:2020}.
-
-\martin{Add contributions and overview of the paper}
-
-In the following sections, we will explore the different backgrounds on which ChiselVerify was based.
 
 \section{Background and State-of-the-Art}
 \label{sec:background}
-
-\martin{For a paper we should better have related work instead of background.
-Maybe also add some of Kasper's words on UVM from the technical report.}
 
 %\section{Related work}
 
@@ -263,14 +264,6 @@ Scala/Chisel brings object-oriented and functional programming into the world of
 For hardware generation and testing, the full Scala language and Scala and Java libraries are available.
 As Scala and Java's full power is available to the verification engineer,
 the verification process is also made more efficient.
-
-
-Chisel is a hardware construction language embedded in Scala.
-Chisel allows the user to write hardware generators in Scala, an object-oriented and functional language.
-For example, we read in the string based schedules for a network-on-chip~\cite{s4noc:nocarc2019}
-%\footnote{available at: \url{https://github.com/t-crest/s4noc/tree/master/noc/vhdl/generated}}
-and convert them with a few lines of Scala code into a hardware table to
-drive the multiplexer of the router and the network interface.
 
 Chisel is solely a hardware \emph{construction} language, and thus all valid Chisel code
 maps to synthesizable hardware.
@@ -365,15 +358,15 @@ class frame_t;
     }
 endclass
 \end{lstlisting}
-Listing \ref{lst:randobjsysv} shows a class named "frame\_t". It uses the "rand" keyword for variables "len", "ptype", and payload.
-Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the ``common'' "unicast,"
-and "multicast" constraint groups. Each class in SystemVerilog has an intrinsic method called "randomize()," which causes new values to be selected
+Listing \ref{lst:randobjsysv} shows a class named \code{frame\_t} in SystemVerilog. It uses the \code{rand} keyword for variables \code{len}, \code{ptype}, and \code{payload}.
+Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the \code{common},  \code{unicast},
+and \code{multicast} constraint groups. Each class in SystemVerilog has an intrinsic method called \code{randomize()}, which causes new values to be selected
 for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
-``rand'' variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
+\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
 paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. In the research process, a
 CSP solver was implemented in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components.
 The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems.
-The second component is a small DSL, which allows users to declare and randomize objects.
+The second component is a domain specific language, which allows users to declare and randomize objects.
 
 \begin{lstlisting}[language=scala, caption={Random object in Scala}, label={lst:randobjscala}]
 
@@ -416,8 +409,8 @@ class Frame extends Random {
 \end{lstlisting}
 
 Listing \ref{lst:randobjscala}, shows an example of random a object. Contrary to SystemVerilog, to declare a random object, the user has to extend
-the class from the Random base-class provided by the library. After that each random variable has to be declared of type "RandInt" and initialized
-with the "rand" macro. Finally, like for SystemVerilog, in Scala inheriting the Random base class exposes the method "random" which assigns random
+the class from the \code{Random} base-class provided by the library. After that each random variable has to be declared of type \code{RandInt} and initialized
+with the \code{rand} macro. Finally, like for SystemVerilog, in Scala inheriting the Random base class exposes the method \code{random} which assigns random
 values to the random fields of the class.
 
 \section{Verification of AXI4 Interfaced Components}
@@ -425,11 +418,11 @@ values to the random fields of the class.
 Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces,
 which enable greater reuse. One of such standard interfaces is AXI4, an open standard by ARM \cite{axi4standard},
 which is used in particular to connect processor nodes to memories.
-As such, most available synthesis tools, including Xilinx' Vivado,
+As such, most available synthesis tools, including Xilinx's Vivado,
 provide IP generators whose output IP blocks are equipped with AXI interfaces
 along with optional verification structures written in (System-)Verilog \cite{axi4vip}.
 
-Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel -- hence, why we include an example BFM based around ChiselTest in our framework.
+Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel. Therefore, we include an example BFM based around ChiselTest in our framework.
 
 \subsection{Introduction to AXI4}
 The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five separate channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The five channels are:
@@ -509,7 +502,7 @@ The example above is taken for a simple test, where we are only testing the path
 Treadle thus allows us to obtain coverage at the FIRRTL level. A more interesting result would be if the FIRRTL line coverage would be mapped to the original Chisel source. This is possible but challenging, since Treadle only has access to the original source code through \textit{Source locators} which map some of the FIRRTL lines back to Chisel. This means that the code can only be partially mapped and the remainder will have to be reconstructed using some smart guessing.\\
 
 \paragraph{Functional Coverage Directly in Scala}
-Functional Coverage is on the principal tools used during the verification process, since it allows one to have a measurement of \textit{"how much of the specification has been implemented correctly"}. A verification framework would thus not be complete without constructs allowing one to define a verification plan and retrieve a functional coverage report. The main language used for functional coverage is \textit{SystemVerilog}, which is why our solution is based on the same syntax. There are three main components to defining a verification plan: 
+Functional coverage allows one to have a measurement of \textit{"how much of the specification has been implemented correctly"}.The main language used for functional coverage is \textit{SystemVerilog}, which is why our solution is based on the same syntax. There are three main components to defining a verification plan: 
 \begin{itemize}
 \item \texttt{Bin}: Defines a range of values that should be tested for (i.e. what values can we expect to get from a given port).
 \item \texttt{CoverPoint}: Defines a port that needs to be sampled in the coverage report. These are defined using a set of bins.
@@ -523,7 +516,7 @@ In order to implement said elements in Scala we needed to be able to do the foll
 \item Keep track of bins to sampled value matches (using a sort of DataBase).
 \item Compile all of the results into a comprehensible Coverage Report.
 \end{itemize}
-Implementing these elements was done using a structure where we had a top-level element, known as our \texttt{Coverage Reporter} which allows the verification engineer to define a verification plan using the \texttt{register} method, which itself stores the \texttt{coverpoint} to \texttt{bin} mappings inside of our \texttt{CoverageDB}. Once the verification plan is defined, we can sample our ports using the \texttt{sample} method, which is done by hooking into \textit{Chisel Testers2} in order to use its peeking capabilities. At the end of the test suite a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
+Implementing these elements was done using a structure where we had a top-level element, known as our \texttt{CoverageReporter} which allows the verification engineer to define a verification plan using the \texttt{register} method, which itself stores the \texttt{coverpoint} to \texttt{bin} mappings inside of our \texttt{CoverageDB}. Once the verification plan is defined, we can sample our ports using the \texttt{sample} method, which is done by hooking into \textit{Chisel Testers2} in order to use its peeking capabilities. At the end of the test suite a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter
 cr.register(
@@ -572,15 +565,13 @@ One final element that our framework offers is the possibility to gater delayed 
 
 
 
-\section{Use Case: Hardware sorting}
+\section{Use Case: Sorting in Hardware}
 
-In the process of the research a use case provided by Microchip was implemented in order to apply developed testing and verification features.
-In the following section the implementation of the use case and the connected testing will be discussed. The code can be found in the 
-\href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/main/scala/heappriorityqueue}{project repository}.
+In the process of the research we implemented a use case provided by Microchip to evaluate our verification library.
 
 \subsection{Specification}
 
-The provided specification document describes a priority queue which can be used in real time systems for the scheduling of deadlines by providing information about the 
+The provided specification document describes a priority queue which can be used in real-time systems for the scheduling of deadlines by providing information about the 
 next timer expiration to the host system. Sorting of the enqueued elements is conducted by applying the heap sort algorithm. Elements are structured in a so-called 
 heap which is a tree data structure. The tree needs to be balanced in order for the
 timer closest to expiring to get to the top of the tree and thus to the head of the queue. This means verifying that every parent node is smaller than the connected child nodes.
@@ -598,12 +589,12 @@ ID is therefore given together with the element at insertion, where ID generatio
 
 \subsection{Implementation}
 
-The implemented priority queue is described in chisel.
+The implemented priority queue is described in Chisel.
 It is split into 3 modules: The \texttt{Heapifier}, responsible for the sorting, the \texttt{QueueControl}, taking care
 of the general control flow in the queue and the \texttt{Memory} module which handles memory accesses and can search the memory for a specific reference 
 ID.
 
-In order for the priority queue to work efficiently it is crucial to optimize memory accesses. Therefore a layout is proposed in the specification where all 
+In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. Therefore a layout is proposed in the specification where all 
 child elements of a certain node are stored together under one memory address. This allows single memory access fetches of all $k$ children. Since 
 the root node has no siblings it is stored alone in a register. This enables even faster access in certain scenarios which are discussed later on.
 
@@ -624,7 +615,7 @@ only 3 cycles (1 fetch, 2 write backs) are required per swap. The state diagram 
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.35\textwidth]{HeapifierStateDiagram.pdf}
+	\includegraphics[width=0.7\textwidth]{HeapifierStateDiagram.pdf}
 	\caption{The state diagram of the \texttt{Heapifier}}
 	\label{fig:pq_heapifier_state}
 \end{figure}
@@ -636,7 +627,7 @@ being saved in a register. The achieved best and worst case insertion as well as
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.45\textwidth]{QueueControlStateDiagram.pdf}
+	\includegraphics[width=1\textwidth]{QueueControlStateDiagram.pdf}
 	\caption{The state diagram of the \texttt{QueueControl}}
 	\label{fig:pq_control_state}
 \end{figure}
@@ -679,16 +670,20 @@ wrapper classes were employed. These make it easy to think on a transaction or
 operation based level when writing tests.
 
 In the test of the priority queue, purely random pokes are produced. In order to evaluate how well these pokes were spread over the spectrum 
-of possible or interesting input combinations, the developed functional coverage feature is used. This allows to evaluate whether interesting 
+of possible or interesting input combinations, the functional coverage feature of ChiselVerify is used. This allows to evaluate whether interesting 
 or important edge cases are reached by the random input sequence. Furthermore, metrics on how many of the generated pokes actually are valid 
-operations, are collected. The average insertion and removal times measured under a random test run are shown in table \ref{tab:pq_simres}.
-These numbers are of course heavily dependent on access patterns and are as such only representative for the completely random test case used here.
-The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
+operations, are collected. The average insertion and removal times measured under a random test run are shown in Table \ref{tab:pq_simres}.
+These numbers are dependent on access patterns and are as such only representative for the random test case used here.
+%The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
 
 
 
 \section{Conclusion}
 In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought functional coverage, statement coverage, constraint random verification and transactional modelling to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
+
+\subsection*{Source Access}
+
+This work is in open source and hosted at GitHub: \url{https://github.com/chiselverify/chiselverify}
 
 \subsection*{Acknowledgment}
 

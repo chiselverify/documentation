@@ -1,4 +1,5 @@
-\documentclass[conference]{IEEEtran}
+\documentclass[runningheads]{llncs}
+
 
 \usepackage{cite}
 \usepackage{pslatex} % -- times instead of computer modern, especially for the plain article class
@@ -83,17 +84,40 @@
 \title{ChiselVerify: An Open-Source Verification Method with
 Chisel and Scala}
 
-\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
-Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
-\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
-\textit{Technical University of Denmark}\\
-Lyngby, Denmark \\\\
-\textit{Department of Electrical Engineering and Computer Sciences} \\
-\textit{UC Berkeley}\\
-Berkeley, CA \\\\
-andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, s190057@student.dtu.dk, \\
-s163915@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
+\author{Andrew Dobis\inst{1} \orcidID{0000-0001-9663-1672} \and
+Tjark Petersen\inst{1} \orcidID{0000-0002-0239-511X} \and 
+Kasper Hesse\inst{1} \orcidID{0000-0003-2455-1360} \and
+Enrico Tolotto\inst{1} \orcidID{0000-0001-5921-0772} \and
+Hans Jakob Damsgaard\inst{1} \orcidID{0000-0001-8409-0282} \and 
+Simon Thye Andersen\inst{1} \and
+Richard Lin\inst{2} \and
+Martin Schoeberl\inst{1} \orcidID{0000-0003-2366-382X}}
+
+\institute{Technical University of Denmark\\
+Department of Applied Mathematics and Computer Science\\
+Lyngby, Denmark\\
+\email{andrew.dobis@alumni.epfl.ch}, \email{s190057@student.dtu.dk}, \email{s163915@student.dtu.dk}, \email{s183735@student.dtu.dk},\\
+\email{s186083@student.dtu.dk}, \email{masca@dtu.dk} \and
+University of California, Berkeley\\
+Department of Electrical Engineering and Computer Sciences\\
+UC Berkeley\\
+Berkeley, CA\\
+\email{richard.lin@berkeley.edu}
 }
+
+\authorrunning{A. Dobis et al.}
+
+%\author{\IEEEauthorblockNAndrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
+%Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
+%\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+%\textit{Technical University of Denmark}\\
+%Lyngby, Denmark \\\\
+%\textit{Department of Electrical Engineering and Computer Sciences} \\
+%\textit{UC Berkeley}\\
+%Berkeley, CA \\\\
+%andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, s190057@student.dtu.dk, \\
+%s163915@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
+%}
 
 
 \begin{document}
@@ -125,9 +149,7 @@ functional coverage, constrained-random verification, bus functional models, tra
 during the verification process of a design in a contemporary high-level programming ecosystem.
 \end{abstract}
 
-\begin{IEEEkeywords}
-digital design, verification, Chisel, Scala
-\end{IEEEkeywords}
+\keywords{digital design \and verification \and Chisel \and Scala}
 
 \section{Introduction}
 \label{sec:introduction}
@@ -674,7 +696,7 @@ This work has been performed as part of the
 ``InfinIT -- Innovationsnetv{\ae}rk for IT'', UFM case no. 1363-00036B,
 ``High-Level Design and Verification of Digital Systems''.
 
-\bibliographystyle{abbrv}
+\bibliographystyle{splncs04}
 \bibliography{../msbib,../chisel-uvm,../ftp-chisel/testing}
 
 

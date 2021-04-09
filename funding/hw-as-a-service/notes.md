@@ -7,3 +7,8 @@ The project addresses the following: (1) how to make hardware accelerates in the
  * WS6, WS7
  * Core partners: DTU, ITU
  * External partners: TBD, invitation email is sent out
+
+
+## Note:
+
+ * There is some good text on co-verification in the ftp-chisel folder as a Word document from ?

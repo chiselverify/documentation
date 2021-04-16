@@ -12,6 +12,7 @@ The project addresses the following: (1) how to make hardware accelerates in the
 ## Note:
 
  * There is some good text on co-verification in the ftp-chisel folder as a Word document from ?
+ * Accelerators are needed for AI and krypto stuff
 
 
 ## The Word template:

@@ -144,7 +144,14 @@ In a Chisel design, the source code is first compiled into an intermediate repre
 \item Mid-FIRRTL, which is a form where abstract constructs are simplified, i.e., loops are unrolled and arrays are flattened.
 \item Low-FIRRTL, which maps to RTL code with high-level conditional statements turned into multiplexers.
 \end{itemize}
-Throughout this optimisation process, custom FIRRTL compiler passes, known as \textit{Transforms}, can be used to modify the design. This is often done when trying to apply simplifications to the design to make the generated hardware more optimal~\cite{firrtl}.
+Throughout this optimisation process, custom FIRRTL compiler passes, known as \textit{Transforms}, can be used to modify the design. This is often done when trying to apply simplifications to the design to make the generated hardware more optimal~\cite{firrtl}.  
+  
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{Chisel_FIRRTL_VERILOG.pdf}
+    \caption{Overview of the Chisel pipeline.}
+\label{fig:expr}
+\end{figure}
 
 \subsection{Code Coverage}
 In software development, code coverage is used as a metric to measure the completeness of a testing suite. In recent years, these techniques, originally used for software, have been brought into the hardware verification universe. The coverage metric can be defined in multiple ways, but in this paper we will mostly focus on two key aspects of it: statement coverage and functional coverage. 

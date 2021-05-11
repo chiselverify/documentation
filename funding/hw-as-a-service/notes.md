@@ -48,9 +48,12 @@ Hardware as a Service
 Short summary (3-5 lines)
 
 
-Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The project addresses the following: (1) how to make hardware accelerates in the cloud accessible for software developers, (2) how hardware verification can learn from software testing, and (3) co-verification of software and hardware with modern tooling. The project requests funding for two PhD students at DTU and ITU. The project partners are Danish companies in the digital design domain.
+Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The project addresses: (1) how to make hardware accelerates in the cloud accessible for software developers, (2) how hardware verification can learn from software testing, and (3) co-verification of software and hardware with modern tooling. The project requests funding for two PhD students at DTU and ITU. 
 
 **** following not in use ****
+
+The project partners are Danish companies in the digital design domain.
+
  The main issue is the usage of old tools compared to tools for programming those devices. This project aims to apply tools and methods from software development to hardware development to increase productivity. Danish firms will benefit from the results of this project.
 
 
@@ -136,9 +139,7 @@ We will build a combination of open-source tools for verifying circuits describe
 %Furthermore, our aim is to build on open-source projects. Therefore, our
 %work will be in open-source as well.
 
-The idea is to start the development of a framework, which will consist of both methods and tools which will allow failing regressions found as part of system level verification and qualification in the lab to be moved back into a simulation environment in which the visibility into the system can be increased for better debugging. Ideally, the same verification framework used for system level verification in the lab can be reused in simulation to allow a sub-set of the found failing regressions to be re-executed in simulation with full visibility into the system.
-
-One idea is to establish a co-simulation framework which would allow test-cases currently executing in a Napatech proprietary test framework used for system qualification in the lab to also be executed in the co-simulation framework. The co-simulation framework could be based on QEMU for software emulation combined with RTL simulators for emulation/simulation of the digital hardware entities. Several challenges of this approach must be addressed, e.g. regarding the ability to speed up parts of the system (e.g. in a fast-forward mode), the ability to transfer the state of the system from the emulated hardware setup in the lab into the simulation environment and vice versa and in general to tackle the notion of time and synchronization between the different modules being simulated. It is important that the methods and framework developed can be used in a UVM based verification methodology. It would also be relevant to investigate the use of the portable stimuli specification in this context.
+The idea is to start the development of a co-simulation framework, which will consist of both methods and tools which will allow failing regressions found as part of system level verification and qualification in the lab to be moved back into a simulation environment. Ideally, the same verification framework used for system level verification in the lab can be reused in simulation to allow a sub-set of the found failing regressions to be re-executed in simulation with full visibility into the system. This co-simulation framework will allow test-cases currently executing in a Napatech proprietary test framework used for system qualification in the lab to also be executed in the co-simulation framework. The co-simulation framework could be based on QEMU for software emulation combined with RTL simulators for emulation/simulation of the digital hardware entities.
 
 A grand hardware verification objective would be to verify the functional correctness of all realistic run-time scenarios. To this end, code coverage metrics, in combination with software simulation, remain to be an essential way in quantifying verification completeness and identifying inadequately exercised design aspects. The challenge, however, lies in *how to achieve high cove coverage automatically*.
 

@@ -34,10 +34,10 @@
 
 % uncomment following for final submission
 %\renewcommand{\todo}[1]{}
-\renewcommand{\martin}[1]{}
-\renewcommand{\simon}[1]{}
-\renewcommand{\kasper}[1]{}
-\renewcommand{\ducky}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\simon}[1]{}
+%\renewcommand{\kasper}[1]{}
+%\renewcommand{\ducky}[1]{}
 
 
 %%% ZF
@@ -114,6 +114,94 @@ We evaluate our approach with an industry-provided use case.
 %
 %
 %
+\section{TODO and Reviews}
+
+\begin{itemize}
+\item Discuss the reiews
+\end{itemize}
+
+Dear Martin Schoeberl,
+thank you very much for submitting your work to the ARCS2021 conference. We regret to inform you that your paper entitled
+
+Improving the Verification Efficiency of Chisel Designs with Multi-Level Code Coverage
+
+has not been accepted on this occasion. Reviews have been included below.
+
+All papers were reviewed by 3-5 program committee members. We selected the papers according to their technical merit and suitability for the overall conference program. We are confident that a strong program is now under preparation for ARCS, and look forward to seeing you there! Further information will soon be announced at the ARCS webpage.
+
+Best regards,
+Lars Bauer, Thilo Pionteck (PC Chairs)
+
+SUBMISSION: 1
+TITLE: Improving the Verification Efficiency of Chisel Designs with Multi-Level Code Coverage
+
+
+----------------------- REVIEW 1 ---------------------
+SUBMISSION: 1
+TITLE: Improving the Verification Efficiency of Chisel Designs with Multi-Level Code Coverage
+AUTHORS: Andrew Dobis, Enrico Tolotto, Hans Jakob Damsgaard, Kasper Hesse, Tjark Petersen and Martin Schoeberl
+
+----------- Overall evaluation -----------
+SCORE: 2 (accept)
+----- TEXT:
+Moving the verification from the Verilog/Systemverilog to the Chisel stage, allows for a verification at an earlier stage and therefore makes it easier for the systemdesigner.
+Also the proposed algorithm allows the verifcation at various stages and therefore allows the systemdesigner to choice the best stage for a specific verification task.
+
+The paper is written in a nice and understandable way. The topic does not allow for many pictures and the authors tried their best, but a picture about the interactions between Verilog, FIRRTL, Chisel and its compilers would be nice.
+
+\martin{Already added by Andrew :-)}
+
+The addition of the proposed work to the chisel repository shows the value of this work.
+
+\martin{Nice, positive review}
+
+
+
+----------------------- REVIEW 2 ---------------------
+SUBMISSION: 1
+TITLE: Improving the Verification Efficiency of Chisel Designs with Multi-Level Code Coverage
+AUTHORS: Andrew Dobis, Enrico Tolotto, Hans Jakob Damsgaard, Kasper Hesse, Tjark Petersen and Martin Schoeberl
+
+----------- Overall evaluation -----------
+SCORE: 1 (weak accept)
+----- TEXT:
+The paper describes an approach to add code coverage analysis to Chisel. Chisel is a high level hardware description language embedded in Scala. Unfortunatly, Chiel itself does not offer much functionality for code coverage. The authors first describe how code coverage can be done on the lower levels, since Chisle translates to FIRRTL and then to VERILOG. So coder coverage analysdis can be done on these two levels. Basic coverage is also provided on Chisel level, so the authors propose an extension to allow functional coverage analysis directly on Chisel level. This is a important approach. However, reading the paper I initially had difficulties to find out the contribution of the authors. More than 3/4 of the paper describe existing approaches before comming to the authors contribution. This is something that needs improvement, either by cutting out well known parts or at least by marking more clearly the autors' contribution. Nevertheless, since the topi is very interestin!
+g I weakly recommend the paper for acception.
+
+
+
+----------------------- REVIEW 3 ---------------------
+SUBMISSION: 1
+TITLE: Improving the Verification Efficiency of Chisel Designs with Multi-Level Code Coverage
+AUTHORS: Andrew Dobis, Enrico Tolotto, Hans Jakob Damsgaard, Kasper Hesse, Tjark Petersen and Martin Schoeberl
+
+----------- Overall evaluation -----------
+SCORE: -2 (reject)
+----- TEXT:
+The paper describes approaches to improve the verification efficiency of hardware designs which use Chisel, FIRRTL or Scala specifications for design entry. Goal is to create coverage reports on statements and functions traversed in Chisel-based code during test runs. 
+
+The motivation of the authors, to help overcoming an inherent deficiency of Chisel-based design entries in terms of design verification, seems to be well founded. From this perspective, the submission could be of interest to the hardware design community. However, in terms of its scientific merits, the paper has a number of serious flaws:
+- Per the description in section 6, the verification plan with the specification of the cover points and bins has to be created manually. Methodology wise, how does this go beyond the straightforward specifications of manual test cases? How can this approach ensure that all necessary, pertinent cover points and bins are listed? The value of the outcome, the coverage report, entirely depends on the skill of the developer to specify the relevant cover points and bins. This is the known and old dilemma if designers write their own test specs. The doubts of the reviewer on the methodological novelty is also raised by the following sentence in the paper (last sentence before section 6.1): ``The concepts are directly taken from SystemVerilog, so it should be accessible to anyone coming from that environment.'' What's new here and goes beyond SystemVerilog?
+- The evaluation of the industry provided use case, a heap-based priority queue supporting scheduling tasks in real-time systems, falls very short. It is said that there are 5 cover points, each having up to 3 bins and 2 cross points each having up to 5 cross bins, being specified, but why is it necessary to specify exactly those points and bins in order to ensure coverage for the design at hand? I couldn't find any information that can be generalized for other designs, nor did I see any quantitative results reported for this use case.
+
+The value of the paper would be significantly improved if it could clarify what aspects of the verification plan generation process may be automated and supported by a corresponding tool, or how a tool could support the developer in formulating a comprehensive but not exhaustive verification plan. For the time being, the message is that the value of the coverage report entirely depends on the manually created verification plan. There is very little / no novelty in this ``method''. 
+
+The introduction declares the two most widely used HDLs as outdated and inefficient (kind of ignoring that SystemVerilog is the natural successor to Verilog - DRAM is also outdated, as all computing systems use DDR SDRAM these days, but its nevertheless DRAM). Authors might possibly rethink this general positioning of Chisel vs. other HDLS, as in the end, they are  "borrowing" verification concepts from exactly these HDLs - which is fully legitimate. For now, designers using SystemC or SystemVerilog for design entry rather see themselves confirmed in their choice.
+
+
+
+----------------------- REVIEW 4 ---------------------
+SUBMISSION: 1
+TITLE: Improving the Verification Efficiency of Chisel Designs with Multi-Level Code Coverage
+AUTHORS: Andrew Dobis, Enrico Tolotto, Hans Jakob Damsgaard, Kasper Hesse, Tjark Petersen and Martin Schoeberl
+
+----------- Overall evaluation -----------
+SCORE: -2 (reject)
+----- TEXT:
+This paper extends the Chisel system to allow for verification. However, the paper is more into development or implementation rather than research, and thus find it hard to accept.
+
+\martin{We simply ignore this ignorant ``review''.}
+
 \section{Introduction}
 \label{sec:objectives}
 As time passes, contemporary hardware design is met with tighter and tighter development and verification time constraints. This is added to the fact that, with the halting of Moore's law, hardware designers are turning to domain-specific accelerators in order to keep up with the ever-increasing performance demands~\cite{henn-patt:turing:2019}. This means that more and more hardware must be designed from scratch in shorter and shorter time periods~\cite{domain-hw-acc:2020}. However, the two most widely used hardware description languages (i.e., VHDL and Verilog) are outdated and inefficient. To solve said problem, researchers at the University of California in Berkeley proposed Chisel~\cite{chisel:dac2012}, a Scala embedded high-level hardware construction language.
@@ -287,7 +375,7 @@ coverageFailOnMinimum := false
 coverageHighlighting := true
 \end{verbatim}
 % Running a test is still just a matter of running e.g. \texttt{sbt test}, while generating a coverage report requires running \texttt{sbt coverageReport} afterwards, as Scoverage otherwise simply generates coverage databases.
-Running the test and coverage report will create a set of HTML files. The page may optionally include the original source files with statements that were executed during the test marked in green. The global coverage results are also printed to \textt{stdout}.
+Running the test and coverage report will create a set of HTML files. The page may optionally include the original source files with statements that were executed during the test marked in green. The global coverage results are also printed to \texttt{stdout}.
 %in the terminal:
 %\begin{verbatim}
 %[info] Statement coverage.: 100.00%

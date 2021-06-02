@@ -440,49 +440,44 @@ demonstrating a module's behavior from a temporal perspective.
 \todo{Explain the basic on the verification library - Martin}
 
 \subsection{Constraint Random Verification}
-The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct''
-testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming.
-Constraint programming (CP) is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic
-programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
-With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user's
-perspective. A subset of these problems is the so-called Constraint Satisfaction Problems (CSP), which are mathematical problems defined as a
-set of objects such that their state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous
-collection of constraints.
+The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct'' testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming. Constraint programming is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
 
-% MS: verilog does not work on my Latex
-%\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}, style={verilog-style}]
-\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}]
-typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
+Constraint random verification is a combined effort of constraint programming and coverage-based methodologies. By utilizing constraint random inputs, a verification engineer can run Monte Carlo-style tests which, statistically, cover many interesting test cases with relatively few input combinations whose validity is guaranteed by predefined constraints. This method avoids the potential issue of tests failing due to invalid input combinations that would never appear during regular operation \hjd{Needs citation.}.
 
-class frame_t;
-    rand pkt_type ptype;
-    rand integer len;
-    rand bit  [7:0] payload [];
-    constraint common {
-        payload.size() == len;
-    }
-    // Constraint the members
-    constraint unicast {
-        len <= 2;
-        ptype == UNICAST;
-    }
-    // Constraint the members
-    constraint multicast {
-        len >= 3;
-        len <= 4;
-        ptype == MULTICAST;
-    }
-endclass
-\end{lstlisting}
-Listing \ref{lst:randobjsysv} shows a class named \code{frame\_t} in SystemVerilog. It uses the \code{rand} keyword for variables \code{len}, \code{ptype}, and \code{payload}.
-Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the \code{common},  \code{unicast},
-and \code{multicast} constraint groups. Each class in SystemVerilog has an intrinsic method called \code{randomize()}, which causes new values to be selected
-for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
-\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
-paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. In the research process, a
-CSP solver was implemented in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components.
-The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems.
-The second component is a domain specific language, which allows users to declare and randomize objects.
+With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user's perspective. A subset of these problems is the so-called Constraint Satisfaction Problems (CSP), which are mathematical problems defined as a set of objects whose state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous collection of constraints. CSP solvers thus serve well as the basis for generating sets of constraint random signal values for verification.
+
+%\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}]
+%typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
+%
+%class frame_t;
+%    rand pkt_type ptype;
+%    rand integer len;
+%    rand bit  [7:0] payload [];
+%    constraint common {
+%        payload.size() == len;
+%    }
+%    // Constraint the members
+%    constraint unicast {
+%        len <= 2;
+%        ptype == UNICAST;
+%    }
+%    // Constraint the members
+%    constraint multicast {
+%        len >= 3;
+%        len <= 4;
+%        ptype == MULTICAST;
+%    }
+%endclass
+%\end{lstlisting}
+
+%Listing \ref{lst:randobjsysv} shows a class named \code{frame\_t} in SystemVerilog. It uses the \code{rand} keyword for variables \code{len}, \code{ptype}, and \code{payload}.
+%Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the \code{common},  \code{unicast},
+%and \code{multicast} constraint groups. Each class in SystemVerilog has an intrinsic method called \code{randomize()}, which causes new values to be selected
+%for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
+%\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
+%paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. 
+
+SystemVerilog has native support for constraint random data types and a built-in CSP solver. Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method \hjd{Needs citation.}. We let our work be inspired by the features of SystemVerilog, but bring them into the more accessible space of object oriented programming in Scala. In doing so, we have implemented a CSP solver in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain specific language, which allows users to declare and randomize objects.
 
 \begin{lstlisting}[language=scala, caption={Random object in Scala}, label={lst:randobjscala}]
 object pktType extends SVEnumeration {
@@ -504,12 +499,12 @@ class Frame extends Random {
     binary ((len, payload) => len == payload)
   )
 
-  val unicast = constraintBlock(
+  val unicast = constraintBlock (
     unary (len => len <= 2),
     unary (pType => pType == UNICAST.id)
   )
 
-  val multicast = constraintBlock(
+  val multicast = constraintBlock (
     unary (len => len >= 3),
     unary (len => len <= 4),
     unary (pType => pType == MULTICAST.id)
@@ -517,7 +512,7 @@ class Frame extends Random {
 }
 \end{lstlisting}
 
-Listing \ref{lst:randobjscala}, shows an example of random a object. To declare a random object, the user has to extend
+Listing \ref{lst:randobjscala}, shows an example of a random object. To declare a random object, the user has to extend
 the class from the \code{Random} base-class provided by the library. After that, each random variable has to be declared of type \code{RandInt} and initialized with the \code{rand} macro. Finally, inheriting the Random base class exposes the method \code{random} which assigns random values to the random fields of the class.
 
 \subsection{Coverage in Chisel}

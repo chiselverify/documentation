@@ -25,6 +25,7 @@
 %}
 \usepackage{xspace}		% For using \SV with trailing spaces
 \usepackage{cleveref}	% Needed for correctly referencing listings
+\usepackage{subfig}
 
 \newcommand{\code}[1]{{\small{\texttt{#1}}}}
 \newcommand{\SV}{SystemVerilog\xspace}
@@ -160,130 +161,130 @@ Finally, the solution is well integrated into the existing Chisel universe, maki
 
 
 %\begin{verbatim}
-Dear Martin Schoeberl:
-
-I am sorry to inform you that the following submission was not selected by the program committee to appear at SAMOS XXI 2021:
-
-ChiselVerify: An Open-Source Verification Method with Chisel and Scala
-
-The selection process was very competitive. Due to time and space limitations, we could only choose a small number of the submitted papers to appear on the program. Nonetheless, I still hope you can attend the conference.
-
-I have enclosed the reviewer comments for your perusal.
-
-Best Regards, 
-Matthias Jung, PC SAMOS XXI
-
-============================================================================ 
-SAMOS XXI 2021 Reviews for Submission \#33
-============================================================================ 
-
-Title: ChiselVerify: An Open-Source Verification Method with Chisel and Scala
-Authors: Andrew Dobis, Tjark Petersen, Kasper Hesse, Enrico Tolotto, Hans Damsgaard, Simon Andersen, Richard Lin and Martin Schoeberl
-
-
-============================================================================
-                            REVIEWER \#1
-============================================================================
-
----------------------------------------------------------------------------
-Reviewer's Scores
----------------------------------------------------------------------------
-Evaluation of the work and contributions (1-5): 3
-           Originality and Novelty (1-4): 3
-                         Relevance (1-5): 5
-            Overall Recommendation (1-4): 2
-                        Best Paper Award: No
-                  Your Familiarity (1-3): 3
-
-Detailed Comments
----------------------------------------------------------------------------
-The paper presents ChiselVerify, an open source framework for verification of circuits modeled in Chisel. Chisel is a framework developed previously in other works. ChiselVerify appears to be based on ChiselTest, a previously developed testing framework for Chisel. ChiselVerify appears to extend ChiselTest with constraint based coverage.
-
-The paper definitely presents a valid contribution and ChiselVerify should be a very useful verification environment for Chisel. Unfortunately, the paper is badly written, with little structure to help the reader understand the contributions and navigate the different sections. Even basic questions, such as what exactly is ChiselVerify? what inputs does it take? what outputs does it produce? how is it implemented? what other software does it use? etc. are left untouched.
-
-As it stands, the paper reads more like a juxtaposition of different sections written by various people, with no connection to one another. I believe that a significant rewrite is necessary before publication.
-
-Ira. D. Baxter -> Ira D. Baxter
----------------------------------------------------------------------------
-
-
-
-============================================================================
-                            REVIEWER \#2
-============================================================================
-
----------------------------------------------------------------------------
-Reviewer's Scores
----------------------------------------------------------------------------
-Evaluation of the work and contributions (1-5): 3
-           Originality and Novelty (1-4): 2
-                         Relevance (1-5): 3
-            Overall Recommendation (1-4): 2
-                        Best Paper Award: No
-                  Your Familiarity (1-3): 3
-
-Detailed Comments
----------------------------------------------------------------------------
-This paper proposes ChiselVerify, an open-source tool for verifying circuits described in Chisel. The idea is both good and timely. However, I could not get a clear picture of what is ChiselVerify, and what are its strengths and weaknesses. Does it support testing FSMs? Possibly as the test example shows some, but how? This paper is an extension of [15]. How does it differ from that work? The authors claim the main contribution of this paper is ChiselVerify, an open-source verification library for hardware designs. As such I would expect the paper to focus on the description of the tool and its functionality.
-
-A section named "Verification of AXI4 Interfaced Components" is offered, and mentions "bus functional models" (BFMs). However it is unclear if any BFM is supported and what is the required effort to produce/include them
-
-Treadle: cite this work. This section appears interesting but it not a contribution of this paper
-
-A sorting hardware use case is described, but actual testing text consists of two parahgraphs 
-
-Overall which ether topic is interesting, the presentation lacks focus.
----------------------------------------------------------------------------
-
-
-
-============================================================================
-                            REVIEWER \#3
-============================================================================
-
----------------------------------------------------------------------------
-Reviewer's Scores
----------------------------------------------------------------------------
-Evaluation of the work and contributions (1-5): 4
-           Originality and Novelty (1-4): 3
-                         Relevance (1-5): 4
-            Overall Recommendation (1-4): 3
-                        Best Paper Award: No
-                  Your Familiarity (1-3): 2
-
-Detailed Comments
----------------------------------------------------------------------------
-This paper presents ChiselVerify, an open-source tool for verifying circuits described in Chisel. It builds on top of the Chisel language and uses Scala to drive the verification process, thus the effectiveness (productivity) of verification phases can be improved. 
-In general, the paper is easy to read and follow. The fact that the author released it as open source is well received. 
-The paper is useful to verification engineers.
----------------------------------------------------------------------------
-
-
-
-============================================================================
-                            REVIEWER \#4
-============================================================================
-
----------------------------------------------------------------------------
-Reviewer's Scores
----------------------------------------------------------------------------
-Evaluation of the work and contributions (1-5): 4
-           Originality and Novelty (1-4): 2
-                         Relevance (1-5): 4
-            Overall Recommendation (1-4): 3
-                        Best Paper Award: No
-                  Your Familiarity (1-3): 2
-
-Detailed Comments
----------------------------------------------------------------------------
-In this work, ChiselVerify, an open-source tool for verifying circuits described in Chisel, is proposed.It builds on top of the Chisel hardware construction language and uses Scala to drive the verification process.
-The manuscript is very well organized and written presenting thoroughly all the steps of the research. The target problem and its importance are presented and discussed in detail as well as the previous work. Also, the proposed design methodology are presented in a clear and detailed way. All the sections of the paper balance very effectively between the background information of each topic and the explanation of each implementation. Moreover, both the examples throughout the sections and the final example, it seems the ideal way to make a reader have a deep understanding of this work. Finally the fact that this work is in open source, underlines and emphasizes the reliability of this work. 
-However an interesting information would be a comparison of this kind of verification(that this work proposes) compared to more conservatives methods in relation to time needed for each method, and effectiveness.
----------------------------------------------------------------------------
-
-
--- 
-SAMOS XXI 2021 - https://www.softconf.com/l/samos-xxi
+%Dear Martin Schoeberl:
+%
+%I am sorry to inform you that the following submission was not selected by the program committee to appear at SAMOS XXI 2021:
+%
+%ChiselVerify: An Open-Source Verification Method with Chisel and Scala
+%
+%The selection process was very competitive. Due to time and space limitations, we could only choose a small number of the submitted papers to appear on the program. Nonetheless, I still hope you can attend the conference.
+%
+%I have enclosed the reviewer comments for your perusal.
+%
+%Best Regards, 
+%Matthias Jung, PC SAMOS XXI
+%
+%============================================================================ 
+%SAMOS XXI 2021 Reviews for Submission \#33
+%============================================================================ 
+%
+%Title: ChiselVerify: An Open-Source Verification Method with Chisel and Scala
+%Authors: Andrew Dobis, Tjark Petersen, Kasper Hesse, Enrico Tolotto, Hans Damsgaard, Simon Andersen, Richard Lin and Martin Schoeberl
+%
+%
+%============================================================================
+%                            REVIEWER \#1
+%============================================================================
+%
+%---------------------------------------------------------------------------
+%Reviewer's Scores
+%---------------------------------------------------------------------------
+%Evaluation of the work and contributions (1-5): 3
+%           Originality and Novelty (1-4): 3
+%                         Relevance (1-5): 5
+%            Overall Recommendation (1-4): 2
+%                        Best Paper Award: No
+%                  Your Familiarity (1-3): 3
+%
+%Detailed Comments
+%---------------------------------------------------------------------------
+%The paper presents ChiselVerify, an open source framework for verification of circuits modeled in Chisel. Chisel is a framework developed previously in other works. ChiselVerify appears to be based on ChiselTest, a previously developed testing framework for Chisel. ChiselVerify appears to extend ChiselTest with constraint based coverage.
+%
+%The paper definitely presents a valid contribution and ChiselVerify should be a very useful verification environment for Chisel. Unfortunately, the paper is badly written, with little structure to help the reader understand the contributions and navigate the different sections. Even basic questions, such as what exactly is ChiselVerify? what inputs does it take? what outputs does it produce? how is it implemented? what other software does it use? etc. are left untouched.
+%
+%As it stands, the paper reads more like a juxtaposition of different sections written by various people, with no connection to one another. I believe that a significant rewrite is necessary before publication.
+%
+%Ira. D. Baxter -> Ira D. Baxter
+%---------------------------------------------------------------------------
+%
+%
+%
+%============================================================================
+%                            REVIEWER \#2
+%============================================================================
+%
+%---------------------------------------------------------------------------
+%Reviewer's Scores
+%---------------------------------------------------------------------------
+%Evaluation of the work and contributions (1-5): 3
+%           Originality and Novelty (1-4): 2
+%                         Relevance (1-5): 3
+%            Overall Recommendation (1-4): 2
+%                        Best Paper Award: No
+%                  Your Familiarity (1-3): 3
+%
+%Detailed Comments
+%---------------------------------------------------------------------------
+%This paper proposes ChiselVerify, an open-source tool for verifying circuits described in Chisel. The idea is both good and timely. However, I could not get a clear picture of what is ChiselVerify, and what are its strengths and weaknesses. Does it support testing FSMs? Possibly as the test example shows some, but how? This paper is an extension of [15]. How does it differ from that work? The authors claim the main contribution of this paper is ChiselVerify, an open-source verification library for hardware designs. As such I would expect the paper to focus on the description of the tool and its functionality.
+%
+%A section named "Verification of AXI4 Interfaced Components" is offered, and mentions "bus functional models" (BFMs). However it is unclear if any BFM is supported and what is the required effort to produce/include them
+%
+%Treadle: cite this work. This section appears interesting but it not a contribution of this paper
+%
+%A sorting hardware use case is described, but actual testing text consists of two parahgraphs 
+%
+%Overall which ether topic is interesting, the presentation lacks focus.
+%---------------------------------------------------------------------------
+%
+%
+%
+%============================================================================
+%                            REVIEWER \#3
+%============================================================================
+%
+%---------------------------------------------------------------------------
+%Reviewer's Scores
+%---------------------------------------------------------------------------
+%Evaluation of the work and contributions (1-5): 4
+%           Originality and Novelty (1-4): 3
+%                         Relevance (1-5): 4
+%            Overall Recommendation (1-4): 3
+%                        Best Paper Award: No
+%                  Your Familiarity (1-3): 2
+%
+%Detailed Comments
+%---------------------------------------------------------------------------
+%This paper presents ChiselVerify, an open-source tool for verifying circuits described in Chisel. It builds on top of the Chisel language and uses Scala to drive the verification process, thus the effectiveness (productivity) of verification phases can be improved. 
+%In general, the paper is easy to read and follow. The fact that the author released it as open source is well received. 
+%The paper is useful to verification engineers.
+%---------------------------------------------------------------------------
+%
+%
+%
+%============================================================================
+%                            REVIEWER \#4
+%============================================================================
+%
+%---------------------------------------------------------------------------
+%Reviewer's Scores
+%---------------------------------------------------------------------------
+%Evaluation of the work and contributions (1-5): 4
+%           Originality and Novelty (1-4): 2
+%                         Relevance (1-5): 4
+%            Overall Recommendation (1-4): 3
+%                        Best Paper Award: No
+%                  Your Familiarity (1-3): 2
+%
+%Detailed Comments
+%---------------------------------------------------------------------------
+%In this work, ChiselVerify, an open-source tool for verifying circuits described in Chisel, is proposed.It builds on top of the Chisel hardware construction language and uses Scala to drive the verification process.
+%The manuscript is very well organized and written presenting thoroughly all the steps of the research. The target problem and its importance are presented and discussed in detail as well as the previous work. Also, the proposed design methodology are presented in a clear and detailed way. All the sections of the paper balance very effectively between the background information of each topic and the explanation of each implementation. Moreover, both the examples throughout the sections and the final example, it seems the ideal way to make a reader have a deep understanding of this work. Finally the fact that this work is in open source, underlines and emphasizes the reliability of this work. 
+%However an interesting information would be a comparison of this kind of verification(that this work proposes) compared to more conservatives methods in relation to time needed for each method, and effectiveness.
+%---------------------------------------------------------------------------
+%
+%
+%-- 
+%SAMOS XXI 2021 - https://www.softconf.com/l/samos-xxi
 %\end{verbatim}
 
 
@@ -633,30 +634,39 @@ One final element that our framework offers is the possibility to gater delayed 
  \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}
 
-\subsection{Verification of AXI4 Interfaced Components}
+\subsection{Verification with Bus Functional Models}
+Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces or buses of multiple signals, which enable greater reuse. 
+Many synthesis tools, including Xilinx's Vivado, provide IP generators whose output IP blocks are equipped with such standard interfaces. Verification of components 
+with such interfaces is most easily handled with so-called \textit{bus functional models} (BFMs), which abstract peeking and poking of wires to a transaction level. That is, 
+using a BFM, a verification engineer can reduce several lines of code representing, e.g., a write transaction to just a single call to a standardized method.
 
-\todo{Add figure - Hans}
-
-Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces,
-which enable greater reuse. One of such standard interfaces is AXI4, an open standard by ARM \cite{axi4standard},
-which is used in particular to connect processor nodes to memories.
-As such, most available synthesis tools, including Xilinx's Vivado,
-provide IP generators whose output IP blocks are equipped with AXI interfaces
-along with optional verification structures written in (System-)Verilog \cite{axi4vip}.
-
-Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel. Therefore, we include an example BFM based around ChiselTest in our framework.
+In this work, we provide an example BFM for AXI4, an open standard by ARM~\cite{axi4standard}. Let us first give a brief introduction to AXI4. At the time of writing, the example works only for AXI4, but it can easily be extended to support other buses.
 
 \subsubsection{Introduction to AXI4}
-The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five separate channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The five channels are:
-\begin{itemize}
-  \item \textit{Write Address} for transferring transaction attributes from master to slave
-  \item \textit{Write Data} for transferring write data and strobe from master to slave
-  \item \textit{Write Response} for transferring transaction status of a writes from slave to master
-  \item \textit{Read Address} same as \textit{Write Address}, but for reads
-  \item \textit{Read Data} for transferring read data from slave to master
-\end{itemize}
+The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, see figure~\ref{fig:axi4w}, while the read channels are \textit{Read Address} and \textit{Read Data}, see figure~\ref{fig:axi4r}. 
 
-Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address, burst length, and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}. %Similarly, the master may provide several more addresses while transferring data in relation to the first address -- granted that the slave is capable of multiple outstanding transactions.
+\begin{figure*}[t]
+  \centering
+  \subfloat[Write channels.\label{fig:axi4w}]{
+    \includegraphics[width=0.45\linewidth]{WriteTrx.pdf}
+  }
+  \hfill
+  \subfloat[Read channels.\label{fig:axi4r}]{
+    \includegraphics[width=0.45\linewidth]{ReadTrx.pdf}
+  }
+  \label{fig:axi4}
+  \caption{An overview of the channels defined in the AXI4 standard.}
+\end{figure*}
+
+%\begin{itemize}
+%  \item \textit{Write Address} for transferring transaction attributes from master to slave
+%  \item \textit{Write Data} for transferring write data and strobe from master to slave
+%  \item \textit{Write Response} for transferring transaction status of a writes from slave to master
+%  \item \textit{Read Address} same as \textit{Write Address}, but for reads
+%  \item \textit{Read Data} for transferring read data from slave to master
+%\end{itemize}
+
+Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}.
 
 \subsubsection{Implementation}
 Our implementation includes bundles defining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and of course the BFM itself; the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends the slave class and provides a simple, transaction level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx} which do exactly as their names indicate; create and enqueue write and read transactions. \\
@@ -664,16 +674,15 @@ Our implementation includes bundles defining the five different channels, abstra
 Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the aforementioned methods (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. As such, when, for example, a write transaction is enqueued and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
 
 \subsubsection{A Simple Example}
-Returning to the example used before, using the BFM to test a module called \texttt{Memory} is as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction -- but beware that due to the BFM's parallel execution style, the channels are indeed independent. As such, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+Consider as an example using the BFM to test a module called \texttt{Memory}, which is now as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction. Beware that due to channel independence, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
 \begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
-class MemoryTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class MemoryTester extends FlatSpec with ChiselScalatestTester {
   behavior of "My Memory module"
   it should "write and read" in {
-    test(new Memory()) {
-      dut =>
-        val bfm = new FunctionalMaster(dut)
-        master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
-        master.createReadTrx(0, len = 15, size = 2)
+    test(new Memory()) { dut =>
+      val bfm = new FunctionalMaster(dut)
+      master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
+      master.createReadTrx(0, len = 15, size = 2)
     }
   }
 }

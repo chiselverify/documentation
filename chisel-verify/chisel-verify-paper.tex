@@ -47,11 +47,11 @@
 \newcommand{\hjd}[1]{{\color{pink} Hans: #1}}
 
 % uncomment following for final submission
-\renewcommand{\todo}[1]{}
-\renewcommand{\martin}[1]{}
-\renewcommand{\simon}[1]{}
-\renewcommand{\kasper}[1]{}
-\renewcommand{\ducky}[1]{}
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\simon}[1]{}
+%\renewcommand{\kasper}[1]{}
+%\renewcommand{\ducky}[1]{}
 
 
 
@@ -357,20 +357,14 @@ However, UVM supports more functionality that a plain ChiselTest in Scala.
 %Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
 %open-source solution available for VHDL simulation. For companies with a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow.
 %All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
-%
-%To alleviate this issue, we use the open-source Yosys synthesis suite \cite{Yosys}.
-%Yosys is an open-source digital hardware synthesis suite for Verilog.
-%Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl},
-%an open-source VHDL simulator. By using Yosys in conjunction with GHDL,
-%VHDL files are compiled to an RTL-based intermediate representation,
-%which is then written to a Verilog file using Yosys.
-%GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008.
-%A working solution named VHDL2Verilog has been made for this, which has been
-%tested with certain simple VHDL designs \cite{vhdl2verilog}.
 
-This paper is an extension of \cite{verify:chisel:2020}. Then main contributions of
+
+This paper is an extension of \cite{verify:chisel:2020}.
+
+\todo{What is different from the workshop paper}. Then main contributions of
 this paper is ChiselVerify, an open-source verification library for hardware designs.
 
+\todo{Rewrite section order}
 The paper is organized in 7 sections.
 Section 2 describes background and related work.
 Section 3 describes our addition of constraint random verification to Chisel.
@@ -380,15 +374,12 @@ Section 6 explores ChiselVerify on a use case from industry.
 Section 7 concludes.
 
 
-\section{Background and State-of-the-Art}
+\section{Background on Verification}
 \label{sec:background}
 
-%\section{Related work}
-
-\todo{Talk about Kevin Lauefer's work and verif}
 
 
-
+\todo{rewrite, Andrew}
 
 VHDL and Verilog are the classic hardware description languages, first appeared in the 1980s.
 SystemVerilog~\cite{SystemVerilog}, as an extension to Verilog, adds features from VHDL
@@ -418,25 +409,7 @@ Open source hardware components in Chisel can be organized like software
 libraries at Maven servers.
 
 
-SystemVerilog adds object-oriented concepts for the non-synthesizable verification code.
-The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
-C functions inside a SystemVerilog (UVM) testbench.
-This enables co-simulation with a ``golden model'' written in C, and the
-testbench verifying the device under test (DUT).
-With ChiselTest we can co-simulate with Java and Scala models and use the Java Native Interface
-to co-simulate with models in C.
-
-The Universal Verification Method (UVM) is an open source collection of SystemVerilog,
-which is becoming popular in industry.
-SystemVerilog has become a complex language with more than 250 keywords, and it is unclear
-which tools support which language constructs for hardware description.
-In contrast with Chisel, when the program compiles, it is synthesizable hardware.
-Chisel is a small language, where the cheat sheet fits on two pages.
-The power of Chisel comes from the embedding in Scala.
-Furthermore, as classic hardware description languages are niche products, not
-many tools or libraries are available. 
-With Chisel on Scala we have the choice of different integrated development environments (IDE),
-testing infrastructure (e.g., ScalaTest), and many free libraries.
+\todo{Paragraph on SV (e.g., coverage stuff)}
 
 The Java JNI (Java Native Interface) allows for a similar functionality in Java programs,
 allowing them to call C functions and use their functionality.
@@ -459,8 +432,11 @@ Its lightweight syntax encourages writing targeted unit tests by making small te
 A clear and clean test code also enables the test-as-documentation pattern,
 demonstrating a module's behavior from a temporal perspective.
 
+\section{Verification with Chisel}
 
-\section{Constraint Random Verification}
+\todo{Explain the basic on the verification library - Martin}
+
+\subsection{Constraint Random Verification}
 The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct''
 testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming.
 Constraint programming (CP) is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic
@@ -550,51 +526,8 @@ the class from the \code{Random} base-class provided by the library. After that 
 with the \code{rand} macro. Finally, like for SystemVerilog, in Scala inheriting the Random base class exposes the method \code{random} which assigns random
 values to the random fields of the class.
 
-\section{Verification of AXI4 Interfaced Components}
 
-Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces,
-which enable greater reuse. One of such standard interfaces is AXI4, an open standard by ARM \cite{axi4standard},
-which is used in particular to connect processor nodes to memories.
-As such, most available synthesis tools, including Xilinx's Vivado,
-provide IP generators whose output IP blocks are equipped with AXI interfaces
-along with optional verification structures written in (System-)Verilog \cite{axi4vip}.
-
-Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel. Therefore, we include an example BFM based around ChiselTest in our framework.
-
-\subsection{Introduction to AXI4}
-The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five separate channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The five channels are:
-\begin{itemize}
-  \item \textit{Write Address} for transferring transaction attributes from master to slave
-  \item \textit{Write Data} for transferring write data and strobe from master to slave
-  \item \textit{Write Response} for transferring transaction status of a writes from slave to master
-  \item \textit{Read Address} same as \textit{Write Address}, but for reads
-  \item \textit{Read Data} for transferring read data from slave to master
-\end{itemize}
-
-Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address, burst length, and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}. %Similarly, the master may provide several more addresses while transferring data in relation to the first address -- granted that the slave is capable of multiple outstanding transactions.
-
-\subsection{Implementation}
-Our implementation includes bundles definining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and of course the BFM itself; the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends the slave class and provides a simple, transaction level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx} which do exactly as their names indicate; create and enqueue write and read transactions. \\
-
-Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the aforementioned methods (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. As such, when, for example, a write transaction is enqueued and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
-
-\subsection{A Simple Example}
-Returning to the example used before, using the BFM to test a module called \texttt{Memory} is as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction -- but beware that due to the BFM's parallel execution style, the channels are indeed independent. As such, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
-\begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
-class MemoryTester extends FlatSpec with ChiselScalatestTester with Matchers {
-  behavior of "My Memory module"
-  it should "write and read" in {
-    test(new Memory()) {
-      dut =>
-        val bfm = new FunctionalMaster(dut)
-        master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
-        master.createReadTrx(0, len = 15, size = 2)
-    }
-  }
-}
-\end{lstlisting}
-
-\section{Coverage in Chisel}
+\subsection{Coverage in Chisel}
 
 \martin{This is probably already contained in the coverage paper and can be removed here.}
 
@@ -700,7 +633,51 @@ One final element that our framework offers is the possibility to gater delayed 
  \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}
 
+\subsection{Verification of AXI4 Interfaced Components}
 
+\todo{Add figure - Hans}
+
+Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces,
+which enable greater reuse. One of such standard interfaces is AXI4, an open standard by ARM \cite{axi4standard},
+which is used in particular to connect processor nodes to memories.
+As such, most available synthesis tools, including Xilinx's Vivado,
+provide IP generators whose output IP blocks are equipped with AXI interfaces
+along with optional verification structures written in (System-)Verilog \cite{axi4vip}.
+
+Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel. Therefore, we include an example BFM based around ChiselTest in our framework.
+
+\subsubsection{Introduction to AXI4}
+The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five separate channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The five channels are:
+\begin{itemize}
+  \item \textit{Write Address} for transferring transaction attributes from master to slave
+  \item \textit{Write Data} for transferring write data and strobe from master to slave
+  \item \textit{Write Response} for transferring transaction status of a writes from slave to master
+  \item \textit{Read Address} same as \textit{Write Address}, but for reads
+  \item \textit{Read Data} for transferring read data from slave to master
+\end{itemize}
+
+Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address, burst length, and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}. %Similarly, the master may provide several more addresses while transferring data in relation to the first address -- granted that the slave is capable of multiple outstanding transactions.
+
+\subsubsection{Implementation}
+Our implementation includes bundles defining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and of course the BFM itself; the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends the slave class and provides a simple, transaction level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx} which do exactly as their names indicate; create and enqueue write and read transactions. \\
+
+Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the aforementioned methods (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. As such, when, for example, a write transaction is enqueued and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
+
+\subsubsection{A Simple Example}
+Returning to the example used before, using the BFM to test a module called \texttt{Memory} is as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction -- but beware that due to the BFM's parallel execution style, the channels are indeed independent. As such, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+\begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
+class MemoryTester extends FlatSpec with ChiselScalatestTester with Matchers {
+  behavior of "My Memory module"
+  it should "write and read" in {
+    test(new Memory()) {
+      dut =>
+        val bfm = new FunctionalMaster(dut)
+        master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
+        master.createReadTrx(0, len = 15, size = 2)
+    }
+  }
+}
+\end{lstlisting}
 
 \section{Use Case: Sorting in Hardware}
 
@@ -813,7 +790,37 @@ operations, are collected. The average insertion and removal times measured unde
 These numbers are dependent on access patterns and are as such only representative for the random test case used here.
 %The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
 
+\section{Related Work}
 
+\todo{Andrew}
+
+\todo{Maybe steal form Coverage paper}
+
+\todo{Talk about Kevin Lauefer's work and verif}
+
+\todo{UVM}
+
+SystemVerilog adds object-oriented concepts for the non-synthesizable verification code.
+The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
+C functions inside a SystemVerilog (UVM) testbench.
+This enables co-simulation with a ``golden model'' written in C, and the
+testbench verifying the device under test (DUT).
+With ChiselTest we can co-simulate with Java and Scala models and use the Java Native Interface
+to co-simulate with models in C.
+
+The Universal Verification Method (UVM) is an open source collection of SystemVerilog,
+which is becoming popular in industry.
+SystemVerilog has become a complex language with more than 250 keywords, and it is unclear
+which tools support which language constructs for hardware description.
+In contrast with Chisel, when the program compiles, it is synthesizable hardware.
+Chisel is a small language, where the cheat sheet fits on two pages.
+The power of Chisel comes from the embedding in Scala.
+Furthermore, as classic hardware description languages are niche products, not
+many tools or libraries are available. 
+With Chisel on Scala we have the choice of different integrated development environments (IDE),
+testing infrastructure (e.g., ScalaTest), and many free libraries.
+
+\todo{State what is different to related work, e.g., timed asserts}
 
 \section{Conclusion}
 In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought functional coverage, statement coverage, constraint random verification and transactional modelling to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
@@ -829,7 +836,7 @@ This work has been performed as part of the
 ``High-Level Design and Verification of Digital Systems''.
 
 \bibliographystyle{splncs04}
-\bibliography{../msbib,../chisel-uvm,../ftp-chisel/testing}
+\bibliography{../msbib,../chisel-uvm,../funding/ftp-chisel/testing}
 
 
 \end{document}

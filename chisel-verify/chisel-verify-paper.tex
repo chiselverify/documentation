@@ -380,50 +380,50 @@ Section 7 concludes.
 \section{Background on Verification}
 \label{sec:background}
 
+This section will present a brief overview of what hardware verification is. We will also talk about Chisel, as well as the current solutions that exist in it with regards to the verification of digital systems.
 
+\subsection{Verification of digital designs}
+Verification of digital systems refers to the testing of a design before it has been taped-out~\cite{spear2008systemverilog}. This is in contrast to validation, which refers to testing a taped-out version of a digital circuit. 
+It is difficult to talk about the verification of digital designs without mentioning SystemVerilog~\cite{SystemVerilog}, which is one of the main languages used for verification.
+This is due to the wide variety of verification-centric functionalities that the language offers, which focus on improving the efficiency of writing test-benches rather than the testing itself.
+SystemVerilog is an extension of Verilog, adding verification features and object-oriented programming to the mix. 
+The language enables verification engineers to define constraint-dirven randomized test-benches as well as define metrics to gather functional coverage data related to a test-suite. 
+However, the verification functionalities are quite limited and trapped in a complex low-level language. 
+SystemVerilog does however prove itself to be a good inspiration for the development of a high-level verification framework, which is what we did with ChiselVerify.
 
-\todo{rewrite, Andrew}
+\subsection{Digital Design with Chisel}
+In order to understand the context of our work, one first needs to know about the environment we are working in.
+Chisel is a ``Hardware Construction Language'' embedded in Scala, used to describe digital circuits~\cite{chisel:dac2012}.
+This language is much more high-level than the traditional hardware description languages, such as VHDL or Verilog, and allows for object-oriented and functional programming in the context of digital design.
+One of the main aspects of Chisel that make it so compelling is its full integration in the Java/Scala ecosystem.
 
-VHDL and Verilog are the classic hardware description languages, first appeared in the 1980s.
-SystemVerilog~\cite{SystemVerilog}, as an extension to Verilog, adds features from VHDL
-for the hardware description and object-oriented features for verification.
-Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have
-brought object-oriented programming into the digital design and verification process.
+Indeed, since Chisel and Scala are executing on the Java virtual machine, they have a very good interoperability with Java. 
+We can therefore leverage a large pool of Java and Scala libraries for hardware design and verification. 
+Furthermore, the name space of packets in Scala/Java simplifies integration of external components.
+Open source hardware components in Chisel can thus be organized in the same manner as software libraries in Maven servers.
 
-Chisel is a ``Hardware Construction Language'' embedded in Scala, to describe digital circuits~\cite{chisel:dac2012}.
-Scala/Chisel brings object-oriented and functional programming into the world of digital design.
-For hardware generation and testing, the full Scala language and Scala and Java libraries are available.
-As Scala and Java's full power is available to the verification engineer,
-the verification process is also made more efficient.
+Working in the JVM also allows for the use of the Java JNI (Java Native Interface), which enables JVM based languages to call C functions and use their functionality.
+This makes it possible to have co-simulations between Scala/Chisel testers and a C-based golden model. 
+Ideally, this should allow companies to keep their existing C models, but move their simulation workflow into Scala/Chisel testers.
 
-Chisel is solely a hardware \emph{construction} language, and thus all valid Chisel code
-maps to synthesizable hardware.
-By separating the hardware construction and hardware verification languages,
-it becomes impossible to write non-synthesizable hardware and in turn, speeds up the design process.
+Another important thing to note is that Chisel is solely a hardware \emph{construction} language, and thus all valid Chisel code maps to synthesizable hardware.
+By separating the hardware construction and hardware verification languages, it thus becomes impossible to write non-synthesizable hardware and, in turn, speeds up the design process.
 
+To go more into detail about how Chisel works, it starts by being translated into an intermediate representation called FIRRTL~\cite{firrtl}. It then goes through multiple optimization stages, called \textit{Transforms}, during which high-level concepts, such as a functional \texttt{map} or vectors, are compiled into lower level concepts that map nicely onto what we normally see in a Verilog or VHDL description. Once that is done, the newly transformed FIRRTL, called Low FIRRTL, can be used either for simulation, using an execution engine such as Treadle, or for synthesis by translated into Verilog which is then used to generate the synthesised circuit. Note that the final Verilog description may also be used for simulation purposes using engines such as verilator~\cite{verilator}. An overview of the Chisel pipeline can be found in \ref{fig:chisel-pipe}.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{Chisel_FIRRTL_VERILOG.pdf}
+    \caption{Overview of the Chisel pipeline.}
+\label{fig:chisel-pipe}
+\end{figure}
 
-Chisel and Scala are executing on the Java virtual machine and therefore have a very good
-interoperability with Java. Therefore, we can leverage a large pool of Java libraries for
-hardware design and  verification.
-Furthermore, the name space of packets in Scala/Java simplifies integration of
-external components.
-Open source hardware components in Chisel can be organized like software
-libraries at Maven servers.
+All of these things make Chisel feel much more contemporary than its predecessors.
 
-
-\todo{Paragraph on SV (e.g., coverage stuff)}
-
-The Java JNI (Java Native Interface) allows for a similar functionality in Java programs,
-allowing them to call C functions and use their functionality.
-By using Scala, which is built on Java, it is our hope to use the JNI together with Scala's test frameworks.
-The aim is to develop a framework for co-simulation with Scala/Chisel testers and a
-C-based golden model. This should allow companies to keep their existing C models,
-but move their simulation workflow into Scala/Chisel testers.
-
-The digital design described in Chisel can be tested and verified with
-ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel.
-ChiselTest emphasizes usability and simplicity while providing ways to scale up complexity.
+\subsection{Testing Chisel Designs}
+An aspect that can't be omitted from any Hardware Construction Language, is a way to test systems built in it.
+A digital design described in Chisel can be tested with ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel.
+ChiselTest emphasizes on usability and simplicity while providing ways to scale up in complexity.
 Fundamentally, ChiselTest is a Scala library that provides access into the simulator through
 operations like poke (write value into circuit), peek (read value from circuit, into the test framework), and step (advance time).
 As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
@@ -435,9 +435,15 @@ Its lightweight syntax encourages writing targeted unit tests by making small te
 A clear and clean test code also enables the test-as-documentation pattern,
 demonstrating a module's behavior from a temporal perspective.
 
+One problem with ChiselTest, is that it lacks some fundamental verification functionalities that could greatly improve the verification efficiency of Chisel designs. 
+It is currently not possible to do things such as constrained random testing or obtaining functional coverage results while solely relying on the ChiselTest framework. 
+Functionalities such as those are crucial when it comes to efficiently verifying one's design and this lack is probably one of the factors that is holding back some engineers thinking about switching to Chisel. 
+We thus attempt to solve this lack by bringing some verification functionalities to the Chisel ecosystem. 
+
+
 \section{Verification with Chisel}
 
-\todo{Explain the basic on the verification library - Martin}
+\todo{Explain the basics of the verification library - Martin}
 
 \subsection{Constraint Random Verification}
 The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct'' testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming. Constraint programming is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.

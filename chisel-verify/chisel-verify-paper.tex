@@ -25,6 +25,7 @@
 %}
 \usepackage{xspace}		% For using \SV with trailing spaces
 \usepackage{cleveref}	% Needed for correctly referencing listings
+\usepackage{subfig}
 
 \newcommand{\code}[1]{{\small{\texttt{#1}}}}
 \newcommand{\SV}{SystemVerilog\xspace}
@@ -140,7 +141,7 @@ circuits described in Chisel. It builds on top of the Chisel
 hardware construction language and uses Scala to drive the verification process.
 ChiselVerify is created based on three key ideas.
 First, our solution highly increases the productivity of the verification engineer, by allowing hardware testing to be done in a modern high-level programming environment.
-Second, the framework functions with any hardware description language thanks to the flexibility of Chisel blackboxes.
+\hjd{This needs covering later in the paper.} Second, the framework functions with any hardware description language thanks to the flexibility of Chisel blackboxes.
 Finally, the solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
 
 %We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
@@ -156,134 +157,136 @@ Finally, the solution is well integrated into the existing Chisel universe, maki
 \item incorporate the reviews
 \item add \url{http://people.eecs.berkeley.edu/~ksen/papers/rfuzz.pdf} to related work
 \item Find a new venue abstract May 28: \url{http://www.iccd-conf.com/Home.html|}
+\item \hjd{Do we write Scala package names in italic or not? \textit{ChiselTest} seems to be most common, so I have corrected some places.}
+\item \hjd{Perhaps the use case is a bit too lengthy... Implementation details are not interesting here; the testing is, and it takes up little of the section.}
 \end{itemize}
 
 
 %\begin{verbatim}
-Dear Martin Schoeberl:
-
-I am sorry to inform you that the following submission was not selected by the program committee to appear at SAMOS XXI 2021:
-
-ChiselVerify: An Open-Source Verification Method with Chisel and Scala
-
-The selection process was very competitive. Due to time and space limitations, we could only choose a small number of the submitted papers to appear on the program. Nonetheless, I still hope you can attend the conference.
-
-I have enclosed the reviewer comments for your perusal.
-
-Best Regards, 
-Matthias Jung, PC SAMOS XXI
-
-============================================================================ 
-SAMOS XXI 2021 Reviews for Submission \#33
-============================================================================ 
-
-Title: ChiselVerify: An Open-Source Verification Method with Chisel and Scala
-Authors: Andrew Dobis, Tjark Petersen, Kasper Hesse, Enrico Tolotto, Hans Damsgaard, Simon Andersen, Richard Lin and Martin Schoeberl
-
-
-============================================================================
-                            REVIEWER \#1
-============================================================================
-
----------------------------------------------------------------------------
-Reviewer's Scores
----------------------------------------------------------------------------
-Evaluation of the work and contributions (1-5): 3
-           Originality and Novelty (1-4): 3
-                         Relevance (1-5): 5
-            Overall Recommendation (1-4): 2
-                        Best Paper Award: No
-                  Your Familiarity (1-3): 3
-
-Detailed Comments
----------------------------------------------------------------------------
-The paper presents ChiselVerify, an open source framework for verification of circuits modeled in Chisel. Chisel is a framework developed previously in other works. ChiselVerify appears to be based on ChiselTest, a previously developed testing framework for Chisel. ChiselVerify appears to extend ChiselTest with constraint based coverage.
-
-The paper definitely presents a valid contribution and ChiselVerify should be a very useful verification environment for Chisel. Unfortunately, the paper is badly written, with little structure to help the reader understand the contributions and navigate the different sections. Even basic questions, such as what exactly is ChiselVerify? what inputs does it take? what outputs does it produce? how is it implemented? what other software does it use? etc. are left untouched.
-
-As it stands, the paper reads more like a juxtaposition of different sections written by various people, with no connection to one another. I believe that a significant rewrite is necessary before publication.
-
-Ira. D. Baxter -> Ira D. Baxter
----------------------------------------------------------------------------
-
-
-
-============================================================================
-                            REVIEWER \#2
-============================================================================
-
----------------------------------------------------------------------------
-Reviewer's Scores
----------------------------------------------------------------------------
-Evaluation of the work and contributions (1-5): 3
-           Originality and Novelty (1-4): 2
-                         Relevance (1-5): 3
-            Overall Recommendation (1-4): 2
-                        Best Paper Award: No
-                  Your Familiarity (1-3): 3
-
-Detailed Comments
----------------------------------------------------------------------------
-This paper proposes ChiselVerify, an open-source tool for verifying circuits described in Chisel. The idea is both good and timely. However, I could not get a clear picture of what is ChiselVerify, and what are its strengths and weaknesses. Does it support testing FSMs? Possibly as the test example shows some, but how? This paper is an extension of [15]. How does it differ from that work? The authors claim the main contribution of this paper is ChiselVerify, an open-source verification library for hardware designs. As such I would expect the paper to focus on the description of the tool and its functionality.
-
-A section named "Verification of AXI4 Interfaced Components" is offered, and mentions "bus functional models" (BFMs). However it is unclear if any BFM is supported and what is the required effort to produce/include them
-
-Treadle: cite this work. This section appears interesting but it not a contribution of this paper
-
-A sorting hardware use case is described, but actual testing text consists of two parahgraphs 
-
-Overall which ether topic is interesting, the presentation lacks focus.
----------------------------------------------------------------------------
-
-
-
-============================================================================
-                            REVIEWER \#3
-============================================================================
-
----------------------------------------------------------------------------
-Reviewer's Scores
----------------------------------------------------------------------------
-Evaluation of the work and contributions (1-5): 4
-           Originality and Novelty (1-4): 3
-                         Relevance (1-5): 4
-            Overall Recommendation (1-4): 3
-                        Best Paper Award: No
-                  Your Familiarity (1-3): 2
-
-Detailed Comments
----------------------------------------------------------------------------
-This paper presents ChiselVerify, an open-source tool for verifying circuits described in Chisel. It builds on top of the Chisel language and uses Scala to drive the verification process, thus the effectiveness (productivity) of verification phases can be improved. 
-In general, the paper is easy to read and follow. The fact that the author released it as open source is well received. 
-The paper is useful to verification engineers.
----------------------------------------------------------------------------
-
-
-
-============================================================================
-                            REVIEWER \#4
-============================================================================
-
----------------------------------------------------------------------------
-Reviewer's Scores
----------------------------------------------------------------------------
-Evaluation of the work and contributions (1-5): 4
-           Originality and Novelty (1-4): 2
-                         Relevance (1-5): 4
-            Overall Recommendation (1-4): 3
-                        Best Paper Award: No
-                  Your Familiarity (1-3): 2
-
-Detailed Comments
----------------------------------------------------------------------------
-In this work, ChiselVerify, an open-source tool for verifying circuits described in Chisel, is proposed.It builds on top of the Chisel hardware construction language and uses Scala to drive the verification process.
-The manuscript is very well organized and written presenting thoroughly all the steps of the research. The target problem and its importance are presented and discussed in detail as well as the previous work. Also, the proposed design methodology are presented in a clear and detailed way. All the sections of the paper balance very effectively between the background information of each topic and the explanation of each implementation. Moreover, both the examples throughout the sections and the final example, it seems the ideal way to make a reader have a deep understanding of this work. Finally the fact that this work is in open source, underlines and emphasizes the reliability of this work. 
-However an interesting information would be a comparison of this kind of verification(that this work proposes) compared to more conservatives methods in relation to time needed for each method, and effectiveness.
----------------------------------------------------------------------------
-
-
--- 
-SAMOS XXI 2021 - https://www.softconf.com/l/samos-xxi
+%Dear Martin Schoeberl:
+%
+%I am sorry to inform you that the following submission was not selected by the program committee to appear at SAMOS XXI 2021:
+%
+%ChiselVerify: An Open-Source Verification Method with Chisel and Scala
+%
+%The selection process was very competitive. Due to time and space limitations, we could only choose a small number of the submitted papers to appear on the program. Nonetheless, I still hope you can attend the conference.
+%
+%I have enclosed the reviewer comments for your perusal.
+%
+%Best Regards, 
+%Matthias Jung, PC SAMOS XXI
+%
+%============================================================================ 
+%SAMOS XXI 2021 Reviews for Submission \#33
+%============================================================================ 
+%
+%Title: ChiselVerify: An Open-Source Verification Method with Chisel and Scala
+%Authors: Andrew Dobis, Tjark Petersen, Kasper Hesse, Enrico Tolotto, Hans Damsgaard, Simon Andersen, Richard Lin and Martin Schoeberl
+%
+%
+%============================================================================
+%                            REVIEWER \#1
+%============================================================================
+%
+%---------------------------------------------------------------------------
+%Reviewer's Scores
+%---------------------------------------------------------------------------
+%Evaluation of the work and contributions (1-5): 3
+%           Originality and Novelty (1-4): 3
+%                         Relevance (1-5): 5
+%            Overall Recommendation (1-4): 2
+%                        Best Paper Award: No
+%                  Your Familiarity (1-3): 3
+%
+%Detailed Comments
+%---------------------------------------------------------------------------
+%The paper presents ChiselVerify, an open source framework for verification of circuits modeled in Chisel. Chisel is a framework developed previously in other works. ChiselVerify appears to be based on ChiselTest, a previously developed testing framework for Chisel. ChiselVerify appears to extend ChiselTest with constraint based coverage.
+%
+%The paper definitely presents a valid contribution and ChiselVerify should be a very useful verification environment for Chisel. Unfortunately, the paper is badly written, with little structure to help the reader understand the contributions and navigate the different sections. Even basic questions, such as what exactly is ChiselVerify? what inputs does it take? what outputs does it produce? how is it implemented? what other software does it use? etc. are left untouched.
+%
+%As it stands, the paper reads more like a juxtaposition of different sections written by various people, with no connection to one another. I believe that a significant rewrite is necessary before publication.
+%
+%Ira. D. Baxter -> Ira D. Baxter
+%---------------------------------------------------------------------------
+%
+%
+%
+%============================================================================
+%                            REVIEWER \#2
+%============================================================================
+%
+%---------------------------------------------------------------------------
+%Reviewer's Scores
+%---------------------------------------------------------------------------
+%Evaluation of the work and contributions (1-5): 3
+%           Originality and Novelty (1-4): 2
+%                         Relevance (1-5): 3
+%            Overall Recommendation (1-4): 2
+%                        Best Paper Award: No
+%                  Your Familiarity (1-3): 3
+%
+%Detailed Comments
+%---------------------------------------------------------------------------
+%This paper proposes ChiselVerify, an open-source tool for verifying circuits described in Chisel. The idea is both good and timely. However, I could not get a clear picture of what is ChiselVerify, and what are its strengths and weaknesses. Does it support testing FSMs? Possibly as the test example shows some, but how? This paper is an extension of [15]. How does it differ from that work? The authors claim the main contribution of this paper is ChiselVerify, an open-source verification library for hardware designs. As such I would expect the paper to focus on the description of the tool and its functionality.
+%
+%A section named "Verification of AXI4 Interfaced Components" is offered, and mentions "bus functional models" (BFMs). However it is unclear if any BFM is supported and what is the required effort to produce/include them
+%
+%Treadle: cite this work. This section appears interesting but it not a contribution of this paper
+%
+%A sorting hardware use case is described, but actual testing text consists of two parahgraphs 
+%
+%Overall which ether topic is interesting, the presentation lacks focus.
+%---------------------------------------------------------------------------
+%
+%
+%
+%============================================================================
+%                            REVIEWER \#3
+%============================================================================
+%
+%---------------------------------------------------------------------------
+%Reviewer's Scores
+%---------------------------------------------------------------------------
+%Evaluation of the work and contributions (1-5): 4
+%           Originality and Novelty (1-4): 3
+%                         Relevance (1-5): 4
+%            Overall Recommendation (1-4): 3
+%                        Best Paper Award: No
+%                  Your Familiarity (1-3): 2
+%
+%Detailed Comments
+%---------------------------------------------------------------------------
+%This paper presents ChiselVerify, an open-source tool for verifying circuits described in Chisel. It builds on top of the Chisel language and uses Scala to drive the verification process, thus the effectiveness (productivity) of verification phases can be improved. 
+%In general, the paper is easy to read and follow. The fact that the author released it as open source is well received. 
+%The paper is useful to verification engineers.
+%---------------------------------------------------------------------------
+%
+%
+%
+%============================================================================
+%                            REVIEWER \#4
+%============================================================================
+%
+%---------------------------------------------------------------------------
+%Reviewer's Scores
+%---------------------------------------------------------------------------
+%Evaluation of the work and contributions (1-5): 4
+%           Originality and Novelty (1-4): 2
+%                         Relevance (1-5): 4
+%            Overall Recommendation (1-4): 3
+%                        Best Paper Award: No
+%                  Your Familiarity (1-3): 2
+%
+%Detailed Comments
+%---------------------------------------------------------------------------
+%In this work, ChiselVerify, an open-source tool for verifying circuits described in Chisel, is proposed.It builds on top of the Chisel hardware construction language and uses Scala to drive the verification process.
+%The manuscript is very well organized and written presenting thoroughly all the steps of the research. The target problem and its importance are presented and discussed in detail as well as the previous work. Also, the proposed design methodology are presented in a clear and detailed way. All the sections of the paper balance very effectively between the background information of each topic and the explanation of each implementation. Moreover, both the examples throughout the sections and the final example, it seems the ideal way to make a reader have a deep understanding of this work. Finally the fact that this work is in open source, underlines and emphasizes the reliability of this work. 
+%However an interesting information would be a comparison of this kind of verification(that this work proposes) compared to more conservatives methods in relation to time needed for each method, and effectiveness.
+%---------------------------------------------------------------------------
+%
+%
+%-- 
+%SAMOS XXI 2021 - https://www.softconf.com/l/samos-xxi
 %\end{verbatim}
 
 
@@ -443,83 +446,71 @@ We thus attempt to solve this lack by bringing some verification functionalities
 \todo{Explain the basics of the verification library - Martin}
 
 \subsection{Constraint Random Verification}
-The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct''
-testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming.
-Constraint programming (CP) is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic
-programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
-With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user's
-perspective. A subset of these problems is the so-called Constraint Satisfaction Problems (CSP), which are mathematical problems defined as a
-set of objects such that their state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous
-collection of constraints.
+The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct'' testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming. Constraint programming is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
 
-% MS: verilog does not work on my Latex
-%\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}, style={verilog-style}]
-\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}]
-typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
+Constraint random verification is a combined effort of constraint programming and coverage-based methodologies. By utilizing constraint random inputs, a verification engineer can run Monte Carlo-style tests which, statistically, cover many interesting test cases with relatively few input combinations whose validity is guaranteed by predefined constraints. This method avoids the potential issue of tests failing due to invalid input combinations that would never appear during regular operation \hjd{Needs citation.}.
 
-class frame_t;
-    rand pkt_type ptype;
-    rand integer len;
-    rand bit  [7:0] payload [];
-    constraint common {
-        payload.size() == len;
-    }
-    // Constraint the members
-    constraint unicast {
-        len <= 2;
-        ptype == UNICAST;
-    }
-    // Constraint the members
-    constraint multicast {
-        len >= 3;
-        len <= 4;
-        ptype == MULTICAST;
-    }
-endclass
-\end{lstlisting}
-Listing \ref{lst:randobjsysv} shows a class named \code{frame\_t} in SystemVerilog. It uses the \code{rand} keyword for variables \code{len}, \code{ptype}, and \code{payload}.
-Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the \code{common},  \code{unicast},
-and \code{multicast} constraint groups. Each class in SystemVerilog has an intrinsic method called \code{randomize()}, which causes new values to be selected
-for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
-\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
-paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. In the research process, a
-CSP solver was implemented in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components.
-The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems.
-The second component is a domain specific language, which allows users to declare and randomize objects.
+With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user's perspective. A subset of these problems is the so-called Constraint Satisfaction Problems (CSP), which are mathematical problems defined as a set of objects whose state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous collection of constraints. CSP solvers thus serve well as the basis for generating sets of constraint random signal values for verification.
+
+%\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}]
+%typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
+%
+%class frame_t;
+%    rand pkt_type ptype;
+%    rand integer len;
+%    rand bit  [7:0] payload [];
+%    constraint common {
+%        payload.size() == len;
+%    }
+%    // Constraint the members
+%    constraint unicast {
+%        len <= 2;
+%        ptype == UNICAST;
+%    }
+%    // Constraint the members
+%    constraint multicast {
+%        len >= 3;
+%        len <= 4;
+%        ptype == MULTICAST;
+%    }
+%endclass
+%\end{lstlisting}
+
+%Listing \ref{lst:randobjsysv} shows a class named \code{frame\_t} in SystemVerilog. It uses the \code{rand} keyword for variables \code{len}, \code{ptype}, and \code{payload}.
+%Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the \code{common},  \code{unicast},
+%and \code{multicast} constraint groups. Each class in SystemVerilog has an intrinsic method called \code{randomize()}, which causes new values to be selected
+%for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
+%\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
+%paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. 
+
+SystemVerilog has native support for constraint random data types and a built-in CSP solver. Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method \hjd{Needs citation.}. We let our work be inspired by the features of SystemVerilog, but bring them into the more accessible space of object oriented programming in Scala. In doing so, we have implemented a CSP solver in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain specific language, which allows users to declare and randomize objects.
 
 \begin{lstlisting}[language=scala, caption={Random object in Scala}, label={lst:randobjscala}]
-
 object pktType extends SVEnumeration {
     val UNICAST: Value = Value(11)
     val MULTICAST: Value = Value(0)
     val BROADCAST: Value = Value(1)
     
-    val domainValues = {
-      values.map(x => x.id).toList
-    }
-
+    val domainValues = values.map(x => x.id).toList
 }
+
 class Frame extends Random {
   import pktType._
-  var pType: RandInt = 
-        rand(pType, pktType.domainValues())
-  var len: RandInt = 
-        rand(len, 0 to 10 toList)
-  var noRepeat: RandCInt = 
-        randc( noRepeat, 0 to 1 toList)
-  var payload: RandInt =
-        rand(payload, 0 to 7 toList)
+  var pType: RandInt     = rand(pType, pktType.domainValues())
+  var len: RandInt       = rand(len, 0 to 10 toList)
+  var noRepeat: RandCInt = randc( noRepeat, 0 to 1 toList)
+  var payload: RandInt   = rand(payload, 0 to 7 toList)
 
   val common = constraintBlock (
     binary ((len, payload) => len == payload)
   )
 
-  val unicast = constraintBlock(
+  val unicast = constraintBlock (
     unary (len => len <= 2),
     unary (pType => pType == UNICAST.id)
   )
 
-  val multicast = constraintBlock(
+  val multicast = constraintBlock (
     unary (len => len >= 3),
     unary (len => len <= 4),
     unary (pType => pType == MULTICAST.id)
@@ -527,30 +518,29 @@ class Frame extends Random {
 }
 \end{lstlisting}
 
-Listing \ref{lst:randobjscala}, shows an example of random a object. Contrary to SystemVerilog, to declare a random object, the user has to extend
-the class from the \code{Random} base-class provided by the library. After that each random variable has to be declared of type \code{RandInt} and initialized
-with the \code{rand} macro. Finally, like for SystemVerilog, in Scala inheriting the Random base class exposes the method \code{random} which assigns random
-values to the random fields of the class.
-
+Listing \ref{lst:randobjscala}, shows an example of a random object. To declare a random object, the user has to extend
+the class from the \code{Random} base-class provided by the library. After that, each random variable has to be declared of type \code{RandInt} and initialized with the \code{rand} macro. Finally, inheriting the Random base class exposes the method \code{random} which assigns random values to the random fields of the class.
 
 \subsection{Coverage in Chisel}
 
 \martin{This is probably already contained in the coverage paper and can be removed here.}
 
-One of the main tools used in verification is test coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: code coverage and functional coverage. code coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas functional coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.
+One of the main tools used in verification is test coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: code coverage and functional coverage. Code coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas functional coverage gives a rather qualitative measure, \textit{"How many functionalities have we tested?"} \hjd{Side-note: this question is quantitative.}.  Our solution gives the verification engineer access to two ways of obtaining their code coverage and new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.
 
-\paragraph{Code Coverage with Treadle}  
-The first part of our solution is about code coverage, more specifically line coverage that was added to the Treadle FIRRTL execution engine. Treadle is a common FIRRTL execution engine used to simulate designs implemented in Chisel. This engine runs on the FIRRTL intermediate representation code generated by a given Chisel implementation and allows one to run user-defined tests on the design using frameworks like \textit{iotesters} or the more recent \textit{testers2}. In our pursuit of creating a verification framework, we found that one way to obtain line coverage would be to have our framework run on an extended version of Treadle that was capable of keeping track of said information.
+\subsubsection{Code Coverage with Treadle}  
+The first part of our solution is about code coverage, more specifically line coverage that was added to the Treadle FIRRTL execution engine. Treadle is a common FIRRTL execution engine used to simulate designs implemented in Chisel. This engine runs on the FIRRTL intermediate representation code generated by a given Chisel implementation and allows one to run user-defined tests on the design using frameworks like \textit{iotesters} or the more recent \textit{ChiselTest}. In our pursuit of creating a verification framework, we found that one way to obtain line coverage would be to have our framework run on an extended version of Treadle that was capable of keeping track of said information.
 
-The solution that was used to implement line coverage was based off of a method presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}. The idea is to add additional outputs for each multiplexer in the design. These new ports, which we will call \textit{Coverage Validators}, are set depending on the paths taken by each multiplexer and that information is then gathered at the end of each test and maintained throughout a test suite. Once the testing is done, we used the outputs gathered from the \textit{Coverage Validators} to check wether or not a certain multiplexer path was taken during the test, all of this resulting in a branch coverage percentage.
+The solution that was used to implement line coverage was based off of a method presented by Ira. D. Baxter~\cite{branch-cov-made-easy:2002}. The idea is to add additional outputs for each multiplexer in the design. These new ports, which we will call \textit{Coverage Validators}, are set depending on the paths taken by each multiplexer and that information is then gathered at the end of each test and maintained throughout a test suite. Once the testing is done, we used the outputs gathered from the \textit{Coverage Validators} to check whether or not a certain multiplexer path was taken during the test, all of this resulting in a branch coverage percentage \hjd{Should this be line coverage?}.
 
 This was implemented in Treadle by creating a custom pass of the FIRRTL compiler that traverses the Abstract Syntax Tree (\textit{AST}) and adds the wanted outputs and coverage expressions into the source tree. Once that is done, the \texttt{TreadleTester} samples those additional outputs every time the \texttt{expect} method is called and keeps track of their values throughout a test suite. Finally it generates a Scala \texttt{case class} containing the following coverage information:
+
 \begin{itemize}
-\item The multiplexer path coverage percentage.
-\item The coverage Validator lines that were covered by a test.
-\item The modified LoFIRRTL source code in the form of a \texttt{List[String]}.
+  \item The multiplexer path coverage percentage.
+  \item The coverage Validator lines that were covered by a test.
+  \item The modified LoFIRRTL source code in the form of a \texttt{List[String]}.
 \end{itemize}
-The \texttt{CoverageReport} case class can then be serialized, giving the following report:
+
+The \texttt{CoverageReport} case class can then be serialized, giving, e.g., the following report:
 \begin{verbatim}
 COVERAGE: 50.0% of multiplexer paths tested
 COVERAGE REPORT:
@@ -569,51 +559,56 @@ COVERAGE REPORT:
 -     io_cov_valid_1 <= not(io_a)
 +     out <= mux(io_a, io_b_0, io_b_1)
 \end{verbatim}
-The example above is taken for a simple test, where we are only testing the path where \texttt{in\_a} is 1. This means that, since we only have a single multiplexer, only half of our branches have been tested and we would thus want to add a test for the case where \texttt{in\_a} is 0. The report can thus be interpreted as follows:  
+The example above is taken for a simple test, where we are only testing the path where \texttt{in\_a} is 1. This means that, since we only have a single multiplexer, only half of our branches have been tested and we would thus want to add a test for the case where \texttt{in\_a} is 0. The report can thus be interpreted as follows:
+
 \begin{itemize}
-\item "\texttt{+}" before a line, means that it was executed in at least one of the tests in the test suite.
-\item "\texttt{-}" before a line, means that it wasn't executed in any of the tests in the test suite.\\
+  \item "\texttt{+}" before a line means that it was executed in at least one of the tests in the test suite.
+  \item "\texttt{-}" before a line means that it wasn't executed in any of the tests in the test suite.
 \end{itemize}
 
-Treadle thus allows us to obtain coverage at the FIRRTL level. A more interesting result would be if the FIRRTL line coverage would be mapped to the original Chisel source. This is possible but challenging, since Treadle only has access to the original source code through \textit{Source locators} which map some of the FIRRTL lines back to Chisel. This means that the code can only be partially mapped and the remainder will have to be reconstructed using some smart guessing.\\
+Treadle thus allows us to obtain coverage at the FIRRTL level. A more interesting result would be if the FIRRTL line coverage would be mapped to the original Chisel source. This is possible but challenging, since Treadle only has access to the original source code through \textit{Source locators} which map some of the FIRRTL lines back to Chisel. This means that the code can only be partially mapped and the remainder will have to be reconstructed using some smart guessing.
 
-\paragraph{Functional Coverage Directly in Scala}
-Functional coverage allows one to have a measurement of \textit{"how much of the specification has been implemented correctly"}.The main language used for functional coverage is \textit{SystemVerilog}, which is why our solution is based on the same syntax. There are three main components to defining a verification plan: 
+\subsubsection{Functional Coverage Directly in Scala}
+Functional coverage allows one to have a measurement of \textit{"how much of the specification has been implemented correctly?"} \hjd{This question differs from the one before.}. The main language used for functional coverage is \textit{SystemVerilog}, which is, as mentioned before, often too complex and time-consuming to work with. Functional coverage is measured relative to a verification plan, which includes the three following components:
+
 \begin{itemize}
-\item \texttt{Bin}: Defines a range of values that should be tested for (i.e. what values can we expect to get from a given port).
-\item \texttt{CoverPoint}: Defines a port that needs to be sampled in the coverage report. These are defined using a set of bins.
-\item \texttt{CoverGroup}: Defines a set of \texttt{CoverPoint}s that need to be sampled at the same time.
+  \item \texttt{Bin}s: Ranges of values that should be tested for (i.e., expected values of a given port).
+  \item \texttt{CoverPoint}s: Ports that need to be sampled in the coverage report defined using a set of \texttt{Bin}s.
+  \item \texttt{CoverGroup}s: Sets of \texttt{CoverPoint}s that need to be sampled at the same time.
 \end{itemize}
-Using the above elements, one can define what's known as a verification plan, which tells the coverage reporter what ports need to be sampled in order to generate a report.
-In order to implement said elements in Scala we needed to be able to do the following:
+
+A verification plan based on these three components tells the coverage reporter which ports need to be sampled in order to generate a report. In order to implement said components in Scala, we needed to be able to do the following:
+
 \begin{itemize}
-\item Define a verification plan (using constructs similar to \texttt{coverpoint} and \texttt{bins}).
-\item Sample DUT ports (for example by hooking into the \textit{Chisel Testers2} framework).
-\item Keep track of bins to sampled value matches (using a sort of DataBase).
-\item Compile all of the results into a comprehensible Coverage Report.
+  \item Define a verification plan (using constructs similar to \texttt{CoverPoint} and \texttt{Bin}).
+  \item Sample DUT ports (for example by hooking into the \textit{ChiselTest} framework).
+  \item Keep track of bins to sampled value matches (using a sort of database).
+  \item Compile all of the results into a comprehensible coverage report.
 \end{itemize}
-Implementing these elements was done using a structure where we had a top-level element, known as our \texttt{CoverageReporter} which allows the verification engineer to define a verification plan using the \texttt{register} method, which itself stores the \texttt{coverpoint} to \texttt{bin} mappings inside of our \texttt{CoverageDB}. Once the verification plan is defined, we can sample our ports using the \texttt{sample} method, which is done by hooking into \textit{Chisel Testers2} in order to use its peeking capabilities. At the end of the test suite a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
+
+Implementing these elements was done using a structure based around a top-level element known as the \texttt{CoverageReporter}, which allows the verification engineer to define a verification plan using a \texttt{register} method. The \texttt{register} method stores \texttt{CoverPoint} to \texttt{Bin} mappings inside a \texttt{CoverageDB} (DB being short for database) object. Once the verification plan is defined, ports may be sampled using the \texttt{sample} method, which is implemented based on \textit{ChiselTest} peeking capabilities. At the end of a test suite, a functional coverage report can be generated using the \texttt{printReport} method, which summarizes the results stored in the database.
+
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter
-cr.register(
-    //Declare CoverPoints
-    //CoverPoint 1
-    CoverPoint(dut.io.accu , "accu",
-        Bins("lo10", 0 to 10)::
-        Bins("First100", 0 to 100)
-        ::Nil)::
-    //CoverPoint 2
-    CoverPoint(dut.io.test, "test", 
-        Bins("testLo10", 0 to 10)
-        ::Nil)::
-    Nil,
-    //Declare cross points
-    Cross("accuAndTest", "accu", "test",
-        CrossBin("both1", 1 to 1, 1 to 1)
-        ::Nil)::
-    Nil)
+cr.register( // Declare CoverPoints
+  CoverPoint(dut.io.accu, "accu", // CoverPoint 1
+    Bins("lo10", 0 to 10) ::
+    Bins("First100", 0 to 100) ::
+    Nil) ::
+  CoverPoint(dut.io.test, "test", // CoverPoint 2
+    Bins("testLo10", 0 to 10) ::
+    Nil) ::
+  Nil,
+  // Declare cross points
+  Cross("accuAndTest", "accu", "test", 
+    CrossBin("both1", 1 to 1, 1 to 1) ::
+    Nil)::
+  Nil
+)
 \end{lstlisting}
-The above code snippet is an example of how to define a verification plan using our coverage framework. The concepts are directly taken from \texttt{SystemVerilog}, so it should be accessible to anyone coming from there. One concept, that is used in the example verification plan, which we haven't presented yet is the idea of \textit{Cross Coverage} defined using the \texttt{Cross} construct. \textit{Cross Coverage} allows one to specify coverage relations between CoverPoints. This means that a cross defined between, let's say, \texttt{coverpoint a} and \texttt{coverpoint b} will be used to gather information about when \texttt{a} and \texttt{b} had certain values simultaneously. Thus in example verification plan we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.\\
+
+The above code snippet is an example of how to define a verification plan using our coverage framework. One concept, that is used in the example verification plan, which we have not yet presented, is the idea of \textit{cross coverage} defined using the \texttt{Cross} construct. Cross coverage allows one to specify coverage relations between \texttt{CoverPoint}s. This means that a cross defined between, e.g., \texttt{CoverPoint} $a$ and \texttt{CoverPoint} $b$ will be used to gather information about when $a$ and $b$ have certain values simultaneously. Thus, in our example verification plan, we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.
+
 Once our verification plan is defined, we need to decide when we want to sample our cover points. This means that at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. This can be done, in our example, simply by calling \texttt{cr.sample()} when we are ready to sample our points. Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()} which results in the following coverage report: 
 \begin{verbatim}
 ============== COVERAGE REPORT ==============
@@ -630,39 +625,48 @@ BIN both1 COVERING Range 1 to 1 CROSS Range 1 to 1
 HAS 1 HIT(S)
 ============================================
 \end{verbatim}
-An other option would be, for example if we want to do automated constraint modifications depending on the current coverage, to generate the coverage as a Scala \texttt{case class} and then to use it's \texttt{binNcases} method to get numerical and reusable coverage results.  
-  
-One final element that our framework offers is the possibility to gater delayed coverage relationships between two coverage points. The idea is similar to how a \texttt{Cross} works, but this time rather than sampling both points in the same cycle, we rather look at the relation between one point at the starting cycle and an other point sampled a given number of cycles later. This number of cycles is called the \texttt{delay} and there are currently three different ways to specify it:  
+Implementing a more advanced automated constraint modification flow depending on current coverage results is also possible by simply using the \texttt{binNcases} method of the \texttt{CoverageReport} case class returned by the coverage reporter. 
+
+One final element that our framework offers is the possibility to gather delayed coverage relationships between two coverage points. The idea is similar to how a \texttt{Cross} works, but this time rather than sampling both points in the same cycle, we rather look at the relation between one point at the starting cycle and another point sampled a given number of cycles later. This number of cycles is called the \texttt{delay} and there are currently three different ways to specify it:  
 \begin{itemize}
- \item \texttt{Exactly} delay, means that a hit will only be considered if the second point is sampled in its range a given number of cycles after the first point was.
- \item \texttt{Eventually} delay, means that a hit will be considered if the second point is sampled in its range at any point within the following given number of cycles after the first point was.  
- \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
+  \item \texttt{Exactly} delay, means that a hit will only be considered if the second point is sampled in its range a given number of cycles after the first point was.
+  \item \texttt{Eventually} delay, means that a hit will be considered if the second point is sampled in its range at any point within the following given number of cycles after the first point was.  
+  \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}
 
-\subsection{Verification of AXI4 Interfaced Components}
+\subsection{Verification with Bus Functional Models}
+Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces or buses of multiple signals, which enable greater reuse. 
+Many synthesis tools, including Xilinx's Vivado, provide IP generators whose output IP blocks are equipped with such standard interfaces. Verification of components 
+with such interfaces is most easily handled with so-called \textit{bus functional models} (BFMs), which abstract peeking and poking of wires to a transaction level. That is, 
+using a BFM, a verification engineer can reduce several lines of code representing, e.g., a write transaction to just a single call to a standardized method.
 
-\todo{Add figure - Hans}
-
-Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces,
-which enable greater reuse. One of such standard interfaces is AXI4, an open standard by ARM \cite{axi4standard},
-which is used in particular to connect processor nodes to memories.
-As such, most available synthesis tools, including Xilinx's Vivado,
-provide IP generators whose output IP blocks are equipped with AXI interfaces
-along with optional verification structures written in (System-)Verilog \cite{axi4vip}.
-
-Typically, verification of components with such standard interfaces is provided through so-called \textit{bus functional models} (BFMs) that abstract complex low-level signal transitions between bus masters and slaves to a transaction level (e.g., write and read transactions). Unfortunately, such BFMs are not yet available in Chisel. Therefore, we include an example BFM based around ChiselTest in our framework.
+In this work, we provide an example BFM for AXI4, an open standard by ARM~\cite{axi4standard}. Let us first give a brief introduction to AXI4. At the time of writing, the example works only for AXI4, but it can easily be extended to support other buses.
 
 \subsubsection{Introduction to AXI4}
-The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five separate channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The five channels are:
-\begin{itemize}
-  \item \textit{Write Address} for transferring transaction attributes from master to slave
-  \item \textit{Write Data} for transferring write data and strobe from master to slave
-  \item \textit{Write Response} for transferring transaction status of a writes from slave to master
-  \item \textit{Read Address} same as \textit{Write Address}, but for reads
-  \item \textit{Read Data} for transferring read data from slave to master
-\end{itemize}
+The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, see figure~\ref{fig:axi4w}, while the read channels are \textit{Read Address} and \textit{Read Data}, see figure~\ref{fig:axi4r}. 
 
-Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address, burst length, and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}. %Similarly, the master may provide several more addresses while transferring data in relation to the first address -- granted that the slave is capable of multiple outstanding transactions.
+\begin{figure*}[t]
+  \centering
+  \subfloat[Write channels.\label{fig:axi4w}]{
+    \includegraphics[width=0.45\linewidth]{WriteTrx.pdf}
+  }
+  \hfill
+  \subfloat[Read channels.\label{fig:axi4r}]{
+    \includegraphics[width=0.45\linewidth]{ReadTrx.pdf}
+  }
+  \label{fig:axi4}
+  \caption{An overview of the channels defined in the AXI4 standard.}
+\end{figure*}
+
+%\begin{itemize}
+%  \item \textit{Write Address} for transferring transaction attributes from master to slave
+%  \item \textit{Write Data} for transferring write data and strobe from master to slave
+%  \item \textit{Write Response} for transferring transaction status of a writes from slave to master
+%  \item \textit{Read Address} same as \textit{Write Address}, but for reads
+%  \item \textit{Read Data} for transferring read data from slave to master
+%\end{itemize}
+
+Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}.
 
 \subsubsection{Implementation}
 Our implementation includes bundles defining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and of course the BFM itself; the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends the slave class and provides a simple, transaction level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx} which do exactly as their names indicate; create and enqueue write and read transactions. \\
@@ -670,16 +674,15 @@ Our implementation includes bundles defining the five different channels, abstra
 Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the aforementioned methods (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. As such, when, for example, a write transaction is enqueued and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
 
 \subsubsection{A Simple Example}
-Returning to the example used before, using the BFM to test a module called \texttt{Memory} is as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction -- but beware that due to the BFM's parallel execution style, the channels are indeed independent. As such, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+Consider as an example using the BFM to test a module called \texttt{Memory}, which is now as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction. Beware that due to channel independence, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
 \begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
-class MemoryTester extends FlatSpec with ChiselScalatestTester with Matchers {
+class MemoryTester extends FlatSpec with ChiselScalatestTester {
   behavior of "My Memory module"
   it should "write and read" in {
-    test(new Memory()) {
-      dut =>
-        val bfm = new FunctionalMaster(dut)
-        master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
-        master.createReadTrx(0, len = 15, size = 2)
+    test(new Memory()) { dut =>
+      val bfm = new FunctionalMaster(dut)
+      master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
+      master.createReadTrx(0, len = 15, size = 2)
     }
   }
 }
@@ -693,17 +696,17 @@ In the process of the research we implemented a use case provided by Microchip t
 
 The provided specification document describes a priority queue which can be used in real-time systems for the scheduling of deadlines by providing information about the 
 next timer expiration to the host system. Sorting of the enqueued elements is conducted by applying the heap sort algorithm. Elements are structured in a so-called 
-heap which is a tree data structure. The tree needs to be balanced in order for the
+heap, which is a tree data structure. The tree needs to be balanced in order for the
 timer closest to expiring to get to the top of the tree and thus to the head of the queue. This means verifying that every parent node is smaller than the connected child nodes.
 
 
-The $\log_k N$ deepness of the tree provides good scalability in terms of insertion and removal times when the queue size increases, 
+The $\log_k N$ depth of the tree provides good scalability in terms of insertion and removal times when the queue size increases, 
 since worst case $\log_k N-1$ swap operations need to be conducted in order to rebalance the heap. Here $k$ is the number of child elements per parent and $N$
 is the number of elements in the heap. A trade-off is the varying delay connected to the rebalancing of the tree where the queue is unresponsive. If queuing
 happens in bursts, a buffer could be added. Here the introduced delay from insertion request to actual appearance of the enqueued value in the heap of course needs
 to be taken into account.
 
-In order for the host system to have the ability to distinguish between multiple consecutive super cycles and clock cycles in a super cycle, the values inserted 
+In order for the host system to have the ability to distinguish between multiple consecutive super cycles \hjd{What's this?} and clock cycles in a super cycle, the values inserted 
 into the queue are split into the fields \textit{cyclic} and \textit{normal} priority (time out value). The removal functionality of the queue requires a reference system. A reference 
 ID is therefore given together with the element at insertion, where ID generation and uniqueness are handled by the host system.
 
@@ -716,22 +719,22 @@ ID.
 
 In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. Therefore a layout is proposed in the specification where all 
 child elements of a certain node are stored together under one memory address. This allows single memory access fetches of all $k$ children. Since 
-the root node has no siblings it is stored alone in a register. This enables even faster access in certain scenarios which are discussed later on.
+the root node has no siblings, it is stored alone in a register. This enables even faster access in certain scenarios which are discussed later on.
 
 One memory row contains $k$ elements each consisting of the 3 introduced fields: \textit{cyclic} priority, \textit{normal} priority and the connected
 reference ID. In the implemented 
-\texttt{Memory} module a single sequential memory is instantiated where masking is used to be able to over-write specific elements in one memory row.
+\texttt{Memory} module, a single sequential memory is instantiated where masking is used to be able to over-write specific elements in one memory row.
 
 There are a variety of solutions to the problem of content addressability which is required here in order to find positions of elements in the heap by providing
 their reference ID. Cache-like memory relying on parallel tag comparison could be used to achieve fast and constant search times. On the other hand, the 
-existing sequential memory could be searched linearly, where $k$ reference ID's are compared in parallel until the searched reference ID is found.
+existing sequential memory could be searched through linearly, where $k$ reference ID's are compared in parallel until the reference ID is found.
 A compromise between the two solutions could include splitting memory space over multiple instances of the latter and thus reducing worst case search time.
 The priority queue is designed to be independent of the specific implementation. As a reference, the linear search is implemented.
 
 The \texttt{Heapifier} loops from a given starting point in the tree either upwards or downwards until it hits the root or a childless node. In each iteration 
 it is checked whether the parent element is smaller than its child elements and if not a swap occurs. Once the parent element and child elements of the starting 
 point are fetched from memory, only the next parent or block of children respectively needs to be fetched depending on the looping direction (up/down). Thus 
-only 3 cycles (1 fetch, 2 write backs) are required per swap. The state diagram of the \texttt{Heapifier} is shown in Figure \ref{fig:pq_heapifier_state}.
+only 3 cycles (1 fetch, 2 write backs) are required per swap. The state diagram of the \texttt{Heapifier} is shown in figure~\ref{fig:pq_heapifier_state}.
 
 \begin{figure}
 	\centering
@@ -740,10 +743,8 @@ only 3 cycles (1 fetch, 2 write backs) are required per swap. The state diagram 
 	\label{fig:pq_heapifier_state}
 \end{figure}
 
-The task of the \texttt{QueueControl} is to insert or remove elements and then signalize to the \texttt{Heapfier} to balance the tree. As it can be seen in Figure 
-\ref{fig:pq_control_state}, there are a series of special cases where insertion or removal times can be reduced for instance by taking advantage of the head element
-being saved in a register. The achieved best and worst case insertion as well as removal times are presented in Table \ref{tab:pq_timings}.
-
+The task of the \texttt{QueueControl} is to insert or remove elements and then signal to the \texttt{Heapfier} to balance the tree. As it can be seen in figure~\ref{fig:pq_control_state}, there are a series of special cases where insertion or removal times can be reduced for instance by taking advantage of the head element
+being stored in a register. The achieved best and worst case insertion as well as removal times are presented in table~\ref{tab:pq_timings}.
 
 \begin{figure}
 	\centering
@@ -778,21 +779,19 @@ being saved in a register. The achieved best and worst case insertion as well as
   \caption{Simulated insertion/removal times.}
 \end{table}
 
-
-
 \subsection{Testing and Verification}
 
-All modules and the fully assembled queue were tested with random stimuli in scala by employing the ChiselTest framework.
-In order to check whether the dut matched the specification, reference models were written for each module. Most modules 
+All modules and the fully assembled queue were tested with random stimuli in Scala by employing the \textit{ChiselTest} framework.
+In order to check whether the DUT matched the specification, reference models were written for each module. Most modules 
 could be modelled by a single or multiple functions. As a reference model for the whole priority queue, a class 
-was written which simulates state and interaction on a operation based level. In order to abstract interaction with the DUT,
-wrapper classes were employed. These make it easy to think on a transaction or 
-operation based level when writing tests.
+was written which simulates state and interaction on the operation level. In order to abstract interaction with the DUT,
+wrapper classes (i.e., classes similar to BFMs) were employed. These make it easy to think on a transaction or 
+operation level when writing tests.
 
-In the test of the priority queue, purely random pokes are produced. In order to evaluate how well these pokes were spread over the spectrum 
+In the test of the priority queue, purely random pokes are produced. In order to evaluate how well these pokes are spread over the spectrum 
 of possible or interesting input combinations, the functional coverage feature of ChiselVerify is used. This allows to evaluate whether interesting 
 or important edge cases are reached by the random input sequence. Furthermore, metrics on how many of the generated pokes actually are valid 
-operations, are collected. The average insertion and removal times measured under a random test run are shown in Table \ref{tab:pq_simres}.
+operations, are collected. The average insertion and removal times measured under a random test run are shown in table~\ref{tab:pq_simres}.
 These numbers are dependent on access patterns and are as such only representative for the random test case used here.
 %The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
 

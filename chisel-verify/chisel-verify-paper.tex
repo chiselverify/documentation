@@ -786,7 +786,10 @@ These numbers are dependent on access patterns and are as such only representati
 %The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
 
 \section{Related Work}
+Our current work does not find itself isolated in the Chisel verification universe. Other solutions do currently exist and we try to discuss a few of them in this section.  
 
+\subsection{SystemVerilog for Verification}
+As mentioned earlier, SystemVerilog is quite prevalent when it comes to verification. Being a mostly non-synthesisable extension of the Verilog HDL, it does contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
 \todo{Andrew}
 
 \todo{Maybe steal form Coverage paper}

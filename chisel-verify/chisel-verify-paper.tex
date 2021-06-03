@@ -148,7 +148,6 @@ digital design, verification, Chisel, Scala
 \item incorporate the reviews
 \item add \url{http://people.eecs.berkeley.edu/~ksen/papers/rfuzz.pdf} to related work
 \item Find a new venue abstract May 28: \url{http://www.iccd-conf.com/Home.html|}
-\item \hjd{Do we write Scala package names in italic or not? \textit{ChiselTest} seems to be most common, so I have corrected some places.}
 \item \hjd{Perhaps the use case is a bit too lengthy... Implementation details are not interesting here; the testing is, and it takes up little of the section.}
 \end{itemize}
 
@@ -435,82 +434,6 @@ We thus attempt to solve this lack by bringing some verification functionalities
 
 \todo{Explain the basics of the verification library - Martin}
 
-\subsection{Constraint Random Verification}
-The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct'' testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming. Constraint programming is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
-
-Constraint random verification is a combined effort of constraint programming and coverage-based methodologies. By utilizing constraint random inputs, a verification engineer can run Monte Carlo-style tests which, statistically, cover many interesting test cases with relatively few input combinations whose validity is guaranteed by predefined constraints. This method avoids the potential issue of tests failing due to invalid input combinations that would never appear during regular operation \hjd{Needs citation.}.
-
-With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user's perspective. A subset of these problems is the so-called Constraint Satisfaction Problems (CSP), which are mathematical problems defined as a set of objects whose state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous collection of constraints. CSP solvers thus serve well as the basis for generating sets of constraint random signal values for verification.
-
-%\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}]
-%typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
-%
-%class frame_t;
-%    rand pkt_type ptype;
-%    rand integer len;
-%    rand bit  [7:0] payload [];
-%    constraint common {
-%        payload.size() == len;
-%    }
-%    // Constraint the members
-%    constraint unicast {
-%        len <= 2;
-%        ptype == UNICAST;
-%    }
-%    // Constraint the members
-%    constraint multicast {
-%        len >= 3;
-%        len <= 4;
-%        ptype == MULTICAST;
-%    }
-%endclass
-%\end{lstlisting}
-
-%Listing \ref{lst:randobjsysv} shows a class named \code{frame\_t} in SystemVerilog. It uses the \code{rand} keyword for variables \code{len}, \code{ptype}, and \code{payload}.
-%Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the \code{common},  \code{unicast},
-%and \code{multicast} constraint groups. Each class in SystemVerilog has an intrinsic method called \code{randomize()}, which causes new values to be selected
-%for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
-%\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
-%paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. 
-
-SystemVerilog has native support for constraint random data types and a built-in CSP solver. Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method~\cite{spear2008systemverilog}. We let our work be inspired by the features of SystemVerilog, but bring them into the more accessible space of object oriented programming in Scala. In doing so, we have implemented a CSP solver in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain specific language, which allows users to declare and randomize objects.
-
-\begin{lstlisting}[language=scala, caption={Random object in Scala}, label={lst:randobjscala}]
-object pktType extends SVEnumeration {
-    val UNICAST: Value = Value(11)
-    val MULTICAST: Value = Value(0)
-    val BROADCAST: Value = Value(1)
-    
-    val domainValues = values.map(x => x.id).toList
-}
-
-class Frame extends Random {
-  import pktType._
-  var pType: RandInt     = rand(pType, pktType.domainValues())
-  var len: RandInt       = rand(len, 0 to 10 toList)
-  var noRepeat: RandCInt = randc( noRepeat, 0 to 1 toList)
-  var payload: RandInt   = rand(payload, 0 to 7 toList)
-
-  val common = constraintBlock (
-    binary ((len, payload) => len == payload)
-  )
-
-  val unicast = constraintBlock (
-    unary (len => len <= 2),
-    unary (pType => pType == UNICAST.id)
-  )
-
-  val multicast = constraintBlock (
-    unary (len => len >= 3),
-    unary (len => len <= 4),
-    unary (pType => pType == MULTICAST.id)
-  )
-}
-\end{lstlisting}
-
-Listing \ref{lst:randobjscala}, shows an example of a random object. To declare a random object, the user has to extend
-the class from the \code{Random} base-class provided by the library. After that, each random variable has to be declared of type \code{RandInt} and initialized with the \code{rand} macro. Finally, inheriting the Random base class exposes the method \code{random} which assigns random values to the random fields of the class.
-
 \subsection{Coverage in Chisel}
 
 \martin{This is probably already contained in the coverage paper and can be removed here.}
@@ -570,12 +493,12 @@ A verification plan based on these three components tells the coverage reporter 
 
 \begin{itemize}
   \item Define a verification plan (using constructs similar to \texttt{CoverPoint} and \texttt{Bin}).
-  \item Sample DUT ports (for example by hooking into the \textit{ChiselTest} framework).
+  \item Sample DUT ports (for example by hooking into the ChiselTest framework).
   \item Keep track of bins to sampled value matches (using a sort of database).
   \item Compile all of the results into a comprehensible coverage report.
 \end{itemize}
 
-Implementing these elements was done using a structure based around a top-level element known as the \texttt{CoverageReporter}, which allows the verification engineer to define a verification plan using a \texttt{register} method. The \texttt{register} method stores \texttt{CoverPoint} to \texttt{Bin} mappings inside a \texttt{CoverageDB} (DB being short for database) object. Once the verification plan is defined, ports may be sampled using the \texttt{sample} method, which is implemented based on \textit{ChiselTest} peeking capabilities. At the end of a test suite, a functional coverage report can be generated using the \texttt{printReport} method, which summarizes the results stored in the database.
+Implementing these elements was done using a structure based around a top-level element known as the \texttt{CoverageReporter}, which allows the verification engineer to define a verification plan using a \texttt{register} method. The \texttt{register} method stores \texttt{CoverPoint} to \texttt{Bin} mappings inside a \texttt{CoverageDB} (DB being short for database) object. Once the verification plan is defined, ports may be sampled using the \texttt{sample} method, which is implemented based on ChiselTest peeking capabilities. At the end of a test suite, a functional coverage report can be generated using the \texttt{printReport} method, which summarizes the results stored in the database.
 
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter
@@ -623,18 +546,103 @@ An other element that our framework offers, is the possibility to gather delayed
   \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}
 
-Finally, we were to exploit the functional nature of Scala in order allow for conditional cover points, which offer the possibility to create fully custom hit-consideration rules using a user-defined condition. This allow the user to check for arbitrary relations between two different ports rather than having to rely solely on value ranges. One could then, for example, create a bin that considers a hit every time all fields in a vector are equal. This is only possible thanks to higher order functions. 
+Finally, we exploit the functional nature of Scala in order allow for conditional cover points, which offer the possibility to create fully custom hit-consideration rules using a user-defined condition. This allows the user to check for arbitrary relations between two different ports rather than having to rely solely on value ranges. One could then, for example, create a bin that considers a hit every time all fields in a vector are equal. This is only possible thanks to higher order functions.
+
+Supporting a coverage measure directly in the testing tool enables modern verification strategies such as constraint random verification, that we will now describe our implementation of.
+
+\subsection{Constraint Random Verification}
+As described earlier, the complexity of digital design is increasing with the capacity of the silicon. Traditionally, verification engineers would write a number of directed tests each focusing on one or a few of a components functionalities, but this approach becomes impractical for larger designs. Instead, a Monte Carlo-style randomized verification methodology may be applied; constraint random verification, which is a combined effort of constraint programming and coverage-based methodologies. Using constraint random inputs, a relatively small test suite can, statistically, cover many of a component's functionalities. The constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied \hjd{Needs citation}.
+
+%The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct'' testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming. Constraint programming is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
+
+%By utilizing constraint random inputs, a verification engineer can run Monte Carlo-style tests which, statistically, cover many interesting test cases with relatively few input combinations whose validity is guaranteed by predefined constraints. This method avoids the potential issue of tests failing due to invalid input combinations that would never appear during regular operation \hjd{Needs citation.}.
+
+%Constraint random verification is a combined effort of constraint programming and coverage-based methodologies. By utilizing constraint random inputs, a verification engineer can run Monte Carlo-style tests which, statistically, cover many interesting test cases with relatively few input combinations whose validity is guaranteed by predefined constraints. This method avoids the potential issue of tests failing due to invalid input combinations that would never appear during regular operation \hjd{Needs citation.}.
+
+With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user's perspective. A subset of these problems is the so-called constraint satisfaction problems (CSP), which are mathematical problems defined as a set of objects whose state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous collection of constraints. CSP solvers thus serve well as the basis for generating sets of constraint random signal values for verification.
+
+%\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}]
+%typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
+%
+%class frame_t;
+%    rand pkt_type ptype;
+%    rand integer len;
+%    rand bit  [7:0] payload [];
+%    constraint common {
+%        payload.size() == len;
+%    }
+%    // Constraint the members
+%    constraint unicast {
+%        len <= 2;
+%        ptype == UNICAST;
+%    }
+%    // Constraint the members
+%    constraint multicast {
+%        len >= 3;
+%        len <= 4;
+%        ptype == MULTICAST;
+%    }
+%endclass
+%\end{lstlisting}
+
+%Listing \ref{lst:randobjsysv} shows a class named \code{frame\_t} in SystemVerilog. It uses the \code{rand} keyword for variables \code{len}, \code{ptype}, and \code{payload}.
+%Therefore these are the variables that can be randomized. Then constraints to these variables are applied and declared by the \code{common},  \code{unicast},
+%and \code{multicast} constraint groups. Each class in SystemVerilog has an intrinsic method called \code{randomize()}, which causes new values to be selected
+%for all the variables declared with the rand keyword. The selected value for each variable will respect the constraints applied to it. If there are
+%\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
+%paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. 
+
+SystemVerilog has native support for constraint random data types and a built-in CSP solver. Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method~\cite{spear2008systemverilog}. We let our work be inspired by the features of SystemVerilog, but bring them into the more accessible space of object oriented programming in Scala. In doing so, we have implemented a CSP solver in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain specific language, which allows users to declare and randomize objects.
+
+Our implementation supports random variables of the three main Chisel data types; integers, Booleans, and bundles, i.e., combinations of signals of the same or different types. Each variable has a specific domain of values that it is constrained to by the user, and values within the domain are equally likely to be selected by the CSP solver. Random objects are defined by extending a base class \texttt{Random} included in the library. Afterwards, fields of the object that are to be randomized must be declared of type \texttt{RandInt} and initialized with the \texttt{rand} macro. Finally, inherited from the \texttt{Random} class is the \texttt{random} method, which may be called to randomize the object's fields.
+
+\subsubsection{An Example Random Object}
+As an example, consider listing~\ref{lst:randobjscala} which shows the declaration of a NoC packet (or frame) random bundle with four fields; the packet type \texttt{pType}, the packet length \texttt{len}, whether the packet will be repeated \texttt{noRepeat}, and the packet payload \texttt{payload}. The packet type takes one of three possible values declared in a separate enumeration object \texttt{pktType}. Constraints are declared as \texttt{constraintBlock}s including one or more unary or binary constraints, which are functions operating on the random fields. In this case, different constraints apply to the \texttt{len} field depending on the packet type field \texttt{pType}.
+
+\begin{lstlisting}[language=scala, caption={Random object in Scala}, label={lst:randobjscala}]
+object pktType extends SVEnumeration {
+  val UNICAST:   Value = Value(11)
+  val MULTICAST: Value = Value(0)
+  val BROADCAST: Value = Value(1)
+  
+  val domainValues = values.map(x => x.id).toList
+}
+
+class Frame extends Random {
+  import pktType._
+  var pType: RandInt     = rand(pType, pktType.domainValues())
+  var len: RandInt       = rand(len, 0 to 10 toList)
+  var noRepeat: RandCInt = randc( noRepeat, 0 to 1 toList)
+  var payload: RandInt   = rand(payload, 0 to 7 toList)
+
+  val common = constraintBlock (
+    binary ((len, payload) => len == payload)
+  )
+
+  val unicast = constraintBlock (
+    unary (len => len <= 2),
+    unary (pType => pType == UNICAST.id)
+  )
+
+  val multicast = constraintBlock (
+    unary (len => len >= 3),
+    unary (len => len <= 4),
+    unary (pType => pType == MULTICAST.id)
+  )
+}
+\end{lstlisting}
+
+%Listing \ref{lst:randobjscala}, shows an example of a random object. To declare a random object, the user has to extend the class from the \code{Random} base-class provided by the library. After that, each random variable has to be declared of type \code{RandInt} and initialized with the \code{rand} macro. Finally, inheriting the Random base class exposes the method \code{random} which assigns random values to the random fields of the class.
+
+Combining constraint random objects with the provided coverage features enables writing tests very efficiently. However, this may be further optimized by abstracting away groups of wires and operating on an operation or transaction level instead, as we will now explain.
 
 \subsection{Verification with Bus Functional Models}
-Another solution to the ever-increasing complexity of digital designs is to use standardized interfaces or buses of multiple signals, which enable greater reuse. 
-Many synthesis tools, including Xilinx's Vivado, provide IP generators whose output IP blocks are equipped with such standard interfaces. Verification of components 
-with such interfaces is most easily handled with so-called \textit{bus functional models} (BFMs), which abstract peeking and poking of wires to a transaction level. That is, 
-using a BFM, a verification engineer can reduce several lines of code representing, e.g., a write transaction to just a single call to a standardized method.
+One solution to the ever-increasing complexity of digital designs often exploited by design engineers is to use standardized interfaces or buses of multiple signals. Doing so enables greater reuse and interchangeability of different implementations of the same component. Many synthesis tools, including Xilinx's Vivado, provide IP generators whose output IP blocks are equipped with such standard interfaces. Verification of components with such interfaces is most easily handled with so-called \textit{bus functional models} (BFMs), which abstract peeking and poking of wires to a transaction level. That is, using a BFM, a verification engineer can reduce several lines of code representing, e.g., a write transaction to just a single call to a standardized method.
 
-In this work, we provide an example BFM for AXI4, an open standard by ARM~\cite{axi4standard}. Let us first give a brief introduction to AXI4. At the time of writing, the example works only for AXI4, but it can easily be extended to support other buses.
+In this work, we provide an example BFM for AXI4, an open standard by ARM~\cite{axi4standard}. At the time of writing, the example works only for AXI4, but it can easily be extended to support other buses. Let us first give a brief introduction to AXI4.
 
 \subsubsection{Introduction to AXI4}
-The Advanced eXtensible Interface protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, see figure~\ref{fig:axi4w}, while the read channels are \textit{Read Address} and \textit{Read Data}, see figure~\ref{fig:axi4r}. 
+The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, see figure~\ref{fig:axi4w}, while the read channels are \textit{Read Address} and \textit{Read Data}, see figure~\ref{fig:axi4r}. 
 
 \begin{figure*}[t]
   \centering
@@ -660,11 +668,11 @@ The Advanced eXtensible Interface protocol by ARM is a highly flexible interconn
 Consider for example a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}.
 
 \subsubsection{Implementation}
-Our implementation includes bundles defining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and of course the BFM itself; the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends the slave class and provides a simple, transaction level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx} which do exactly as their names indicate; create and enqueue write and read transactions. \\
+Our implementation of an example AXI4 BFM includes bundles defining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and of course the BFM itself; the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends a \texttt{Slave} class and provides a simple, transaction level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx} which do exactly as their names indicate; create and enqueue write and read transactions.
 
 Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the aforementioned methods (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. As such, when, for example, a write transaction is enqueued and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
 
-\subsubsection{A Simple Example}
+\subsubsection{A Test Example}
 Consider as an example using the BFM to test a module called \texttt{Memory}, which is now as simple as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction. Beware that due to channel independence, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
 \begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
 class MemoryTester extends FlatSpec with ChiselScalatestTester {
@@ -772,7 +780,7 @@ being stored in a register. The achieved best and worst case insertion as well a
 
 \subsection{Testing and Verification}
 
-All modules and the fully assembled queue were tested with random stimuli in Scala by employing the \textit{ChiselTest} framework.
+All modules and the fully assembled queue were tested with random stimuli in Scala by employing the ChiselTest framework.
 In order to check whether the DUT matched the specification, reference models were written for each module. Most modules 
 could be modelled by a single or multiple functions. As a reference model for the whole priority queue, a class 
 was written which simulates state and interaction on the operation level. In order to abstract interaction with the DUT,
@@ -793,7 +801,7 @@ Our current work does not find itself isolated in the Chisel verification univer
 As mentioned earlier, SystemVerilog is quite prevalent when it comes to verification. Being a mostly non-synthesisable extension of the Verilog HDL, it does contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
 
 \subsection{Universal Verification Methodology}
-An other important player in the Verification world is the \textit{Universal Verification Methodology}(UVM). UVM was created a a stardardized way of writing test-benches and was mostly paired up with SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e. using the same test for multiple designs)~\cite{uvm2015}, however it is extremely verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment, but is quite reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM tried to "reinvent the wheel" makes it less accessible than the simpler approach done by ChiselTest.
+An other important player in the Verification world is the \textit{Universal Verification Methodology} (UVM). UVM was created a a stardardized way of writing test-benches and was mostly paired up with SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e. using the same test for multiple designs)~\cite{uvm2015}, however it is extremely verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment, but is quite reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM tried to "reinvent the wheel" makes it less accessible than the simpler approach done by ChiselTest.
 
 \subsection{Other Chisel-Specific Verification Work}
 At the time of writing this, there are only a couple instances (other than the work presented in this paper) of verification work aimed specifically at Chisel. One example of this is \texttt{chisel3.formal}, which is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. The approach taken here is quite different from what we've developed. Rather than creating a set of tools that supplement the current chisel testing pipeline, \texttt{chisel3.formal} rather proposes a different way of testing, based around defining a set of formal checks that a design must pass in order to be considered as functional. These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. These formal checks can then be verified by calling the \texttt{verify(module)} function. 

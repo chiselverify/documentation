@@ -790,35 +790,16 @@ Our current work does not find itself isolated in the Chisel verification univer
 
 \subsection{SystemVerilog for Verification}
 As mentioned earlier, SystemVerilog is quite prevalent when it comes to verification. Being a mostly non-synthesisable extension of the Verilog HDL, it does contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
+
+\subsection{Universal Verification Methodology}
+An other important player in the Verification world is the \textit{Universal Verification Methodology}(UVM). UVM was created a a stardardized way of writing test-benches and was mostly paired up with SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e. using the same test for multiple designs)~\cite{uvm2015}, however it is extremely verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment, but is quite reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM tried to "reinvent the wheel" makes it less accessible than the simpler approach done by ChiselTest.
+
+\subsection{Other Chisel-Specific Verification Work}
+
+
 \todo{Andrew}
 
-\todo{Maybe steal form Coverage paper}
-
 \todo{Talk about Kevin Lauefer's work and verif}
-
-\todo{UVM}
-
-SystemVerilog adds object-oriented concepts for the non-synthesizable verification code.
-The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
-C functions inside a SystemVerilog (UVM) testbench.
-This enables co-simulation with a ``golden model'' written in C, and the
-testbench verifying the device under test (DUT).
-With ChiselTest we can co-simulate with Java and Scala models and use the Java Native Interface
-to co-simulate with models in C.
-
-The Universal Verification Method (UVM) is an open source collection of SystemVerilog,
-which is becoming popular in industry.
-SystemVerilog has become a complex language with more than 250 keywords, and it is unclear
-which tools support which language constructs for hardware description.
-In contrast with Chisel, when the program compiles, it is synthesizable hardware.
-Chisel is a small language, where the cheat sheet fits on two pages.
-The power of Chisel comes from the embedding in Scala.
-Furthermore, as classic hardware description languages are niche products, not
-many tools or libraries are available. 
-With Chisel on Scala we have the choice of different integrated development environments (IDE),
-testing infrastructure (e.g., ScalaTest), and many free libraries.
-
-\todo{State what is different to related work, e.g., timed asserts}
 
 \section{Conclusion}
 In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought functional coverage, statement coverage, constraint random verification and transactional modelling to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.

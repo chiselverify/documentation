@@ -1,4 +1,4 @@
-\documentclass[runningheads]{llncs}
+\documentclass[conference]{IEEEtran}
 
 
 \usepackage{cite}
@@ -85,28 +85,17 @@
 \title{ChiselVerify: An Open-Source Verification Method with
 Chisel and Scala}
 
-\author{Andrew Dobis\inst{1} \orcidID{0000-0001-9663-1672} \and
-Tjark Petersen\inst{1} \orcidID{0000-0002-0239-511X} \and 
-Kasper Hesse\inst{1} \orcidID{0000-0003-2455-1360} \and
-Enrico Tolotto\inst{1} \orcidID{0000-0001-5921-0772} \and
-Hans Jakob Damsgaard\inst{1} \orcidID{0000-0001-8409-0282} \and 
-Simon Thye Andersen\inst{1} \and
-Richard Lin\inst{2} \and
-Martin Schoeberl\inst{1} \orcidID{0000-0003-2366-382X}}
-
-\institute{Technical University of Denmark\\
-Department of Applied Mathematics and Computer Science\\
-Lyngby, Denmark\\
-\email{andrew.dobis@alumni.epfl.ch}, \email{s186083@student.dtu.dk}, \email{s183735@win.dtu.dk}, \email{s190057@student.dtu.dk},
-\email{s163915@student.dtu.dk}, \email{simon.thye@gmail.com}, \email{masca@dtu.dk} \and
-University of California, Berkeley\\
-Department of Electrical Engineering and Computer Sciences\\
-UC Berkeley\\
-Berkeley, CA\\
-\email{richard.lin@berkeley.edu}
+\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
+Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
+\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+\textit{Technical University of Denmark}\\
+Lyngby, Denmark \\\\
+\textit{Department of Electrical Engineering and Computer Sciences} \\
+\textit{UC Berkeley}\\
+Berkeley, CA \\\\
+andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, s190057@student.dtu.dk, \\
+s163915@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
 }
-
-\authorrunning{A. Dobis et al.}
 
 %\author{\IEEEauthorblockNAndrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
 %Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
@@ -149,7 +138,9 @@ Finally, the solution is well integrated into the existing Chisel universe, maki
 %during the verification process of a design in a contemporary high-level programming ecosystem.
 \end{abstract}
 
-\keywords{digital design \and verification \and Chisel \and Scala}
+\begin{IEEEkeywords}
+digital design, verification, Chisel, Scala
+\end{IEEEkeywords}
 
 \section{TODO}
 
@@ -412,8 +403,7 @@ By separating the hardware construction and hardware verification languages, it 
 To go more into detail about how Chisel works, it starts by being translated into an intermediate representation called FIRRTL~\cite{firrtl}. It then goes through multiple optimization stages, called \textit{Transforms}, during which high-level concepts, such as a functional \texttt{map} or vectors, are compiled into lower level concepts that map nicely onto what we normally see in a Verilog or VHDL description. Once that is done, the newly transformed FIRRTL, called Low FIRRTL, can be used either for simulation, using an execution engine such as Treadle, or for synthesis by translating it into Verilog which is then used to generate the synthesised circuit. Note that the final Verilog description may also be used for simulation purposes using engines such as verilator~\cite{verilator}. An overview of the Chisel pipeline can be found in figure \ref{fig:chisel-pipe}.
 
 \begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{Chisel_FIRRTL_VERILOG.pdf}
+    \includegraphics[width=9cm]{Chisel_FIRRTL_VERILOG.pdf}
     \caption{Overview of the Chisel pipeline.}
 \label{fig:chisel-pipe}
 \end{figure}
@@ -738,7 +728,7 @@ only 3 cycles (1 fetch, 2 write backs) are required per swap. The state diagram 
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\textwidth]{HeapifierStateDiagram.pdf}
+	\includegraphics[width=9cm]{HeapifierStateDiagram.pdf}
 	\caption{The state diagram of the \texttt{Heapifier}}
 	\label{fig:pq_heapifier_state}
 \end{figure}
@@ -748,7 +738,7 @@ being stored in a register. The achieved best and worst case insertion as well a
 
 \begin{figure}
 	\centering
-	\includegraphics[width=1\textwidth]{QueueControlStateDiagram.pdf}
+	\includegraphics[width=9cm]{QueueControlStateDiagram.pdf}
 	\caption{The state diagram of the \texttt{QueueControl}}
 	\label{fig:pq_control_state}
 \end{figure}

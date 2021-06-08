@@ -112,7 +112,9 @@ s163915@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dt
 
 \begin{document}
 
-\maketitle \thispagestyle{empty}
+\maketitle
+\thispagestyle{plain}
+\pagestyle{plain}
 
 
 \begin{abstract}
@@ -142,14 +144,14 @@ Finally, the solution is well integrated into the existing Chisel universe, maki
 digital design, verification, Chisel, Scala
 \end{IEEEkeywords}
 
-\section{TODO}
+%\section{TODO}
 
-\begin{itemize}
-\item incorporate the reviews
-\item add \url{http://people.eecs.berkeley.edu/~ksen/papers/rfuzz.pdf} to related work
-\item Find a new venue abstract May 28: \url{http://www.iccd-conf.com/Home.html|}
-\item \hjd{Perhaps the use case is a bit too lengthy... Implementation details are not interesting here; the testing is, and it takes up little of the section.}
-\end{itemize}
+%\begin{itemize}
+%\item incorporate the reviews
+%\item add \url{http://people.eecs.berkeley.edu/~ksen/papers/rfuzz.pdf} to related work
+%\item Find a new venue abstract May 28: \url{http://www.iccd-conf.com/Home.html|} // Abstract due 11.06.21
+%\item \hjd{Perhaps the use case is a bit too lengthy... Implementation details are not interesting here; the testing is, and it takes up little of the section.}
+%\end{itemize}
 
 
 %\begin{verbatim}
@@ -686,7 +688,7 @@ class MemoryTester extends FlatSpec with ChiselScalatestTester {
 
 \section{Use Case: Sorting in Hardware}
 
-In the process of the research we implemented a use case provided by Microchip to evaluate our verification library.
+In the process of our research we implemented a use case provided by Microchip to evaluate our verification library.
 
 \subsection{Specification}
 
@@ -823,8 +825,8 @@ This work has been performed as part of the
 ``InfinIT -- Innovationsnetv{\ae}rk for IT'', UFM case no. 1363-00036B,
 ``High-Level Design and Verification of Digital Systems''.
 
-\bibliographystyle{splncs04}
-\bibliography{../msbib,../chisel-uvm,../funding/ftp-chisel/testing}
+\bibliographystyle{IEEEtran}
+\bibliography{../msbib, ../chisel-uvm, ../funding/ftp-chisel/testing}
 
 
 \end{document}

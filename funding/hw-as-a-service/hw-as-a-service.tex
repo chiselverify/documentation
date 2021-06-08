@@ -112,9 +112,14 @@
 %\subsection{Popular Abstract}
 %
 %Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The main issue is the usage of old tools compared to tools for programming those devices. This project aims to apply tools and methods from software development to hardware development to increase productivity. Danish firms will benefit from the results of this project.
+\begin{abstract}
+Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The project addresses: (1) how to make hardware accelerates in the cloud accessible for software developers, (2) how hardware verification can learn from software testing, and (3) co-verification of software and hardware with modern tooling. The project requests funding for two PhD students at DTU and ITU.
+\end{abstract}
 
 \section{Introduction and Objectives}
 \label{sec:objectives}
+
+\todo{Mix and merge text from the first phase document.}
 
 We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
 Performance increase with general-purpose processors has come to a halt.
@@ -182,6 +187,9 @@ It builds on top of the Chisel hardware construction language and uses Scala to 
 \section{Background and State-of-the-Art}
 \label{sec:background}
 
+\todo{Some more is needed here. Stuff that we could also need for our paper.}
+
+\todo{Ref our initial ``towards'' paper.}
 
 %\begin{itemize}
 %\item Verification (check what is current praxis)
@@ -357,9 +365,21 @@ scala> propSquare.check
 
 
 
+\section{Value Creation}
 
+\todo{This is a weak section. Maybe we shall integrate the industry cooperation here.}
 
+Digital technologies are currently the main driver for growth in Denmark. Furthermore, the Covid-19 induced working from home, gives a further boost to digitalization right now.
 
+This project with the cooperation between researchers as DTU and ITU and Danish companies will allow Denmark to take the lead in digital research and development.
+
+Two PhD students, and additional master students, will become highly educated engineers, who are in need in Danish industry in digital systems design. Those students will also learn how to program the accelerators in the cloud for future applications 
+
+At DTU and ITU we will advance the research in the design and test of digital systems. This research will drive the adaption of the education curriculum towards modern tools and agile methods.
+
+The industrial project partners will learn and get exposed to modern tools and methods to increase the efficiency of designing and testing digital systems.
+
+The partner companies, who design hardware, can benefit from our developed software tool that generates test stimuli achieving high coverage of the hardware in simulation.
 
 \section{Research Plan}
 
@@ -581,10 +601,11 @@ open to all interested companies, and students from DTU and ITU.
 
 \section{Practical Feasibility}
 
-%The Embedded Systems Engineering section at DTU Compute provides
-%the intellectual environment and the infrastructure (e.g., regression test server...) that we need for an ambitious research project.
-%Furthermore, DTU Compute provides the infrastructure (e.g., an automatic test
-%environment for regressions tests, web server).
+The Embedded Systems Engineering section at DTU Compute provides
+the intellectual environment and the infrastructure (e.g., regression test server...) that we need for an ambitious research project.
+Furthermore, DTU Compute provides the infrastructure (e.g., an automatic test
+environment for regressions tests, web server).
+\todo{Add ITU}
 
 %\paragraph*{Internationalization}
 %
@@ -599,25 +620,43 @@ test benches written in VHDL and Verilog to a verification method based on const
 test generation with tools such as UVM. Therefore, the HaaS project is just-in-time to support this
 transition.
 
-Following {\bf seven companies are interested in the HaaS project} and support it with use cases.
-Teledyne is interested in exploring Chisel for development and testing with the compatibility of VHDL and Verilog.
-Microchip is interested in using Chisel to improve the design throughput and
-provides a hardware use case to sort Ethernet packets according to their deadlines.
-Synopsys provides tool sHaaSupport for the project.
-WSAudiology provides a decimation filter use case for our verification framework.
-Napatech will follow the project and offer challenges to the project.
-Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
+The topic is relevant to several companies in Denmark. Following companies provided a commitment: Napatech (Jesper Birch), GN Hearing (Drazen Horvat), Comcores (Thomas Noergaard, Joergen Carstensen), Teledyne Reson (Morten Rytter, Simon Andersen), WSAudiology (Ketil Julsgaard), and Microchip (Thomas Aakjer)
+
+
+Following companies are considered additional partners: SyoSil (Jacob Sander Andersen), Synopsis (Martine Chegaray), and Demant (Anders Hebsgaard).
+\todo{Missing replies.}
+
+\todo{More concrete text on contribution and cooperation. Probably one short abstract per company}
+
+Following {\bf six companies are interested in the HaaS project} and support it with use cases.
+
+Napatech...
+
+GN Hearing...
+
 Comcores is interested in improving the throughput with HaaS.
 
+Teledyne is interested in exploring Chisel for development and testing with the compatibility of VHDL and Verilog.
 
-%\paragraph*{Use Cases}
-%
-%We will have several non-trivial use cases from industry and from our own development to verify
-%our development.
-%Microchip provides the specification of a hardware sorting algorithm.
-%From WSA we will use a decimation filter written in VHDL.
-%From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
-%to explore concurrent, transaction based verification.
+WSAudiology provides a decimation filter use case for our verification framework.
+
+Microchip is interested in using Chisel to improve the design throughput and
+provides a hardware use case to sort Ethernet packets according to their deadlines
+for a time-sensitive network switch.
+
+% Synopsys provides tool support for the project.
+%Napatech will follow the project and offer challenges to the project.
+%Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
+
+
+\paragraph*{Use Cases}
+
+We will have several non-trivial use cases from industry and from our own development to verify
+our development.
+Microchip provides the specification of a hardware sorting algorithm.
+From WSA we will use a decimation filter written in VHDL.
+From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
+to explore concurrent, transaction based verification.
 
 \paragraph*{Human Resources}
 
@@ -654,6 +693,7 @@ and tools for systems engineering of computing systems, embedded systems-on-a-ch
 Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
 synthetic biology (molecular computing). 
 
+\todo{Can we have a student researcher in the budget? Question to Ellen/Jan.}
 {\bf Kasper Hesse (KH)} is student at DTU with a strong background in digital design.
 He has already some knowledge in UVM and can therefore help the project to be productive
 from day one.

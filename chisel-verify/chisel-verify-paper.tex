@@ -428,11 +428,12 @@ We thus attempt to solve this lack by bringing some verification functionalities
 
 \section{Verification with Chisel}
 
-\todo{Explain the basics of the verification library - Martin}
+%\todo{Explain the basics of the verification library - Martin}
+We propose, as a solution to the Chisel's lack of verification-oriented features, ChiselVerify, a verification library based entirely in Scala. ChiselVerify uses the DUT interfacing features from ChiselTest in order to enable three main verification functionalities in Chisel, namely Functional Coverage, Constraint Random Verification and Bus Functional Modelling. We also show how our framework can be used to create a Bus Functional Model, by creating an example one for the standardized AXI4 interface. The following subsections will give a deep-dive into each one of the functionalities and present how to use them.
 
 \subsection{Coverage in Chisel}
 
-\martin{This is probably already contained in the coverage paper and can be removed here.}
+%\martin{This is probably already contained in the coverage paper and can be removed here.}
 
 One of the main tools used in verification is test coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into two distinct categories: code coverage and functional coverage. Code coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas functional coverage gives a rather qualitative measure, \textit{"Which functionalities have we tested?"}.  Our solution gives the verification engineer access to new constructs allowing the definition of a verification plan and the creation of a functional coverage report directly integrated into the Chisel testing framework.
 
@@ -791,7 +792,7 @@ These numbers are dependent on access patterns and are as such only representati
 %The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
 
 \section{Related Work}
-Our current work does not find itself isolated in the Chisel verification universe. Other solutions do currently exist and we try to discuss a few of them in this section.  
+Our current work does not find itself isolated in the Chisel verification universe. Other solutions do currently exist and we will discuss a few of them in this section.  
 
 \subsection{SystemVerilog for Verification}
 As mentioned earlier, SystemVerilog is quite prevalent when it comes to verification. Being a mostly non-synthesisable extension of the Verilog HDL, it does contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 

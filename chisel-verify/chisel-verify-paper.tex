@@ -130,9 +130,9 @@ method, one needs to have efficient tools both for design and verification.
 This paper thus proposes ChiselVerify, an open-source tool for verifying
 circuits described in Chisel. It builds on top of the Chisel
 hardware construction language and uses Scala to drive the verification process.
-ChiselVerify is created based on three key ideas.
+ChiselVerify is created based on two key ideas.
 First, our solution highly increases the productivity of the verification engineer, by allowing hardware testing to be done in a modern high-level programming environment.
-\hjd{This needs covering later in the paper.} Second, the framework functions with any hardware description language thanks to the flexibility of Chisel blackboxes.
+%\hjd{This needs covering later in the paper.} Second, the framework functions with any hardware description language thanks to the flexibility of Chisel blackboxes.
 Finally, the solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
 
 %We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
@@ -692,11 +692,10 @@ In the process of our research we implemented a use case provided by Microchip t
 
 \subsection{Specification}
 
-The provided specification document describes a priority queue which can be used in real-time systems for the scheduling of deadlines by providing information about the 
+The provided specification document describes a priority queue which can be used in real-time systems to schedule deadlines by providing information about the 
 next timer expiration to the host system. Sorting of the enqueued elements is conducted by applying the heap sort algorithm. Elements are structured in a so-called 
 heap, which is a tree data structure. The tree needs to be balanced in order for the
 timer closest to expiring to get to the top of the tree and thus to the head of the queue. This means verifying that every parent node is smaller than the connected child nodes.
-
 
 The $\log_k N$ depth of the tree provides good scalability in terms of insertion and removal times when the queue size increases, 
 since worst case $\log_k N-1$ swap operations need to be conducted in order to rebalance the heap. Here $k$ is the number of child elements per parent and $N$
@@ -720,62 +719,60 @@ child elements of a certain node are stored together under one memory address. T
 the root node has no siblings, it is stored alone in a register. This enables even faster access in certain scenarios which are discussed later on.
 
 One memory row contains $k$ elements each consisting of the 3 introduced fields: \textit{cyclic} priority, \textit{normal} priority and the connected
-reference ID. In the implemented 
-\texttt{Memory} module, a single sequential memory is instantiated where masking is used to be able to over-write specific elements in one memory row.
+reference ID. In the implemented \texttt{Memory} module, a single sequential memory is instantiated where masking is used to be able to over-write specific elements in one memory row.
 
-There are a variety of solutions to the problem of content addressability which is required here in order to find positions of elements in the heap by providing
-their reference ID. Cache-like memory relying on parallel tag comparison could be used to achieve fast and constant search times. On the other hand, the 
-existing sequential memory could be searched through linearly, where $k$ reference ID's are compared in parallel until the reference ID is found.
-A compromise between the two solutions could include splitting memory space over multiple instances of the latter and thus reducing worst case search time.
-The priority queue is designed to be independent of the specific implementation. As a reference, the linear search is implemented.
-
-The \texttt{Heapifier} loops from a given starting point in the tree either upwards or downwards until it hits the root or a childless node. In each iteration 
-it is checked whether the parent element is smaller than its child elements and if not a swap occurs. Once the parent element and child elements of the starting 
-point are fetched from memory, only the next parent or block of children respectively needs to be fetched depending on the looping direction (up/down). Thus 
-only 3 cycles (1 fetch, 2 write backs) are required per swap. The state diagram of the \texttt{Heapifier} is shown in figure~\ref{fig:pq_heapifier_state}.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=9cm]{HeapifierStateDiagram.pdf}
-	\caption{The state diagram of the \texttt{Heapifier}}
-	\label{fig:pq_heapifier_state}
-\end{figure}
-
-The task of the \texttt{QueueControl} is to insert or remove elements and then signal to the \texttt{Heapfier} to balance the tree. As it can be seen in figure~\ref{fig:pq_control_state}, there are a series of special cases where insertion or removal times can be reduced for instance by taking advantage of the head element
-being stored in a register. The achieved best and worst case insertion as well as removal times are presented in table~\ref{tab:pq_timings}.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=9cm]{QueueControlStateDiagram.pdf}
-	\caption{The state diagram of the \texttt{QueueControl}}
-	\label{fig:pq_control_state}
-\end{figure}
-\begin{table}
-	\centering
-	\begin{tabular}{l|c}
-		Head insertion & 2 cycles \\
-		Normal insertion & min 7 cycles and max $5+3\cdot \mathrm{log}_k(N)$\\
-		Head removal & min 8 cycles and max $6+3\cdot \mathrm{log}_k(N)$\\
-		Tail removal & 3 cycles\\
-    Normal removal & \begin{tabular}{c}min 12 cycles + search time\\ max $13+3\cdot \mathrm{log}_k(N)$ + search time \end{tabular} \\
-    \multicolumn{2}{c}{\scriptsize{($N=$ queued elements, $k=$ number of child elements per node)}}
-	\end{tabular}
-	\caption{Best and worst case insertion and removal times}
-	\label{tab:pq_timings}
-\end{table}
-\begin{table}[]
-  \centering
-  \begin{tabular}{l|cccc}
-      Size &$k=2$&$k=4$&$k=8$&$k=16$\\\hline
-      16+1 & 9.38/14.56&7.86/11.51&7.47/10.42&-\\
-      32+1 & 9.9/15.15&7.96/12.29&7.34/11.22&7.54/11.00\\
-      64+1 & 9.79/16.34&8.01/13.80&7.41/12.38&7.32/11.18\\
-      128+1 & 9.96/17.37&8.14/14.47&7.54/13.14&7.26/11.62\\
-      256+1 & 9.73/17.39&8.15/15.54&7.53/14.21&7.34/12.89
-  \end{tabular}
-  \label{tab:pq_simres}
-  \caption{Simulated insertion/removal times.}
-\end{table}
+%There are a variety of solutions to the problem of content addressability which is required here in order to find positions of elements in the heap by providing
+%their reference ID. Cache-like memory relying on parallel tag comparison could be used to achieve fast and constant search times. On the other hand, the 
+%existing sequential memory could be searched through linearly, where $k$ reference ID's are compared in parallel until the reference ID is found.
+%A compromise between the two solutions could include splitting memory space over multiple instances of the latter and thus reducing worst case search time.
+The priority queue is designed to be independent of the specific implementation. As a reference, linear search is implemented.
+%The \texttt{Heapifier} loops from a given starting point in the tree either upwards or downwards until it hits the root or a childless node. In each iteration 
+%it is checked whether the parent element is smaller than its child elements and if not a swap occurs. Once the parent element and child elements of the starting 
+%point are fetched from memory, only the next parent or block of children respectively needs to be fetched depending on the looping direction (up/down). Thus 
+%only 3 cycles (1 fetch, 2 write backs) are required per swap. The state diagram of the \texttt{Heapifier} is shown in figure~\ref{fig:pq_heapifier_state}.
+%
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=9cm]{HeapifierStateDiagram.pdf}
+%	\caption{The state diagram of the \texttt{Heapifier}}
+%	\label{fig:pq_heapifier_state}
+%\end{figure}
+The task of the \texttt{QueueControl} is to insert or remove elements and then signal to the \texttt{Heapfier} to balance the tree. 
+%As it can be seen in figure~\ref{fig:pq_control_state}, there are a series of special cases where insertion or removal times can be reduced for instance by taking advantage of the head element being stored in a register. 
+%The achieved best and worst case insertion as well as removal times are presented in table~\ref{tab:pq_timings}.
+%
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=9cm]{QueueControlStateDiagram.pdf}
+%	\caption{The state diagram of the \texttt{QueueControl}}
+%	\label{fig:pq_control_state}
+%\end{figure}
+%\begin{table}
+%	\centering
+%	\begin{tabular}{l|c}
+%		Head insertion & 2 cycles \\
+%		Normal insertion & min 7 cycles and max $5+3\cdot \mathrm{log}_k(N)$\\
+%		Head removal & min 8 cycles and max $6+3\cdot \mathrm{log}_k(N)$\\
+%		Tail removal & 3 cycles\\
+%    Normal removal & \begin{tabular}{c}min 12 cycles + search time\\ max $13+3\cdot \mathrm{log}_k(N)$ + search time \end{tabular} \\
+%    \multicolumn{2}{c}{\scriptsize{($N=$ queued elements, $k=$ number of child elements per node)}}
+%	\end{tabular}
+%	\caption{Best and worst case insertion and removal times}
+%	\label{tab:pq_timings}
+%\end{table}
+%\begin{table}[]
+%  \centering
+%  \begin{tabular}{l|cccc}
+%      Size &$k=2$&$k=4$&$k=8$&$k=16$\\\hline
+%      16+1 & 9.38/14.56&7.86/11.51&7.47/10.42&-\\
+%      32+1 & 9.9/15.15&7.96/12.29&7.34/11.22&7.54/11.00\\
+%      64+1 & 9.79/16.34&8.01/13.80&7.41/12.38&7.32/11.18\\
+%      128+1 & 9.96/17.37&8.14/14.47&7.54/13.14&7.26/11.62\\
+%      256+1 & 9.73/17.39&8.15/15.54&7.53/14.21&7.34/12.89
+%  \end{tabular}
+%  \label{tab:pq_simres}
+%  \caption{Simulated insertion/removal times.}
+%\end{table}
 
 \subsection{Testing and Verification}
 
@@ -797,7 +794,7 @@ These numbers are dependent on access patterns and are as such only representati
 Our current work does not find itself isolated in the Chisel verification universe. Other solutions do currently exist and we will discuss a few of them in this section.  
 
 \subsection{SystemVerilog for Verification}
-As mentioned earlier, SystemVerilog is quite prevalent when it comes to verification. Being a mostly non-synthesisable extension of the Verilog HDL, it does contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
+As mentioned earlier, SystemVerilog is quite prevalent when it comes to verification. Being a mostly non-synthesizable extension of the Verilog HDL, it does contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
 
 \subsection{Universal Verification Methodology}
 An other important player in the Verification world is the \textit{Universal Verification Methodology} (UVM). UVM was created a a stardardized way of writing test-benches and was mostly paired up with SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e. using the same test for multiple designs)~\cite{uvm2015}, however it is extremely verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment, but is quite reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM tried to "reinvent the wheel" makes it less accessible than the simpler approach done by ChiselTest.
@@ -813,7 +810,7 @@ This approach is similar to software contracts in Scala. The main difference bet
 As far as we know, ChiselVerify is one of the only verification frameworks allowing for the simple use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
 
 \section{Conclusion}
-In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought functional coverage, statement coverage, constraint random verification and transactional modelling to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
+In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought Functional Coverage, Constraint Random Verification and Bus Functional Models to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
 
 \subsection*{Source Access}
 

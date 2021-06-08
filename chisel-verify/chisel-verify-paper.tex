@@ -331,7 +331,7 @@ combination of object-oriented programming with functional programming.
 An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
 showed the that a test written with UVM was about 800 lines of code, where a Scala based
 test was around 80 lines of code~\cite{verify:chisel:2020}.
-However, UVM supports more functionality that a plain ChiselTest in Scala.
+However, UVM supports more functionality than a plain ChiselTest in Scala.
 
 %Within our verification framework, we support mixed language verification.
 %Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
@@ -353,19 +353,15 @@ However, UVM supports more functionality that a plain ChiselTest in Scala.
 %All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
 
 
-This paper is an extension of \cite{verify:chisel:2020}.
+This paper is an extension of \cite{verify:chisel:2020}, which discussed different approaches towards enabling verification directly in Chisel.
+The main contribution of this paper is ChiselVerify~\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for hardware designs.
 
-\todo{What is different from the workshop paper}. Then main contributions of
-this paper is ChiselVerify, an open-source verification library for hardware designs.
-
-\todo{Rewrite section order}
-The paper is organized in 7 sections.
-Section 2 describes background and related work.
-Section 3 describes our addition of constraint random verification to Chisel.
-Section 4 gives an example of a bus functional model in Chisel for AXI.
-Section 5 describes our addition of coverage to Chisel tests.
-Section 6 explores ChiselVerify on a use case from industry.
-Section 7 concludes.
+The paper is organized in 6 sections.
+Section 2 describes the necessary background on hardware verification.
+Section 3 describes our solution for enabling verification in Chisel, namely ChiselVerify.
+Section 4 explores ChiselVerify on an industry-provided use case.
+Section 5 describes the different works related to ChiselVerify.
+Section 6 concludes.
 
 
 \section{Background on Verification}
@@ -794,6 +790,9 @@ As mentioned earlier, SystemVerilog is quite prevalent when it comes to verifica
 
 \subsection{Universal Verification Methodology}
 An other important player in the Verification world is the \textit{Universal Verification Methodology}(UVM). UVM was created a a stardardized way of writing test-benches and was mostly paired up with SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e. using the same test for multiple designs)~\cite{uvm2015}, however it is extremely verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment, but is quite reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM tried to "reinvent the wheel" makes it less accessible than the simpler approach done by ChiselTest.
+
+\subsection{Other Software-Inspired Verification Techniques}
+Other projects have also focused on applying software testing techniques to hardware verification. A notable one would be RFuzz~\cite{rfuzz2018}, which focuses on creating a generalized method that enables efficient "coverage-guided fuzz mutational testing". This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e. randomized testing, where the random seeds are updated depending on certain coverage results) on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. This work offers a different type of solution, while we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. RFuzz uses functional coverage tools in order to guide its randomized testing. A similar result could be obtained by combining the Constrained Random Verification and Functional Coverage tools that are available in ChiselVerify.
 
 \subsection{Other Chisel-Specific Verification Work}
 At the time of writing this, there are only a couple instances (other than the work presented in this paper) of verification work aimed specifically at Chisel. One example of this is \texttt{chisel3.formal}, which is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. The approach taken here is quite different from what we've developed. Rather than creating a set of tools that supplement the current chisel testing pipeline, \texttt{chisel3.formal} rather proposes a different way of testing, based around defining a set of formal checks that a design must pass in order to be considered as functional. These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. These formal checks can then be verified by calling the \texttt{verify(module)} function. 

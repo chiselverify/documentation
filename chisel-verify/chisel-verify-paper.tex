@@ -368,6 +368,11 @@ Section 6 concludes.
 \section{Background on Verification}
 \label{sec:background}
 
+\url{https://capra.cs.cornell.edu/latte21/}
+
+\martin{I think we should have a related work section. Maybe split between background and
+related work.}
+
 This section will present a brief overview of what hardware verification is. We will also talk about Chisel, as well as the current solutions that exist in it with regards to the verification of digital systems.
 
 \subsection{Verification of digital designs}
@@ -399,11 +404,12 @@ By separating the hardware construction and hardware verification languages, it 
 
 To go more into detail about how Chisel works, it starts by being translated into an intermediate representation called FIRRTL~\cite{firrtl}. It then goes through multiple optimization stages, called \textit{Transforms}, during which high-level concepts, such as a functional \texttt{map} or vectors, are compiled into lower level concepts that map nicely onto what we normally see in a Verilog or VHDL description. Once that is done, the newly transformed FIRRTL, called Low FIRRTL, can be used either for simulation, using an execution engine such as Treadle, or for synthesis by translating it into Verilog which is then used to generate the synthesised circuit. Note that the final Verilog description may also be used for simulation purposes using engines such as verilator~\cite{verilator}. An overview of the Chisel pipeline can be found in figure \ref{fig:chisel-pipe}.
 
-\begin{figure}
-    \includegraphics[width=9cm]{Chisel_FIRRTL_VERILOG.pdf}
+\begin{figure*}
+  \centering
+    \includegraphics[width=0.8\linewidth]{Chisel_FIRRTL_VERILOG.pdf}
     \caption{Overview of the Chisel pipeline.}
 \label{fig:chisel-pipe}
-\end{figure}
+\end{figure*}
 
 All of these things make Chisel feel much more contemporary than its predecessors.
 

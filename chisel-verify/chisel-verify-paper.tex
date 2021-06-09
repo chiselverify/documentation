@@ -310,7 +310,7 @@ However, compared to software development and testing, digital design and testin
 lack several decades of development. We propose a tool that
 leverages software development and testing methods for digital design.
 Based in the hardware construction language Chisel~\cite{chisel:dac2012}, which itself is embedded in Scala,
-our framework reimagines functionalities form Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} and
+our framework reimagines functionalities from the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} and
 adapts them for the existing Chisel ecosystem.
 
 We thus developed a method and concrete tools for agile hardware development.
@@ -328,7 +328,7 @@ them in the first place.
 
 We developed an object-oriented and functional framework for verification in Scala.
 This framework is inspired by UVM, but leverages Scala's conciseness with the
-combination of object-oriented programming with functional programming.
+combination of object-oriented and functional programming.
 An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
 showed the that a test written with UVM was about 800 lines of code, where a Scala based
 test was around 80 lines of code~\cite{verify:chisel:2020}.
@@ -354,7 +354,7 @@ However, UVM supports more functionality than a plain ChiselTest in Scala.
 %All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
 
 
-This paper is an extension of \cite{verify:chisel:2020}, which discussed different approaches towards enabling verification directly in Chisel.
+This paper is an extension of \cite{verify:chisel:2020}, which discussed different approaches towards enabling verification directly in Scala.
 The main contribution of this paper is ChiselVerify~\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for hardware designs.
 
 The paper is organized in 6 sections.
@@ -593,14 +593,14 @@ With constraint programming, the user describes the problem in a declarative way
 
 SystemVerilog has native support for constraint random data types and a built-in CSP solver. Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method~\cite{spear2008systemverilog}. We let our work be inspired by the features of SystemVerilog, but diverge from them by exploiting the functional nature of Scala. In doing so, we have implemented a CSP solver in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain specific language, which allows users to declare and randomize objects.
 
-\subsubsection{Constraint Programming with ChiseVerify}
+\subsubsection{Constraint Programming with ChiselVerify}
 In order to begin writing constrained random objects using the our library, one must define a \texttt{class} which extends the \texttt{RandObj} trait while initializing it with a \texttt{Model}. A \texttt{Model} represents a database in which all of the \texttt{RandObj}'s random variables and constraints are stored. This \texttt{RandObj} will then contain all of the constraints and random variables that we will want to use in our constrained random tests. There are two main constructs that can be defined inside of a \texttt{RandObj}: Random Variables and Random Constraints.
 
 \paragraph{Random variables} There are two main types of Random Variables that can be defined inside of a \texttt{RandObj}: \texttt{Rand} and \texttt{Randc}. Both types are declared using a lower and an upper bound. \texttt{Rand} random variables  are regular uniformly distributed values found between the given upper and lower bounds. \texttt{Randc}, however, represents a Random-cyclic variable, meaning that the values found between the lower and upper bound will not be repeated until all of the values have been covered. For example, if we create a \texttt{Randc(0, 5}, we will never get the same value twice if we sample it 6 times, however on the 7 sampling the cycle will be reset and we will start to re-obtain old values.
 
 \paragraph{Constraints} Once all of the random variables have been declared, we can start declaring constraints for these variables. Constraints can either be defined alone or in \texttt{ConstraintGroup}s. Constraint operators are usually preceded by the \texttt{\#} symbol. These constraints can be on a single random variable or an on expression containing multiple variables, like for example a constraint can contain the subtraction of two random variables. Conditional constraints may also be defined using the \texttt{IfCond} and \texttt{ElseC} constructs. All of these constraints can then be enabled and disabled when needed throughout the test suite.
 
-\paragraph{Using a RandObj} When we are finished defining our random variables and their constraints, we can move on to using them in our test. To do this we must instantiate the previously defined \texttt{RandObj} and then randomize it using the \texttt{randomize} method which returns \texttt{true} if the constraints were able to be solved by the CSP solver. The random variables can then be accessed using their respective \texttt{value()} methods. We will now demonstrate how to use the Constrained Random Verification tool with a simple example shown in  listing~\ref{lst:randobjscala}.
+\paragraph{Using a RandObj} When we are finished defining our random variables and their constraints, we can move on to using them in our test. To do this we must instantiate the previously defined \texttt{RandObj} and then randomize it using the \texttt{randomize} method which returns \texttt{true} if the constraints were able to be solved by the CSP solver. The random variables can then be accessed using their respective \texttt{value()} methods. We will now demonstrate how to use the Constrained Random Verification tool with a simple example shown in listing~\ref{lst:randobjscala}.
 
 %As an example, consider listing~\ref{lst:randobjscala} which shows the declaration of a NoC packet (or frame) random bundle with four fields; the packet type \texttt{pType}, the packet length \texttt{len}, whether the packet will be repeated \texttt{noRepeat}, and the packet payload \texttt{payload}. The packet type takes one of three possible values declared in a separate enumeration object \texttt{pktType}. Constraints are declared as \texttt{constraintBlock}s including one or more unary or binary constraints, which are functions operating on the random fields. In this case, different constraints apply to the \texttt{len} field depending on the packet type field \texttt{pType}.
 
@@ -641,6 +641,8 @@ class TestRandExample extends FlatSpec with Matchers {
 }
 
 \end{lstlisting}
+
+The above example shows how we can create a random object with a given seed. We also show that it is possible to gave collections of random variables and create constraints on those collections. An other example could be to use poke dut ports in a loop that randomizes the \texttt{RandObj} at each iteration. This is really just a basic example to show how our constraint-specific language can be used to write constrained random tests.
 
 %Listing \ref{lst:randobjscala}, shows an example of a random object. To declare a random object, the user has to extend the class from the \code{Random} base-class provided by the library. After that, each random variable has to be declared of type \code{RandInt} and initialized with the \code{rand} macro. Finally, inheriting the Random base class exposes the method \code{random} which assigns random values to the random fields of the class.
 

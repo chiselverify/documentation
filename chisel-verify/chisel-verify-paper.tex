@@ -431,7 +431,7 @@ We thus attempt to solve this lack by bringing some verification functionalities
 \section{Verification with Chisel}
 
 %\todo{Explain the basics of the verification library - Martin}
-We propose, as a solution to the Chisel's lack of verification-oriented features, ChiselVerify, a verification library based entirely in Scala. ChiselVerify uses the DUT interfacing features from ChiselTest in order to enable three main verification functionalities in Chisel, namely Functional Coverage, Constraint Random Verification and Bus Functional Modelling. We also show how our framework can be used to create a Bus Functional Model, by creating an example one for the standardized AXI4 interface. The following subsections will give a deep-dive into each one of the functionalities and present how to use them.
+We propose, as a solution to the Chisel's lack of verification-oriented features, ChiselVerify, a verification library based entirely in Scala. ChiselVerify uses the DUT interfacing features from ChiselTest in order to enable three main verification functionalities in Chisel, namely Functional Coverage, Constrained Random Verification and Bus Functional Modelling. We also show how our framework can be used to create a Bus Functional Model, by creating an example one for the standardized AXI4 interface. The following subsections will give a deep-dive into each one of the functionalities and present how to use them.
 
 \subsection{Coverage in Chisel}
 
@@ -503,11 +503,11 @@ Implementing these elements was done using a structure based around a top-level 
 val cr = new CoverageReporter
 cr.register( // Declare CoverPoints
   CoverPoint(dut.io.accu, "accu", // CoverPoint 1
-    Bins("lo10", 0 to 10) ::
-    Bins("First100", 0 to 100) ::
+    Bins("lo10", 0 to 9) ::
+    Bins("First100", 0 to 99) ::
     Nil) ::
   CoverPoint(dut.io.test, "test", // CoverPoint 2
-    Bins("testLo10", 0 to 10) ::
+    Bins("testLo10", 0 to 9) ::
     Nil) ::
   Nil,
   // Declare cross points
@@ -522,19 +522,19 @@ The above code snippet is an example of how to define a verification plan using 
 
 Once our verification plan is defined, we need to decide when we want to sample our cover points. This means that at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. This can be done, in our example, simply by calling \texttt{cr.sample()} when we are ready to sample our points. Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()} which results in the following coverage report: 
 \begin{verbatim}
-============== COVERAGE REPORT ==============
-================ GROUP ID: 1 ================
+=============== COVERAGE REPORT ===============
+================= GROUP ID: 1 =================
 COVER_POINT PORT NAME: accu
-BIN lo10 COVERING Range 0 to 10 HAS 8 HIT(S)
-BIN First100 COVERING Range 0 to 100 HAS 9 HIT(S)
-============================================
+BIN lo10 COVERING 0 to 9 HAS 8 HIT(S) = 80%
+BIN First100 COVERING 0 to 99 HAS 9 HIT(S) = 9%
+===============================================
 COVER_POINT PORT NAME: test
-BIN testLo10 COVERING Range 0 to 10 HAS 8 HIT(S)
-============================================
+BIN testLo10 COVERING 0 to 9 HAS 8 HIT(S) = 80%
+===============================================
 CROSS_POINT accuAndTest FOR POINTS accu AND test
-BIN both1 COVERING Range 1 to 1 CROSS Range 1 to 1 
-HAS 1 HIT(S)
-============================================
+BIN both1 COVERING 1 to 1 CROSS 1 to 1 HAS
+1 HIT(S) = 100%
+===============================================
 \end{verbatim}
 Implementing a more advanced automated constraint modification flow depending on current coverage results is also possible by simply using the \texttt{binNcases} method of the \texttt{CoverageReport} case class returned by the coverage reporter. 
 
@@ -547,10 +547,10 @@ An other element that our framework offers, is the possibility to gather delayed
 
 Finally, we exploit the functional nature of Scala in order allow for conditional cover points, which offer the possibility to create fully custom hit-consideration rules using a user-defined condition. This allows the user to check for arbitrary relations between two different ports rather than having to rely solely on value ranges. One could then, for example, create a bin that considers a hit every time all fields in a vector are equal. This is only possible thanks to higher order functions.
 
-Supporting a coverage measure directly in the testing tool enables modern verification strategies such as constraint random verification, that we will now describe our implementation of.
+Supporting a coverage measure directly in the testing tool enables modern verification strategies such as constrained random verification, that we will now describe our implementation of.
 
-\subsection{Constraint Random Verification}
-As described earlier, the complexity of digital design is increasing with the capacity of the silicon. Traditionally, verification engineers would write a number of directed tests each focusing on one or a few of a components functionalities, but this approach becomes impractical for larger designs. Instead, a Monte Carlo-style randomized verification methodology may be applied; constraint random verification, which is a combined effort of constraint programming and coverage-based methodologies. Using constraint random inputs, a relatively small test suite can, statistically, cover many of a component's functionalities. The constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied \hjd{Needs citation}.
+\subsection{Constrained Random Verification}
+As described earlier, the complexity of digital design is increasing with the capacity of the silicon. Traditionally, verification engineers would write a number of directed tests each focusing on one or a few of a components functionalities, but this approach becomes impractical for larger designs. Instead, a Monte Carlo-style randomized verification methodology may be applied; constrained random verification, which is a combined effort of constraint programming and coverage-based methodologies. Using constraint random inputs, a relatively small test suite can, statistically, cover many of a component's functionalities. The constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied~\cite{MehtaCRV2018}.
 
 %The complexity of digital design is growing with the capacity of the silicon. A decade ago, the industry started to move away from ``direct'' testing towards functional coverage and formal methods. One of the pillars of functional verification is constraint programming. Constraint programming is a programming paradigm that has been developed since the mid-1980s and emerged as a further development of logic programming. Constraint-based programming allows constraints and their solution mechanisms to be integrated into a programming language.
 
@@ -591,44 +591,55 @@ With constraint programming, the user describes the problem in a declarative way
 %\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
 %paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. 
 
-SystemVerilog has native support for constraint random data types and a built-in CSP solver. Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method~\cite{spear2008systemverilog}. We let our work be inspired by the features of SystemVerilog, but bring them into the more accessible space of object oriented programming in Scala. In doing so, we have implemented a CSP solver in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain specific language, which allows users to declare and randomize objects.
+SystemVerilog has native support for constraint random data types and a built-in CSP solver. Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method~\cite{spear2008systemverilog}. We let our work be inspired by the features of SystemVerilog, but diverge from them by exploiting the functional nature of Scala. In doing so, we have implemented a CSP solver in Scala based on the method described in \cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain specific language, which allows users to declare and randomize objects.
 
-Our implementation supports random variables of the three main Chisel data types; integers, Booleans, and bundles, i.e., combinations of signals of the same or different types. Each variable has a specific domain of values that it is constrained to by the user, and values within the domain are equally likely to be selected by the CSP solver. Random objects are defined by extending a base class \texttt{Random} included in the library. Afterwards, fields of the object that are to be randomized must be declared of type \texttt{RandInt} and initialized with the \texttt{rand} macro. Finally, inherited from the \texttt{Random} class is the \texttt{random} method, which may be called to randomize the object's fields.
+\subsubsection{Constraint Programming with ChiseVerify}
+In order to begin writing constrained random objects using the our library, one must define a \texttt{class} which extends the \texttt{RandObj} trait while initializing it with a \texttt{Model}. A \texttt{Model} represents a database in which all of the \texttt{RandObj}'s random variables and constraints are stored. This \texttt{RandObj} will then contain all of the constraints and random variables that we will want to use in our constrained random tests. There are two main constructs that can be defined inside of a \texttt{RandObj}: Random Variables and Random Constraints.
 
-\subsubsection{An Example Random Object}
-As an example, consider listing~\ref{lst:randobjscala} which shows the declaration of a NoC packet (or frame) random bundle with four fields; the packet type \texttt{pType}, the packet length \texttt{len}, whether the packet will be repeated \texttt{noRepeat}, and the packet payload \texttt{payload}. The packet type takes one of three possible values declared in a separate enumeration object \texttt{pktType}. Constraints are declared as \texttt{constraintBlock}s including one or more unary or binary constraints, which are functions operating on the random fields. In this case, different constraints apply to the \texttt{len} field depending on the packet type field \texttt{pType}.
+\paragraph{Random variables} There are two main types of Random Variables that can be defined inside of a \texttt{RandObj}: \texttt{Rand} and \texttt{Randc}. Both types are declared using a lower and an upper bound. \texttt{Rand} random variables  are regular uniformly distributed values found between the given upper and lower bounds. \texttt{Randc}, however, represents a Random-cyclic variable, meaning that the values found between the lower and upper bound will not be repeated until all of the values have been covered. For example, if we create a \texttt{Randc(0, 5}, we will never get the same value twice if we sample it 6 times, however on the 7 sampling the cycle will be reset and we will start to re-obtain old values.
 
-\begin{lstlisting}[language=scala, caption={Random object in Scala}, label={lst:randobjscala}]
-object pktType extends SVEnumeration {
-  val UNICAST:   Value = Value(11)
-  val MULTICAST: Value = Value(0)
-  val BROADCAST: Value = Value(1)
-  
-  val domainValues = values.map(x => x.id).toList
+\paragraph{Constraints} Once all of the random variables have been declared, we can start declaring constraints for these variables. Constraints can either be defined alone or in \texttt{ConstraintGroup}s. Constraint operators are usually preceded by the \texttt{\#} symbol. These constraints can be on a single random variable or an on expression containing multiple variables, like for example a constraint can contain the subtraction of two random variables. Conditional constraints may also be defined using the \texttt{IfCond} and \texttt{ElseC} constructs. All of these constraints can then be enabled and disabled when needed throughout the test suite.
+
+\paragraph{Using a RandObj} When we are finished defining our random variables and their constraints, we can move on to using them in our test. To do this we must instantiate the previously defined \texttt{RandObj} and then randomize it using the \texttt{randomize} method which returns \texttt{true} if the constraints were able to be solved by the CSP solver. The random variables can then be accessed using their respective \texttt{value()} methods. We will now demonstrate how to use the Constrained Random Verification tool with a simple example shown in  listing~\ref{lst:randobjscala}.
+
+%As an example, consider listing~\ref{lst:randobjscala} which shows the declaration of a NoC packet (or frame) random bundle with four fields; the packet type \texttt{pType}, the packet length \texttt{len}, whether the packet will be repeated \texttt{noRepeat}, and the packet payload \texttt{payload}. The packet type takes one of three possible values declared in a separate enumeration object \texttt{pktType}. Constraints are declared as \texttt{constraintBlock}s including one or more unary or binary constraints, which are functions operating on the random fields. In this case, different constraints apply to the \texttt{len} field depending on the packet type field \texttt{pType}.
+
+\begin{lstlisting}[language=scala, caption={Random object toy example in Scala}, label={lst:randobjscala}]
+class TestRandExample extends FlatSpec with Matchers {
+    
+    class Packet extends RandObj(new Model(3)) {
+    	val idx = new Randc("idx", 0, 10)
+    	val size = new Rand("size", 1, 100)
+    	val len = new Rand("len", 1, 100)
+      val payload: Array[Rand] = Array.tabulate(11)(i => 
+          new Rand("byte[" + i + "]", 1, 100)
+      )
+        
+    	//Example Constraint with operations
+    	val single = payload(0) #= (len #- size)
+	
+	    //Example conditional constraint
+	    val conditional = IfCon(len #= 1) {
+            payload.size #= 3
+   	  } ElseC {
+            payload.size #= 10
+   	  }
+	    val idxConst = idx #< payload.size
+    }
+    //Instantiate RandObj
+    val pckt = new Packet
+    
+    //Check that the constraints were solvable
+    assert(pckt.randomize)
+    
+    // [...] ChiselTest boilerplate [...]
+    
+    //Example use of random variables
+    dut.portA.poke(
+    	pckt.payload(pckt.idx.value()).value()
+    )
 }
 
-class Frame extends Random {
-  import pktType._
-  var pType: RandInt     = rand(pType, pktType.domainValues())
-  var len: RandInt       = rand(len, 0 to 10 toList)
-  var noRepeat: RandCInt = randc( noRepeat, 0 to 1 toList)
-  var payload: RandInt   = rand(payload, 0 to 7 toList)
-
-  val common = constraintBlock (
-    binary ((len, payload) => len == payload)
-  )
-
-  val unicast = constraintBlock (
-    unary (len => len <= 2),
-    unary (pType => pType == UNICAST.id)
-  )
-
-  val multicast = constraintBlock (
-    unary (len => len >= 3),
-    unary (len => len <= 4),
-    unary (pType => pType == MULTICAST.id)
-  )
-}
 \end{lstlisting}
 
 %Listing \ref{lst:randobjscala}, shows an example of a random object. To declare a random object, the user has to extend the class from the \code{Random} base-class provided by the library. After that, each random variable has to be declared of type \code{RandInt} and initialized with the \code{rand} macro. Finally, inheriting the Random base class exposes the method \code{random} which assigns random values to the random fields of the class.
@@ -703,7 +714,7 @@ is the number of elements in the heap. A trade-off is the varying delay connecte
 happens in bursts, a buffer could be added. Here the introduced delay from insertion request to actual appearance of the enqueued value in the heap of course needs
 to be taken into account.
 
-In order for the host system to have the ability to distinguish between multiple consecutive super cycles \hjd{What's this?} and clock cycles in a super cycle, the values inserted 
+In order for the host system to have the ability to distinguish between multiple consecutive super cycles, i.e. different repetitions of the same set of tasks, and clock cycles in a super cycle, the values inserted 
 into the queue are split into the fields \textit{cyclic} and \textit{normal} priority (time out value). The removal functionality of the queue requires a reference system. A reference 
 ID is therefore given together with the element at insertion, where ID generation and uniqueness are handled by the host system.
 
@@ -810,7 +821,7 @@ This approach is similar to software contracts in Scala. The main difference bet
 As far as we know, ChiselVerify is one of the only verification frameworks allowing for the simple use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
 
 \section{Conclusion}
-In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought Functional Coverage, Constraint Random Verification and Bus Functional Models to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
+In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought Functional Coverage, Constrained Random Verification and Bus Functional Models to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
 
 \subsection*{Source Access}
 

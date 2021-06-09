@@ -608,6 +608,11 @@ From WSA we will use a decimation filter written in VHDL.
 From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
 to explore concurrent, transaction based verification.
 
+In the process of the research, the the specification of the hardware sorting algorithm provided by Microchip was 
+successfully implemented in a parameterized priority queue module in chisel. The sorting is based on heap sort which allows for efficient 
+sorting of the enqueued elements. Testing and verification of the component was conducted in scala with chiseltest. A reference model written in scala
+was used to verify outputs after driving random inputs onto the component. In order to evaluate coverage of those
+random test sequences, the developed coverage report functionality was successfully employed.
 
 
 

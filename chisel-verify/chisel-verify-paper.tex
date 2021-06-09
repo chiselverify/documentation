@@ -605,41 +605,38 @@ In order to begin writing constrained random objects using the our library, one 
 
 %As an example, consider listing~\ref{lst:randobjscala} which shows the declaration of a NoC packet (or frame) random bundle with four fields; the packet type \texttt{pType}, the packet length \texttt{len}, whether the packet will be repeated \texttt{noRepeat}, and the packet payload \texttt{payload}. The packet type takes one of three possible values declared in a separate enumeration object \texttt{pktType}. Constraints are declared as \texttt{constraintBlock}s including one or more unary or binary constraints, which are functions operating on the random fields. In this case, different constraints apply to the \texttt{len} field depending on the packet type field \texttt{pType}.
 
-\begin{lstlisting}[language=scala, caption={Random object toy example in Scala}, label={lst:randobjscala}]
-class TestRandExample extends FlatSpec with Matchers {
-    
-    class Packet extends RandObj(new Model(3)) {
-    	val idx = new Randc("idx", 0, 10)
-    	val size = new Rand("size", 1, 100)
-    	val len = new Rand("len", 1, 100)
-      val payload: Array[Rand] = Array.tabulate(11)(i => 
-          new Rand("byte[" + i + "]", 1, 100)
-      )
-        
-    	//Example Constraint with operations
-    	val single = payload(0) #= (len #- size)
-	
-	    //Example conditional constraint
-	    val conditional = IfCon(len #= 1) {
-            payload.size #= 3
-   	  } ElseC {
-            payload.size #= 10
-   	  }
-	    val idxConst = idx #< payload.size
-    }
-    //Instantiate RandObj
-    val pckt = new Packet
-    
-    //Check that the constraints were solvable
-    assert(pckt.randomize)
-    
-    // [...] ChiselTest boilerplate [...]
-    
-    //Example use of random variables
-    dut.portA.poke(
-    	pckt.payload(pckt.idx.value()).value()
+\begin{lstlisting}[language=scala, caption={Random object toy example in Scala}, label={lst:randobjscala}]    
+class Packet extends RandObj(new Model(3)) {
+    val idx = new Randc("idx", 0, 10)
+    val size = new Rand("size", 1, 100)
+    val len = new Rand("len", 1, 100)
+    val payload: Array[Rand] = Array.tabulate(11)(
+        new Rand(s"byte[$_]", 1, 100)
     )
+
+    //Example Constraint with operations
+    val single = payload(0) #= (len #- size)
+	
+    //Example conditional constraint
+    val conditional = IfCon(len #= 1) {
+        payload.size #= 3
+    } ElseC {
+        payload.size #= 10
+    }
+    val idxConst = idx #< payload.size
 }
+//Instantiate RandObj
+val pckt = new Packet
+
+//Check that the constraints were solvable
+assert(pckt.randomize)
+
+// [...] ChiselTest boilerplate [...]
+
+//Example use of random variables
+dut.portA.poke(
+    pckt.payload(pckt.idx.value()).value()
+)
 
 \end{lstlisting}
 

@@ -518,7 +518,7 @@ In order to implement the different components needed for Functional Coverage in
   \item Compile all of the results into a comprehensible coverage report.
 \end{itemize}
 
-Implementing these elements was done using a structure based around a top-level element known as the \texttt{CoverageReporter}, which allows the verification engineer to define a verification plan using a \texttt{register} method. The \texttt{register} method stores \texttt{CoverPoint} to \texttt{Bin} mappings inside a \texttt{CoverageDB} (DB being short for database) object. Once the verification plan is defined, ports may be sampled using the \texttt{sample} method, which is implemented based on ChiselTest peeking capabilities. At the end of a test suite, a functional coverage report can be generated using the \texttt{printReport} method, which summarizes the results stored in the database.
+Implementing these elements was done using a structure based around a top-level element known as the \texttt{CoverageReporter}, which allows the verification engineer to define a verification plan using a \texttt{register} method. The \texttt{register} method stores \texttt{CoverPoint} to \texttt{Bin} mappings inside a \texttt{CoverageDB} (DB being short for database) object. Once the verification plan is defined, ports may be sampled using the \texttt{sample} method, which is implemented based on ChiselTest peeking capabilities. At the end of a test suite, a functional coverage report can be generated using the \texttt{printReport} method, which summarizes the results stored in the database.\\\\
 
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter
@@ -542,7 +542,7 @@ cr.register( // Declare CoverPoints
 The above code snippet is an example of how to define a verification plan using our coverage framework. One concept, that is used in the example verification plan, is the idea of \textit{cross coverage} defined using the \texttt{Cross} construct. Cross coverage allows one to specify coverage relations between \texttt{CoverPoint}s. This means that a cross defined between, e.g., \texttt{CoverPoint} $a$ and \texttt{CoverPoint} $b$ will be used to gather information about when $a$ and $b$ have certain values simultaneously~\cite{spear2008systemverilog}.
 Thus, in our example verification plan, we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.
 
-Once our verification plan is defined, we need to decide when we want to sample our cover points. This means that at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. This can be done, in our example, simply by calling \texttt{cr.sample()} when we are ready to sample our points. Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()} which results in the following coverage report: 
+Once our verification plan is defined, we need to decide when we want to sample our cover points. This means that at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. This can be done, in our example, simply by calling \texttt{cr.sample()} when we are ready to sample our points. Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()} which results in the following coverage report: \\\\
 \begin{verbatim}
 =============== COVERAGE REPORT ===============
 ================= GROUP ID: 1 =================

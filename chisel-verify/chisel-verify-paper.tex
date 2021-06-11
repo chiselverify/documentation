@@ -123,9 +123,9 @@ method, one needs to have efficient tools both for design and verification.
 This paper thus proposes ChiselVerify, an open-source library for verifying
 circuits described in Chisel. It builds on top of the Chisel
 hardware construction language and uses Scala to drive the verification process.
-ChiselVerify is created based on two key ideas.
-First, our solution highly increases the productivity of the verification engineer, by allowing hardware testing to be done in a modern high-level programming environment.
-Finally, the solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
+ChiselVerify increases the productivity of the verification engineer, by allowing hardware testing to be done in a modern high-level programming environment.
+The solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
+
 
 %We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
 %functional coverage, constrained-random verification, bus functional models, transaction-level modelling and much more
@@ -299,17 +299,15 @@ design and testing of digital circuits.
 %However, both languages are decades behind
 %modern languages for software development.
 However, compared to software development and testing, digital design and testing methods/tools 
-lack several decades of development. We propose a tool that
-leverages software development and testing methods for digital design.
-Based in the hardware construction language Chisel~\cite{chisel:dac2012}, which itself is embedded in Scala,
-our framework reimagines functionalities from the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} and
-adapts them for the existing Chisel ecosystem.
-
+lack several decades of development.
 We thus developed a method and concrete tools for agile hardware development.
 ChiselVerify combines tools, languages, development, and testing methods from the last decades in
 software development and applies them to hardware design.
-We aim to raise the tooling level for a digital design to increase productivity.
-%The workload demanded for the verification (testing) of digital systems is about double the time of developing them in the first place.
+
+Therefore, we aim to raise the tooling level for a digital design to increase productivity.
+ChiselVerify is based in the hardware construction language Chisel~\cite{chisel:dac2012},
+which itself is embedded in Scala.
+
 
 %Using the power and flexibility of Chisel Blackboxes, our tool can be used to verify
 %designs implemented in any of the major hardware description languages (i.e., VHDL or Verilog)
@@ -318,7 +316,7 @@ We aim to raise the tooling level for a digital design to increase productivity.
 %is thus also open-source.
 
 We developed a verification framework in Scala.
-This framework is inspired by UVM, but leverages Scala's conciseness with the
+This framework is inspired by the Universal Verification Method (UVM), but leverages Scala's conciseness with the
 combination of object-oriented and functional programming.
 An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
 showed the that a test written with UVM was about 800 lines of code, where a Scala-based
@@ -345,7 +343,6 @@ However, UVM supports more functionalities than a plain ChiselTest~\cite{chisel:
 %All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
 
 
-This is an extension of a previous workshop paper\cite{verify:chisel:2020}, which discussed different approaches towards enabling verification directly in Scala.
 The main contribution of this paper is ChiselVerify~\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for hardware designs.
 
 The paper is organized in 6 sections.
@@ -373,7 +370,6 @@ Other projects have also focused on applying software testing techniques to hard
 This approach is similar to software contracts in Scala. The main difference between our solution and this one is that here the rules are written on a per-module basis and are thus directly linked to the Chisel code, while our solution rather focuses on checking that a suite of test-benches are testing the right things. The \texttt{chisel3.formal} package has also been extended in \texttt{kiwi-formal}~\cite{chisel:kiwi-formal} and \texttt{dank-formal}~\cite{chisel:dank-formal}, leading to multiple different versions of it, each adding their own additional formal rule templates. 
 
 As far as we know, ChiselVerify is the only verification frameworks allowing for the simple use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
-
 
 \section{Background}
 \label{sec:background}

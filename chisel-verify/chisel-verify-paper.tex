@@ -382,13 +382,13 @@ SystemVerilog~\cite{SystemVerilog} is one of the main languages used for verific
 This is due to the wide variety of verification-centric functionalities that the language offers, which focus on improving the efficiency of writing test-benches rather than the testing itself.
 The language enables verification engineers to define constraint-driven randomized test-benches as well as define metrics to gather functional coverage data related to a test-suite. 
 However, the verification functionalities are quite limited and being embedded in a low-level language makes writing tests quite complex. 
-The three main verification features that we are interested in are: Functional Coverage, Constrained Random Verification and Bus Functional Models.
+The three main verification features that we are interested in are: functional coverage, Constrained random verification, and bus functional models.
 
 \subsubsection{Functional Coverage}
 One of the main tools used in verification is test coverage. 
 This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. 
 Coverage can be separated into two distinct categories: code coverage and functional coverage. 
-Code coverage defines a quantitative measure of the testing progress, \textit{"How many lines of code have been tested?"}, whereas functional coverage gives a rather qualitative measure, \textit{"Which functionalities have we tested?"}.~\cite{spear2008systemverilog}  
+Code coverage defines a quantitative measure of the testing progress, \textit{``How many lines of code have been tested?''}, whereas functional coverage gives a rather qualitative measure, \textit{``Which functionalities have we tested?''}~\cite{spear2008systemverilog}.
 Functional coverage allows one to have a way of measuring how correctly the specification has been implemented. Functional coverage is measured relative to a verification plan, which includes the three following components:
 
 \begin{itemize}
@@ -397,14 +397,14 @@ Functional coverage allows one to have a way of measuring how correctly the spec
   \item \texttt{CoverGroup}s: Sets of \texttt{CoverPoint}s that need to be sampled at the same time.
 \end{itemize}
 
-A verification plan based on these three components tells the coverage reporter which ports need to be sampled in order to generate a report.
+A verification plan that includes these three components tells the coverage reporter which ports need to be sampled in order to generate a report.
 
 \subsubsection{Constrained Random Verification}
 As described earlier, the complexity of digital design is increasing with the capacity of the silicon. Traditionally, verification engineers would write a number of directed tests each focusing on one or more of a component's functionalities, but this approach becomes impractical for larger designs. Instead, a uniformly randomized verification methodology may be applied; constrained random verification, which is a combined effort of constraint programming and coverage-based methodologies.
 Using constrained random inputs, a relatively small test suite can, statistically, cover many of a component's functionalities. 
 The constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied~\cite{MehtaCRV2018}.
 
-With constraint programming, the user describes the problem in a declarative way, while the solution process takes a back seat from the user's perspective. A subset of these problems is the so-called constraint satisfaction problems (CSP), which are mathematical problems defined as a set of objects whose state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous collection of constraints. CSP solvers thus serve well as the basis for generating sets of constrained random signal values for verification.
+With constraint programming, the user describes the problem in a declarative way. A subset of these problems is the so-called constraint satisfaction problems (CSP), which are mathematical problems defined as a set of objects whose state must satisfy several constraints. CSP represents the entities of a problem as a finite homogeneous collection of constraints. CSP solvers thus serve well as the basis for generating sets of constrained random signal values for verification.
 
 SystemVerilog has native support for constrained random data types and a built-in CSP solver. Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method.
 

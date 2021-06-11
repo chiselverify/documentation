@@ -570,9 +570,23 @@ An other element that our framework offers, is the possibility to gather delayed
   \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}
 
-Finally, we exploit the functional nature of Scala in order allow for conditional cover points, which offer the possibility to create fully custom hit-consideration rules using a user-defined condition. This allows the user to check for arbitrary relations between two different ports rather than having to rely solely on value ranges. One could then, for example, create a bin that considers a hit every time all fields in a vector are equal. This is only possible thanks to higher order functions.
+Finally, we exploit the functional nature of Scala in order allow for conditional cover points, which offer the possibility to create fully custom hit-consideration rules using a user-defined condition. 
+This allows the user to check for arbitrary relations between an arbitrary number of ports rather than having to rely solely on value ranges. 
+One could then, for example, create a bin that considers a hit every time all fields in a vector are equal. 
+This is only possible thanks to higher order functions. 
+These can be defined in two different ways. 
+A first way is to use regular \texttt{CoverPoint}s and add a \texttt{Condition} argument to the bin that would want them. 
+This would mean that the condition would filter out values that can be considered for a hit in the given range and can only be applied to a single port. 
+An other way would be to use a \texttt{CoverCondition}, which is similar to a \texttt{CoverPoint}, but can be applied to an arbitrary amount of ports and only uses \texttt{Condition}s when considering a hit.
+The report shows the number of hits that each condition had throughout the test suite.
+The user also has the choice of adding and "expected number of hits" to each condition.
+This would then allow for a final percentage to be shown along side the number of hits.
+An other method to compute a coverage percentage would be to create the set of every possible value combination between the given ports, then filtering them out using the condition and getting the size of the remaining possible values.
+This, however, requires an expensive Cartesian product to be computed, which results in a complexity of $O(w^{p})$, where $w$ is the maximum port width and $p$ is the number of ports.
+This method is thus unusable any real-world applications, which is why we opted for the first one.
 
-Supporting a coverage measure directly in the testing tool enables modern verification strategies such as constrained random verification, that we will now describe our implementation of.
+All of these features allow for the definition of complex verification plans that can be used to represent any given specification, making it possible to verify the correct testing of any design.
+Supporting a coverage measure directly in the testing tool also enables modern verification strategies such as constrained random verification, that we will now describe our implementation of.
 
 \subsection{Constrained Random Verification}
 As described earlier, the complexity of digital design is increasing with the capacity of the silicon. Traditionally, verification engineers would write a number of directed tests each focusing on one or a few of a components functionalities, but this approach becomes impractical for larger designs. Instead, a Monte Carlo-style randomized verification methodology may be applied; constrained random verification, which is a combined effort of constraint programming and coverage-based methodologies. Using constraint random inputs, a relatively small test suite can, statistically, cover many of a component's functionalities. The constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied~\cite{MehtaCRV2018}.

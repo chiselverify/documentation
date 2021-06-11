@@ -130,10 +130,8 @@ method, one needs to have efficient tools both for design and verification.
 This paper thus proposes ChiselVerify, an open-source tool for verifying
 circuits described in Chisel. It builds on top of the Chisel
 hardware construction language and uses Scala to drive the verification process.
-ChiselVerify is created based on two key ideas.
-First, our solution highly increases the productivity of the verification engineer, by allowing hardware testing to be done in a modern high-level programming environment.
-%\hjd{This needs covering later in the paper.} Second, the framework functions with any hardware description language thanks to the flexibility of Chisel blackboxes.
-Finally, the solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
+ChiselVerify increases the productivity of the verification engineer, by allowing hardware testing to be done in a modern high-level programming environment.
+The solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
 
 %We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
 %functional coverage, constrained-random verification, bus functional models, transaction-level modelling and much more
@@ -307,18 +305,17 @@ design and testing of digital circuits.
 %However, both languages are decades behind
 %modern languages for software development.
 However, compared to software development and testing, digital design and testing methods/tools 
-lack several decades of development. We propose a tool that
-leverages software development and testing methods for digital design.
-Based in the hardware construction language Chisel~\cite{chisel:dac2012}, which itself is embedded in Scala,
-our framework reimagines functionalities from the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} and
-adapts them for the existing Chisel ecosystem.
-
+lack several decades of development.
 We thus developed a method and concrete tools for agile hardware development.
 ChiselVerify combines tools, languages, development, and testing methods from the last decades in
 software development and applies them to hardware design.
-We aim to raise the tooling level for a digital design to increase productivity.
-The workload demanded for the verification (testing) of digital systems is about double the time of developing
-them in the first place.
+Therefore, we aim to raise the tooling level for a digital design to increase productivity.
+ChiselVerify is based in the hardware construction language Chisel~\cite{chisel:dac2012},
+which itself is embedded in Scala.
+
+
+%The workload demanded for the verification (testing) of digital systems is about double the time of developing
+%them in the first place.
 
 %Using the power and flexibility of Chisel Blackboxes, our tool can be used to verify
 %designs implemented in any of the major hardware description languages (i.e., VHDL or Verilog)
@@ -327,7 +324,7 @@ them in the first place.
 %is thus also open-source.
 
 We developed an object-oriented and functional framework for verification in Scala.
-This framework is inspired by UVM, but leverages Scala's conciseness with the
+This framework is inspired by the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog}, but leverages Scala's conciseness with the
 combination of object-oriented and functional programming.
 An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
 showed the that a test written with UVM was about 800 lines of code, where a Scala based
@@ -354,11 +351,11 @@ However, UVM supports more functionality than a plain ChiselTest in Scala.
 %All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
 
 
-This paper is an extension of \cite{verify:chisel:2020}, which discussed different approaches towards enabling verification directly in Scala.
+%This paper is an extension of \cite{verify:chisel:2020}, which discussed different approaches towards enabling verification directly in Scala.
 The main contribution of this paper is ChiselVerify~\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for hardware designs.
 
 The paper is organized in 6 sections.
-Section 2 describes related work
+Section 2 describes related work.
 Section 3 describes background on hardware verification.
 Section 4 describes our solution for enabling verification in Chisel, namely ChiselVerify.
 Section 5 explores ChiselVerify on an industry-provided use case.
@@ -367,21 +364,26 @@ Section 6 concludes.
 \section{Related Work}
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
 
-SystemVerilog is an extension of Verilog. Many non-synthesizable extension are intended
+SystemVerilog is an extension of Verilog~~\cite{SystemVerilog}.
+Many non-synthesizable extension are intended
 to write more advanced test benches. SystemVerilog adds object-oriented programming
 for those test benches. In contrast to Chisel, the object-oriented addition cannot be
 used for hardware description.
-It contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
+SystemVerilog contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
 
-The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test-benches on top of SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e. using the same test for multiple designs)~\cite{uvm2015}, however it is extremely verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment, but is quite reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM tried to ``reinvent the wheel'' makes it less accessible than the simpler approach done by ChiselTest.
+The Universal Verification Methodology (UVM) was created as a standardized way of writing test-benches on top of SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. However UVM is very verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment.
+UVM can be used to verify designs written in Chisel, but changing the language for
+the verification is not ideal. Furthermore, SystemVerilog is a quite closed environment,
+where ChiselVerify runs on the Java virtual machine and the verification engineer has
+access to a large collection of (open-source) libraries written in Java and Scala.
 
-Other projects have also focused on applying software testing techniques to hardware verification. A notable one would be RFuzz~\cite{rfuzz2018}, which focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e. randomized testing, where the random seeds are updated depending on certain coverage results) on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. This work offers a different type of solution, while we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. RFuzz uses functional coverage tools in order to guide its randomized testing. A similar result could be obtained by combining the Constrained Random Verification and Functional Coverage tools that are available in ChiselVerify.
+Other projects have also focused on applying software testing techniques to hardware verification. A notable one is RFuzz~\cite{rfuzz2018}, which focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e., randomized testing, where the random seeds are updated depending on certain coverage results) on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. This work offers a different type of solution, while we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. RFuzz uses functional coverage tools in order to guide its randomized testing. A similar result could be obtained by combining the constrained random verification and functional coverage tools that are available in ChiselVerify.
 
-At the time of writing this, there are only a couple instances (other than the work presented in this paper) of verification work aimed specifically at Chisel. One example of this is \texttt{chisel3.formal}, which is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. The approach taken here is quite different from what we've developed. Rather than creating a set of tools that supplement the current chisel testing pipeline, \texttt{chisel3.formal} rather proposes a different way of testing, based around defining a set of formal checks that a design must pass in order to be considered as functional. These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. These formal checks can then be verified by calling the \texttt{verify(module)} function. 
+At the time of writing this, there are only a couple of instances of verification work aimed specifically at Chisel. One example of this is \texttt{chisel3.formal}, which is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. The approach taken here is quite different from what we've developed. Rather than creating a set of tools that supplement the current chisel testing pipeline, \texttt{chisel3.formal} rather proposes a different way of testing, based around defining a set of formal checks that a design must pass in order to be considered as functional. These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. These formal checks can then be verified by calling the \texttt{verify(module)} function. 
 
 This approach is similar to software contracts in Scala. The main difference between our solution and this one is that here the rules are written on a per-module basis and are thus directly linked to the Chisel code, while our solution rather focuses on checking that a suite of test-benches are testing the right things. The \texttt{chisel3.formal} package has also been extended in \texttt{kiwi-formal}~\cite{chisel:kiwi-formal} and \texttt{dank-formal}~\cite{chisel:dank-formal}, leading to multiple different versions of it, each adding their own additional formal rule templates. 
 
-As far as we know, ChiselVerify is one of the only verification frameworks allowing for the simple use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
+As far as we know, ChiselVerify is the only verification framework allowing for the simple use of verification functionalities, well integrated into the ChiselTest/Chisel ecosystem.
 
 
 \section{Background on Verification}
@@ -760,8 +762,10 @@ For verification of the modules and the fully assembled queue, the presented CRV
 The functional coverage report was then used to check how well the inputs were spread over the spectrum of possibilities and to check whether certain input combinations where applied to the DUT at some point throughout the test. As an example, the timed coverage feature made it easy to check whether the \texttt{valid} input of the DUT was revoked at some point within 10 clock cycles after issuing an operation by adding the following cross coverage group:
 
 \begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
-TimedCross("timed_valid","valid","valid",Eventually(10))(
-  CrossBin("revoked valid under operation",1 to 1, 0 to 0) :: Nil
+TimedCross("timed_valid","valid","valid",
+  Eventually(10))(
+    CrossBin("revoked valid under operation",
+      1 to 1, 0 to 0) :: Nil
 )
 \end{lstlisting}
 

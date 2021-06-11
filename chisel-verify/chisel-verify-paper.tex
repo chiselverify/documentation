@@ -358,8 +358,8 @@ This paper is an extension of \cite{verify:chisel:2020}, which discussed differe
 The main contribution of this paper is ChiselVerify~\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for hardware designs.
 
 The paper is organized in 6 sections.
-Section 2 describes the different works related to ChiselVerify.
-Section 3 describes the necessary background on hardware verification.
+Section 2 describes related work
+Section 3 describes background on hardware verification.
 Section 4 describes our solution for enabling verification in Chisel, namely ChiselVerify.
 Section 5 explores ChiselVerify on an industry-provided use case.
 Section 6 concludes.
@@ -367,34 +367,29 @@ Section 6 concludes.
 \section{Related Work}
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
 
-Our current work does not find itself isolated in the Chisel verification universe. Other solutions do currently exist and we will discuss a few of them in this section.  
+SystemVerilog is an extension of Verilog. Many non-synthesizable extension are intended
+to write more advanced test benches. SystemVerilog adds object-oriented programming
+for those test benches. In contrast to Chisel, the object-oriented addition cannot be
+used for hardware description.
+It contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
 
-\subsection{SystemVerilog for Verification}
-As mentioned earlier, SystemVerilog is quite prevalent when it comes to verification. Being a mostly non-synthesizable extension of the Verilog HDL, it does contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However this greatly hinders the purely Scala based workflow that our solution offers. When it comes to functional coverage, our solution offers many features that SystemVerilog does not, such as more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
+The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test-benches on top of SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e. using the same test for multiple designs)~\cite{uvm2015}, however it is extremely verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment, but is quite reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM tried to ``reinvent the wheel'' makes it less accessible than the simpler approach done by ChiselTest.
 
-\subsection{Universal Verification Methodology}
-An other important player in the Verification world is the \textit{Universal Verification Methodology} (UVM). UVM was created a a stardardized way of writing test-benches and was mostly paired up with SystemVerilog. The interesting thing about UVM is that it allows for the creation of reusable test-benches (i.e. using the same test for multiple designs)~\cite{uvm2015}, however it is extremely verbose and even a simple test required around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment, but is quite reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM tried to "reinvent the wheel" makes it less accessible than the simpler approach done by ChiselTest.
+Other projects have also focused on applying software testing techniques to hardware verification. A notable one would be RFuzz~\cite{rfuzz2018}, which focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e. randomized testing, where the random seeds are updated depending on certain coverage results) on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. This work offers a different type of solution, while we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. RFuzz uses functional coverage tools in order to guide its randomized testing. A similar result could be obtained by combining the Constrained Random Verification and Functional Coverage tools that are available in ChiselVerify.
 
-\subsection{Other Software-Inspired Verification Techniques}
-Other projects have also focused on applying software testing techniques to hardware verification. A notable one would be RFuzz~\cite{rfuzz2018}, which focuses on creating a generalized method that enables efficient "coverage-guided fuzz mutational testing". This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e. randomized testing, where the random seeds are updated depending on certain coverage results) on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. This work offers a different type of solution, while we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. RFuzz uses functional coverage tools in order to guide its randomized testing. A similar result could be obtained by combining the Constrained Random Verification and Functional Coverage tools that are available in ChiselVerify.
-
-\subsection{Other Chisel-Specific Verification Work}
 At the time of writing this, there are only a couple instances (other than the work presented in this paper) of verification work aimed specifically at Chisel. One example of this is \texttt{chisel3.formal}, which is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. The approach taken here is quite different from what we've developed. Rather than creating a set of tools that supplement the current chisel testing pipeline, \texttt{chisel3.formal} rather proposes a different way of testing, based around defining a set of formal checks that a design must pass in order to be considered as functional. These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. These formal checks can then be verified by calling the \texttt{verify(module)} function. 
 
 This approach is similar to software contracts in Scala. The main difference between our solution and this one is that here the rules are written on a per-module basis and are thus directly linked to the Chisel code, while our solution rather focuses on checking that a suite of test-benches are testing the right things. The \texttt{chisel3.formal} package has also been extended in \texttt{kiwi-formal}~\cite{chisel:kiwi-formal} and \texttt{dank-formal}~\cite{chisel:dank-formal}, leading to multiple different versions of it, each adding their own additional formal rule templates. 
 
 As far as we know, ChiselVerify is one of the only verification frameworks allowing for the simple use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
 
-\section{Conclusion}
-In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought Functional Coverage, Constrained Random Verification and Bus Functional Models to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
-
 
 \section{Background on Verification}
 \label{sec:background}
 
-This section will present a brief overview of what hardware verification is. We will also talk about Chisel, as well as the current solutions that exist in it with regards to the verification of digital systems.
+This section presents a brief overview of what hardware verification is. We will also talk about Chisel, as well as the current solutions that exist in it with regards to the verification of digital systems.
 
-\subsection{Verification of digital designs}
+\subsection{Verification of Digital Designs}
 Verification of digital systems refers to the testing of a design before it has been taped-out~\cite{spear2008systemverilog}. This is in contrast to validation, which refers to testing a taped-out version of a digital circuit. 
 It is difficult to talk about the verification of digital designs without mentioning SystemVerilog~\cite{SystemVerilog}, which is one of the main languages used for verification.
 This is due to the wide variety of verification-centric functionalities that the language offers, which focus on improving the efficiency of writing test-benches rather than the testing itself.
@@ -690,7 +685,7 @@ One solution to the ever-increasing complexity of digital designs often exploite
 In this work, we provide an example BFM for AXI4, an open standard by ARM~\cite{axi4standard}. At the time of writing, the example works only for AXI4, but it can easily be extended to support other buses. Let us first give a brief introduction to AXI4.
 
 \subsubsection{Introduction to AXI4}
-The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, see figure~\ref{fig:axi4w}, while the read channels are \textit{Read Address} and \textit{Read Data}, see figure~\ref{fig:axi4r}. 
+The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of a number of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with DMA-based memories in focus supporting multiple outstanding transactions and out-of-order completion. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, see Figure~\ref{fig:axi4w}, while the read channels are \textit{Read Address} and \textit{Read Data}, see Figure~\ref{fig:axi4r}. 
 
 \begin{figure*}[t]
   \centering
@@ -741,20 +736,11 @@ In the process of our research we implemented a use case provided by Microchip t
 
 \subsection{Specification}
 
-The provided specification document describes a priority queue which can be used in real-time systems to schedule deadlines by providing information about the 
-next timer expiration to the host system. Sorting of the enqueued elements is conducted by applying the heap sort algorithm. Elements are structured in a so-called 
-heap, which is a tree data structure. The tree needs to be balanced in order for the
-timer closest to expiring to get to the top of the tree and thus to the head of the queue. This means verifying that every parent node is smaller than the connected child nodes.
+The provided use case is a hardware implementation of a priority queue. It can be used in real-time systems where scheduling capabilities are required. For instance, time stamps for deadlines can be inserted and sorted, such that the host system has access to the closest deadline.
 
-The $\log_k N$ depth of the tree provides good scalability in terms of insertion and removal times when the queue size increases, 
-since worst case $\log_k N-1$ swap operations need to be conducted in order to rebalance the heap. Here $k$ is the number of child elements per parent and $N$
-is the number of elements in the heap. A trade-off is the varying delay connected to the rebalancing of the tree where the queue is unresponsive. If queuing
-happens in bursts, a buffer could be added. Here the introduced delay from insertion request to actual appearance of the enqueued value in the heap of course needs
-to be taken into account.
+Internally, the hardware priority queue relies like its software counterpart on a min-heap which is a tree data structure. The running time of insertion and removal operations, both being $O(\log_k N)$, are bound by the depth of the tree. By increasing the number of children $k$ per node, the depth and as such the running times can be reduced.
 
-In order for the host system to have the ability to distinguish between multiple consecutive super cycles, i.e. different repetitions of the same set of tasks, and clock cycles in a super cycle, the values inserted 
-into the queue are split into the fields \textit{cyclic} and \textit{normal} priority (time out value). The removal functionality of the queue requires a reference system. A reference 
-ID is therefore given together with the element at insertion, where ID generation and uniqueness are handled by the host system.
+In order to be able to remove elements from the priority queue, a way to reference them is needed. Therefore the user of the hardware priority queue has to add a reference ID to each element, which can be used later on to remove said element again.
 
 \subsection{Implementation}
 
@@ -764,80 +750,29 @@ of the general control flow in the queue and the \texttt{Memory} module which ha
 ID.
 
 In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. Therefore a layout is proposed in the specification where all 
-child elements of a certain node are stored together under one memory address. This allows single memory access fetches of all $k$ children. Since 
-the root node has no siblings, it is stored alone in a register. This enables even faster access in certain scenarios which are discussed later on.
+child elements of a certain node are stored together under one memory address. This allows single memory access fetches of all children of a node. When writing to the memory, masking can be used to overwrite the data of one specific child.
 
-One memory row contains $k$ elements each consisting of the 3 introduced fields: \textit{cyclic} priority, \textit{normal} priority and the connected
-reference ID. In the implemented \texttt{Memory} module, a single sequential memory is instantiated where masking is used to be able to over-write specific elements in one memory row.
-
-%There are a variety of solutions to the problem of content addressability which is required here in order to find positions of elements in the heap by providing
-%their reference ID. Cache-like memory relying on parallel tag comparison could be used to achieve fast and constant search times. On the other hand, the 
-%existing sequential memory could be searched through linearly, where $k$ reference ID's are compared in parallel until the reference ID is found.
-%A compromise between the two solutions could include splitting memory space over multiple instances of the latter and thus reducing worst case search time.
-The priority queue is designed to be independent of the specific implementation. As a reference, linear search is implemented.
-%The \texttt{Heapifier} loops from a given starting point in the tree either upwards or downwards until it hits the root or a childless node. In each iteration 
-%it is checked whether the parent element is smaller than its child elements and if not a swap occurs. Once the parent element and child elements of the starting 
-%point are fetched from memory, only the next parent or block of children respectively needs to be fetched depending on the looping direction (up/down). Thus 
-%only 3 cycles (1 fetch, 2 write backs) are required per swap. The state diagram of the \texttt{Heapifier} is shown in figure~\ref{fig:pq_heapifier_state}.
-%
-%\begin{figure}
-%	\centering
-%	\includegraphics[width=9cm]{HeapifierStateDiagram.pdf}
-%	\caption{The state diagram of the \texttt{Heapifier}}
-%	\label{fig:pq_heapifier_state}
-%\end{figure}
-The task of the \texttt{QueueControl} is to insert or remove elements and then signal to the \texttt{Heapfier} to balance the tree. 
-%As it can be seen in figure~\ref{fig:pq_control_state}, there are a series of special cases where insertion or removal times can be reduced for instance by taking advantage of the head element being stored in a register. 
-%The achieved best and worst case insertion as well as removal times are presented in table~\ref{tab:pq_timings}.
-%
-%\begin{figure}
-%	\centering
-%	\includegraphics[width=9cm]{QueueControlStateDiagram.pdf}
-%	\caption{The state diagram of the \texttt{QueueControl}}
-%	\label{fig:pq_control_state}
-%\end{figure}
-%\begin{table}
-%	\centering
-%	\begin{tabular}{l|c}
-%		Head insertion & 2 cycles \\
-%		Normal insertion & min 7 cycles and max $5+3\cdot \mathrm{log}_k(N)$\\
-%		Head removal & min 8 cycles and max $6+3\cdot \mathrm{log}_k(N)$\\
-%		Tail removal & 3 cycles\\
-%    Normal removal & \begin{tabular}{c}min 12 cycles + search time\\ max $13+3\cdot \mathrm{log}_k(N)$ + search time \end{tabular} \\
-%    \multicolumn{2}{c}{\scriptsize{($N=$ queued elements, $k=$ number of child elements per node)}}
-%	\end{tabular}
-%	\caption{Best and worst case insertion and removal times}
-%	\label{tab:pq_timings}
-%\end{table}
-%\begin{table}[]
-%  \centering
-%  \begin{tabular}{l|cccc}
-%      Size &$k=2$&$k=4$&$k=8$&$k=16$\\\hline
-%      16+1 & 9.38/14.56&7.86/11.51&7.47/10.42&-\\
-%      32+1 & 9.9/15.15&7.96/12.29&7.34/11.22&7.54/11.00\\
-%      64+1 & 9.79/16.34&8.01/13.80&7.41/12.38&7.32/11.18\\
-%      128+1 & 9.96/17.37&8.14/14.47&7.54/13.14&7.26/11.62\\
-%      256+1 & 9.73/17.39&8.15/15.54&7.53/14.21&7.34/12.89
-%  \end{tabular}
-%  \label{tab:pq_simres}
-%  \caption{Simulated insertion/removal times.}
-%\end{table}
 
 \subsection{Testing and Verification}
 
-All modules and the fully assembled queue were tested with random stimuli in Scala by employing the ChiselTest framework.
-In order to check whether the DUT matched the specification, reference models were written for each module. Most modules 
-could be modelled by a single or multiple functions. As a reference model for the whole priority queue, a class 
-was written which simulates state and interaction on the operation level. In order to abstract interaction with the DUT,
+For verification of the modules and the fully assembled queue, the presented CRV and functional coverage functionalities of the ChiselVerify framework where employed. Due to the simple interface of the priority queue which only consists of two boolean flow control inputs alongside the data fields, only distributional constraints where used in order to reduce the number of transactions marked as invalid. 
+
+The functional coverage report was then used to check how well the inputs were spread over the spectrum of possibilities and to check whether certain input combinations where applied to the DUT at some point throughout the test. As an example, the timed coverage feature made it easy to check whether the \texttt{valid} input of the DUT was revoked at some point within 10 clock cycles after issuing an operation by adding the following cross coverage group:
+
+\begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
+TimedCross("timed_valid","valid","valid",Eventually(10))(
+  CrossBin("revoked valid under operation",1 to 1, 0 to 0) :: Nil
+)
+\end{lstlisting}
+
+In order to check whether the DUT matched the specification, reference models were written for each module. 
+As a reference model for the whole priority queue, a class 
+was written which simulates state and interaction on an transaction/query level. In order to abstract interaction with the DUT,
 wrapper classes (i.e., classes similar to BFMs) were employed. These make it easy to think on a transaction or 
 operation level when writing tests.
 
-In the test of the priority queue, purely random pokes are produced. In order to evaluate how well these pokes are spread over the spectrum 
-of possible or interesting input combinations, the functional coverage feature of ChiselVerify is used. This allows to evaluate whether interesting 
-or important edge cases are reached by the random input sequence. Furthermore, metrics on how many of the generated pokes actually are valid 
-operations, are collected. The average insertion and removal times measured under a random test run are shown in table~\ref{tab:pq_simres}.
-These numbers are dependent on access patterns and are as such only representative for the random test case used here.
-%The tests can be found in the \href{https://github.com/chisel-uvm/chisel-verify/tree/master/src/test/scala/heappriorityqueue}{project repository}.
+\section{Conclusion}
+In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software like ecosystem for hardware design. With this, we brought Functional Coverage, Constrained Random Verification and Bus Functional Models to the Chisel/Scala ecosystem, thus allowing for the improvement of current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
 
 \subsection*{Source Access}
 

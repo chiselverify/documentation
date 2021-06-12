@@ -540,7 +540,7 @@ cr.register( // Declare CoverPoints
 )
 \end{lstlisting}
 
-The above code snippet is an example of how to define a verification plan using our coverage framework. One concept used in the example verification plan is the idea of \textit{cross coverage} defined using the \texttt{Cross} construct. Cross coverage allows one to specify coverage relations between \texttt{CoverPoint}s. This means that cross-defined between, e.g., \texttt{CoverPoint} $a$ and \texttt{CoverPoint} $b$ will be used to gather information about when $a$ and $b$ have specific values simultaneously~\cite{spear2008systemverilog}.
+The above code snippet is an example of how to define a verification plan using our coverage framework. One concept used in the example verification plan is the idea of \textit{cross coverage} defined using the \texttt{Cross} construct. Cross coverage allows one to specify coverage relations between \texttt{CoverPoint}s. This means that a cross defined between, e.g., \texttt{CoverPoint} $a$ and \texttt{CoverPoint} $b$ will be used to gather information about when $a$ and $b$ have specific values simultaneously~\cite{spear2008systemverilog}.
 Thus, in our example verification plan, we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.
 
 Once our verification plan is defined, we need to decide when we want to sample our cover points. This means that at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. This can be done, in our example, simply by calling \texttt{cr.sample()} when we are ready to sample our points. Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()} which results in the following coverage report: 
@@ -623,7 +623,14 @@ the boarder to cheating.}
 %\code{rand} variables that are unconstrained, a random value inside their domain will be assigned. Combining random classes using the inheritance OOP
 %paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. 
 
-SystemVerilog serves as an inspiration for our work, but we diverge from SystemVerilog by exploiting the functional nature of Scala. We have implemented a CSP solver in Scala based on the method described in~\cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain-specific language, which allows users to declare and randomize objects.
+To make best use of a coverage-driven verification flow, one needs access to CRV tools. Such tools are, as explained 
+before, included in SystemVerilog, and we provide another implementation in ChiselVerify. An initial attempt at 
+implementing a custom CSP solver in Scala based on backtracing and arc consistency, as described in~
+\cite{russell2002artificial}, performed poorly. Instead, ChiselVerify provides a wrapper to an existing CSP solver and 
+a domain-specific language, which allows users to declare and randomize objects. \hjd{We need a reference to the CSP 
+solver now.}
+
+%SystemVerilog serves as an inspiration for our work, but we diverge from SystemVerilog by exploiting the functional nature of Scala. We have implemented a CSP solver in Scala based on the method described in~\cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain-specific language, which allows users to declare and randomize objects.
 
 \subsubsection{Constraint Programming with ChiselVerify}
 To begin writing constrained random objects using our library, one must define a \texttt{class} that extends the \texttt{RandObj} trait while initializing it with a \texttt{Model}. A \texttt{Model} represents a database in which all of the \texttt{RandObj}'s random variables and constraints are stored. This \texttt{RandObj} will then contain all of the constraints and random variables we will use in our constrained random tests. Thus, there are two main constructs that can be defined inside of a \texttt{RandObj}: random variables and constraints.
@@ -678,7 +685,10 @@ Listing~\ref{lst:randobjscala} shows how we can create a random object with a gi
 Combining constraint-random objects with the provided coverage features enables writing tests very efficiently. However, this may be further optimized by abstracting away groups of wires and operating on an operation or transaction level instead.
 
 \subsection{Verification with Bus Functional Models}
-In this work, we provide an example BFM for AXI4, an open standard by ARM~\cite{axi4standard}. The example works only for AXI4, but it can easily be extended to support other buses. So, let us first give a brief introduction to AXI4.
+Finally, many designers ensure portability and flexibility by equipping their designs with standardized interfaces. The 
+verification engineers can test such components by combining CRV and coverage measures with BFMs to abstract their 
+operation to a transaction level. In this work, we provide an example BFM for AXI4, an open standard by ARM~
+\cite{axi4standard}.
 
 \subsubsection{Introduction to AXI4}
 The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of several transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with memories in focus that supports multiple outstanding transactions and out-of-order completion. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, as shown in Figure~\ref{fig:axi4w}. The read channels are \textit{Read Address} and \textit{Read Data} shown in Figure~\ref{fig:axi4r}.
@@ -723,8 +733,8 @@ class MemoryTester extends FlatSpec with ChiselScalatestTester {
   it should "write and read" in {
     test(new Memory()) { dut =>
       val bfm = new FunctionalMaster(dut)
-      master.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
-      master.createReadTrx(0, len = 15, size = 2)
+      bfm.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
+      bfm.createReadTrx(0, len = 15, size = 2)
     }
   }
 }

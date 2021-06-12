@@ -625,10 +625,9 @@ the boarder to cheating.}
 
 To make best use of a coverage-driven verification flow, one needs access to CRV tools. Such tools are, as explained 
 before, included in SystemVerilog, and we provide another implementation in ChiselVerify. An initial attempt at 
-implementing a custom CSP solver in Scala based on backtracing and arc consistency, as described in~
-\cite{russell2002artificial}, performed poorly. Instead, ChiselVerify provides a wrapper to an existing CSP solver and 
-a domain-specific language, which allows users to declare and randomize objects. \hjd{We need a reference to the CSP 
-solver now.}
+implementing a custom CSP solver in Scala based on backtracing and arc consistency, as described in Stuart Russel's book on modern AI~
+\cite{russell2002artificial}, performed poorly. Instead, ChiselVerify provides a wrapper to an existing CSP solver, named JaCoP~\cite{jacop2013}, and 
+a domain-specific language, which allows users to declare and randomize objects.
 
 %SystemVerilog serves as an inspiration for our work, but we diverge from SystemVerilog by exploiting the functional nature of Scala. We have implemented a CSP solver in Scala based on the method described in~\cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain-specific language, which allows users to declare and randomize objects.
 

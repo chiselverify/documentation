@@ -117,5 +117,29 @@ As an example of this, we chose to develop a BFM for the AXI4 Bus interface. AXI
 The idea is to use this as an example for any other BFM that one would want to create.  
   
 ## Timed Assertions  
-Finally, let quickly talk about Timed Assertions.  
+Finally, let's quickly talk about Timed Assertions. These allow to create predicated assertions that take into account certain timing delays. The delays can be defined using different types of delays. 
+Given a delay of x cycles:  
 
+- __Exactly__: Assertion is true exactly in x cycles.
+- __Eventually__: Assertion is true at least one in the next x cycles.   
+- __Always__: Assertion is true every cycle for the next x cycles. 
+- __Never__: Assertion isn’t true at any cycle for the next x cycles.
+
+There are two types of timed assertions: `AssertTimed` and `ExpectTimed`. `ExpectTimed` uses _ChiselTest_'s `expect` method whereas`AssertTimed` functions using scala's software assertion. This makes `ExpectTimed` maybe a bit more adapted for hardware, on top of the fact that the syntax is a bit lighter.  
+  
+### Using it  
+The interface is very similar to their non-timed counterparts, where `message` is what will be displayed in case of a failed assertion. Here's an example where we use the same assertion with different delays and with `AssertTimed` and `ExpectTimed`.  
+  
+## Conclusion  
+So that's what the current state of `ChiselVerify` looks like. `ChiselVerify` brings hardware verification to the Chisel-Scala ecosystem. As you might have noticed during the presentation, the syntax used by `ChiselVerify` is a lot more  efficient and lightweight than using SystemVerilog with UVM and provides many of the same functionalities as well as more modern ones that aren't present in SV such as Timing-based verification and purely conditional coverage. We also want to add that `ChiselVerify` can be used to verify non-Chisel designs as well thanks to Chisel's blackboxing features.  
+
+## References  
+Here are a few references to the main work that inspired `ChiselVerify`.   
+ 
+## Getting started  
+This project is of course fully open-source and can be found on github. If you want to get started using our library, the best way is by checking out our wiki, which contains an in-depth tutorial on how to use the different functionalities proposed by our library. `ChiselVerify` is published on Maven, so you can use it without a problem by adding a single line to your project's `build.sbt` file.  
+  
+## Questions?
+Thank you very much for listening and now are there any questions?  
+  
+  

@@ -14,7 +14,7 @@ This definition can be split into two methods:
 - __Verification__, which is when we test before tapeing-out.  
 - __Validation__, which is testing after tapeing-out.    
 	
-We are solely going to focus on the first one, i.e. verification. Now why is it useful to test a design before spending a lot of money tapeing it out? Well obviously to save time and money. Now to do that we thus need to have efficient tools allowing us to do so. These tools are currently lacking in the Chisel ecosystem and many people are noticing that, since we are seeing more and more projects like ours pop up. But let's start by talking about the current well-established solutions.  
+We are solely going to focus on the first one, i.e. verification. Now why is it useful to test a design before spending a lot of money tapeing it out? Well obviously to save time and money. Now this thus requires we thus efficient tools allowing us to do so. These tools are currently lacking in the Chisel ecosystem and many people are noticing that, since we are seeing more and more projects like ours pop up. But let's start by talking about the current well-established solutions.  
   
 ## Current Solutions 
 Chisel designs can be tested using essentially two main approaches: testing the Chisel code and testing the output Verilog.   

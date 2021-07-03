@@ -220,7 +220,7 @@ We evaluate our coverage solutions with an industry-provided use case that illus
 
 \section{Background and State-of-the-Art}
 \label{sec:background}
-This section presents a brief overview of Chisel and FFIRRTL. Furthermore, it presents an introduction into code coverage.
+This section presents a brief overview of Chisel and FIRRTL. Furthermore, it presents an introduction into code coverage.
 
 \subsection{Chisel}
 Chisel is a hardware construction language~\cite{chisel:dac2012, chisel:book} embedded in the functional and object-oriented programming language Scala~\cite{Scala}. This means that a Chisel design actually generates a Verilog description that can then be synthesised. The language itself has syntax rooted in Scala, since Chisel is technically Scala code. As a result, Chisel enables the description of hardware in a high-level manner, which is thus much more efficient than traditional HDLs like VHDL or Verilog. Scala also allows for both functional and OOP constructs, which makes it possible to organise a design very intuitively using Scala classes and objects and also to use the power of higher order functions to simplify descriptions thanks to constructs like \textit{mapping} or \textit{reductions}.

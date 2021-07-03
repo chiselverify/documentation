@@ -4,7 +4,7 @@ Hi everyone, my name is _Andrew Dobis_ and I'm here to present __ChiselVerify__,
 ## Outline  
 Let's start by giving a quick outline of the presentation, so that you know what to expect. First off, I'm going to briefly introduce the notion of _Verification_ or at least what we consider as _Verification_. Then I'll move on to discussing the current solutions when it comes to verifying a Chisel design. Finally, and this will take up most of the presentation, I'll present our solution for verification in Chisel. So let's get started!  
   
-## Hardware Verification : What & Why?  
+## Hardware Verification : What & Why?  
 Let's start by defining what we consider as hardware verificaiton:   
 
 _Verifying a desing means guaranteeing that the expected features, as described in the specification, have been correctly implemented and have the correct behavior._   
@@ -68,7 +68,7 @@ There are two main elements:
 
 Let's now look at how to use our Functional Coverge tool.
 
-### Functional Coverage API   
+### Functional Coverage API   
 The API is quite simple and generaly follow the same structure throughout the different point types: `PointType(name, ports)(bins/conditions)`.  
   
 Then here's an overview of the interfaces for all of our PointTypes. Now let's use these elements together in an example. So we first start by creating a coverage reporter and then we can define our verification plan by using its `register` method.  
@@ -83,7 +83,7 @@ That's enough for coverage, now let's move on to Constrained Random Verification
   
 To enable this in Scala, we developped a `Constraint Programming Language` allowing the definition of random objects containing random variables and constraints. These random object define a _Constraint Satisfaction Problem_ wich is then solved using an existing CSP Solver named JaCoP.  
   
-### SystemVerilog
+### SystemVerilog
 Let's first look at how constraint programming is done in a well established language like SystemVerilog. The idea is the same, we first start by defining a Random Object (here we called it `frame_t`). We then define random varibles as fields of the random object. These will be used to generate and store random values. Random Variables can be created using either:  
   
 - `rand`, which defines a regular random variable that can take any bit value it wants.  

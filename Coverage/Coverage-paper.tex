@@ -2,7 +2,7 @@
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.20 of 2017/10/04
 %
-\documentclass[runningheads]{llncs}
+\documentclass[conference]{IEEEtran}
 %
 \usepackage{cite}
 \usepackage{pslatex} % -- times instead of computer modern, especially for the plain article class
@@ -66,6 +66,7 @@
 
 \newcommand{\longlist}[3]{{\lstinputlisting[float, caption={#2}, label={#3}, frame=tb, captionpos=b]{#1}}}
 \usepackage{graphicx}
+
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
@@ -76,6 +77,10 @@
 \begin{document}
 %
 \title{Improving the Verification Efficiency of Chisel Designs with Multi-Level Code Coverage}
+\author{
+\IEEEauthorblockN{No Author Given}
+\IEEEauthorblockA{No Institute Given}
+}
 %
 %\titlerunning{Abbreviated paper title}
 % If the paper title is too long for the running head, you can set
@@ -90,7 +95,6 @@
 %
 %\authorrunning{A. Dobis et al.}
 
-\titlerunning{Multi-Level Code Coverage in Chisel}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
@@ -107,7 +111,10 @@ Ever-increasing performance demands are pushing hardware designers towards desig
 We explore and create methods enabling statement coverage of a Chisel design at multiple levels of abstraction: at Scala, FIRRTL, and Verilog levels. Furthermore, we describe our solution for gathering functional coverage on a Chisel design.
 We evaluate our approach with an industry-provided use case.
 
-\keywords{Hardware Verification \and Code Coverage \and Chisel \and Scala \and SystemVerilog \and FIRRTL \and Treadle}
+\begin{IEEEkeywords}
+Hardware Verification, Code Coverage, Chisel, Scala, SystemVerilog, FIRRTL, Treadle
+\end{IEEEkeywords}
+
 \end{abstract}
 
 \begin{itemize}
@@ -171,6 +178,13 @@ This section presents a brief overview of Chisel and FIRRTL. Furthermore, it pre
 \subsection{Chisel}
 Chisel is a hardware construction language~\cite{chisel:dac2012, chisel:book} embedded in the functional and object-oriented programming language Scala~\cite{Scala}. This means that a Chisel design actually generates a Verilog description that can then be synthesised. The language itself has syntax rooted in Scala, since Chisel is technically Scala code. As a result, Chisel enables the description of hardware in a high-level manner, which is thus much more efficient than traditional HDLs like VHDL or Verilog. Scala also allows for both functional and OOP constructs, which makes it possible to organise a design very intuitively using Scala classes and objects and also to use the power of higher order functions to simplify descriptions thanks to constructs like \textit{mapping} or \textit{reductions}.
 
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Chisel_FIRRTL_VERILOG.pdf}
+    \caption{Overview of the Chisel pipeline. Chisel code is first given to the FIRRTL compiler, where it is transformed by a series of "lowering passes". It is then output by the compiler in a low-level form, where only hardware primitives are used without loops. It is then used to either emit Verilog or simulate using an execution engine like Treadle.}
+\label{fig:chisel}
+\end{figure*}
+
 \subsection{FIRRTL}
 In a Chisel design, the source code is first compiled into an intermediate representation, named Flexible Intermediate Representation for RTL (FIRRTL), that is used as a sort of ``optimisation layer" before being converted into the final Verilog form. During this optimisation process the original Chisel description goes through three different intermediate representation layers:
 \begin{itemize}
@@ -180,15 +194,7 @@ In a Chisel design, the source code is first compiled into an intermediate repre
 \end{itemize}
 Throughout this optimisation process, custom FIRRTL compiler passes, known as \textit{Transforms}, can be used to modify the design. This is often done when trying to apply simplifications to the design to make the generated hardware more optimal~\cite{firrtl}.  
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{Chisel_FIRRTL_VERILOG.pdf}
-    \caption{Overview of the Chisel pipeline.}
-\label{fig:chisel}
-\end{figure}
-
-
-Figure~\ref{fig:chisel} shows... \todo{Add a description and maybe have it earier.}
+Figure~\ref{fig:chisel} shows an overview of the Chisel compilation pipeline and the different stages the code goes through before being converted into a usable format.
 
 \subsection{Code Coverage}
 In software development, code coverage is used as a metric to measure the completeness of a testing suite. In recent years, these techniques, originally used for software, have been brought into the hardware verification universe. The coverage metric can be defined in multiple ways, but in this paper we will mostly focus on two key aspects of it: statement coverage and functional coverage. 
@@ -225,7 +231,7 @@ Expression coverage takes this one step further checking whether all possible co
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{Coverage_example.pdf}
+    \includegraphics[width=0.5\textwidth]{Coverage_example.pdf}
     \caption{Example of path and expression coverage}
 \label{fig:expr}
 \end{figure}
@@ -558,6 +564,6 @@ We would like to thank the researchers at Berkeley who are constantly working on
 
 \todo{Add source pointers in final version. Not possible now due to double-blind review.}
 
-\bibliographystyle{abbrv}
-\bibliography{coverage,msbib}
+\bibliographystyle{IEEEtran}
+\bibliography{coverage, ../msbib, ../funding/ftp-chisel/testing, ../chisel-uvm}
 \end{document}

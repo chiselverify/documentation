@@ -357,6 +357,11 @@ Running the test and coverage report will create a set of HTML files. The page m
 While the previous section seems promising, experimenting with Scoverage in combination with Chisel revealed some limitations. In particular, some of the basic constructs introduced by Chisel, e.g. \texttt{switch} statements, are simply not considered by the Coverage tool and thus, incomplete results are reported. In practice, this makes Scoverage insufficient for hardware verification. However, it must be noted that Scoverage provides coverage results for the hardware generators written in Chisel, which can also be important to consider, both for verification and potentially for optimization purposes by pointing a designer's attention toward unused generator code.
 
 \subsection{Statement Coverage at the Verilog Level}
+
+\martin{We will drop this section and move it to one paragraph in related work,
+mention the HTML generation, and reference Enricos' thesis}
+
+
 \andrew{We can also move this part up, directly separating our direct contributions and our exploration of existing methods, as one of the reviewers advised.}
 An other solution to obtaining statement coverage, is to rely on the generated Verilog. Since Chisel as a language is not directly supported by any synthesis tools, it relies on transforming the intermediate representation of the FIRRTL stage into Verilog. The Verilog code generated can then be simulated by any Verilog simulator or directly synthesized by any vendor-specific development tool. As part of the Chisel development tools, \texttt{ChiselTest} is a library based on \texttt{ScalaTest}~\cite{ScalaTest}, which allows simulating a Chisel design transformed to Verilog using the Verilator~\cite{verilator} back-end.
 
@@ -449,6 +454,8 @@ The example above is taken from a simple test, where we are only testing the pat
 
 With our modification Treadle thus allows us to obtain coverage at the FIRRTL level. An interesting result can be obtained by mapping the FIRRTL statement coverage to the original Chisel source. This is possible by accessing the original source code through \textit{Source locators} which map some of the FIRRTL lines back to Chisel.
 %Another way to obtain coverage information would be to use the generated Verilog description and we will discuss that in detail in the following section.
+
+\martin{Maybe we should lookup what Kevin is doing. Kind of picked up our work.}
 
 \section{Functional Coverage in Chisel}
 
@@ -586,5 +593,5 @@ We would like to thank the researchers at Berkeley who are constantly working on
 \todo{Add source pointers in final version. Not possible now due to double-blind review.}
 
 \bibliographystyle{IEEEtran}
-\bibliography{coverage, ../msbib, ../funding/ftp-chisel/testing, ../chisel-uvm}
+\bibliography{coverage,../msbib,../funding/ftp-chisel/testing,../chisel-uvm}
 \end{document}

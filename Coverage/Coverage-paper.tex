@@ -108,11 +108,11 @@
 %
 \begin{abstract}
 Ever-increasing performance demands are pushing hardware designers towards designing domain-specific accelerators. We must thus find a way to improve the overall efficiency of the hardware design and verification cycles. The design efficiency was improved with the introduction of Chisel. However, we still need to improve the verification efficiency.
-We explore and create methods enabling statement coverage of a Chisel design at multiple levels of abstraction: at Scala, FIRRTL, and Verilog levels. Furthermore, we describe our solution for gathering functional coverage on a Chisel design.
+We explore how existing tools can enable statement coverage of a Chisel design at Scala and Verilog levels. Furthermore, we create a new method allowing for statement coverage at the FIRRTL level. Finally we describe our solution for gathering functional coverage on a Chisel design.
 We evaluate our approach with an industry-provided use case.
 
 \begin{IEEEkeywords}
-Hardware Verification, Code Coverage, Chisel, Scala, SystemVerilog, FIRRTL, Treadle
+Hardware Verification, Code Coverage, Chisel, Scala, SystemVerilog, FIRRTL, Treadle.
 \end{IEEEkeywords}
 
 \end{abstract}
@@ -157,18 +157,18 @@ Hardware Verification, Code Coverage, Chisel, Scala, SystemVerilog, FIRRTL, Trea
 
 \section{Introduction}
 \label{sec:objectives}
-As time passes, contemporary hardware design is met with tighter and tighter development and verification time constraints. This is added to the fact that, with the halting of Moore's law, hardware designers are turning to domain-specific accelerators in order to keep up with the ever-increasing performance demands~\cite{henn-patt:turing:2019}. This means that more and more hardware must be designed from scratch in shorter and shorter time periods~\cite{domain-hw-acc:2020}. \martin{We need to fix this.} However, the two most widely used hardware description languages (i.e., VHDL and Verilog) are outdated and inefficient.  To solve said problem, researchers at the University of California in Berkeley proposed Chisel~\cite{chisel:dac2012}, a Scala embedded high-level hardware construction language.
+As time passes, contemporary hardware design is met with tighter and tighter development and verification time constraints. This is added to the fact that, with the halting of Moore's law, hardware designers are turning to domain-specific accelerators in order to keep up with the ever-increasing performance demands~\cite{henn-patt:turing:2019}. This means that more and more hardware must be designed from scratch in shorter and shorter time periods~\cite{domain-hw-acc:2020}.  To help meet these demands, researchers at the University of California in Berkeley proposed Chisel~\cite{chisel:dac2012}, a Scala embedded high-level hardware construction language.
 
-This solution is powerful, but is still lacking in verification functionalities. One of the main tools needed for the verification of digital systems is code coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into multiple distinct categories, but we will focus on the following two: Statement and functional coverage. Statement coverage defines a quantitative measure of the testing progress, \textit{``How many lines of code have been tested?"}, whereas Functional Coverage gives a rather qualitative measure, \textit{``Which functionalities have we tested?"}~\cite{spear2008systemverilog}.
+This solution is powerful, but is still lacking in verification functionalities. One of the main tools needed for the verification of digital systems is code coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Code Coverage can be separated into multiple distinct categories, but we will focus on the following two: Statement and Functional coverage. Statement coverage defines a quantitative measure of the testing progress, \textit{``how many lines of code have been tested?"}, whereas Functional coverage gives a rather qualitative measure, \textit{``which functionalities have we tested?"}~\cite{spear2008systemverilog}.
 
 %\martin{shall write some words on the different languages levels.}
 
-In this paper, we will propose three different methods for obtaining statement coverage, each at different levels of abstraction. We will present these methods in a top-down fashion: First, we present code coverage at the Scala level. This coverage presents how much of a \emph{hardware generator} code has been tested. 
-Second, we will show our solution for getting statement coverage of the FIRRTL intermediate representation. This represents coverage of testing the circuit at Chisel level. Third, we present how to measure coverage at the Verilog level. This allows coverage analysis when testing the finally generated Verilog code.
+In this paper, we will explore how to use existing tools, both for Scala and for Verilog, in order to obtain Statement coverage in Chisel. Furthermore, we will present a method we created to gather Statement coverage at the FIRRTL level. We will first start by presenting code coverage at the Scala level. This represents how much of the \emph{hardware generator} code has been tested. 
+Second, we will briefly discuss how to use Verilator~\cite{verilator} in order to enable Statement coverage of the generated Verilog description. Third, we will show our solution for getting statement coverage of the FIRRTL intermediate representation~\cite{firrtl}. This represents the test coverage of the Chisel circuit.
 
-Furthermore, we will also present our solution for gathering functional code coverage of the Chisel design directly in Scala. In the following section, we will take a brief look at the Chisel hardware construction language, how FIRRTL comes into play and gather the knowledge needed to fully appreciate our solutions. Initial work on verification with Chisel has been presented in a previous paper~\cite{blind} %\cite{verify:chisel:2020}.
+Moreover, we will also present our solution for gathering Functional code coverage of the Chisel design directly in Scala. In the following section, we will take a brief look at the Chisel hardware construction language, how FIRRTL comes into play and gather the knowledge needed to fully appreciate our solutions. Initial work on verification with Chisel has been presented in a previous paper~\cite{blind}. %\cite{verify:chisel:2020}.
 
-We evaluate our coverage solutions with an industry-provided use case that illustrates the efficiency of our coverage tools. These solutions are shown to reduce the amount of code (measured in Lines Of Code a.k.a. LOC) needed to gather functional coverage on a Chisel design in comparison to using SystemVerilog with UVM.
+We evaluate our coverage solutions with an industry-provided use case that illustrates the efficiency of our coverage tools. These solutions are shown to reduce the amount of code (measured in Lines Of Code a.k.a. LOC) needed to gather functional coverage on a Chisel design in comparison to using SystemVerilog with UVM~\cite{uvm2015}.
 %Note that a discussion could be had on the usefulness of coverage information at certain levels of abstraction (i.e. high-level coverage might not be interesting when using hardware generators), but for now this is left up for the reader to decide.
 
 \section{Related Work}

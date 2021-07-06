@@ -421,24 +421,22 @@ COVERAGE REPORT:
 -     io_cov_valid_1 <= not(io_a)
 +     out <= mux(io_a, io_b_0, io_b_1)
 \end{verbatim}
-The example above is taken from a simple test, where we are only testing the path where \texttt{in\_a} is 1. This means that, since we only have a single multiplexer, only half of our branches have been tested and we would thus want to add a test for the case where \texttt{in\_a} is 0. The report can thus be interpreted as follows:  
+The example above is taken from a simple test, where we are only testing the path where \texttt{in\_a} is 1. This means that, since we only have a single multiplexer, only half of our branches have been tested.
+ The report can thus be interpreted as follows:  
 \begin{itemize}
 \item ``\texttt{+}" before a line, means that it was executed in at least one of the tests in the test suite. All port declarations are considered explored by default.
 \item ``\texttt{-}" before a line, means that it wasn't executed in any of the tests in the test suite. This can only appear next to a line containing a coverage-validator, since it represents a non-explored multiplexer path.
 \end{itemize}
 
-With our modification Treadle thus allows us to obtain coverage at the FIRRTL level. An interesting result can be obtained by mapping the FIRRTL statement coverage to the original Chisel source. This is possible by accessing the original source code through \textit{Source locators} which map some of the FIRRTL lines back to Chisel.
-%Another way to obtain coverage information would be to use the generated Verilog description and we will discuss that in detail in the following section.
+With our modification Treadle thus allows us to obtain Statement coverage at the FIRRTL level. 
 
 \martin{Maybe we should lookup what Kevin is doing. Kind of picked up our work.}
 
 \section{Functional Coverage in Chisel}
 
-\martin{This is our main contribution, so expand on this.}
+Functional coverage is one of the principal tools used during the verification process. It allows one to measure \textit{``which part of the specification has been implemented correctly"}. A discussion on hardware verification would thus not be complete without constructs allowing one to define a verification plan and retrieve a functional coverage report. 
 
-Functional coverage is one of the principal tools used during the verification process. It allows one to measure \textit{``which part of the specification has been implemented correctly"}. A discussion on hardware verification would thus not be complete without constructs allowing one to define a verification plan and retrieve a functional coverage report. The main language used for functional coverage is usually SystemVerilog, which is why our solution is based on the same syntax. 
-
-Functional coverage is based on three base elements: \texttt{Bins}, \texttt{CoverPoints} and \texttt{CoverGroups}. Using these, one can define what's known as a verification plan, which tells the coverage reporter what ports need to be sampled and taken into account in the coverage report.
+Functional coverage is based on three base elements: \texttt{Bins}, \texttt{CoverPoints} and \texttt{CoverGroups}. Using these, one can define what's known as a verification plan, which tells the coverage reporter which ports need to be sampled and taken into account in the coverage report.
 In order to implement said elements in Scala, we needed to be able to do the following:
 \begin{itemize}
 \item Define a verification plan (using constructs similar to \texttt{coverpoint} and \texttt{bins}).
@@ -447,71 +445,91 @@ In order to implement said elements in Scala, we needed to be able to do the fol
 \item Compile all of the results into a comprehensible coverage report.
 \end{itemize}
 
-We implemented this on top of the existing \texttt{ChiselTest}~\cite{chisel:tester2} framework, using a structure similar to the one used in SystemVerilog~\cite{spear2008systemverilog}. We start with a top-level construct, called \texttt{CoverageReporter}, which allows one to define a verification plan using the \texttt{register} method, which itself stores the \texttt{coverpoint} to \texttt{bin} mappings inside of a \texttt{CoverageDB}. Once the verification plan is defined, we can sample the DUT ports using the \texttt{sample} method, which hooks into \texttt{ChiselTest} in order to use its peeking capabilities. At the end of the test suite, a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
+We implemented this on top of the existing \texttt{ChiselTest}~\cite{chisel:tester2} framework. We start with a top-level construct, called \texttt{CoverageReporter}, which allows one to define a verification plan using the \texttt{register} method, which itself stores the \texttt{coverpoint} to \texttt{bin} mappings inside of a \texttt{CoverageDB}. Once the verification plan is defined, we can sample the DUT ports using the \texttt{sample} method, which hooks into \texttt{ChiselTest} in order to use its peeking capabilities. At the end of the test suite, a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
 
-\begin{lstlisting}[language=scala]
-val cr = new CoverageReporter
-cr.register(
-    // Declare CoverPoints
-    // CoverPoint 1
-    CoverPoint("accu", dut.io.accu)(
-        Bins("lo10", 0 to 10),
-        Bins("First100", 0 to 100)
-     ),
-    // CoverPoint 2
-    CoverPoint("test", dut.io.test)(
-        Bins("testLo10", 0 to 10)
-     ),
-    // Declare cross points
-    Cross("accuAndTest", dut.io.accu, dut.io.test)(
-        CrossBin("both1", 1 to 1, 1 to 1)
-     )
-)
-\end{lstlisting}
-The above code snippet is an example of how to define a verification plan using our Scala solution. Note that the semantics follow that of \texttt{SystemVerilog}:
+The basic verification plan semantics are as follows:
 \begin{itemize}
     \item \texttt{CoverGroup} is defined as a list of \texttt{CoverPoint}s using the \texttt{cr.register} method.
     \item \texttt{CoverPoint} is defined as a list of \texttt{Bins} tied to a DUT port and a name. If no \texttt{Bins} are given, then a \texttt{DefaultBin} is used, ranging over all possible values for the given port.
-    \item \texttt{Bins} instance is defined by a name and a value range.
+    \item \texttt{Bins} is defined by a name and a value range.
     \item \texttt{CrossPoint} is defined using the names of two previously defined \texttt{CoverPoints} and a list of \texttt{CrossBins}.
     \item \texttt{CrossBins} instance is defined using two ranges given in the same order as their associated \texttt{CoverPoint}.
 \end{itemize}
-The concepts are directly taken from \texttt{SystemVerilog}, so it should be accessible to anyone coming from that environment. 
-
-\subsection{Generating the Coverage Report}
-After defining a verification plan, we need to decide when we want to sample our cover points. This means that at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. This can be done, in our example, simply by calling \texttt{cr.sample()} when we are ready to sample our points. Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()} which results in the following coverage report: 
-\begin{verbatim}
-============== COVERAGE REPORT ==============
-================ GROUP ID: 1 ================
-COVER_POINT PORT NAME: accu
-BIN lo10 COVERING Range 0 to 10 
-HAS 8 HIT(S) = 80%
-BIN First100 COVERING Range 0 to 100 
-HAS 9 HIT(S) = 9%
-============================================
-COVER_POINT PORT NAME: test
-BIN testLo10 COVERING Range 0 to 10 
-HAS 8 HIT(S) = 80%
-============================================
-CROSS_POINT accuAndTest FOR POINTS accu AND test
-BIN both1 COVERING Range 1 to 1 CROSS Range 1 to 1 
-HAS 1 HIT(S) = 100%
-============================================
-\end{verbatim}
-Another option would be, for example if we want to do automated constraint modifications depending on the current coverage, to generate the coverage as a Scala \texttt{case class} and then to use its \texttt{binNcases} method to get numerical and reusable coverage results.  
   
 \subsection{Timed Coverage}
-\andrew{This can be much more developed}
-One final element that our framework offers is the possibility to gather delayed coverage relationships between two coverage points. The idea is similar to how a \texttt{Cross} works, but this time rather than sampling both points in the same clock cycle, we look at the relation between one point at the starting clock cycle and another point sampled a given number of clock cycles later. This number of clock cycles is called the \texttt{delay} and there are currently three different ways to specify it:  
+\texttt{TimedCross} constructs offer the possibility to gather delayed coverage relationships between two ports. The idea is similar to how a \texttt{CrossPoint} works, but rather than sampling both points in the same clock cycle, we look at the relation between one point at the starting clock cycle and another point sampled a given number of clock cycles later. This is defined by the \texttt{delay} and there are three different ways to specify it:  
 \begin{itemize}
  \item \texttt{Exactly} delay, means that a hit will only be considered if the second point is sampled in its range a given number of cycles after the first point was.
  \item \texttt{Eventually} delay, means that a hit will be considered if the second point is sampled in its range at any point within the following given number of cycles after the first point was.  
  \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}  
+Using these constructs, one can add timing-based information to the verification plan.
 
-\andrew{We should probably also have a section that talks about the purely conditional coverage.}
+\subsection{Conditional Coverage}
+Working in Scala allows us to use functions as higher-order objects. 
+This means that we can have bins that are defined using arbitrary predicates rather than specific value ranges. 
+This was thus enabled with our \texttt{CoverCondition} object.
+This object gathers coverage information on an arbitrary number of ports by using user-defined predicates in order to consider Bin-hits.
+This means that a hit is considered when the predicate evaluates to \texttt{true}. 
+Since we are working with an arbitrary number of ports, computing the set of possible value combinations in order to obtain a coverage percentage is computationally expensive.
+To alleviate said problem, we added an \texttt{expectedHits} parameter that lets the user define the a number of expected hits.
+This is then used to compute the coverage percentage.
+This coverage information can be very useful when wanting to create points that cover sparse ranges.   
+This sort of predication can also be used in conjunction to a regular bins to create a predicate that is only evaluated over a specific range.  
+  
+\begin{lstlisting}[language=scala]
+val cr = new CoverageReporter
+cr.register(
+    CoverPoint("accu", dut.io.accu)(
+        Bins("lo10", 0 until 10),
+        Bins("First100odd", 0 until 100,  Condition("onlyOdd", 
+            { case Seq(x) => x % 2 != 0 })
+        )
+    ),
+    CoverCondition("aAndB",dut.io.outA, dut.io.outB)(
+        Condition("asuptobAtLeast100", 
+            { case Seq(a, b) => a > b }, 100
+        ),
+    ),
+    CrossPoint("accuAndTest", dut.io.accu, dut.io.test)(
+        CrossBin("both1", 1 to 1, 1 to 1)
+    ),
+    TimedCross("timedAB", dut.io.outA, dut.io.count)(Exactly(3))(
+        CrossBin("ExactlyBoth3", 3 to 3, 3 to 3)
+    ) 
+)
+\end{lstlisting}
+The above code snippet shows an example of how to define a verification plan using the presented framework.
 
-%This thus concludes our discussion on Functional Coverage. We will now move on to presenting an industry provided use-case and show how our coverage solutions can be used to improve the testing efficiency of Chisel designs.
+\subsection{Generating the Coverage Report}
+After defining a verification plan, we need to decide when we want to sample our cover points. This means that, at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. 
+This can be done simply by calling \texttt{cr.sample()} when we are ready to sample our points. 
+Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()}, which results in the following: 
+\begin{verbatim}
+============== COVERAGE REPORT ==============
+================ GROUP ID: 1 ================
+COVER_POINT PORT NAME: accu
+BIN lo10 COVERING Range 0 until 10 
+HAS 8 HIT(S) = 80%
+BIN First100odd COVERING Range 0 until 100 
+WITH CONDITION onlyOdd HAS 1 HIT(S) = 1,00%
+============================================
+COVER_CONDITION NAME: aAndB
+CONDITION asuptobAtLeast100 HAS 5 HITS 
+EXPECTED 100 = 5.0%
+============================================
+CROSS_POINT accuAndTest FOR POINTS accu AND test
+BIN both1 COVERING Range 1 to 1 CROSS Range 1 to 1 
+HAS 1 HIT(S) = 100%
+============================================
+CROSS_POINT timedAB WITH AN EXACT DELAY OF 3 CYCLES
+BIN ExactlyBoth3 COVERING: CROSS(Range 3 to 3, 
+Range 3 to 3) HAS 1 HIT(S) = 100,00%
+============================================
+============================================
+\end{verbatim}
+The above report shows each point with its user-defined name and the bins it contains. These are then associated to a number of hits and also, whenever possible, to a coverage percentage.
+Another option would be, for example if we want to do automated constraint modifications depending on coverage results, to generate the coverage report as a Scala \texttt{case class} and then to use its \texttt{binNcases} method to get numerical and reusable coverage results.  
 
 \section{Evaluation}
 

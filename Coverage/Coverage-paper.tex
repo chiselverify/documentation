@@ -383,6 +383,14 @@ With our modification Treadle thus allows us to obtain coverage at the FIRRTL le
 %Another way to obtain coverage information would be to use the generated Verilog description and we will discuss that in detail in the following section.
 
 \section{Statement Coverage at the Verilog Level}
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.8\textwidth]{ChiselverifyHtml.pdf}
+\caption{Custom HTML ChiselTest report with Verilator coverage}
+\label{fig:customhtmlreport}
+\end{figure*}
+
 \andrew{We can also move this part up, directly separating our direct contributions and our exploration of existing methods, as one of the reviewers advised.}
 An other solution to obtaining statement coverage, is to rely on the generated Verilog. Since Chisel as a language is not directly supported by any synthesis tools, it relies on transforming the intermediate representation of the FIRRTL stage into Verilog. The Verilog code generated can then be simulated by any Verilog simulator or directly synthesized by any vendor-specific development tool. As part of the Chisel development tools, \texttt{ChiselTest} is a library based on \texttt{ScalaTest}~\cite{ScalaTest}, which allows simulating a Chisel design transformed to Verilog using the Verilator~\cite{verilator} back-end.
 
@@ -425,13 +433,6 @@ Line coverage 100.0%, Coverage saved in file:///
 \end{lstlisting}
 
 The HTML output is shown in Figure~\ref{fig:customhtmlreport}.
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{ChiselverifyHtml.pdf}
-\caption{Custom HTML ChiselTest report with Verilator coverage}
-\label{fig:customhtmlreport}
-\end{figure}
 
 \section{Functional Coverage Directly in Chisel}
 

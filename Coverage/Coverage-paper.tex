@@ -166,7 +166,7 @@ This solution is powerful, but is still lacking in verification functionalities.
 In this paper, we will explore how to use existing tools, both for Scala and for Verilog, in order to obtain Statement coverage in Chisel. Furthermore, we will present a method we created to gather Statement coverage at the FIRRTL level. We will first start by presenting code coverage at the Scala level. This represents how much of the \emph{hardware generator} code has been tested. 
 Second, we will briefly discuss how to use Verilator~\cite{verilator} in order to enable Statement coverage of the generated Verilog description. Third, we will show our solution for getting statement coverage of the FIRRTL intermediate representation~\cite{firrtl}. This represents the test coverage of the Chisel circuit.
 
-Moreover, we will also present our solution for gathering Functional code coverage of the Chisel design directly in Scala. In the following section, we will take a brief look at the Chisel hardware construction language, how FIRRTL comes into play and gather the knowledge needed to fully appreciate our solutions. Initial work on verification with Chisel has been presented in a previous paper~\cite{blind}. %\cite{verify:chisel:2020}.
+Moreover, we will also present our solution for gathering Functional coverage of the Chisel design directly in Scala. In the following section, we will take a brief look at the Chisel hardware construction language, how FIRRTL comes into play and gather the knowledge needed to fully appreciate our solutions. Initial work on verification with Chisel has been presented in a previous paper~\cite{blind}. %\cite{verify:chisel:2020}.
 
 We evaluate our coverage solutions with an industry-provided use case that illustrates the efficiency of our coverage tools. These solutions are shown to reduce the amount of code (measured in Lines Of Code a.k.a. LOC) needed to gather functional coverage on a Chisel design in comparison to using SystemVerilog with UVM~\cite{uvm2015}.
 %Note that a discussion could be had on the usefulness of coverage information at certain levels of abstraction (i.e. high-level coverage might not be interesting when using hardware generators), but for now this is left up for the reader to decide.
@@ -448,22 +448,20 @@ In order to implement said elements in Scala, we needed to be able to do the fol
 \end{itemize}
 
 We implemented this on top of the existing \texttt{ChiselTest}~\cite{chisel:tester2} framework. We start with a top-level construct, called \texttt{CoverageReporter}, which allows one to define a verification plan using the \texttt{register} method, which itself stores the \texttt{coverpoint} to \texttt{bin} mappings inside of a \texttt{CoverageDB}. Once the verification plan is defined, we can sample the DUT ports using the \texttt{sample} method, which hooks into \texttt{ChiselTest} in order to use its peeking capabilities. At the end of the test suite, a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
+Our solution also enables the use of special \texttt{Cover} constructs that allow the user to define relations between ports.
 
-The basic verification plan semantics are as follows:
-\begin{itemize}
-    \item \texttt{CoverGroup} is defined as a list of \texttt{CoverPoint}s using the \texttt{cr.register} method.
-    \item \texttt{CoverPoint} is defined as a list of \texttt{Bins} tied to a DUT port and a name. If no \texttt{Bins} are given, then a \texttt{DefaultBin} is used, ranging over all possible values for the given port.
-    \item \texttt{Bins} is defined by a name and a value range.
-    \item \texttt{CrossPoint} is defined using the names of two previously defined \texttt{CoverPoints} and a list of \texttt{CrossBins}.
-    \item \texttt{CrossBins} instance is defined using two ranges given in the same order as their associated \texttt{CoverPoint}.
-\end{itemize}
+\subsection{Cross Coverage}
+Basic coverage relations between different ports can be defined using a \texttt{CrossPoint}. 
+This allows one to associate a set of ports to a set of ranges of equal size.  
+A hit is then considered if each of the ports was sampled with a value that is contained in its associated range.  
+Using this construct, the user has a way to gather information about the interactions between multiple ports.  
   
 \subsection{Timed Coverage}
 \texttt{TimedCross} constructs offer the possibility to gather delayed coverage relationships between two ports. The idea is similar to how a \texttt{CrossPoint} works, but rather than sampling both points in the same clock cycle, we look at the relation between one point at the starting clock cycle and another point sampled a given number of clock cycles later. This is defined by the \texttt{delay} and there are three different ways to specify it:  
 \begin{itemize}
- \item \texttt{Exactly} delay, means that a hit will only be considered if the second point is sampled in its range a given number of cycles after the first point was.
- \item \texttt{Eventually} delay, means that a hit will be considered if the second point is sampled in its range at any point within the following given number of cycles after the first point was.  
- \item \texttt{Always} delay, means that a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
+ \item \texttt{Exactly} delay, a hit will only be considered if the second point is sampled in its range a given number of cycles after the first point was.
+ \item \texttt{Eventually} delay, a hit will be considered if the second point is sampled in its range at any point within the following given number of cycles after the first point was.  
+ \item \texttt{Always} delay, a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}  
 Using these constructs, one can add timing-based information to the verification plan.
 
@@ -478,7 +476,19 @@ To alleviate said problem, we added an \texttt{expectedHits} parameter that lets
 This is then used to compute the coverage percentage.
 This coverage information can be very useful when wanting to create points that cover sparse ranges.   
 This sort of predication can also be used in conjunction to a regular bins to create a predicate that is only evaluated over a specific range.  
-  
+
+\subsection{Creating a Verification Plan}
+The basic verification plan semantics are as follows:
+\begin{itemize}
+    \item \texttt{CoverGroup} is defined as a set of \texttt{CoverPoint}s using the \texttt{cr.register} method.
+    \item \texttt{CoverPoint} is defined as a set of \texttt{Bins} tied to a DUT port and a name. If no \texttt{Bins} are given, then a \texttt{DefaultBin} is used, ranging over all possible values for the given port.
+    \item \texttt{Bins} is defined by a name and a value range.
+    \item \texttt{CrossPoint} is defined by an arbitrary number of ports and a list of \texttt{CrossBins}.
+    \item \texttt{CrossBin} is defined using the same number of ranges as the number of ports in the parent \texttt{CrossPoint}.
+    \item \texttt{TimedCross} is defined using two ports, a set of cross bins and a delay.
+    \item \texttt{CoverCondition} is defined using an arbitrary number of ports and a predicate.
+\end{itemize}
+Using each of these elements together allows the user to define accurate representations of their specifications in the form of a verification plan.
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter
 cr.register(
@@ -572,8 +582,6 @@ endgroup: unnamed;
 All of this sums up to roughly 100 lines of code for the same result. So not only does our solution allow us to perform the entirety of our design and verification within the same ecosystem (moving to SystemVerilog would first require to generate Verilog from the Chisel design and then to simulate it using a SystemVerilog capable simulator like Verilator), but it also reduces the 5 step functional coverage process to a single step (defining the verification plan). It thus requires much less boilerplate code and reduces the total source code by a factor of 5.  
 
 The Scala functional coverage solution presents itself as a natural addition to the \texttt{ChiselTest} framework. One of the main advantages here is that the same language can be used for design and verification, thus increasing the time effectiveness and removing a possible source of errors. Overall, the use-case makes a strong point for hardware development in Scala/Chisel and all the possibilities that come with it. The coverage features, for both functional and statement coverage, help pave the way to a fully capable verification suite accompanying the Chisel language.
-
-
 
 \section{Conclusion}
 We propose multiple solutions for the gathering of coverage data in high-level Chisel designs. Previously, one needed to rely on other languages such as SystemVerilog in order to obtain coverage information during the verification of a Chisel design. This meant that testing either needed to be done in another language or we needed to turn to multi-language testing which was very often cumbersome and time-consuming. With our solutions we are bringing the world one step closer to making Chisel a fully capable design and verification language.

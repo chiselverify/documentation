@@ -363,12 +363,11 @@ Coverage is sampled whenever the \texttt{sample} method is called on a covergrou
 \section{Applying Existing Tools}
 
 \subsection{Statement Coverage at the Scala Level}
-\andrew{Maybe we should consider shortening this section and moving it into the background section, since it isn't really one of our contributions and is more an exploration of current methods.}
-We will start with measuring coverage at a high level (i.e., coverage of the Scala/Chisel code itself), which gives code coverage to test the hardware generators. Scala and ScalaTest have some coverage functionalities for software testing built-in, specifically, we have looked at the Scoverage plugin which is available with ScalaC through SBT and Maven \cite{scoverage}. Scoverage supports statement and branch coverage rather than simple line coverage. We note that according to the Chisel3 GitHub wiki-page, Scoverage should work with Chisel \cite{chisel:scoverage}.
+\andrew{Maybe we should consider shortening this section and moving it into the background section, since it isn't really one of our contributions and is more an exploration of current methods.} \hjd{I left this here but changed a few sentences.}
+We will start with measuring coverage at a high level (i.e., coverage of the Scala/Chisel code itself). Scala and ScalaTest have some coverage functionalities for software testing built-in, specifically, we have looked at the Scoverage plugin which is available with ScalaC through SBT and Maven \cite{scoverage}. Scoverage supports statement and branch coverage rather than simple line coverage. We note that according to the Chisel3 GitHub wiki-page, Scoverage should work with Chisel \cite{chisel:scoverage}.
 
 %\martin{This actually does coverage of the Chisel hardware generation, not the Chisel hardware itself. It tests the generator, which is important as well.} Fixed.
 
-\subsubsection{Using the Scoverage Plugin}
 To enable coverage, the Scoverage plugin must be added to the Scala project, including optional arguments.
 %'s \textit{plugins.sbt} file, and a number of optional arguments may be included in the project's \textit{build.sbt} file -- the arguments specify whether coverage is enabled, a targeted coverage percentage, etc.
 An example configuration is provided below:
@@ -379,15 +378,14 @@ coverageFailOnMinimum := false
 coverageHighlighting := true
 \end{verbatim}
 % Running a test is still just a matter of running e.g. \texttt{sbt test}, while generating a coverage report requires running \texttt{sbt coverageReport} afterwards, as Scoverage otherwise simply generates coverage databases.
-Running the test and coverage report will create a set of HTML files. The page may optionally include the original source files with statements that were executed during the test marked in green. The global coverage results are also printed to \texttt{stdout}.
+Running the test and coverage reporter tool will create a graphical coverage report in a set of HTML files. The report may optionally include the original source files with statements that were executed during the test marked in green. The global coverage results are also printed to \texttt{stdout}.
 %in the terminal:
 %\begin{verbatim}
 %[info] Statement coverage.: 100.00%
 %[info] Branch coverage....: 100.00%
 %\end{verbatim}
 
-\subsubsection{Scoverage Limitations}
-While the previous section seems promising, experimenting with Scoverage in combination with Chisel revealed some limitations. In particular, some of the basic constructs introduced by Chisel, e.g. \texttt{switch} statements, are simply not considered by the Coverage tool and thus, incomplete results are reported. In practice, this makes Scoverage insufficient for hardware verification. However, it must be noted that Scoverage provides coverage results for the hardware generators written in Chisel, which can also be important to consider, both for verification and potentially for optimization purposes by pointing a designer's attention toward unused generator code.
+While this sounds promising, experimenting with Scoverage in combination with Chisel revealed some limitations. In particular, some of the basic constructs introduced by Chisel, e.g. \texttt{switch} statements, are simply not considered by the coverage tool and thus, incomplete results are reported. In practice, this makes Scoverage insufficient for hardware verification. However, it must be noted that Scoverage provides coverage results for the hardware generators written in Chisel, which can also be important to consider, both for verification and potentially for optimization purposes by pointing a designer's attention toward unused generator code.
 
 \section{Statement Coverage at the FIRRTL Level}  
 %Let us now move down an abstraction level and discuss how we've gone about implementing statement coverage at the FIRRTL level. First of all, we must briefly discuss the utility of having coverage at an intermediate representation level.

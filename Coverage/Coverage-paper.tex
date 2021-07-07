@@ -295,33 +295,31 @@ The greatest pitfall is the idea of needing to hit 100\,\% coverage, regardless 
 
 Additionally, we should keep in mind that coverage metrics solely indicate the thoroughness of the verification suite. They provide no indication of the correctness or completeness of the suite. That is, they give no information on whether the design under test (DUT) is correctly functioning, merely how much it was exercised~\cite{hdlverify}.
 
-\subsection{Coverage in Chisel} Up until recently, the main Chisel developers have mostly focused their energy on getting Chisel up to the standards imposed by mainstream HDLs like VHDL or Verilog. This means that verification features are mostly lacking from the Chisel package. Some testing frameworks like \textit{ChiselTest}~\cite{chisel:tester2} have come to be, but they still lack coverage capabilities. All of this amounts to the realisation that if one wants to gather code coverage of a current Chisel design, we need to rely on basic Scala software code coverage tools (which we explore in more detail in a later section). Therefore, we introduce code coverage solutions that are specifically tailored for Chisel.
-
 \subsection{Coverage in SystemVerilog}
-\andrew{Should we simply dump this entire subsection? I don't think that we need to know this much about SV in order to understand our contributions.}
+\andrew{Should we simply dump this entire subsection? I don't think that we need to know this much about SV in order to understand our contributions.} \hjd{Moved and shortened this.}
 SystemVerilog supports functional coverage and assertions, and is widely used in the scope of the Universal Verification Methodology (UVM)~\cite{uvm2015}. 
 
-As was previously discussed, when performing functional verficiation in SystemVerilog, a \texttt{CoverGroup} is used to group related signals that should be sampled at the same time, a \texttt{CoverPoint} specifies the signals which are of interest, and the bins specify what ranges of values are of interest.
+As was previously discussed, when performing functional verficiation in SystemVerilog, a \texttt{CoverGroup} is used to group related signals that should be sampled at the same time, a \texttt{CoverPoint} specifies the signals which are of interest, and bins specify ranges of values of interest.
 
-Consider below an example where an ALU is tested to ensure that all operations have been performed with all edge-case values (0, 1, -1 etc).
-When declared without any explicitly instantiated bins, the coverpoint \texttt{OPS}, covering the signal \texttt{op}, will auto-generate one bin for each possible value that the signal may take on. The coverpoint \texttt{DIN} explicitly declares bins for the values of interest, and declares a bin \texttt{others} to collect all remaining test input which are not an edge case.
+%Consider below an example where an ALU is tested to ensure that all operations have been performed with all edge-case values (0, 1, -1 etc).
+%When declared without any explicitly instantiated bins, the coverpoint \texttt{OPS}, covering the signal \texttt{op}, will auto-generate one bin for each possible value that the signal may take on. The coverpoint \texttt{DIN} explicitly declares bins for the values of interest, and declares a bin \texttt{others} to collect all remaining test input which are not an edge case.
 
-\begin{lstlisting}[language=verilog]
-covergroup all_ops_edge_cases;
-  OPS: coverpoint op;
+%\begin{lstlisting}[language=verilog]
+%covergroup all_ops_edge_cases;
+%  OPS: coverpoint op;
+%
+%  DIN: coverpoint din {
+%    bins min_value = {32'h80000000};
+%    bins neg1 = {'1};
+%    bins zero = {0};
+%    bins one =  {1};
+%    bins max_value = {32'h7fffffff};
+%    bins others = default; // All the rest
+%    }
+%endgroup: all_ops_edge_cases
+%\end{lstlisting}
 
-  DIN: coverpoint din {
-    bins min_value = {32'h80000000};
-    bins neg1 = {'1};
-    bins zero = {0};
-    bins one =  {1};
-    bins max_value = {32'h7fffffff};
-    bins others = default; // All the rest
-    }
-endgroup: all_ops_edge_cases
-\end{lstlisting}
-
-SystemVerilog also supports cross coverage, a special kind of coverpoint which is only incremented whenever two or more coverpoints have specific values. The cross between two coverpoints automatically generates bins for all possible bin combinations. If a coverpoint with 3 bins is crossed with a coverpoint with 8 bins, the resulting cross coverage point would have 24 bins.
+SystemVerilog also supports cross coverage, a special kind of coverpoint which is only incremented whenever two or more coverpoints have specific values. The cross between two coverpoints automatically generates bins for all possible bin combinations. Thus, crossing a coverpoint with 3 bins with another coverpoint with 8 bins results in a cross coverage point with 24 bins.
 
 %Below is shown an example where we ensure that all of the ALU operands function correctly in the clock cycle where the reset signal has toggled from 1 to 0.
 
@@ -338,26 +336,29 @@ SystemVerilog also supports cross coverage, a special kind of coverpoint which i
 
 %In this example, the bin \texttt{updown} is incremented every time the reset signal toggles from 1 to 0. The current operation is sampled on every clock cycle.  By verifying that all bins have at least one hit, it can be concluded that all operations have been attempted at least once directly following a reset. 
 
-Coverage is sampled whenever the \texttt{sample} method is called on a covergroup. This may be on every clock cycle, or dependent on a chosen event such as the current state of the DUT. Below we show an example function which is called once per clock cycle, taking a container object which contains the values currently on the DUT bus as a parameter. These are copied into variables local to the coverage object, and the covergroups are sampled. Notice that these local variables are the variables used when defining the covergroups.
+Coverage is sampled whenever the \texttt{sample} method is called on a covergroup. Once the test has been run, a coverage report may be generated by the simulator. If a covergroup has 100\% coverage, all bins have seen hits.
+%This may be on every clock cycle, or dependent on a chosen event such as the current state of the DUT. Below we show an example function which is called once per clock cycle, taking a container object which contains the values currently on the DUT bus as a parameter. These are copied into variables local to the coverage object, and the covergroups are sampled. Notice that these local variables are the variables used when defining the covergroups.
 
-\begin{lstlisting}[language=verilog]
-function void coverage_sample(container c);
-	op = c.op;
-	din = c.din;
-	reset = c.reset;
-	
-	all_ops_edge_cases.sample();
-	post_rst.sample();
-endfunction;
-\end{lstlisting}
+%\begin{lstlisting}[language=verilog]
+%function void coverage_sample(container c);
+%	op = c.op;
+%	din = c.din;
+%	reset = c.reset;
+%	
+%	all_ops_edge_cases.sample();
+%	post_rst.sample();
+%endfunction;
+%\end{lstlisting}
 
-Once the test has been run, a coverage report may be generated by the simulator. If a covergroup has 100\% coverage, all relevant values have been covered. If not, this may indicate that the design is missing some functionality.
+%If not, this may indicate that the design is missing some functionality.
 
 %Now that the sufficient background was presented, we can move on to presenting the different methods that allow for statement coverage gathering on a Chisel design at three different abstraction levels.
 
 %\martin{I would change the order from high level to low level:
 %1. Chisel source, 2. FIRRTL, 3. Verilog (verilator).
 %BTW: we could in principle use vcs to do the Verilog level.} Fixed.
+
+\subsection{Coverage in Chisel} Up until recently, the main Chisel developers have mostly focused their energy on getting Chisel up to the standards imposed by mainstream HDLs like VHDL or Verilog. This means that verification features are mostly lacking from the Chisel package. Some testing frameworks like \textit{ChiselTest}~\cite{chisel:tester2} have come to be, but they still lack coverage capabilities. All of this amounts to the realisation that if one wants to gather code coverage of a current Chisel design, we need to rely on basic Scala software code coverage tools (which we explore in more detail in a later section). Therefore, we introduce code coverage solutions that are specifically tailored for Chisel.
 
 \section{Applying Existing Tools}
 

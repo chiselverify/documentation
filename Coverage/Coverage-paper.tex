@@ -217,7 +217,9 @@ Scala also allows for both functional and OOP constructs, which makes it possibl
 \label{fig:chisel}
 \end{figure*}
 
-\paragraph{Testing a Chisel Design} The most common way to test a design implemented in Chisel, is by using ChiselTest~\cite{chisel:tester2}. 
+\paragraph{Testing a Chisel Design} 
+\hjd{Maybe we should merge this with the "Coverage in Chisel" subsection.}
+The most common way to test a design implemented in Chisel, is by using ChiselTest~\cite{chisel:tester2}. 
 This is a testing framework for Chisel that gives access to a simple \texttt{peek}, \texttt{poke} and \texttt{expect} testing interface. 
 ChiselTest also helps the user create golden models, to test their design against, entirely in Scala by given them access to a simple \texttt{fork} functionality for easy concurrency.  
 
@@ -238,12 +240,12 @@ Figure~\ref{fig:chisel} shows an overview of the Chisel compilation pipeline and
 \subsection{Test Coverage}
 In software development, test coverage is used as a metric to measure the completeness of a testing suite. 
 In recent years, these techniques, originally used for software, have been brought into the hardware verification universe. 
-In this paper, we will mostly focus on two key approaches to test coverage: Statement coverage and Functional coverage. 
+In this paper, we will mostly focus on two key approaches to test coverage: statement coverage and functional coverage. 
 %Nonetheless, we briefly mention closely related and more thorough coverage metrics here.
 
-\paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific program or design, statement coverage will give us a quantitative measure of our testing progress. It measures which percentage of statements in our code have been tested. This metric can be very useful in the software world, when it comes to completeness of a testing suite, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested.
+\paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific program or design, statement coverage will give a quantitative measure of our testing progress. It measures which percentage of statements in our code have been executed during the test. This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested.
 
-Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent metrics. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit. For example, consider the code snippets below. The left snippet is written in Verilog and presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right snippet is written in VHDL and presents an implicit block starting with the \texttt{wait}-statement which may never be passed \cite{hdlverify}.
+Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent metrics. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit. For example, consider the code snippets below. The left Verilog snippet presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right VHDL snippet presents an implicit block starting with the \texttt{wait}-statement which may never be passed~\cite{hdlverify}.
 
 \noindent\begin{minipage}{0.45\linewidth}
 \begin{lstlisting}[language=verilog]{verilogBlock}
@@ -267,7 +269,7 @@ ale     <= '0';
 \end{minipage}
 
 More elaborate metrics include path and expression coverage. Figure~\ref{fig:expr} shows examples of both. Path coverage focuses on whether all possible paths through a piece of code have been executed. 
-Expression coverage takes this one step further checking whether all possible combinations of true checks are executed. The left code snippet in Figure~\ref{fig:expr} shows an example of path coverage, while the right code snippet shows expression coverage. One must note that the finer the granularity, the greater the computational requirements. For simple designs, statement coverage is generally sufficient \cite{hdlverify}.
+Expression coverage takes this one step further checking whether all possible combinations of true checks are executed. The left code snippet in Figure~\ref{fig:expr} shows an example of path coverage, while the right code snippet shows expression coverage. One must note that the finer the granularity, the greater the computational requirements. For simple designs, statement coverage is generally sufficient~\cite{hdlverify}.
 
 \begin{figure}
     \centering
@@ -276,30 +278,29 @@ Expression coverage takes this one step further checking whether all possible co
 \label{fig:expr}
 \end{figure}
 
-\paragraph{Functional Coverage} If we are looking to measure the completeness of a test suite, we need to ask the following question: \textit{``Are we even testing the right thing?"}. 
+\paragraph{Functional Coverage} If we are looking to measure the completeness of a test suite, we need to ask the following question: \textit{``are we even testing the right thing?"}. 
 In the hardware world, engineers usually implement designs based on pre-determined specifications, so when testing, we should also have a metric for how well we are implementing the specification. 
 Functional coverage is that metric. 
-The idea is to first define what is called a \textit{Verification Plan}~\cite{spear2008systemverilog}, which represents the specification we are implementing. 
-Once that is done, we sample the different points defined in the specification during the testing process, to obtain results in the form of: \textit{``test suite T covered a total of x\% of the values specified by point P in specification A"}. 
-This was first implemented in SystemVerilog, where a verification plan was defined using the following constructs:  
+The idea is to first define what is called a \textit{verification plan}~\cite{spear2008systemverilog}, which represents the specification we are implementing. 
+A good verification plan tests only the required functionality of a DUT. As such, it should apply only 
+realistic input patterns to the DUT.
+Once a plan is defined, we sample the different points defined in the specification during the testing process to obtain results in the form of: \textit{``test suite T covered a total of x\% of the values specified by point P in specification A"}. 
+
+\subsection{What to Aim For}
+The greatest pitfall is the idea of needing to hit 100\,\% coverage, regardless of the coverage type considered. Indeed, in the majority of cases, reaching 100\,\% is either unreasonable due to the computational requirements (exhaustively testing a 2-input $n$-bit adder requires $2^{n+1}$ different input patterns!) or impossible due to statements not meant to be executed (e.g., assertions or default cases in fully-specified switch statements). Hence, one should generally aim not for a specific percentage but rather fully exercising the most important code blocks of one's design.
+
+Additionally, one should keep in mind that coverage metrics solely indicate the thoroughness of the verification suite. They provide no indication of the correctness or completeness of the suite. That is, they give no information on whether the design under test (DUT) is correctly functioning, merely how much it was exercised~\cite{hdlverify}.
+
+\subsection{Coverage in SystemVerilog}
+\andrew{Should we simply dump this entire subsection? I don't think that we need to know this much about SV in order to understand our contributions.} \hjd{1) Moved and shortened this. 2) Moved some stuff from "Test coverage" to here to avoid unnecessary repetition.}
+SystemVerilog supports functional coverage and assertions, and is widely used in the scope of the Universal Verification Methodology (UVM)~\cite{uvm2015}. Using SystemVerilog, a verification plan may be defined using the following constructs:
 \begin{itemize}
 \item \texttt{Bin}: Defines a range of values that should be tested for (i.e., what values can we expect to get from a given port). Whenever the sampled value is within the range defined by a bin, the counter associated with the bin is incremented.
 \item \texttt{CoverPoint}: Defines a port that needs to be sampled in the coverage report. These are defined using a set of bins.
 \item \texttt{CoverGroup}: Defines a set of \texttt{CoverPoint}s that need to be sampled at the same time.
 \end{itemize}
-Our solution is inspired by this syntax and offers much more powerful tools for defining a precise verification plan that closely models the target specification.
 
-\subsection{What to Aim For}
-
-The greatest pitfall is the idea of needing to hit 100\,\% coverage, regardless of the coverage type considered. Indeed, in the majority of cases, reaching 100\,\% is either unreasonable due to the computational requirements (exhaustively testing a 2-input $n$-bit adder requires $2^{n+1}$ different input patterns!) or impossible due to statements not meant to be executed (e.g., assertions or default cases in fully-specified switch statements). Hence, one should generally aim not for a specific percentage but rather fully exercising the most important code blocks of one's design.
-
-Additionally, we should keep in mind that coverage metrics solely indicate the thoroughness of the verification suite. They provide no indication of the correctness or completeness of the suite. That is, they give no information on whether the design under test (DUT) is correctly functioning, merely how much it was exercised~\cite{hdlverify}.
-
-\subsection{Coverage in SystemVerilog}
-\andrew{Should we simply dump this entire subsection? I don't think that we need to know this much about SV in order to understand our contributions.} \hjd{Moved and shortened this.}
-SystemVerilog supports functional coverage and assertions, and is widely used in the scope of the Universal Verification Methodology (UVM)~\cite{uvm2015}. 
-
-As was previously discussed, when performing functional verficiation in SystemVerilog, a \texttt{CoverGroup} is used to group related signals that should be sampled at the same time, a \texttt{CoverPoint} specifies the signals which are of interest, and bins specify ranges of values of interest.
+%As was previously discussed, when performing functional verficiation in SystemVerilog, a \texttt{CoverGroup} is used to group related signals that should be sampled at the same time, a \texttt{CoverPoint} specifies the signals which are of interest, and bins specify ranges of values of interest.
 
 %Consider below an example where an ALU is tested to ensure that all operations have been performed with all edge-case values (0, 1, -1 etc).
 %When declared without any explicitly instantiated bins, the coverpoint \texttt{OPS}, covering the signal \texttt{op}, will auto-generate one bin for each possible value that the signal may take on. The coverpoint \texttt{DIN} explicitly declares bins for the values of interest, and declares a bin \texttt{others} to collect all remaining test input which are not an edge case.
@@ -357,6 +358,8 @@ Coverage is sampled whenever the \texttt{sample} method is called on a covergrou
 %\martin{I would change the order from high level to low level:
 %1. Chisel source, 2. FIRRTL, 3. Verilog (verilator).
 %BTW: we could in principle use vcs to do the Verilog level.} Fixed.
+
+Our solution is inspired by the SystemVerilog syntax and offers much more powerful tools for defining a precise verification plan that closely models the target specification.
 
 \subsection{Coverage in Chisel} Up until recently, the main Chisel developers have mostly focused their energy on getting Chisel up to the standards imposed by mainstream HDLs like VHDL or Verilog. This means that verification features are mostly lacking from the Chisel package. Some testing frameworks like \textit{ChiselTest}~\cite{chisel:tester2} have come to be, but they still lack coverage capabilities. All of this amounts to the realisation that if one wants to gather code coverage of a current Chisel design, we need to rely on basic Scala software code coverage tools (which we explore in more detail in a later section). Therefore, we introduce code coverage solutions that are specifically tailored for Chisel.
 

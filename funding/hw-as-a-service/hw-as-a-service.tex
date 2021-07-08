@@ -78,15 +78,14 @@
 \begin{document}
 % Empirically this seems to match MS Word's idea of 1.5 line spacing.
 % DO NOT CHANGE
-\setlength{\baselineskip}{1.44\baselineskip}
+%\setlength{\baselineskip}{1.44\baselineskip}
 
 % ----------------------------------------------------------------------
 % Enter the title of the project and your name
 
 \begin{center}
-  {\LARGE\bf DIREC Project Description }\\[1ex]
-  %https://dtudk.zoom.us/j/61032875012
   {\LARGE\bf Hardware as a Service (HaaS)}\\[1ex]
+  {\large DIREC Bridge Project}\\[1ex]
   {\large Martin Schoeberl, DTU Compute}\\[1ex]
  \end{center}
 
@@ -113,10 +112,9 @@
 %
 %Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The main issue is the usage of old tools compared to tools for programming those devices. This project aims to apply tools and methods from software development to hardware development to increase productivity. Danish firms will benefit from the results of this project.
 \begin{abstract}
-  Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems.\todo{such as...?} However, designing and verifying such digital systems becomes an ever-growing challenge. The project addresses: (1) how to simplify software developers' access to hardware accelerators in the cloud %how to make hardware accelerators in the cloud accessible for software developers,\todo{\#1 grammar issue; maybe rephrase?}% 
-(2) how hardware verification can learn from software testing, and (3) co-verification of software and hardware with modern tooling.
-
-  This project requests funding for two PhD students at DTU and ITU.
+  Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems.
+ However, designing and verifying such digital systems becomes an ever-growing challenge. The project addresses: (1) how hardware verification can learn from software testing, (2) co-verification of software and hardware with modern tooling, and (3) how to simplify software developers' access to hardware accelerators in the cloud,
+%This project requests funding for two PhD students at DTU and ITU.
 \end{abstract}
 
 \section{Introduction and Objectives}
@@ -735,11 +733,6 @@ and tools for systems engineering of computing systems, embedded systems-on-a-ch
 Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
 synthetic biology (molecular computing). 
 
-\todo{Can we have a student researcher in the budget? Question to Ellen/Jan.}
-{\bf Kasper Hesse (KH)} is student at DTU with a strong background in digital design.
-He has already some knowledge in UVM and can therefore help the project to be productive
-from day one.
-
 {\bf Zhoulai Fu (ZF)} is an assistant professor at ITU. His research
 spans programming language theory and software engineering
 techniques. Related to this project, he worked on developing automated
@@ -765,7 +758,6 @@ with interest in digital design and programming languages.
 %%
 %The needed software (e.g., VHDL simulation, FPGA compilation) is freely available.
 
-\todo{Co-verification}
 
 %\vspace{-2mm}
 \begin{table*}% [h!]
@@ -775,13 +767,10 @@ with interest in digital design and programming languages.
       \toprule
       Task                   & PM  & Person    & Description                                                                                   \\
       \midrule
-      Recruiting             & 1   & MS and PS & Recruiting of the two PhDs.                                                                    \\
-      \midrule
-      UVM                    & 3   & KH        & Develop a UVM verification example on a complex multicore device.          \\
       Prepare1                & 3   & PhD1      & Exploring related work and learning Chisel, SystemVerilog, and UVM.                           \\
       Cover                  & 6   & PhD1      & Adding constraint random testing and coverage to ChiselTest.                     \\
       Generate               & 6   & PhD1      & Developing a hardware generator methodology by using functional programming in Scala.         \\
-      Framework              & 9   & PhD1      & Development of an object-oriented and functional testing framework.                      \\
+      Framework              & 9   & PhD1      & Development of an object-oriented and functional testing framework, including co-verification                     \\
       \midrule
       Prepare2                    & 3   & PhD2      & Explore related work on property-based testing and ScalaCheck.                   \\
       Spec          & 6   & PhD2      & Collaborate with hardware developers to manually inject both valid and faulty specifications. \\
@@ -791,10 +780,8 @@ with interest in digital design and programming languages.
   additional, meaningful  specification in code (\`a la FindBugs or ScalaFix).                                                                 \\
 %      Implement              & 6   & PhD2      & Implement a user-friendly tool for automating the testing process.                            \\
       \midrule
-      Explore                & 2x4 & PhD1/2    & Detect and report bugs with the implemented tool and incorporate their feedback into a detailed
-      empirical bug study.                                                                                                                      \\
-      Eval                   & 2x4 & PhD1/2    & Evaluation of the results collected with the industry use cases.                                                     \\
-      Thesis                 & 4   & PhD1/2    & Thesis writing und submission.                                                                \\
+      Eval                   & 2x6 & PhD1/2    & Evaluation of the results collected with the industry use cases.                                                     \\
+      Thesis                 & 6   & PhD1/2    & Thesis writing und submission.                                                                \\
       \midrule
       TeachSW                 &  2  & JM            & Make Chisel and its design methods accessible for software designers. \\
       Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
@@ -837,73 +824,63 @@ For each task, the time is given in person-months (PM). The Gantt chart shows
 the project schedule.
 For an assessment of the project's success, we plan the following milestones:
 
-\textbf{M1} (Month 6): The PhD students are selected and employed.
+\textbf{M1} (Month 9): Tools have been learned, and first artifacts have been developed.
 
-\textbf{M2} (Month 15): Tools have been learned, and first artifacts have been developed.
-
-\textbf{M3} (Month 30): All development has been finished, and the different components
+\textbf{M2} (Month 24): All development has been finished, and the different components
 can be used for exploration and evaluation of the results with the industrial use cases.
 
-\textbf{M4} (Month 48): The project has finished, and two PhD theses have been handed in.
+\textbf{M3} (Month 36): The project has finished, and two PhD theses have been handed in.
 
 %\vspace{-5mm}
 \begin{figure*}
 \centering
 \begin{ganttchart}[vgrid,hgrid,bar/.style={fill=gray},
-x unit=3mm, % horizontal squeezing
+x unit=4mm, % horizontal squeezing
 %y unit chart=5mm, % vertical squeezing
 y unit title=8mm,y unit chart=4.5mm, milestone top shift=.15, milestone height=.2mm, % very tight format
 title label font=\footnotesize,
 bar label font=\footnotesize,
 milestone label font=\footnotesize,
-]{1}{48}
+]{1}{36}
 % labels
 %\gantttitle{\textbf{\normalsize{RTAI Gantt chart}}}{42} \\
-\gantttitlelist{1,...,48}{1} \\
+\gantttitlelist{1,...,36}{1} \\
 % tasks, groups and milestones
-\ganttbar[name=r1]{Recruiting}{1}{6} \\
-\ganttmilestone[name=m1]{Milestone 1}{6} \\
-\ganttbar[name=t1]{UVM}{1}{9} \\
-\ganttbar[name=t2]{Prepare1}{7}{9} \\
-\ganttbar[name=t3]{Cover}{10}{15} \\
-\ganttmilestone[name=m2]{Milestone 2}{15} \\
-\ganttbar[name=t4]{Generate}{16}{21} \\
-\ganttbar[name=t41]{Framework}{22}{30} \\
-\ganttbar[name=t5]{Perpare2}{7}{9} \\
-\ganttbar[name=t6]{Spec}{10}{15} \\
-\ganttbar[name=t7]{Testing}{16}{21} \\
-\ganttbar[name=t8]{Bugbase}{22}{24} \\
-\ganttbar[name=t9]{Implement}{25}{30} \\
-\ganttmilestone[name=m3]{Milestone 3}{30} \\
-\ganttbar[name=t10]{Explore}{31}{34} \\
-\ganttbar[name=t11]{Eval}{35}{39} \\
-\ganttbar[name=t12]{Thesis}{40}{48} \\
-\ganttbar[name=t13]{TeachSW}{40}{46} \\
-\ganttbar[name=t14]{Chapter}{40}{46} \\
-\ganttmilestone[name=m4]{Milestone 4}{48}
+\ganttbar[name=t2]{Prepare1}{1}{3} \\
+\ganttbar[name=t3]{Cover}{4}{9} \\
+\ganttmilestone[name=m2]{Milestone 1}{9} \\
+\ganttbar[name=t4]{Generate}{10}{15} \\
+\ganttbar[name=t41]{Framework}{16}{24} \\
+\ganttbar[name=t5]{Perpare2}{1}{3} \\
+\ganttbar[name=t6]{Spec}{4}{9} \\
+\ganttbar[name=t7]{Testing}{10}{15} \\
+\ganttbar[name=t8]{Bugbase}{16}{18} \\
+\ganttbar[name=t9]{Implement}{19}{24} \\
+\ganttmilestone[name=m3]{Milestone 2}{24} \\
+\ganttbar[name=t11]{Eval}{25}{30} \\
+\ganttbar[name=t12]{Thesis}{31}{36} \\
+\ganttbar[name=t13]{TeachSW}{33}{36} \\
+\ganttbar[name=t14]{Chapter}{33}{36} \\
+\ganttmilestone[name=m4]{Milestone 3}{36}
 
 % relations
-\ganttlink{r1}{m1}
-\ganttlink{m1}{t2}
-\ganttlink{t1}{m2}
 \ganttlink{t2}{t3}
 \ganttlink{t3}{m2}
 \ganttlink{m2}{t4}
 \ganttlink{t4}{t41}
 \ganttlink{t41}{m3}
 
-\ganttlink{m1}{t5}
 \ganttlink{t5}{t6}
 \ganttlink{t6}{m2}
 \ganttlink{m2}{t7}
 \ganttlink{t7}{t8}
 \ganttlink{t8}{t9}
 \ganttlink{t9}{m3}
-\ganttlink{m3}{t10}
-\ganttlink{t10}{t11}
-\ganttlink{t11}{m4}
+\ganttlink{m3}{t11}
+\ganttlink{t11}{t12}
 \ganttlink{t12}{m4}
 \ganttlink{t13}{m4}
+\ganttlink{t14}{m4}
 
 \end{ganttchart}
 

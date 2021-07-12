@@ -1,16 +1,4 @@
-% DFF template for Latex and A4 paper.
-% 12pt Times New Roman on 1.5 line spacing and 2 cm margins.
 
-% ----------------------------------------------------------------------
-
-% Either format with
-%    pdflatex projectdescription.tex
-% Or if you use dvips and ps2pdf, remember to specify A4 paper:
-%    latex  projectdescription
-%    dvips  -ta4 projectdescription -o projectdescription.ps
-%    ps2pdf -sPAPERSIZE=a4 projectdescription.ps
-
-% ----------------------------------------------------------------------
 
 \documentclass[fleqn,12pt]{article}
 \usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
@@ -76,12 +64,6 @@
 
 
 \begin{document}
-% Empirically this seems to match MS Word's idea of 1.5 line spacing.
-% DO NOT CHANGE
-%\setlength{\baselineskip}{1.44\baselineskip}
-
-% ----------------------------------------------------------------------
-% Enter the title of the project and your name
 
 \begin{center}
   {\LARGE\bf Hardware as a Service (HaaS)}\\[1ex]
@@ -89,17 +71,6 @@
   {\large Martin Schoeberl, DTU Compute}\\[1ex]
  \end{center}
 
-% ----------------------------------------------------------------------
-% Delete the instruction
-
-%\noindent
-%The length of the project description must not exceed the number of pages indicated for the specific instrument in the Call, excl. a brief list of references, whether it includes figures/tables or not. \emph{You must use Times New Roman; 12 point font size; 1.5 line spacing; and with a right, left, top and bottom margin of at least 2 cm. The requirements for font size also apply to any footnotes, tables and figure texts.}  This template is formatted accordingly. In the "Confirmation" \ section of the application form, you must confirm that your project description observes the permitted maximum length, before you can submit your application. The Council will disregard any portions of the project description that exceed the permitted maximum length. 
-%
-%Please note that the summary of the project should only be included in the application form (under the section "Title and scientific content"). The summary should therefore not be included in the project description.
-% Delete the instruction
-
-% ----------------------------------------------------------------------
-% Begin writing your project description
 
 %\section{Abstract for the application -- do not include in this document}
 %
@@ -112,8 +83,8 @@
 %
 %Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The main issue is the usage of old tools compared to tools for programming those devices. This project aims to apply tools and methods from software development to hardware development to increase productivity. Danish firms will benefit from the results of this project.
 \begin{abstract}
-  Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems.
- However, designing and verifying such digital systems becomes an ever-growing challenge. The project addresses: (1) how hardware verification can learn from software testing, (2) co-verification of software and hardware with modern tooling, and (3) how to simplify software developers' access to hardware accelerators in the cloud.
+Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems.
+However, designing and verifying such digital systems becomes an ever-growing challenge. The project addresses: (1) how hardware verification can learn from software testing, (2) co-verification of software and hardware with modern tooling, and (3) how to simplify software developers' access to hardware accelerators in the cloud.
 %This project requests funding for two PhD students at DTU and ITU.
 \end{abstract}
 
@@ -127,17 +98,66 @@
 
 \noindent ITU: Zhoulai Fu and Mahsa Varshosaz
 
-The topic is relevant to several companies in Denmark. Following companies provided a commitment: Napatech (Jesper Birch), GN Hearing (Mark Brooks), Comcores (Thomas Noergaard, Joergen Carstensen), Teledyne Reson (Morten Rytter, Simon Andersen), WSAudiology (Ketil Julsgaard), Microchip (Thomas Aakjer), and SyoSil (Jacob Sander Andersen).
+\paragraph*{Human Resources}
+
+For the HaaS project, we request funding of two PhD students.
+Each of the senior researchers will contribute to the HaaS research project.
+Furthermore, several students will contribute to the project with
+master projects.
+%
+%We intend to build a group with one PhD student, one postdoc, and
+%two senior researchers at DTU.
+%
+%Quoted from the Diversity and Gender statement at DTU:
+%``Diversity, equal treatment, and equality are integral to DTU, being an international
+%university in scope and standard, and are fundamental principles underlying DTU's
+%expectations of respect and equality''.
+%As the already named researchers are all male, we will actively search
+%for female researchers for the PhD positions.
+%However, the PhD position will be announced openly and men and women
+%will have equal opportunities for applying.
 
 
-Following companies may be considered as additional partners: Synopsis (Martine Chegaray), and Demant (Anders Hebsgaard).
-\todo{Missing replies.}
+{\bf Martin Schoeberl (MS)} is associate professor at DTU Compute and is the PI.
+%His research interest is in computer architecture for real-time systems.
+During his stay
+at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
+Martin has {\bf written the Chisel textbook}~\cite{chisel:book}, which has been translated
+into Chinese, Japanese, and Vietnamise. Martin is a {\bf member of the Technical Advisory Committee for
+Chisel} and therefore keeps the work of HaaS in sync with the Chisel main development.
+Martin is part of the regular Chisel developer meeting with
+UC Berkeley researchers and developers from SiFive, a startup in silicon valley.
+
+
+{\bf Jan Madsen (JM)} is professor and deputy director of DTU Compute.
+His research spans methods
+and tools for systems engineering of computing systems, embedded systems-on-a-chip,
+Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
+synthetic biology (molecular computing). 
+
+{\bf Zhoulai Fu (ZF)} is an assistant professor at ITU. His research
+spans programming language theory and software engineering
+techniques. Related to this project, he worked on developing automated
+testing techniques in achieving high code coverage in scientific
+programs and detecting bugs in robotic software.
+
+{\bf Peter Sestoft (PS)} is professor and head of department at the IT University of Copenhagen.
+His research focus is programming languages, and especially functional, parallel, domain-specific
+and declarative languages, their description, formal modeling, analysis, transformation, and implementation.
+Most of his books have appeared with leading international academic publishers.
+
+{\bf PhD1/2} we are looking for two PhD candidates with a background in computer engineering
+with interest in digital design and programming languages.
+
+The topic is relevant to several companies in Denmark. Following companies provided a commitment: Napatech (Jesper Birch), Comcores (Thomas Noergaard, Joergen Carstensen), Teledyne Reson (Morten Rytter, Simon Andersen), WSAudiology (Ketil Julsgaard), Microchip (Thomas Aakjer), and SyoSil (Jacob Sander Andersen).
+
+
+We are in contact with following additional companies that may join the project later:
+Intel (Dines Justesen), Synopsis (Martine Chegaray), GN Hearing (Mark Brooks), and Demant (Anders Hebsgaard).
 
 Napatech's primary interest is to improve design and  verification throughput using methods developed in the HaaS project.
 Napatech will enable student Master projects during the project.
 Napatech will provide use cases that can be transferred to the project by students reimplementing use cases from Napatech in the HaaS environment.
-
-GN Hearing...
 
 
 
@@ -155,8 +175,17 @@ provides a hardware use case to sort Ethernet packets according to their deadlin
 for a time-sensitive network switch.
 
 % Synopsys provides tool support for the project.
-%Napatech will follow the project and offer challenges to the project.
-%Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
+
+Syosil will provide consulting and training in connection with any questions related
+to functional verification and UVM.
+
+\subsection*{Waiting for}
+
+Ketil talk tomorrow.
+
+\subsection*{Sent out reminders:}
+
+Jacob (Syosil), Morten (Teledyn), Thomas (Microchip)
 
 
 \subsubsection*{Workstreams: WS 6 and WS 7}
@@ -164,14 +193,42 @@ for a time-sensitive network switch.
 
 \section*{Contact Details}
 
-\section*{Unmet Needs}
+Martin Schoeberl
 
-\todo{Mix and merge text from the first phase document.}
+\noindent Associate Professor
+
+\bigskip
+
+\noindent DTU Compute
+
+\noindent Department of Applied Mathematics and Computer Science
+
+\noindent Technical University of Denmark
+
+\noindent Richard Petersens Plads
+
+\noindent Building 322, room 128
+
+\noindent 2800 Lyngby
+
+\noindent Denmark
+
+\bigskip
+
+
+\noindent Phone: +45 50621247
+
+\noindent Email: masca@dtu.dk
+
+
+\newpage
+\section*{Unmet Needs}
 
 We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
 Performance increase with general-purpose processors has come to a halt.
 The only way to achieve higher performance or lower energy consumption
-is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
+is by building {\bf domain-specific hardware accelerators}~\cite{domain-hw-acc:2020},
+e.g., for machine learning, networking, or cryptography.
 These accelerators can be built in chips or in FPGAs in the cloud.
 The production of a chip is costly. Therefore, it is essential to get
 the design right at the first tape-out. Thorough testing and verification of the design is mandatory.
@@ -179,25 +236,38 @@ the design right at the first tape-out. Thorough testing and verification of the
 To efficiently develop and verify those accelerators, we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
 We believe that {\bf we need to adapt to agile hardware development}~\cite{henn-patt:turing:2019}.
 
+The mixture of tight time-to-market constraints and an increasing design complexity associated with the design and development of hybrid systems consisting of both digital hardware and software of today, implies that an efficient verification and qualification methodology is ever more important. 
+A flexible verification methodology which combines different verification and qualification methods in the most optimal way, to keep the verification and qualification cycle as short as possible while maximizing the number of issues found are key to a successful project delivery.
+
+Verification and qualification methodologies used today, most often rely on automated regression runs and focuses highly on randomized stimuli generation. Long running regressions benefit from being executed at system level using hardware emulated systems in the lab (e.g., using FPGAs and software running on actual processors). While this approach brings the benefit of execution speed allowing a broader verification coverage, the cost of this is limited visibility during debugging of failing regressions. Verification at register-transfer-level (RTL level) on the other-hand provides high visibility into the digital system but suffers from the challenge of very low cycle speed.
+
+Consequently, it is desirable to catch as many issues as possible during RTL development as they are hard to debug in the lab, however, the simulation speed often becomes a challenge which does not allow for verification of complete initialization sequences which may include booting of operating systems etc. hence forcing one to verify larger parts of the system at system level in the lab with reduced visibility into the system as a cost.
+
+%Until a few years, the two main design languages Verilog and VHDL dominated the
+Up until recently, the two main design languages, i.e., Verilog and VHDL, dominated the
+design and testing of digital circuits.
+%However, both languages are decades behind
+%modern languages for software development.
+However, compared to software development and testing, digital design and testing methods
+and tools are decades behind tools and technologies in software development.
+Within this project, we plan to
+{\bf leverage software development and testing methods for digital design.}
+This shall also enable that software developers can program the FPGAs in the cloud.
+This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
+and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
+the design and test of digital systems. 
+%\note{If this project plans on continuing work on chiselverify, maybe try avoiding linking it to UVM too much. How about something like "This project explores the hardware construction language Chisel~\cite{chisel:dac2012} in order to create a complete design and testing ecosystem for digital systems entirely in Scala." }
+
 Furthermore, as accelerators become part of the cloud service, i.e., FPGAs in the cloud,
 software developers will increasingly need to adapt critical algorithms to FPGAs to enhance performance.
 Hence, it is imperative to make accelerator design accessible for software developers.
 By adapting hardware accelerator design to the methods and tools of contemporary software design,
 it is possible to bridge both domains catering for a more uniform hardware/software development process.
 
-%Until a few years, the two main design languages Verilog and VHDL dominated the
-Up until recently, the two main design languages, i.e. Verilog and VHDL, dominated the
-design and testing of digital circuits.
-%However, both languages are decades behind
-%modern languages for software development.
-However, compared to software development and testing, digital design and testing methods
-and tools lack several decades of development. \note{How does one measure "decades" of development? Maybe use an other term.}
-Within this project, we plan to
-{\bf leverage software development and testing methods for digital design.}
-This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
-and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
-the design and test of digital systems. 
-\note{If this project plans on continuing work on chiselverify, maybe try avoiding linking it to UVM too much. How about something like "This project explores the hardware construction language Chisel~\cite{chisel:dac2012} in order to create a complete design and testing ecosystem for digital systems entirely in Scala." }
+
+\newpage
+\section*{Research Problems and Aims}
+
 
 This project aims to develop a method and concrete tools for agile hardware development.
 We will use tools, languages, development, and testing methods from the last decades in
@@ -212,6 +282,9 @@ We will build a combination of open-source tools for verifying
 circuits described in mixed languages (VHDL, SystemVerilog, and Chisel).
 It builds on top of the Chisel hardware construction language and uses Scala to drive the verification. 
 %We will explore the testing strategy used in UVM in the context of verifying hardware described in Chisel.
+We have in an earlier, small project explored initial steps towards
+the project aim \cite{verify:chisel:2020}.
+
 
 %This project proposes a research project that aims at building a testing framework
 %in Scala that takes the best methods from UVM and from decades of experience
@@ -234,13 +307,8 @@ It builds on top of the Chisel hardware construction language and uses Scala to 
 %\item There are not enough HW designers and verification engineers available, so they shall be more productive
 %\end{itemize}
 
-\section*{Research Problems and Aims}
-
-\section{Research Plan}
 
 
-%%%ZF
-%\subsection{WP1}
 As prerequisites, all researchers involved in this project will need to learn
 languages and tools involved in the project and related work.
 They will learn about the Scala programming language and ScalaCheck
@@ -333,19 +401,14 @@ We will add a method to specify \textit{functional coverage points}, also known 
 \paragraph{Verification Framework.}
 
 We will develop an object-oriented and functional framework for verification in Scala.
-This framework is inspired by UVM, but will leverage Scala's conciseness with the
+This framework will leverage Scala's conciseness with the
 combination of object-oriented programming with functional programming.
-\note{Again, if this relates to chiselverify, then I don't think that it should be linked to UVM.}
-%An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
-%showed the that a test written with UVM was about 800 lines of code, where a Scala based
-%test was around 80 lines of code~\cite{verify:chisel:2020}.
-%However, UVM supports more functionality that a plain ChiselTest in Scala.
-%
 Within our verification framework, we will support mixed language verification.
 Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
 we will use ChiselTest as a driver for the open-source Verilog simulator Verlator.
 With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
 we will translate VHDL into Verilog.
+The framework will also support co-verification of hardware and software
 
 %A verification method is only usable when it can handle mixed-source designs.
 %This means a Scala driven method must be able to test components written in Verilog,
@@ -396,10 +459,6 @@ we will translate VHDL into Verilog.
 %% computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
 
 
-\todo{Co-verification}
-
-\todo{Maybe also talk on mixed language co-verification, e.g., Python with cocotb}
-
 \paragraph{Learning Specification from Historical Bug Patterns.}
 We will consider generating specifications from previously known bug
 patterns.  We will collaborate with our hardware engineers to explore
@@ -432,48 +491,23 @@ the expected functional behavior of the hardware.
 %% Software)~\cite{web:oss-fuzz} for example.
 
 
-\paragraph*{Dissemination and Publication}
-
-Scientific results will be published and presented at international
-conferences (e.g., DATE, DAC, CAV, FPL, ISCAS, FPGA) and in relevant scientific journals
-and two PhD theses.
-%We expect that most tasks will result in at least one publication.
-%One PhD theses will publish the results from the project.
-We aim to publish in open access, to a large extent, in the gold open access model.
-However, publishers such as ACM also allow publishing in green open access
-at no additional cost, where a pre-print version of a paper can be uploaded,
-for example, to ArXiv.
-
-The results from the project will be available as open-source under the
-industry-friendly BSD license.
-%Open-source research projects attract
-%other researchers, developers, and industrial partners
-%to use and build on the results of the project.
-A project web site will host the project documentation, the published papers, and the design's source code.
-We will provide unrestricted and cost-free digital access to all research and development results.
-%
-We will use the developed method and tools to train a new generation of HW/SW engineers
-at DTU and ITU.
-In the middle of the project, we will have a coordination workshop with the project partners.
-In the end, we will organize a design and verification workshop, including a hands-on tutorial,
-open to all interested companies, and students from DTU and ITU.
 
 
 \section*{State-of-the-Art}
 
-\todo{Some more is needed here. Stuff that we could also need for our paper.}
-
-\todo{Ref our initial ``towards'' paper.}
-
-\url{https://capra.cs.cornell.edu/latte21/paper/24.pdf}
-
-\url{https://capra.cs.cornell.edu/latte21/}
-
-HAL: \url{https://hal.inria.fr/hal-01675204/document} and \url{https://www.hyconsys.com/members/mkhaled/supervised_2019_Hiltl.pdf}
-
-\url{https://arxiv.org/abs/2004.03494}
-
-\url{https://grosser.science/}
+%\todo{Some more is needed here. Stuff that we could also need for our paper.}
+%
+%\todo{Ref our initial ``towards'' paper.}
+%
+%\url{https://capra.cs.cornell.edu/latte21/paper/24.pdf}
+%
+%\url{https://capra.cs.cornell.edu/latte21/}
+%
+%HAL: \url{https://hal.inria.fr/hal-01675204/document} and \url{https://www.hyconsys.com/members/mkhaled/supervised_2019_Hiltl.pdf}
+%
+%\url{https://arxiv.org/abs/2004.03494}
+%
+%\url{https://grosser.science/}
 
 %\begin{itemize}
 %\item Verification (check what is current praxis)
@@ -483,18 +517,24 @@ HAL: \url{https://hal.inria.fr/hal-01675204/document} and \url{https://www.hycon
 %\item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
 %\end{itemize}
 
-\paragraph{Digital Design.}
 VHDL and Verilog are the classic hardware description languages, first appeared in the 1980s.
 SystemVerilog~\cite{SystemVerilog}, as an extension to Verilog, adds features from VHDL
 for the hardware description and object-oriented features for verification.
 Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have
 brought object-oriented programming into the digital design and verification process.
+On open source collection of SystemVerilog classes build the Universal Verification Method,
+which is becoming popular in industry.
+The Universal Verification Methodology (UVM) was created as a standardized
+way of writing test benches on top of SystemVerilog.
+UVM is an open-source collection of SystemVerilog classes.
+It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}.
 
-Chisel is a ``Hardware Construction Language'' embedded in Scala, to describe digital circuits~\cite{chisel:dac2012}.
-Scala/Chisel brings object-oriented and functional programming into the world of digital design.
-For hardware generation and testing, the entirety of Scala, as well as its libraries, including Java libraries, are available.%the full Scala language and Scala and Java libraries are available.
-As Scala and Java's full power is available to the verification engineer,
-the verification process is also made more efficient.
+
+%Chisel is a ``Hardware Construction Language'' embedded in Scala, to describe digital circuits~\cite{chisel:dac2012}.
+%Scala/Chisel brings object-oriented and functional programming into the world of digital design.
+%For hardware generation and testing, the entirety of Scala, as well as its libraries, including Java libraries, are available.%the full Scala language and Scala and Java libraries are available.
+%As Scala and Java's full power is available to the verification engineer,
+%the verification process is also made more efficient.
 
 
 %Chisel is a hardware construction language embedded in Scala.
@@ -511,17 +551,15 @@ the verification process is also made more efficient.
 
 
 
-%On open source collection of SystemVerilog classes build the Universal Verification Method,
-%which is becoming popular in industry.
-SystemVerilog has become a complex language with more than 250 keywords, and it is unclear
-which tools support which language constructs for hardware description.
-In contrast with Chisel, when the program compiles, it is synthesizable hardware.
-Chisel is a small language, where the cheat sheet fits on two pages.
-The power of Chisel comes from the embedding in Scala.
-Furthermore, as classic hardware description languages are niche products, not
-many tools or libraries are available. 
-With Chisel on Scala we have the choice of different integrated development environments (IDE),
-testing infrastructure (e.g., ScalaTest), and many free libraries.
+%SystemVerilog has become a complex language with more than 250 keywords, and it is unclear
+%which tools support which language constructs for hardware description.
+%In contrast with Chisel, when the program compiles, it is synthesizable hardware.
+%Chisel is a small language, where the cheat sheet fits on two pages.
+%The power of Chisel comes from the embedding in Scala.
+%Furthermore, as classic hardware description languages are niche products, not
+%many tools or libraries are available. 
+%With Chisel on Scala we have the choice of different integrated development environments (IDE),
+%testing infrastructure (e.g., ScalaTest), and many free libraries.
 
 
 
@@ -535,11 +573,6 @@ testing infrastructure (e.g., ScalaTest), and many free libraries.
 
 
 
-
-
-
-%%%ZF
-\paragraph{Testing Methods.}
 Testing is crucial for making software and hardware reliable. The higher
 expectation of software quality and shrinking development cycles have
 driven programming language researchers and software engineers to
@@ -550,13 +583,13 @@ implements an agile method that automatically runs manually written tests on eac
 %and programming languages address the following two challenges to
 %achieve full test automation.
 
-SystemVerilog adds object-oriented concepts for the non-synthesizable verification code.
-The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
-C functions inside a SystemVerilog (UVM) testbench.
-This enables co-simulation, comparing a ``golden model'' written in C to the
-testbench verifying the device under test (DUT).
-With ChiselTest we can co-simulate with Java and Scala models and use the Java Native Interface
-to co-simulate with models in C.
+%SystemVerilog adds object-oriented concepts for the non-synthesizable verification code.
+%The SystemVerilog direct programming interface~\cite{Doulos:SV:dpi} allows the programmer to call
+%C functions inside a SystemVerilog (UVM) testbench.
+%This enables co-simulation, comparing a ``golden model'' written in C to the
+%testbench verifying the device under test (DUT).
+%With ChiselTest we can co-simulate with Java and Scala models and use the Java Native Interface
+%to co-simulate with models in C.
 %
 %The Java JNI (Java Native Interface) allows for a similar functionality in Java programs,
 %allowing them to call C functions and use their functionality.
@@ -570,19 +603,19 @@ ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chis
 ChiselTest emphasizes usability and simplicity while providing ways to scale up complexity.
 Fundamentally, ChiselTest is a Scala library that provides access into the simulator through
 operations like poke (write value into circuit), peek (read value from circuit, into the test framework), and step (advance time).
-As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
-This structure uses the latest programming language developments that have been implemented into Scala
-and provides a clean and concise interface, unlike approaches that attempt to reinvent the wheel like UVM. 
-\note{Maybe shouldn't be as harsh on UVM. Try something like "unlike approaches that create complex reusable structures like UVM." }
+We will extend ChiselTest for our verification framwork.
 
-Furthermore, ChiselTest tries to enable testing best practices from software engineering.
-Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
-A clear and clean test code also enables the test-as-documentation pattern,
-demonstrating a module's behavior from a temporal perspective.
-\note{What does the test-as-documentation pattern refer to?}
+%As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
+%This structure uses the latest programming language developments that have been implemented into Scala
+%and provides a clean and concise interface, unlike approaches that attempt to reinvent the wheel like UVM. 
+%
+%Furthermore, ChiselTest tries to enable testing best practices from software engineering.
+%Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
+%A clear and clean test code also enables the test-as-documentation pattern,
+%demonstrating a module's behavior from a temporal perspective.
+%\note{What does the test-as-documentation pattern refer to?}
 
-\paragraph{Determining Specification.}
-The first challenge is how to determine the expected code outcome, also
+One challenge is how to determine the expected code outcome, also
 known as the \emph{specification}.  Software developers often document
 specifications within the software itself.  \emph{Property-based testing}
 provides a convenient way of formulating the specification as constraints
@@ -621,8 +654,7 @@ Operating System~\cite{nielsenFSW2020dependencybugs}.
 %% such as use-after-free, array-index-out-of-bound, or race
 %% conditions.
 
-\paragraph{Generating Test Inputs.}
-The second challenge is how to generate interesting test inputs.  The
+Another challenge is how to generate interesting test inputs.  The
 state-of-the-practice uses \emph{fuzzing}, which has emerged as one of
 the most effective testing techniques for discovering reliability
 issues in software~\cite{takanen2018fuzzing}.  Google's OSS-Fuzz
@@ -633,66 +665,91 @@ e.g., crashes or code
 coverage~\cite{DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
 Property-based testing~\cite{DBLP:conf/icfp/ClaessenH00}, which is
 initially designed for testing functional programming languages, uses
-random data generation, a form of plain fuzzing. For example, by
-invoking {\tt propSquare.check} with ScalaCheck (mentioned above), where {\tt
-  propSquare} is the constraint $n^2>0$ for all integers $n$, we can
-immediately get an input $n$ that falsifies the constraint:
+random data generation, a form of plain fuzzing.
 
-\begin{lstlisting}[numbers=none]
-scala> propSquare.check
-       ! Falsified after 1 passed tests.
-      > ARG_0: 0
-      > ARG_0_ORIGINAL: 1083860448
-\end{lstlisting}
- ScalaCheck first finds that n = 1083860448 produces an overflow
- wrapped to a negative (thus $n^2>0$ fails). The input is then
- ``shrunk'', in the terminology of property-based testing, to a smaller
- one, namely 0 in this case.
+%For example, by
+%invoking {\tt propSquare.check} with ScalaCheck (mentioned above), where {\tt
+%  propSquare} is the constraint $n^2>0$ for all integers $n$, we can
+%immediately get an input $n$ that falsifies the constraint:
+%
+%\begin{lstlisting}[numbers=none]
+%scala> propSquare.check
+%       ! Falsified after 1 passed tests.
+%      > ARG_0: 0
+%      > ARG_0_ORIGINAL: 1083860448
+%\end{lstlisting}
+% ScalaCheck first finds that n = 1083860448 produces an overflow
+% wrapped to a negative (thus $n^2>0$ fails). The input is then
+% ``shrunk'', in the terminology of property-based testing, to a smaller
+% one, namely 0 in this case.
 
 
 \section*{Value Creation}
 
 
-\todo{This is a weak section. Maybe we shall integrate the industry cooperation here.}
-
-Digital technologies are currently the main driver for growth in
-Denmark. Furthermore, the Covid-19 induced working from home, which gives a
-further boost to digitalization right now.  With the
-cooperation between researchers as DTU and ITU and Danish companies, this project
-will allow Denmark to take the lead in digital research and
-development.
-
-Our value creation will targets the three following aspects.
 
 
-\paragraph{Methodological Values. }
+
+
+
+
+
+Digital technologies are currently the main driver for growth in Denmark.
+Furthermore, the Covid-19 induced working from home, gives a further boost to digitalization right now.
+This project with the cooperation between researchers as DTU and ITU and
+Danish companies will allow Denmark to take the lead in digital research and development.
+
+
 DTU and ITU will advance the research in the design and testing of
-digital systems.  Our proposed approach provides a general software
+digital systems. Our proposed approach provides a general software
 engineering procedure that we plan to validate in the Robot Operating
 System (closely related to co-PI's previous H2020 project on robotics) before
 applying to real-world hardware systems.
-
-
-\paragraph{Industrial Values.}
-The industrial project partners will learn and get exposed to modern tools and methods to facilitate the designing and testing of digital systems dramatically. Our partner companies will benefit from our advanced software tool that generates test stimuli achieving high coverage of the hardware in simulation. \todo{Can we be more concrete here?}
-
-\paragraph{Educational Values.}
-Two PhD students and additional master students will become highly educated engineers in need in the Danish or international digital systems design industry. Those students will also learn how to program the accelerators in the cloud for future applications. This research will drive the adaption of the education curriculum towards modern tools and agile methods.
-
-
-\section*{Work plan: tasks, milestones \& deliverables}
+This research will drive the adaption of the education curriculum towards modern tools and agile methods.
+We will 
 
 
 
-The Embedded Systems Engineering section at DTU Compute provides
-the intellectual environment and the infrastructure (e.g., regression test server...) that we need for an ambitious research project.
-Furthermore, DTU Compute provides the infrastructure (e.g., an automatic test
-environment for regressions tests, web server).
-\todo{Add ITU}
+The industrial project partners will learn and get exposed to modern tools and methods to increase the efficiency of designing and testing digital systems. Our partner companies will benefit from our advanced software tool that generates test stimuli achieving high coverage of the hardware in simulation.
 
-%\paragraph*{Internationalization}
+
+Two PhD students, and additional master students, will become highly educated engineers in need in the Danish or international digital systems design industry. Those students will also learn how to program the accelerators in the cloud for future applications. This research will drive the adaption of the education curriculum towards modern tools and agile methods.
+
+
+The results from the project will be available as open-source under the
+industry-friendly BSD license.
+%Open-source research projects attract
+%other researchers, developers, and industrial partners
+%to use and build on the results of the project.
+A project web site will host the project documentation, the published papers, and the design's source code.
+We will provide unrestricted and cost-free digital access to all research and development results.
 %
-%\todo{Still waiting from SiFive for an ok for a stay.}
+We will use the developed method and tools to train a new generation of HW/SW engineers
+at DTU and ITU.
+In the middle of the project, we will have a coordination workshop with the project partners.
+In the end, we will organize a design and verification workshop, including a hands-on tutorial,
+open to all interested companies, and students from DTU and ITU.
+
+
+
+\section*{Work Plan: Tasks, Milestones and Deliverables}
+
+
+
+%The Embedded Systems Engineering section at DTU Compute provides
+%the intellectual environment and the infrastructure (e.g., regression test server...) that we need for an ambitious research project.
+%Furthermore, DTU Compute provides the infrastructure (e.g., an automatic test
+%environment for regressions tests, web server).
+%\todo{Add ITU}
+
+
+\todo{The goal of the work plan is to be able to see:}
+
+
+
+\todo{Key results: What will be the key results for the partners in the project to deem the project a success? What will be the goals for the researchers and for external partners and what is the plan for achieving these goals?}
+
+
 
 
 
@@ -703,7 +760,7 @@ test benches written in VHDL and Verilog to a verification method based on const
 test generation with tools such as UVM. Therefore, the HaaS project is just-in-time to support this
 transition.
 
-
+\paragraph{Hiring Plan} We expect to hire two PhD student with the start of the project.
 
 \paragraph*{Use Cases}
 
@@ -714,54 +771,25 @@ From WSA we will use a decimation filter written in VHDL.
 From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
 to explore concurrent, transaction based verification.
 
-\paragraph*{Human Resources}
-
-For the HaaS project, we request funding of two PhD students and a student researcher.
-Each of the senior researchers will contribute to the HaaS research project.
-%
-%We intend to build a group with one PhD student, one postdoc, and
-%two senior researchers at DTU.
-%
-%Quoted from the Diversity and Gender statement at DTU:
-%``Diversity, equal treatment, and equality are integral to DTU, being an international
-%university in scope and standard, and are fundamental principles underlying DTU's
-%expectations of respect and equality''.
-As the already named researchers are all male, we will actively search
-for female researchers for the PhD positions.
-%However, the PhD position will be announced openly and men and women
-%will have equal opportunities for applying.
+\paragraph*{TRL} Within Haas we will test things out by developing prototypes, as much as possible
+in open-source, and host them on GiHub. We aim for a research experimental  implementation 
+of the testing framework that we will validate in the lab with the uses cases from our
+industrial partners. Therefore, we aim for TRL 4.
 
 
-{\bf Martin Schoeberl (MS)} is associate professor at DTU Compute and is the PI.
-%His research interest is in computer architecture for real-time systems.
-During his stay
-at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
-Martin has {\bf written the Chisel textbook}~\cite{chisel:book}, which has been translated
-into Chinese, Japanese, and Vietnamise. Martin is a {\bf member of the Technical Advisory Committee for
-Chisel} and therefore keeps the work of HaaS in sync with the Chisel main development.
-Martin is part of the regular Chisel developer meeting and a meeting on verification with
-UC Berkeley researchers and developers from SiFive, a startup in silicon valley.
+\paragraph*{Dissemination and Publication}
+
+Scientific results will be published and presented at international
+conferences (e.g., DATE, DAC, CAV, FPL, ISCAS, FPGA) and in relevant scientific journals
+and two PhD theses.
+%We expect that most tasks will result in at least one publication.
+%One PhD theses will publish the results from the project.
+We aim to publish in open access, to a large extent, in the gold open access model.
+However, publishers such as ACM also allow publishing in green open access
+at no additional cost, where a pre-print version of a paper can be uploaded,
+for example, to ArXiv.
 
 
-{\bf Jan Madsen (JM)} is professor and deputy director of DTU Compute.
-His research spans methods
-and tools for systems engineering of computing systems, embedded systems-on-a-chip,
-Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
-synthetic biology (molecular computing). 
-
-{\bf Zhoulai Fu (ZF)} is an assistant professor at ITU. His research
-spans programming language theory and software engineering
-techniques. Related to this project, he worked on developing automated
-testing techniques in achieving high code coverage in scientific
-programs and detecting bugs in robotic software.
-
-{\bf Peter Sestoft (PS)} is professor and head of department at the IT University of Copenhagen.
-His research focus is programming languages, and especially functional, parallel, domain-specific
-and declarative languages, their description, formal modeling, analysis, transformation, and implementation.
-Most of his books have appeared with leading international academic publishers.
-
-{\bf PhD1/2} we are looking for two PhD candidates with a background in computer engineering
-with interest in digital design and programming languages.
 
 %\subsection*{Experimental Facilities}
 %
@@ -796,11 +824,11 @@ with interest in digital design and programming languages.
   additional, meaningful  specification in code (\`a la FindBugs or ScalaFix).                                                                 \\
 %      Implement              & 6   & PhD2      & Implement a user-friendly tool for automating the testing process.                            \\
       \midrule
-      Eval                   & 2x6 & PhD1/2    & Evaluation of the results collected with the industry use cases.                                                     \\
+      Eval                   & 2x6 & PhD1/2    & Evaluation of the results with the industry use cases.                                                     \\
       Thesis                 & 6   & PhD1/2    & Thesis writing und submission.                                                                \\
       \midrule
       TeachSW                 &  2  & JM            & Make Chisel and its design methods accessible for software designers. \\
-      Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
+      TeachVerify                & 4   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book} and develop a new course on verification of digital systems.                       \\
       \bottomrule
     \end{tabular}
   \end{center}
@@ -830,22 +858,30 @@ with interest in digital design and programming languages.
 %be collected to measure comprehensiveness of our tests.
 
 
-The project is divided into several tasks.
-%A researcher will be
-%assigned to each task as its main developer.
-%A cooperative
-%working style will be encouraged so, that the experience and
-%knowledge of the different team members will optimally be utilized.
+The project is divided into several tasks, as shown in  Table~\ref{tab:packages}.
+A researcher will be assigned to each task as its main developer.
+A cooperative
+working style will be encouraged so, that the experience and
+knowledge of the different team members will optimally be utilized.
 For each task, the time is given in person-months (PM). The Gantt chart shows
 the project schedule.
-For an assessment of the project's success, we plan the following milestones:
+
+
+For an assessment of the project's success, we plan the following milestones and deliverables:
 
 \textbf{M1} (Month 9): Tools have been learned, and first artifacts have been developed.
+
+\textbf{D1} (Month 9): Constraint random testing and valid and faulty specifications.
+
 
 \textbf{M2} (Month 24): All development has been finished, and the different components
 can be used for exploration and evaluation of the results with the industrial use cases.
 
+\textbf{D2} (Month 24): Tools: testing framework and a program transformer.
+
 \textbf{M3} (Month 36): The project has finished, and two PhD theses have been handed in.
+
+\textbf{D3} (Month 36): two PhD theses.
 
 %\vspace{-5mm}
 \begin{figure*}
@@ -875,8 +911,8 @@ milestone label font=\footnotesize,
 \ganttmilestone[name=m3]{Milestone 2}{24} \\
 \ganttbar[name=t11]{Eval}{25}{30} \\
 \ganttbar[name=t12]{Thesis}{31}{36} \\
-\ganttbar[name=t13]{TeachSW}{33}{36} \\
-\ganttbar[name=t14]{Chapter}{33}{36} \\
+\ganttbar[name=t13]{TeachSW}{31}{34} \\
+\ganttbar[name=t14]{TeachVerify}{29}{36} \\
 \ganttmilestone[name=m4]{Milestone 3}{36}
 
 % relations
@@ -904,15 +940,12 @@ milestone label font=\footnotesize,
 \end{figure*}
 
 
-
-
-
-\newpage
-\newpage
 \small
 \bibliographystyle{abbrv}
 %\bibliography{myown,jsp,noc,misc,msbib}
 \bibliography{../../msbib,testing,../../chisel-uvm}
+
+\end{document}
 
 \newpage
 

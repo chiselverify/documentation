@@ -422,26 +422,25 @@ The basic verification plan semantics are as follows:
     \item \texttt{TimedCross} is defined using two ports, a set of cross bins and a delay.
     \item \texttt{CoverCondition} is defined using an arbitrary number of ports and a predicate.
 \end{itemize}
-Using each of these elements together allows the user to define accurate representations of their specifications in the form of a verification plan.
+These elements are only explicitly used in our internal representation, but represent all of the different behaviors one can model with our framework. 
+Declaring these elements is done using a single \texttt{cover} function for all of the \texttt{Cover} constructs along with \texttt{bin} and \texttt{cross} functions allowing for the definition of \texttt{Bins} and \texttt{CrossBins} respectively.
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter
 cr.register(
-    CoverPoint("accu", dut.io.accu)(
-        Bins("lo10", 0 until 10),
-        Bins("First100odd", 0 until 100,  Condition("onlyOdd", 
-            { case Seq(x) => x % 2 != 0 })
-        )
+    cover("accu", dut.io.accu)(
+        bin("lo10", 0 until 10),
+        bin("First100odd", 0 until 100,  (x: Seq[BigInt]) => x % 2 != 0)
     ),
-    CoverCondition("aAndB",dut.io.outA, dut.io.outB)(
-        Condition("asuptobAtLeast100", 
-            { case Seq(a, b) => a > b }, 100
-        ),
+    cover("aAndB",dut.io.outA, dut.io.outB)(
+        bin("asuptobAtLeast100", 
+        condition = (x: Seq[BigInt]) => x.head > x(1) , 
+        expectedHits = 100),
     ),
-    CrossPoint("accuAndTest", dut.io.accu, dut.io.test)(
-        CrossBin("both1", 1 to 1, 1 to 1)
+    cover("accuAndTest", dut.io.accu, dut.io.test)(
+        cross("both1", Seq(1 to 1, 1 to 1))
     ),
-    TimedCross("timedAB", dut.io.outA, dut.io.count)(Exactly(3))(
-        CrossBin("ExactlyBoth3", 3 to 3, 3 to 3)
+    cover("timedAB", dut.io.outA, dut.io.count)(Exactly(3))(
+        cross("ExactlyBoth3", Seq(3 to 3, 3 to 3))
     ) 
 )
 \end{lstlisting}
@@ -487,9 +486,9 @@ The \texttt{ChiselTest} framework was used for testing (using a peek/poke/expect
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter(c)
 cr.register(
-    CoverPoint("operation", c.io.cmd.op)(
-        Bins("insertion", 0 to 0),
-        Bins("removal", 1 to 1)
+    cover("operation", c.io.cmd.op)(
+        bin("insertion", 0 to 0),
+        bin("removal", 1 to 1)
     )//More CoverPoints
 )
 \end{lstlisting}
@@ -519,7 +518,7 @@ The Scala functional coverage solution presents itself as a natural addition to 
 
 \section{Conclusion}
 \hjd{This conclusion is a bit fluffy.}
-We propose multiple solutions for the gathering of coverage data in high-level Chisel designs. Previously, one needed to rely on other languages such as SystemVerilog in order to obtain coverage information during the verification of a Chisel design. This meant that testing either needed to be done in another language or we needed to turn to multi-language testing which was very often cumbersome and time-consuming. With our solutions we are bringing the world one step closer to making Chisel a fully capable design and verification language.
+We propose multiple solutions for the gathering of coverage data in high-level Chisel designs. These remove the need to rely on other languages such as SystemVerilog in order to obtain coverage information during the verification of a Chisel design. We also explored ways to integrate existing coverage tools into the Chisel ecosystem, thus allowing statement coverage to be gathered at multiple levels of abstraction. With our solutions we are bringing the world one step closer to making Chisel a fully capable design and verification language.
 We presented several methods of collecting coverage measurements staying within Scala/Chisel.
 %We now no longer need to rely on other languages in order to gather statement and functional coverage of our Chisel designs. An interesting discussion to be had is around the abstraction-level that should be used to gather coverage. One could justify that high-level coverage information lacks usefulness when using hardware generators since we would rather have information on the execution of the generated hardware rather than the generator itself, but of course this discussion is left up for the reader to have. 
 

@@ -425,7 +425,7 @@ The basic verification plan semantics are as follows:
 These elements are only explicitly used in our internal representation, but represent all of the different behaviors one can model with our framework. 
 Declaring these elements is done using a single \texttt{cover} function for all of the \texttt{Cover} constructs along with \texttt{bin} and \texttt{cross} functions allowing for the definition of \texttt{Bins} and \texttt{CrossBins} respectively.
 \begin{lstlisting}[language=scala]
-val cr = new CoverageReporter
+val cr = new CoverageReporter(dut)
 cr.register(
     cover("accu", dut.io.accu)(
         bin("lo10", 0 until 10),

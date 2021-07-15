@@ -528,6 +528,13 @@ We believe that our method can be used to introduce coverage-based verification 
 Our results show that, on top of improving efficiency by making coverage tools accessible in a single-language model, we also introduce new methods, such as timed and conditional coverage, which improve the accuracy of a verification plan.
 %We now no longer need to rely on other languages in order to gather statement and functional coverage of our Chisel designs. An interesting discussion to be had is around the abstraction-level that should be used to gather coverage. One could justify that high-level coverage information lacks usefulness when using hardware generators since we would rather have information on the execution of the generated hardware rather than the generator itself, but of course this discussion is left up for the reader to have. 
 
+\hjd{Just an attempt at cutting things down even more.}
+In this paper, we have described the lack of coverage-oriented verification tools 
+for Chisel designs and shown that existing Scala tools do not provide satisfactory results. To 
+address this, we have implemented extensions to the Treadle simulator and the ChiselTest framework 
+to enable statement and functional coverage measurements. Finally, we have shown that implemented 
+framework enables less verbose and more advanced verification suites than possible in SystemVerilog.
+
 \section*{Acknowledgements}
 We would like to thank the researchers at Berkeley who are constantly working on making Chisel a more ubiquitous hardware construction language and for the feedback related to the work done on adding coverage to Treadle.
 

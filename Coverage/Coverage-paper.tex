@@ -479,61 +479,61 @@ Another option would be, for example if we want to do automated constraint modif
 
 \section{Evaluation}
 
-\martin{Could be more}
+\martin{Could be more} \hjd{Let's switch to the Leros AluAccu that Kasper has written a UVM test for.}
 
-As a way of evaluating our coverage solution in Scala, a use-case provided by Microchip was developed and verified using the functional coverage constructs presented in the previous section. It also gave the opportunity to assess how well a complete design process conducted only in Scala/Chisel works with the added features. The use-case is a heap-based priority queue which is meant to be used for scheduling purposes in real-time systems. Values referring to a specific clock cycle number in a specific super cycle can be inserted as well as removed. The priority queue sorts all enqueued values such that the value referring to the next clock cycle number that will be encountered is presented to the host system. 
+%As a way of evaluating our coverage solution in Scala, a use-case provided by Microchip was developed and verified using the functional coverage constructs presented in the previous section. It also gave the opportunity to assess how well a complete design process conducted only in Scala/Chisel works with the added features. The use-case is a heap-based priority queue which is meant to be used for scheduling purposes in real-time systems. Values referring to a specific clock cycle number in a specific super cycle can be inserted as well as removed. The priority queue sorts all enqueued values such that the value referring to the next clock cycle number that will be encountered is presented to the host system. 
 
-The \texttt{ChiselTest} framework was used for testing (using a peek/poke/expect interface) and our functional coverage solution was used to verify the use-case. Defining the verification plan in Scala was done using the following structure:  
-\begin{lstlisting}[language=scala]
-val cr = new CoverageReporter(c)
-cr.register(
-    cover("operation", c.io.cmd.op)(
-        bin("insertion", 0 to 0),
-        bin("removal", 1 to 1)
-    )//More CoverPoints
-)
-\end{lstlisting}
-In total we defined 5 \texttt{CoverPoints} each having up to 3 bins and 2 \texttt{CrossPoints} each having up to 5 cross bins. This was done in roughly 20 lines of Scala, meaning that once the verification plan was defined, we can simply sample it directly inside of our \texttt{ChiselTest} code without ever having to leave the Chisel/Scala world.
+%The \texttt{ChiselTest} framework was used for testing (using a peek/poke/expect interface) and our functional coverage solution was used to verify the use-case. Defining the verification plan in Scala was done using the following structure:  
+%\begin{lstlisting}[language=scala]
+%val cr = new CoverageReporter(c)
+%cr.register(
+%    cover("operation", c.io.cmd.op)(
+%        bin("insertion", 0 to 0),
+%        bin("removal", 1 to 1)
+%    )//More CoverPoints
+%)
+%\end{lstlisting}
+%In total we defined 5 \texttt{CoverPoints} each having up to 3 bins and 2 \texttt{CrossPoints} each having up to 5 cross bins. This was done in roughly 20 lines of Scala, meaning that once the verification plan was defined, we can simply sample it directly inside of our \texttt{ChiselTest} code without ever having to leave the Chisel/Scala world.
 
-Another solution would have been to gather the functional coverage in SystemVerilog rather than in Scala. This however means that Chisel testing frameworks, such as \texttt{ChiselTest} could not have been used, since all of the testing would have to be done in SystemVerilog. For the sake of the argument, let's suppose that only the functional coverage gathering needed to be done in SystemVerilog, then the following would have had to be done in order to obtain the same result as our Scala-based solution:  
-\begin{itemize}
-    \item Create a UVM-subscriber based coverage class.
-    \item Instantiate the current DUT (\texttt{priorityQueue pQ  = new;})
-    \item Declare the verification plan: 
-    \begin{lstlisting}[language=verilog]
-covergroup unnamed;
-	OPERATION: coverpoint pQ.cmd.op {
-		bins insertion = {0};
-		bins removal = {1};
-		//More bins
-	}
-	//More coverpoints
-endgroup: unnamed;
-    \end{lstlisting}
-    \item Define \texttt{build\_phase} and \texttt{write} functions.
-    \item Define the coverage class constructor.
-\end{itemize}  
-All of this sums up to roughly 100 lines of code for the same result. So not only does our solution allow us to perform the entirety of our design and verification within the same ecosystem (moving to SystemVerilog would first require to generate Verilog from the Chisel design and then to simulate it using a SystemVerilog capable simulator like Verilator), but it also reduces the 5 step functional coverage process to a single step (defining the verification plan). It thus requires much less boilerplate code and reduces the total source code by a factor of 5.  
+%Another solution would have been to gather the functional coverage in SystemVerilog rather than in Scala. This however means that Chisel testing frameworks, such as \texttt{ChiselTest} could not have been used, since all of the testing would have to be done in SystemVerilog. For the sake of the argument, let's suppose that only the functional coverage gathering needed to be done in SystemVerilog, then the following would have had to be done in order to obtain the same result as our Scala-based solution:  
+%\begin{itemize}
+%    \item Create a UVM-subscriber based coverage class.
+%    \item Instantiate the current DUT (\texttt{priorityQueue pQ  = new;})
+%    \item Declare the verification plan: 
+%    \begin{lstlisting}[language=verilog]
+%covergroup unnamed;
+%	OPERATION: coverpoint pQ.cmd.op {
+%		bins insertion = {0};
+%		bins removal = {1};
+%		//More bins
+%	}
+%	//More coverpoints
+%endgroup: unnamed;
+%    \end{lstlisting}
+%    \item Define \texttt{build\_phase} and \texttt{write} functions.
+%    \item Define the coverage class constructor.
+%\end{itemize}  
+%All of this sums up to roughly 100 lines of code for the same result. So not only does our solution allow us to perform the entirety of our design and verification within the same ecosystem (moving to SystemVerilog would first require to generate Verilog from the Chisel design and then to simulate it using a SystemVerilog capable simulator like Verilator), but it also reduces the 5 step functional coverage process to a single step (defining the verification plan). It thus requires much less boilerplate code and reduces the total source code by a factor of 5.  
 
-The Scala functional coverage solution presents itself as a natural addition to the \texttt{ChiselTest} framework. One of the main advantages here is that the same language can be used for design and verification, thus increasing the time effectiveness and removing a possible source of errors. Overall, the use-case makes a strong point for hardware development in Scala/Chisel and all the possibilities that come with it. The coverage features, for both functional and statement coverage, help pave the way to a fully capable verification suite accompanying the Chisel language.
+%The Scala functional coverage solution presents itself as a natural addition to the \texttt{ChiselTest} framework. One of the main advantages here is that the same language can be used for design and verification, thus increasing the time effectiveness and removing a possible source of errors. Overall, the use-case makes a strong point for hardware development in Scala/Chisel and all the possibilities that come with it. The coverage features, for both functional and statement coverage, help pave the way to a fully capable verification suite accompanying the Chisel language.
 
 \section{Conclusion}
-\hjd{This conclusion is a bit fluffy.}\andrew{How about now?}
-We propose multiple solutions for the gathering of coverage data in high-level Chisel designs. 
-These remove the need to rely on other languages such as SystemVerilog in order to obtain coverage information during the verification of a Chisel design. 
-We also explored ways to integrate existing coverage tools into the Chisel ecosystem, thus allowing statement coverage to be gathered at multiple levels of abstraction. 
-With our solutions we are bringing the world one step closer to making Chisel a fully capable design and verification language.
-As a measurement of the efficiency of our solutions, we compare its verbosity against a similar test-bench, for the same design, written in SystemVerilog.
-We believe that our method can be used to introduce coverage-based verification into the Scala-Chisel ecosystem all while improving the overall efficiency of the verification cycle for a Chisel design. 
-Our results show that, on top of improving efficiency by making coverage tools accessible in a single-language model, we also introduce new methods, such as timed and conditional coverage, which improve the accuracy of a verification plan.
+%\hjd{This conclusion is a bit fluffy.}\andrew{How about now?}
+%We propose multiple solutions for the gathering of coverage data in high-level Chisel designs. 
+%These remove the need to rely on other languages such as SystemVerilog in order to obtain coverage information during the verification of a Chisel design. 
+%We also explored ways to integrate existing coverage tools into the Chisel ecosystem, thus allowing statement coverage to be gathered at multiple levels of abstraction. 
+%With our solutions we are bringing the world one step closer to making Chisel a fully capable design and verification language.
+%As a measurement of the efficiency of our solutions, we compare its verbosity against a similar test-bench, for the same design, written in SystemVerilog.
+%We believe that our method can be used to introduce coverage-based verification into the Scala-Chisel ecosystem all while improving the overall efficiency of the verification cycle for a Chisel design. 
+%Our results show that, on top of improving efficiency by making coverage tools accessible in a single-language model, we also introduce new methods, such as timed and conditional coverage, which improve the accuracy of a verification plan.
 %We now no longer need to rely on other languages in order to gather statement and functional coverage of our Chisel designs. An interesting discussion to be had is around the abstraction-level that should be used to gather coverage. One could justify that high-level coverage information lacks usefulness when using hardware generators since we would rather have information on the execution of the generated hardware rather than the generator itself, but of course this discussion is left up for the reader to have. 
 
-\hjd{Just an attempt at cutting things down even more.}
-In this paper, we have described the lack of coverage-oriented verification tools 
-for Chisel designs and shown that existing Scala tools do not provide satisfactory results. To 
-address this, we have implemented extensions to the Treadle simulator and the ChiselTest framework 
-to enable statement and functional coverage measurements. Finally, we have shown that implemented 
-framework enables less verbose and more advanced verification suites than possible in SystemVerilog.
+%\hjd{Just an attempt at cutting things down even more.}
+In this paper, we described the lack of coverage-oriented verification tools 
+for Chisel designs and showed that existing Scala tools do not provide satisfactory results. To 
+address this, we implemented extensions to the Treadle simulator and the ChiselTest framework 
+to enable statement and functional coverage measurements. Finally, we showed that the implemented 
+framework enables less verbose and more advanced verification suites than possible in existing tools.
 
 \section*{Acknowledgements}
 We would like to thank the researchers at Berkeley who are constantly working on making Chisel a more ubiquitous hardware construction language and for the feedback related to the work done on adding coverage to Treadle.

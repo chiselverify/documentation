@@ -479,10 +479,10 @@ Another option would be, for example if we want to do automated constraint modif
 
 \section{Evaluation}
 
-\martin{Could be more} \hjd{Let's switch to the Leros AluAccu that Kasper has written a UVM test for.}
-To evaluate our new Coverage tools, we will verify an accumulator ALU for the Leros ISA~\cite{leros:comp:2019} using at first our Scala coverage tools, then compare it to the same done using SystemVerilog with UVM.  
-The ALU is a simple accumulator, that supports operations such as \texttt{add}, \texttt{sub}, \texttt{and}, \texttt{or}, \texttt{xor}, \texttt{load} and \texttt{shiftRight}.   
-In order to test this entirely, we would need to try all operations, defined by the \texttt{op} input, and all corner cases for the input values, using the \texttt{din} input.  
+%\martin{Could be more} \hjd{Let's switch to the Leros AluAccu that Kasper has written a UVM test for.}
+To evaluate our new coverage tools, we will verify an ALU accumulator module which is found at the center of processors implementing the Leros ISA~\cite{leros:comp:2019}. We first use our Scala coverage tools and then compare to the same done using SystemVerilog with UVM.%To evaluate our new Coverage tools, we will verify an accumulator ALU for the Leros ISA~\cite{leros:comp:2019} using at first our Scala coverage tools, then compare it to the same done using SystemVerilog with UVM.  
+The ALU accumulator supports operations such as \texttt{add}, \texttt{load}, \texttt{shiftRight} and bitwise operations.%The ALU is a simple accumulator, that supports operations such as \texttt{add}, \texttt{sub}, \texttt{and}, \texttt{or}, \texttt{xor}, \texttt{load} and \texttt{shiftRight}.   
+In order to test this entirely, we need to try all operations on the \texttt{op} input and all input value corner cases on the \texttt{din} input.%In order to test this entirely, we would need to try all operations, defined by the \texttt{op} input, and all corner cases for the input values, using the \texttt{din} input.  
 A good verification plan would thus capture what we just described.  
 %cr.register(
 %	cover("reset", dut.io.reset, dut.io.op) (Exactly(1)) (
@@ -490,13 +490,15 @@ A good verification plan would thus capture what we just described.
 \begin{lstlisting}[language=scala] 
 val cr = new CoverageReporter(dut)  
 cr.register(
-	cover("ops", dut.io.op)(DefaultBin(dut.io.op)),
-	cover("data inputs", dut.io.din)(
-		bin("minValue", Integer.MIN_VALUE),
-		bin("neg1", -1),
-		bin("zero", 0),
-		bin("one", 1),
-		bin("maxValue", Integer.MAX_VALUE)))
+  cover("ops", dut.io.op)(DefaultBin(dut.io.op)),
+  cover("data inputs", dut.io.din)(
+    bin("minValue", Integer.MIN_VALUE),
+    bin("neg1", -1),
+    bin("zero", 0),
+    bin("one", 1),
+    bin("maxValue", Integer.MAX_VALUE)
+  )
+)
 \end{lstlisting}
 In the above code snippet, we registered a \texttt{CoverGroup} that ensures that the edge cases of all operations are tested.
 Here, the \texttt{defaultRange} and \texttt{DefaultBin} functions are used to cover all possible values for the \texttt{dut.io.op} port.
@@ -505,7 +507,7 @@ All that is left now is to call \texttt{cr.sample()} once per cycle in our \text
 In order to do the same with UVM, we need to:  
 \begin{itemize}
     \item Create a UVM-subscriber based coverage class.
-    \item Instantiate the current DUT (\texttt{LerosAlu lalu  = new;})
+    \item Instantiate the current DUT (\texttt{LerosAlu lalu = new;})
     \item Declare the verification plan: 
     %covergroup cg_post_rst;
 %	UPDOWN: coverpoint cmd.reset {

@@ -480,6 +480,65 @@ Another option would be, for example if we want to do automated constraint modif
 \section{Evaluation}
 
 \martin{Could be more} \hjd{Let's switch to the Leros AluAccu that Kasper has written a UVM test for.}
+To evaluate our new Coverage tools, we will verify an accumulator ALU for the Leros ISA~\cite{leros:comp:2019} using at first our Scala coverage tools, then compare it to the same done using SystemVerilog with UVM.  
+The ALU is a simple accumulator, that supports operations such as \texttt{add}, \texttt{sub}, \texttt{and}, \texttt{or}, \texttt{xor}, \texttt{load} and \texttt{shiftRight}.   
+In order to test this entirely, we would need to try all operations, defined by the \texttt{op} input, and all corner cases for the input values, using the \texttt{din} input.  
+A good verification plan would thus capture what we just described.  
+
+\begin{lstlisting}[language=scala] 
+val cr = new CoverageReporter(dut)  
+cr.register(
+	cover("reset", dut.io.reset, dut.io.op) (Exactly(1)) (
+		cross("zeroToOne", 0 to 1, defaultRange(dut.io.op))))
+cr.register(
+	cover("ops", dut.io.op)(DefaultBin(dut.io.op)),
+	cover("data inputs", dut.io.din)(
+		bin("minValue", Integer.MIN_VALUE),
+		bin("neg1", -1),
+		bin("zero", 0),
+		bin("one", 1),
+		bin("maxValue", Integer.MAX_VALUE)))
+\end{lstlisting}
+In the above code snippet, we registered two \texttt{CoverGroups}, one that ensures that all of the possible operations were tested after a reset and another that ensures that the edge cases of all operations were tested.
+Here, the \texttt{defaultRange} and \texttt{DefaultBin} functions are used to cover all possible values for the \texttt{dut.io.op} port.
+All that is left now is to call \texttt{cr.sample()} once per cycle in our \texttt{ChiselTest}.
+
+In order to do the same with UVM, we need to:  
+\begin{itemize}
+    \item Create a UVM-subscriber based coverage class.
+    \item Instantiate the current DUT (\texttt{LerosAlu lalu  = new;})
+    \item Declare the verification plan: 
+    \begin{lstlisting}[language=verilog]
+covergroup cg_post_rst;
+	UPDOWN: coverpoint cmd.reset {
+		bins updown = (1 => 0);
+	}
+	OPS: coverpoint cmd.op;
+		cross UPDOWN, OPS;
+endgroup: cg_post_rst
+
+covergroup cg_all_zeros_ones;
+	OPS: coverpoint cmd.op;
+	DIN: coverpoint cmd.din {
+		bins min_value = {32'h80000000};
+		bins neg1 = {'1};
+		bins zero = {0};
+		bins one =  {1};
+		bins max_value = {32'h7fffffff};
+		bins others = default; //All the rest
+	}
+endgroup: cg_all_zeros_ones
+    \end{lstlisting}
+    \item Define \texttt{build\_phase} and \texttt{write} functions.
+    \item Define the coverage class constructor.
+\end{itemize}  
+This UVM subscriber must then be used inside of a whole UVM testbench, which itself contains many other classes and constructs.
+Using our Scala-based coverage solution, we have minimized the amount of work needed to gather functional coverage. 
+All that needs to be done is to define the verification plan and sampling it.
+In total our Scala functional coverage took 12 lines to define.
+Its UVM counterpart took 84 lines, only including the \texttt{uvm\_subscriber} class.
+The functional coverage results were the same for both of the verification plans, the Scala one verified the Chisel design and UVM verified the generated Verilog.
+This shows that our coverage solution is on-par with existing coverage solutions, even being more concise and introducing new functionalities like purely conditional coverage, which is only possible using Scala's functional nature.
 
 %As a way of evaluating our coverage solution in Scala, a use-case provided by Microchip was developed and verified using the functional coverage constructs presented in the previous section. It also gave the opportunity to assess how well a complete design process conducted only in Scala/Chisel works with the added features. The use-case is a heap-based priority queue which is meant to be used for scheduling purposes in real-time systems. Values referring to a specific clock cycle number in a specific super cycle can be inserted as well as removed. The priority queue sorts all enqueued values such that the value referring to the next clock cycle number that will be encountered is presented to the host system. 
 

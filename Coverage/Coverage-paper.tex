@@ -370,87 +370,87 @@ With our modification Treadle thus allows us to obtain Statement coverage at the
 
 \section{Functional Coverage in Chisel}
 
-Functional coverage is one of the principal tools used during the verification process. It allows one to measure \textit{``which part of the specification has been implemented correctly"}. A discussion on hardware verification would thus not be complete without constructs allowing one to define a verification plan and retrieve a functional coverage report. 
+Functional coverage is one of the principal tools used during the verification process. It allows one to measure \textit{``which parts of the specification have been implemented correctly"}. A discussion on hardware verification would thus not be complete without constructs allowing one to define a verification plan and retrieve a functional coverage report. 
 
-Functional coverage is based on three base elements: \texttt{Bins}, \texttt{CoverPoints} and \texttt{CoverGroups}. Using these, one can define what is known as a verification plan, which tells the coverage reporter which ports need to be sampled and taken into account in the coverage report.
+Functional coverage is measured relative to cover groups consisting of one or more cover points with one or more bins. Using these, one can define a verification plan, which tells a coverage reporter which ports need to be sampled and taken into account in the coverage report.
 In order to implement said elements in Scala, we needed to be able to do the following:
 \begin{itemize}
 \item Define a verification plan (using constructs similar to \texttt{coverpoint} and \texttt{bins}).
 \item Sample DUT ports (for example by hooking into the \textit{ChiselTest} framework).
 \item Keep track of the number of hits that a bin has obtained (using a sort of a database).
-\item Compile all of the results into a comprehensible coverage report.
+\item Compile the results into a comprehensible report.%Compile all of the results into a comprehensible coverage report.
 \end{itemize}
 
-We implemented this on top of the existing \texttt{ChiselTest}~\cite{chisel:tester2} framework. We start with a top-level construct, called \texttt{CoverageReporter}, which allows one to define a verification plan using the \texttt{register} method, which itself stores \texttt{coverpoint} to \texttt{bin} mappings inside of a \texttt{CoverageDB}. Once the verification plan is defined, we can sample the DUT ports using the \texttt{sample} method, which hooks into \texttt{ChiselTest} in order to use its peeking capabilities. At the end of the test suite, a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
-Our solution also enables the use of special \texttt{Cover} constructs that allow the user to define relations between ports.
+We implemented this on top of the existing \texttt{ChiselTest}~\cite{chisel:tester2} framework with a top-level \texttt{CoverageReporter} class whose \texttt{register} method is used to define verification plans. Internally, the coverage reporter stores cover point to bin mappings inside a \texttt{CoverageDB}. Once defined, the \texttt{sample} method (based on \texttt{ChiselTest}'s \texttt{peek} method) is used to update bins. After a test, a coverage report can be generated using the \texttt{printReport} method. Our solution extends upon existing tools with special coverage constructs that allow the user to define relations between ports. %We implemented this on top of the existing \texttt{ChiselTest}~\cite{chisel:tester2} framework. We start with a top-level construct, called \texttt{CoverageReporter}, which allows one to define a verification plan using the \texttt{register} method, which itself stores \texttt{coverpoint} to \texttt{bin} mappings inside of a \texttt{CoverageDB}. Once the verification plan is defined, we can sample the DUT ports using the \texttt{sample} method, which hooks into \texttt{ChiselTest} in order to use its peeking capabilities. At the end of the test suite, a functional coverage report can be generated using the \texttt{printReport} method, which shows us how many of the possible values, defined by our bin ranges, were obtained during the simulation.
+%Our solution also enables the use of special \texttt{Cover} constructs that allow the user to define relations between ports.
 
 \subsection{Cross Coverage}
-Basic coverage relations between different ports can be defined using a \texttt{CrossPoint}. 
+Basic coverage relations between multiple ports can be defined using a \texttt{CrossPoint}. 
 This allows one to associate a set of ports to a set of ranges of equal size.  
-A hit is then considered if each of the ports was sampled with a value that is contained in its associated range.  
-Using this construct, the user has a way to gather information about the interactions between multiple ports.  
-  
+A sample of the ports is considered a hit if all of the port values are contained in their associated ranges. %A hit is then considered if each of the ports was sampled with a value that is contained in its associated range.  
+%Using this construct, the user has a way to gather information about the interactions between multiple ports.  
+
 \subsection{Timed Coverage}
-\texttt{TimedCross} constructs offer the possibility to gather delayed coverage relationships between two ports. The idea is similar to how a \texttt{CrossPoint} works, but rather than sampling both points in the same clock cycle, we look at the relation between one point at the starting clock cycle and another point sampled a given number of clock cycles later. This is defined by the \texttt{delay} and there are three different ways to specify it:  
+Delayed coverage relations between two ports can be defined using a \texttt{TimedCross}. This construct differs from the basic \texttt{CrossPoint} in that the two ports are not sampled in the same cycle. Instead, one is sampled at a start clock cycle and the other a number of cycles later. The user specifies the expected delay and the delay type to use. For this, we provide the following three delay types:%\texttt{TimedCross} constructs offer the possibility to gather delayed coverage relationships between two ports. The idea is similar to how a \texttt{CrossPoint} works, but rather than sampling both points in the same clock cycle, we look at the relation between one point at the starting clock cycle and another point sampled a given number of clock cycles later. This is defined by the \texttt{delay} and there are three different ways to specify it:  
 \begin{itemize}
- \item \texttt{Exactly} delay, a hit will only be considered if the second point is sampled in its range a given number of cycles after the first point was.
- \item \texttt{Eventually} delay, a hit will be considered if the second point is sampled in its range at any point within the following given number of cycles after the first point was.  
+ \item \texttt{Exactly} delay, a hit will only be considered if the second point is sampled in its range at exactly the given number of cycles after the first point was.
+ \item \texttt{Eventually} delay, a hit will be considered if the second point is sampled in its range at any point within the given number of cycles after the first point was.  
  \item \texttt{Always} delay, a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
 \end{itemize}  
-Using these constructs, one can add timing-based information to the verification plan.
+%Using these constructs, one can add timing-based information to the verification plan.
 
 \subsection{Conditional Coverage}
 Working in Scala allows us to use functions as higher-order objects. 
-This means that we can have bins that are defined using arbitrary predicates rather than specific value ranges. 
-This was thus enabled with our \texttt{CoverCondition} object.
-This object gathers coverage information on an arbitrary number of ports by using user-defined predicates in order to consider Bin-hits.
-This means that a hit is considered when the predicate evaluates to \texttt{true}. 
+%This means that we can have bins that are defined using arbitrary predicates rather than specific value ranges. 
+We exploit this and provide a \texttt{CoverCondition} construct which may be used to gather coverage information on an arbitrary number of ports with a user-defined predicate.%This was thus enabled with our \texttt{CoverCondition} object.
+%This object gathers coverage information on an arbitrary number of ports by using user-defined predicates in order to consider Bin-hits.
+A sample is considered a hit if the predicate evaluates to \texttt{true}.%This means that a hit is considered when the predicate evaluates to \texttt{true}. 
 Since we are working with an arbitrary number of ports, computing the set of possible value combinations in order to obtain a coverage percentage is computationally expensive.
-To alleviate said problem, we added an \texttt{expectedHits} parameter that lets the user define the a number of expected hits.
-This is then used to compute the coverage percentage.
+To alleviate said problem, we added an \texttt{expectedHits} parameter that lets the user define a number of expected hits to generate a coverage percentage.
+%This is then used to compute the coverage percentage.
 This coverage information can be very useful when wanting to create points that cover sparse ranges.   
-This sort of predication can also be used in conjunction to a regular bins to create a predicate that is only evaluated over a specific range.  
+We also provide this predication functionality for regular bins to enable them to have non-trivial ranges.%This sort of predication can also be used in conjunction to a regular bins to create a predicate that is only evaluated over a specific range.  
 
-\subsection{Creating a Verification Plan}
-The basic verification plan semantics are as follows:
-\begin{itemize}
-    \item \texttt{CoverGroup} is defined as a set of \texttt{CoverPoint}s using the \texttt{cr.register} method.
-    \item \texttt{CoverPoint} is defined as a set of \texttt{Bins} tied to a DUT port and a name. If no \texttt{Bins} are given, then a \texttt{DefaultBin} is used, ranging over all possible values for the given port.
-    \item \texttt{Bins} is defined by a name and a value range.
-    \item \texttt{CrossPoint} is defined by an arbitrary number of ports and a list of \texttt{CrossBins}.
-    \item \texttt{CrossBin} is defined using the same number of ranges as the number of ports in the parent \texttt{CrossPoint}.
-    \item \texttt{TimedCross} is defined using two ports, a set of cross bins and a delay.
-    \item \texttt{CoverCondition} is defined using an arbitrary number of ports and a predicate.
-\end{itemize}
-Using each of these elements together allows the user to define accurate representations of their specifications in the form of a verification plan.
+\subsection{Example Verification Plan and Coverage Report}%\subsection{Creating a Verification Plan}
+%The basic verification plan semantics are as follows:
+%\begin{itemize}
+%    \item \texttt{CoverGroup} is defined as a set of \texttt{CoverPoint}s using the \texttt{cr.register} method.
+%    \item \texttt{CoverPoint} is defined as a set of \texttt{Bins} tied to a DUT port and a name. If no \texttt{Bins} are given, then a \texttt{DefaultBin} is used, ranging over all possible values for the given port.
+%    \item \texttt{Bins} is defined by a name and a value range.
+%    \item \texttt{CrossPoint} is defined by an arbitrary number of ports and a list of \texttt{CrossBins}.
+%    \item \texttt{CrossBin} is defined using the same number of ranges as the number of ports in the parent \texttt{CrossPoint}.
+%    \item \texttt{TimedCross} is defined using two ports, a set of cross bins and a delay.
+%    \item \texttt{CoverCondition} is defined using an arbitrary number of ports and a predicate.
+%\end{itemize}
+Using the aforementioned elements allows users to define accurate representations of their specifications in the form of verification plans. The following listing shows an example verification plan utilizing all of the tools:
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter
 cr.register(
-    CoverPoint("accu", dut.io.accu)(
-        Bins("lo10", 0 until 10),
-        Bins("First100odd", 0 until 100,  Condition("onlyOdd", 
-            { case Seq(x) => x % 2 != 0 })
-        )
+  CoverPoint("accu", dut.io.accu)(
+    Bins("lo10", 0 until 10),
+    Bins("First100odd", 0 until 100,  Condition("onlyOdd", 
+      { case Seq(x) => x % 2 != 0 })
+    )
+  ),
+  CoverCondition("aAndB",dut.io.outA, dut.io.outB)(
+    Condition("asuptobAtLeast100", 
+      { case Seq(a, b) => a > b }, 100
     ),
-    CoverCondition("aAndB",dut.io.outA, dut.io.outB)(
-        Condition("asuptobAtLeast100", 
-            { case Seq(a, b) => a > b }, 100
-        ),
-    ),
-    CrossPoint("accuAndTest", dut.io.accu, dut.io.test)(
-        CrossBin("both1", 1 to 1, 1 to 1)
-    ),
-    TimedCross("timedAB", dut.io.outA, dut.io.count)(Exactly(3))(
-        CrossBin("ExactlyBoth3", 3 to 3, 3 to 3)
-    ) 
+  ),
+  CrossPoint("accuAndTest", dut.io.accu, dut.io.test)(
+    CrossBin("both1", 1 to 1, 1 to 1)
+  ),
+  TimedCross("timedAB", dut.io.outA, dut.io.count)(Exactly(3))(
+    CrossBin("ExactlyBoth3", 3 to 3, 3 to 3)
+  ) 
 )
 \end{lstlisting}
-The above code snippet shows an example of how to define a verification plan using the presented framework.
+%The above code snippet shows an example of how to define a verification plan using the presented framework.
 
-\subsection{Generating the Coverage Report}
-After defining a verification plan, we need to decide when we want to sample our cover points. This means that, at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. 
-This can be done simply by calling \texttt{cr.sample()} when we are ready to sample our points. 
-Finally once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()}, which results in the following: 
+%\subsection{Generating the Coverage Report}
+During the subsequent tests, we must call \texttt{cr.sample()} whenever we wish to sample the defined cover points.%After defining a verification plan, we need to decide when we want to sample our cover points. This means that, at some point in our test, we have to tell our \texttt{CoverageReporter} to sample the values of all of the points defined in our verification plan. 
+%This can be done simply by calling \texttt{cr.sample()} when we are ready to sample our points. 
+and, once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()}, which results in the following: 
 \begin{verbatim}
 ============== COVERAGE REPORT ==============
 ================ GROUP ID: 1 ================
@@ -474,7 +474,7 @@ Range 3 to 3) HAS 1 HIT(S) = 100,00%
 ============================================
 ============================================
 \end{verbatim}
-The above report shows each point with its user-defined name and the bins it contains. These are then associated to a number of hits and also, whenever possible, to a coverage percentage.
+The above report shows each point with its user-defined name and the bins it contains. These are then associated to a number of hits and, whenever possible, a coverage percentage.
 Another option would be, for example if we want to do automated constraint modifications depending on coverage results, to generate the coverage report as a Scala \texttt{case class} and then to use its \texttt{binNcases} method to get numerical and reusable coverage results.  
 
 \section{Evaluation}

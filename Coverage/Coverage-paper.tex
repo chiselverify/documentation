@@ -109,7 +109,7 @@
 \begin{abstract}
 Ever-increasing performance demands are pushing hardware designers towards designing domain-specific accelerators. We must thus find a way to improve the overall efficiency of the hardware design and verification cycles. The design efficiency was improved with the introduction of Chisel. However, we still need to improve the verification efficiency.
 We explore how existing tools can enable statement coverage of a Chisel design at Scala and Verilog levels. Furthermore, we create a new method allowing for statement coverage at the FIRRTL level. Finally we describe our solution for gathering functional coverage on a Chisel design.
-We evaluate our approach with an industry-provided use case.
+We evaluate our approach with a real-life application.
 
 \begin{IEEEkeywords}
 Hardware Verification, Code Coverage, Chisel, Scala, SystemVerilog, FIRRTL, Treadle.
@@ -484,12 +484,11 @@ To evaluate our new Coverage tools, we will verify an accumulator ALU for the Le
 The ALU is a simple accumulator, that supports operations such as \texttt{add}, \texttt{sub}, \texttt{and}, \texttt{or}, \texttt{xor}, \texttt{load} and \texttt{shiftRight}.   
 In order to test this entirely, we would need to try all operations, defined by the \texttt{op} input, and all corner cases for the input values, using the \texttt{din} input.  
 A good verification plan would thus capture what we just described.  
-
+%cr.register(
+%	cover("reset", dut.io.reset, dut.io.op) (Exactly(1)) (
+%		cross("zeroToOne", 0 to 1, defaultRange(dut.io.op))))
 \begin{lstlisting}[language=scala] 
 val cr = new CoverageReporter(dut)  
-cr.register(
-	cover("reset", dut.io.reset, dut.io.op) (Exactly(1)) (
-		cross("zeroToOne", 0 to 1, defaultRange(dut.io.op))))
 cr.register(
 	cover("ops", dut.io.op)(DefaultBin(dut.io.op)),
 	cover("data inputs", dut.io.din)(
@@ -499,7 +498,7 @@ cr.register(
 		bin("one", 1),
 		bin("maxValue", Integer.MAX_VALUE)))
 \end{lstlisting}
-In the above code snippet, we registered two \texttt{CoverGroups}, one that ensures that all of the possible operations were tested after a reset and another that ensures that the edge cases of all operations were tested.
+In the above code snippet, we registered a \texttt{CoverGroup} that ensures that the edge cases of all operations are tested.
 Here, the \texttt{defaultRange} and \texttt{DefaultBin} functions are used to cover all possible values for the \texttt{dut.io.op} port.
 All that is left now is to call \texttt{cr.sample()} once per cycle in our \texttt{ChiselTest}.
 
@@ -508,15 +507,14 @@ In order to do the same with UVM, we need to:
     \item Create a UVM-subscriber based coverage class.
     \item Instantiate the current DUT (\texttt{LerosAlu lalu  = new;})
     \item Declare the verification plan: 
+    %covergroup cg_post_rst;
+%	UPDOWN: coverpoint cmd.reset {
+%		bins updown = (1 => 0);
+%	}
+%	OPS: coverpoint cmd.op;
+%		cross UPDOWN, OPS;
+%endgroup: cg_post_rst
     \begin{lstlisting}[language=verilog]
-covergroup cg_post_rst;
-	UPDOWN: coverpoint cmd.reset {
-		bins updown = (1 => 0);
-	}
-	OPS: coverpoint cmd.op;
-		cross UPDOWN, OPS;
-endgroup: cg_post_rst
-
 covergroup cg_all_zeros_ones;
 	OPS: coverpoint cmd.op;
 	DIN: coverpoint cmd.din {

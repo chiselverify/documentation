@@ -1,0 +1,265 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{pslatex} % -- times instead of computer modern, especially for the plain article class
+\usepackage[colorlinks=false,bookmarks=false]{hyperref}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{comment}
+%\usepackage{flushend} % even out the last page, but use only at the end when there is a bibliography
+
+\newcommand{\code}[1]{{\small{\texttt{#1}}}}
+
+% fatter TT font
+\renewcommand*\ttdefault{txtt}
+% another TT, suggested by Alex
+% \usepackage{inconsolata}
+% \usepackage[T1]{fontenc} % needed as well?
+
+\usepackage{listings}
+
+%\newcommand{\todo}[1]{{\emph{TODO: #1}}}
+\newcommand{\todo}[1]{{\color{olive} TODO: #1}}
+\newcommand{\martin}[1]{{\color{blue} Martin: #1}}
+\newcommand{\abcdef}[1]{{\color{red} Author2: #1}}
+\newcommand{\rewrite}[1]{{\color{red} rewrite: #1}}
+
+% uncomment following for final submission
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\martin}[1]{}
+
+
+%%Uncomment the following when you want to add copyright notice and not use any space	 (IEEE only)
+%\usepackage[absolute]{textpos}
+%% Set unit to be pagewidth and height, and increase inner margin of box
+%\setlength{\TPHorizModule}{\paperwidth}\setlength{\TPVertModule}{\paperheight}
+%\TPMargin{5pt}
+%% Define \copyrightstatement command for easier use
+%\newcommand{\copyrightstatement}{
+%	\begin{textblock}{0.85}(0.072,0.93)    % Tweak here: {box width}(leftposition, rightposition)
+%		\noindent
+%		\normalsize
+%		???-?-?-???-?/??/\$31.00~\copyright20?? IEEE % Put here your copyright
+%	\end{textblock}
+%}
+
+\begin{document}
+
+
+%\title{Towards Verification of Digital Circuits with\\
+%SystemVerilog/UVM and Chisel/Scala}
+
+\title{Open-Source Fuzzing-based Verification\\ with Chisel and Scala}
+
+\author{
+
+
+\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Martin Schoeberl}
+\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+\textit{Technical University of Denmark}\\
+Lyngby, Denmark \\
+andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, masca@dtu.dk}
+}
+
+
+\maketitle \thispagestyle{empty}
+
+\begin{abstract}
+
+Verification of Digital Systems ...
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+digital design, verification, fuzzing
+\end{IEEEkeywords}
+
+\martin{We aim for \url{https://woset-workshop.github.io/WOSET2020.html}}
+
+\section{TODO}
+
+Ref Kevin's work
+
+Ref our last WOSET paper
+
+\todo{Rewrite all what is left over now, as this is a copy of the last WOSET paper and from the verify paper}
+
+
+\section{Introduction}
+\label{sec:intro}
+
+
+
+Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have brought object-oriented programming
+into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non synthesizable verification code.
+Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
+Circuits described in Chisel can be tested and verified with a Chisel testing framework and Scala tests.
+Scala/Chisel brings object-oriented and functional programming into the world of
+digital design.
+
+
+This paper describes a research project that aims to build a testing framework in Scala
+that takes the best methods from the Universal Verification Methodology (UVM) and
+decades of experience in software testing.
+Furthermore, we aim to build on open-source projects only. Therefore, our
+work is open-source as well.
+
+The main contribution of this paper is the exploration of available open-source tools
+with a small example design. We can verify digital designs written in mixed
+languages such as Verilog, VHDL, and Chisel and simulate all of them in a tool-flow
+consisting of open-source tools only.
+
+This paper is organized in six sections: % The following section presents related work.
+Section~\ref{sec:related}  Presents related work.
+Section~\ref{sec:tools} describes the open-source tools that we use in our project.
+Section~\ref{xxx} presents our open-source fuzzing library, which is part of ChiselVerify.
+Section~\ref{sec:eval} evaluates our approach with a small design example written in Chisel, VHDL,
+and Verilog.
+Section~\ref{sec:conclusion} concludes.
+
+
+
+
+\section{Related Work}
+\label{sec:related}
+
+
+\martin{What does SV and UVM bring on the table related to fuzzing? Someone must have tried it.}
+
+The Universal Verification Methodology (UVM) is a methodology for testing and verifying of digital circuits, introduced in 2011. Previously, verification methodologies were vendor-specific, forcing users to stay with one tool or to spend a lot of time and money transitioning to a new tool. UVM is unique in the fact that it is an Accellera standard developed together with all of the major EDA vendors, such as Questa, Cadence, and Synopsys. As of 2017, it has also been standardized as IEEE 1800.2. Although SystemVerilog and UVM are IEEE standards, the standards are freely available through the IEEE Get program \cite{IEEE:18002}.
+
+UVM is implemented as a SystemVerilog library and utilizes the fact that SystemVerilog uses object-oriented programming (OOP) when designing testbenches.
+Using OOP patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionality.
+
+Other projects have also focused on applying software testing techniques to hardware verification. RFuzz~\cite{rfuzz2018} focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e. randomized testing, where the random seeds are updated depending on certain coverage results) on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. This work offers a different type of solution. While we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. RFuzz uses functional coverage tools in order to guide its randomized testing. A similar result could be obtained by combining the Constrained Random Verification and Functional Coverage tools that are available in ChiselVerify.
+
+\texttt{Chisel3.formal}  is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. The approach taken here is quite different from what we have developed. Rather than creating a set of tools that supplement the current chisel testing pipeline, \texttt{chisel3.formal} rather proposes a different way of testing, based around defining a set of formal checks that a design must pass in order to be considered as functional. These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. These formal checks can then be verified by calling the \texttt{verify(module)} function. 
+
+This approach is similar to software contracts in Scala. The main difference between our solution and this one is that here the rules are written on a per-module basis and are thus directly linked to the Chisel code, while our solution rather focuses on checking that a suite of test-benches are testing the right things. The \texttt{chisel3.formal} package has also been extended in \texttt{kiwi-formal}~\cite{chisel:kiwi-formal} and \texttt{dank-formal}~\cite{chisel:dank-formal}, leading to multiple different versions of it, each adding their own additional formal rule templates. 
+
+As far as we know, ChiselVerify is the only verification framework allowing for the easy use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
+
+
+
+\section{Open-Source Tools}
+\label{sec:tools}
+
+Our project plans to use mainly open-source tools, as we believe that only the open-source
+movement can lead to tools for agile hardware development and open libraries for IPs
+and verification components.
+
+\subsection{Chisel}
+
+Chisel is a hardware construction language embedded in Scala~\cite{chisel:dac2012}.
+Chisel allows the user to write hardware generators in Scala, an object-oriented and functional language. For hardware generation and testing, the full Scala language and Scala and Java
+libraries are available.
+
+Chisel is solely a hardware \emph{construction} language, and thus all valid Chisel code
+maps to synthesizable hardware.
+By separating the hardware construction and hardware verification languages,
+it becomes impossible to write non-synthesizable hardware and in turn, speeds up the design process.
+As Scala and Java's full power is available to the verification engineer,
+the verification process is also made more efficient.
+
+\subsection{ChiselTest}
+
+While Chisel ultimately produces Verilog, which can be tested with industry-standard tools and processes, those generally force the user to pick between simple but limited (e.g., Verilog testbenches) or complex but powerful (e.g., UVM testbenches).
+
+ChiselTest~\cite{chisel:tester2}, a nonsynthesizable testing framework for Chisel, instead emphasizes on usability and simplicity while providing ways to scale up complexity.
+
+Fundamentally, ChiselTest is a Scala library that provides access into the simulator through operations like poke (write value into circuit), peek (read value from circuit, into the test framework), and step (advance time).
+As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
+This structure uses the latest programming language developments that have been implemented into Scala and provides a clean and concise interface, unlike approaches that attempt to reinvent the wheel like UVM.
+
+Furthermore, ChiselTest tries to enable testing best practices from software engineering.
+Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
+Furthermore, a clear and clean test code also enables the test-as-documentation pattern,
+demonstrating a module's behavior from a temporal perspective.
+
+\subsection{ChiselVerify}
+
+
+\subsection{Simulators}
+
+While Chisel designs can be simulated with any simulator that accepts Verilog input, there are trade-offs involved in choosing simulators.
+Commercial simulators require expensive licenses, while the open-source Verilator has a high time cost for compilation despite being efficient per-cycle.
+On the other hand, Treadle\footnote{\url{https://github.com/freechipsproject/treadle}} is a simulator that operates at the level of Chisel's intermediate representation, FIRRTL\footnote{\url{https://github.com/freechipsproject/firrtl}}.
+Simulators like Treadle avoid the step of generating Verilog code and compiling from Verilog, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
+
+Verilator has the benefit of compiling the Verilog code before simulating it. This is much faster compared to event-driven simulators but also limits the capabilities, as it only works on synchronous designs. Verilator claims to be on par or faster than the ``Big 3'' simulators on single thread. However, it also supports multi-threaded simulation, which can greatly improve simulation times for large designs~\cite{verilator}.
+
+
+\subsection{Scala}
+
+The test environment and the driving code is written in Scala. Scala, with its
+compatibility with Java, has a very rich open-source library ecosystem.
+If you need a tool, e.g., an ELF file reader to load a binary, there will be a Java
+library available for it.
+
+Furthermore, we can use all the testing libraries that have been developed for
+software development. A popular library is ScalaTest.\footnote{\url{https://www.scalatest.org/}}
+A Chisel tester can be embedded
+in a ScalaTest component, and a simple \code{sbt test} will execute all the tests.
+
+\todo{Check what ScalaCheck can offer.}
+
+
+\section{Fuzzing with Chisel}
+
+\todo{This shall become our main section}
+
+\section{First Experiments}
+\label{sec:eval}
+
+\martin{Can we make a quick and dirty (dumb) fuzzing with Leros?}
+
+Although this is a work-in-progress report, we have started with an evaluation.
+
+\martin{Not just the ALU, maybe the whole processor}
+
+We used an ALU with an accumulator from the Leros processor~\cite{leros:arcs2019}
+as our device-under-test (DUT).
+The example is simple, but has a combinational part and state in a register, being
+a non-trivial circuit for testing.
+
+
+
+
+
+
+
+\subsection{The Road Ahead}
+
+\todo{ScalaCheck}
+
+This work-in-progress paper is a first sketch of the ideas to...
+
+
+\subsection{Source Access}
+
+As the project explores open-source tools for digital circuits design
+and verification, we provide all examples, including this paper, in open-source
+on GitHub:\\ \url{https://github.com/chiselverify}.
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This work-in-progress paper is a first sketch of the ideas to ...
+
+
+
+
+\subsection*{Acknowledgment}
+
+\martin{Do we have something here?}
+
+
+\bibliographystyle{plain}
+% Please do not add any references to msbib.bib.
+% They get lost when I 'generate' is again (see Makefile)
+\bibliography{../chisel-uvm,../msbib}
+
+\end{document}

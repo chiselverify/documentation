@@ -88,23 +88,16 @@ Ref our last WOSET paper
 \section{Introduction}
 \label{sec:intro}
 
+In recent years, we have seen an increase in the demands for high performance computing systems.  
+This comes with an increase in the need for domain-specific hardware accelerators.  
+Designing these is time-consuming and error prone, which is why researchers have been focusing on increasing the efficiency of Hardware Verification tools to fight this added time constraint.
+This has lead to the introduction of verifications methods such as constrained random verification and functional coverage~\cite{verify:chisel:2020, dobis2021opensource} into high level hardware construction languages like the Scala-embedded language Chisel~\cite{chisel:dac2012, chisel:book} .
+These tools, inspired by the more hardware-centric approach given in SystemVerilog and UVM, enable a form of static verification, where the verification engineer has to handle the writing of all tests.
+To improve the efficiency of these tools, we propose a form of dynamic verification, based on coverage-driven mutation-based fuzzing techniques found in the Software world.
+Our solution allows for optimal fuzzing for RTL designs using functional coverage as a metric to drive the fuzzing.
 
-
-\rewrite{Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have brought object-oriented programming
-into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non synthesizable verification code.
-Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
-Circuits described in Chisel can be tested and verified with a Chisel testing framework and Scala tests.
-Scala/Chisel brings object-oriented and functional programming into the world of
-digital design.
-
-
-This paper describes a research project that aims to build a testing framework in Scala
-that takes the best methods from the Universal Verification Methodology (UVM) and
-decades of experience in software testing.
-Furthermore, we aim to build on open-source projects only. Therefore, our
-work is open-source as well.
-
-The main contribution of this paper is
+This paper describes a research project that aims to develop an optimal functional coverage-driven mutation-based fuzzing tool to test RTL circuits.
+We then build upon this to enable constrained random program generation allowing for fuzzing to be used to test processors.
 
 This paper is organized in six sections: % The following section presents related work.
 Section~\ref{sec:related}  Presents related work.
@@ -112,9 +105,33 @@ Section~\ref{sec:tools} describes the open-source tools that we use in our proje
 Section~\ref{xxx} presents our open-source fuzzing library, which is part of ChiselVerify.
 Section~\ref{sec:eval} evaluates our approach with a small design example written in Chisel, VHDL,
 and Verilog.
-Section~\ref{sec:conclusion} concludes.}
+Section~\ref{sec:conclusion} concludes.
 
 
+%\rewrite{Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have brought object-oriented programming
+%into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non synthesizable verification code.
+%Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
+%Circuits described in Chisel can be tested and verified with a Chisel testing framework and Scala tests.
+%Scala/Chisel brings object-oriented and functional programming into the world of
+%digital design.
+%
+%
+%This paper describes a research project that aims to build a testing framework in Scala
+%that takes the best methods from the Universal Verification Methodology (UVM) and
+%decades of experience in software testing.
+%Furthermore, we aim to build on open-source projects only. Therefore, our
+%work is open-source as well.
+%
+%The main contribution of this paper is
+%
+%This paper is organized in six sections: % The following section presents related work.
+%Section~\ref{sec:related}  Presents related work.
+%Section~\ref{sec:tools} describes the open-source tools that we use in our project.
+%Section~\ref{xxx} presents our open-source fuzzing library, which is part of ChiselVerify.
+%Section~\ref{sec:eval} evaluates our approach with a small design example written in Chisel, VHDL,
+%and Verilog.
+%Section~\ref{sec:conclusion} concludes.}
+%
 
 
 \section{Related Work}

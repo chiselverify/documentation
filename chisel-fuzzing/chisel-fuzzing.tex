@@ -91,13 +91,13 @@ Ref our last WOSET paper
 In recent years, we have seen an increase in the demands for high performance computing systems.  
 This comes with an increase in the need for domain-specific hardware accelerators.  
 Designing these is time-consuming and error prone, which is why researchers have been focusing on increasing the efficiency of Hardware Verification tools to fight this added time constraint.
-This has lead to the introduction of verifications methods such as constrained random verification and functional coverage~\cite{verify:chisel:2020, dobis2021opensource} into high level hardware construction languages like the Scala-embedded language Chisel~\cite{chisel:dac2012, chisel:book} .
-These tools, inspired by the more hardware-centric approach given in SystemVerilog and UVM, enable a form of static verification, where the verification engineer has to handle the writing of all tests.
+This has lead to the introduction of verifications methods, such as constrained random verification and functional coverage~\cite{verify:chisel:2020, dobis2021opensource}, into high level hardware construction languages, like the Scala-embedded language Chisel~\cite{chisel:dac2012, chisel:book} .
+These tools, inspired by the more hardware-centric approach given in SystemVerilog and UVM, enable basic verification, where the user has to handle the writing of all tests by hand.
 To improve the efficiency of these tools, we propose a form of dynamic verification, based on coverage-driven mutation-based fuzzing techniques found in the Software world.
-Our solution allows for optimal fuzzing for RTL designs using functional coverage as a metric to drive the fuzzing.
+This allows for optimal fuzzing for RTL designs using functional coverage as a metric to drive the fuzzing.
 
 This paper describes a research project that aims to develop an optimal functional coverage-driven mutation-based fuzzing tool to test RTL circuits.
-We then build upon this to enable constrained random program generation allowing for fuzzing to be used to test processors.
+We the plan on building upon this tool to enable constrained random program generation allowing for fuzzing to be used to test processors.
 
 This paper is organized in six sections: % The following section presents related work.
 Section~\ref{sec:related}  Presents related work.
@@ -166,6 +166,30 @@ As far as we know, our solution, which is part of the verification library Chise
 
 \section{Open-Source Tools}
 \label{sec:tools}
+
+Our work is based on the methods and heuristics used in AFL. 
+To understand this tool, we must first describe how mutation-based fuzzing works.
+
+\subsection{Mutation-based fuzzing}
+Mutation-based fuzzing is a form of blackbox fuzzing, i.e.\ fuzzing where the engine does not know about the program or device it is testing.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.8\linewidth]{mutation-fuzzing.pdf}
+    \caption{Mutation-based fuzzing feedback loop. First start with a test, i.e.\ set of inputs, then mutate the test, execute it and evaluate how it effected the coverage. If the coverage changed, then the test is interesting else it isn't.}
+\label{fig:mut-fuzz}
+\end{figure}
+
+\ref{fig:mut-fuzz} shows that in mutation-based fuzzing, we start by defining well-formed inputs, a.k.a.\ seeds, and a coverage metric. 
+We then mutate the seeds based on coverage feedback from a previous test in order to obtain new coverage results. 
+The fuzzing stops once a target coverage percentage is reached.
+
+We can then define a fuzzer with 3 elements:
+\begin{itemize}
+\item \textbf{Fuzz server}, which interfaces with the program under test (PUT) and resets it after each test.
+\item \textbf{Instrumentation pass}, which is where the coverage-related modifications are made to the PUT.
+\item \textbf{Fuzz engine}, which handles test mutation and coverage-feedback analysis.
+\end{itemize}
 
 \rewrite{Our project plans to use mainly open-source tools, as we believe that only the open-source
 movement can lead to tools for agile hardware development and open libraries for IPs

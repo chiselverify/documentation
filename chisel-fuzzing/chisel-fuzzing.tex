@@ -24,6 +24,7 @@
 \newcommand{\todo}[1]{{\color{olive} TODO: #1}}
 \newcommand{\martin}[1]{{\color{blue} Martin: #1}}
 \newcommand{\andrew}[1]{{\color{red} Andrew: #1}}
+\newcommand{\tjark}[1]{{\color{orange} Tjark: #1}}
 \newcommand{\rewrite}[1]{{\color{red} rewrite: #1}}
 
 % uncomment following for final submission
@@ -280,7 +281,15 @@ a non-trivial circuit for testing.
 \subsection{The Road Ahead}
 
 \subsection{Constrained Random Program Generation}
-\todo{Tjark can talk about his project here and try to tie it to the overall fuzzing project.}
+
+The discussed fuzzing techniques can not only be applied to verify classical digital circuits but also processors where instead of input sequences, a program is generated and mutated to maximize the functional coverage of the circuit. This requires a constraint random program generator which can be interfaced by a fuzz engine and a coverage collector which can extract coverage data from the generated program. 
+
+As a part of the chiselverify framework, we have started to develope a constraint random assembly program generator with the long term goal of combining it with the developed fuzz engine to give access to mutation based fuzzing in chisel/scala for processor verification.
+
+There are existing solutions for constrained random program generation, notably the open-source RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. An implementation in the chisel/scala framework will have the advantage of keeping all communication between the constraint random program generator, the fuzz engine and the coverage collector in the same language. Furthermore, our implementation will not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
+
+\tjark{patterns}
+
 
 \todo{ScalaCheck}
 

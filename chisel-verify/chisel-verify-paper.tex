@@ -136,14 +136,15 @@ The solution is well integrated into the existing Chisel universe, making it an 
 digital design, verification, Chisel, Scala
 \end{IEEEkeywords}
 
-%\section{TODO}
+\section{TODO}
 
-%\begin{itemize}
-%\item incorporate the reviews
-%\item add \url{http://people.eecs.berkeley.edu/~ksen/papers/rfuzz.pdf} to related work
-%\item Find a new venue abstract May 28: \url{http://www.iccd-conf.com/Home.html|} // Abstract due 11.06.21
-%\item \hjd{Perhaps the use case is a bit too lengthy... Implementation details are not interesting here; the testing is, and it takes up little of the section.}
-%\end{itemize}
+\begin{itemize}
+\item REVIEW 1: Re-write abstract and introduction - remove anything not related to verification. Remove negative wording on Verilog and VHDL. Re-consider necessity of section III.A and Fig. 2. Switch to Manager/Subordinate terminology. Need for a more advanced use case.
+\item REVIEW 2: Include ChiselTest and ChiselVerify in Fig. 1. Re-write sections 4, 5 and 6, and ensure close connection to introduction. Add a few words on ChiselVerify as an agile development tool. Need for a more advanced use case (with comparison to UVM). Remove filler sentences.
+\item REVIEW 3: Prove claimed productivity increase. Re-write reference to "Stuart Russel's book". 
+\item REVIEW 4: Need for a more advanced use case.
+\item REVIEW 5: Prove claimed productivity increase. Add table of available methods (section III). Remove Moore's law statements.
+\end{itemize}
 
 
 %\begin{verbatim}
@@ -305,7 +306,7 @@ ChiselVerify combines tools, languages, development, and testing methods from th
 software development and applies them to hardware design.
 
 Therefore, we aim to raise the tooling level for a digital design to increase productivity.
-ChiselVerify is based in the hardware construction language Chisel~\cite{chisel:dac2012},
+ChiselVerify is based on the hardware construction language Chisel~\cite{chisel:dac2012},
 which itself is embedded in Scala.
 
 
@@ -343,7 +344,7 @@ However, UVM supports more functionalities than a plain ChiselTest~\cite{chisel:
 %All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
 
 
-The main contribution of this paper is ChiselVerify~\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for hardware designs.
+The main contribution of this paper is ChiselVerify~\footnote{Link removed for anonymity.}, an open-source verification library for hardware designs.
 
 The paper is organized into 6 sections.
 Section 2 describes related work.
@@ -801,3 +802,125 @@ This work is in open source and hosted at GitHub: \url{https://github.com/chisel
 
 
 \end{document}
+
+%----------------------- REVIEW 1 ---------------------
+%SUBMISSION: 222
+%TITLE: ChiselVerify: An Open-Source Hardware Verification Library for Chisel and Scala
+%AUTHORS: Andrew Dobis, Tjark Petersen, Kasper Hesse Rasmussen, Enrico Tolotto, Hans Damsgaard, Simon Thye Andersen, Richard Lin and Martin Schoeberl
+%
+%----------- Overall evaluation -----------
+%SCORE: -1 (weak reject)
+%----- TEXT:
+%Summary: The paper describes a verification framework for Chisel. They demonstrate the framework on a priority queue.
+%
+%The abstract and introduction could use a major rewrite. Both cover quite a range of topics that are only tangential to their work. I suggest that they focus on making verification better for Chisel (the topic of their paper) rather than the end of moore's law, domain-specific acceleration and other tangentially related topics.
+%
+%"We can no longer depend on Moore’s Law to increase computing performance." I would be careful about such statements given that TSMC and Intel have just both announced continuations to their manufacturing processes for several more years. More importantly, is this really important to state in your abstract (which is quite long)? I would just focus on the problem that you are addressing.
+%
+%The same is true in the introduction. I would just remove the parts about domain specific. I just don't see them as all that relevant. Instead I would focus on the need verification for hardware designs. 
+%
+%"A few years ago, the two main design languages, Verilog and VHDL, dominated the design and testing of digital circuits." They still do (well, SystemVerilog).
+%
+%Section III.A can be reduced if needed for space. I feel it is ok to assume that the ICCD audience will know the basics of hardware test and verification.
+%
+%I feel Fig 2 is unnecessary. An ICCD reader will understand this.
+%
+%Once the paper got into the core of the materials, I found that it was well explained.
+%
+%Consider using the new ARM terminology Manager/Subordinate instead of Master/Slave. (see https://documentation-service.arm.com/static/604f31721da8f8344a2c9f18)
+%
+%The paper could use a more thorough evaluation of the tool. E.g., adding more examples/benchmarks and discussing the challenges and differences would significantly enhance the paper.
+%
+%++ The project is open-source!
+%
+%-- The link to the repo deanonymizes the paper. :(
+%
+%
+%
+%----------------------- REVIEW 2 ---------------------
+%SUBMISSION: 222
+%TITLE: ChiselVerify: An Open-Source Hardware Verification Library for Chisel and Scala
+%AUTHORS: Andrew Dobis, Tjark Petersen, Kasper Hesse Rasmussen, Enrico Tolotto, Hans Damsgaard, Simon Thye Andersen, Richard Lin and Martin Schoeberl
+%
+%----------- Overall evaluation -----------
+%SCORE: 1 (weak accept)
+%----- TEXT:
+%This paper presents the Open-Source Hardware Verification Library ChiselVerify. ChiselVerify is a part of the Chisel ecosystem. It has been developed with contemporary tools and languages. It supports features from UVM such as Constrained Random Verification or functional coverage but also adds features, such as Timed Cross Constraints. The paper compares it with currently existing solutions, such as SystemVerilog, UVM and other libraries in the Chisel universe. The paper also demonstrates the capabilities of ChiselVerify and explains its usage in a use case provided by an industry partner.
+%
+%The paper explains the features and thought processes behind ChiselVerify very well. Especially Sections 3 and 4 are well written. The goals behind ChiselVerify became clear and it is also demonstrated how it was achieved. The ideas behind ChiselVerify itself seem very thought out implementing existing practices and building additional features onto them such as time dependent cross conditions or conditional cover points where one can define an arbitrary condition.
+%
+%A small improvement would be to include ChiselTest and ChiselVerify in Figure 1 for a visual representation of how these libraries fit in the Chisel universe.
+%There is also a typo in Section 1 in the fifth paragraph: "ChiselVerify is based _in_ the hardware [...]".
+%
+%There is a mention of a failed implementation of a CSP solver in Section 4, B in the first paragraph. This reads like a filler and should be removed.
+%The paragraphs 4, 5 and 6 in the introduction feel disconnected and should be rewritten. A suggestion would be to move every mention of ChiselVerify into its own paragraph to give a rough idea of what ChiselVerify actually is.
+%
+%In the introduction the authors mention a comparison of Lines-of-Code between SystemVerilog and ChiselTest. It would have been interesting to mention how much more lines ChiselVerify is adding, since it seems that it builds on ChiselTest.
+%The paper also mentions agile hardware development in the introduction and in the conclusion but it falls flat to handle that topic in the main part. The paper focuses on the design verification part, which is fine, but a few words about how ChiselVerify fits into the idea of agile hardware development would have been preferable.
+%Section 5 feels superfluous. It does talk about how ChiselVerify was used in an industrial use case and describes said case and what has been done.
+%But I do not see significant contribution to the paper in general that justifies this section. Section 4 and 5 could have been combined for example. Or another team implementing the same verification bench with UVM could have been employed and then the results compared. There is nothing measurable or comparable from the use case presentation.
+%
+%Overall, the paper has a well written description of ChiselVerify and how it fits into the Chisel universe.
+%The Verification library itself seems thought out and the paper makes a good job of showing how ChiselVerify enriches the Chisel universe.
+%But the paper also has its weaknesses. It did not pick up the topic of agile hardware development again. And there is Section 5 which does not really add anything meaningful to the overall contribution.
+%There are some passages which feel like filler content, e.g., the failed implementation of a CSP solver.
+%
+%
+%
+%----------------------- REVIEW 3 ---------------------
+%SUBMISSION: 222
+%TITLE: ChiselVerify: An Open-Source Hardware Verification Library for Chisel and Scala
+%AUTHORS: Andrew Dobis, Tjark Petersen, Kasper Hesse Rasmussen, Enrico Tolotto, Hans Damsgaard, Simon Thye Andersen, Richard Lin and Martin Schoeberl
+%
+%----------- Overall evaluation -----------
+%SCORE: 2 (accept)
+%----- TEXT:
+%1. The link to the source code for ChiselVerify should have been made anonymous using http://anonymous.4open.science/ or another provider. Since the link is so clearly available in the paper and the authors are prominently mentioned on the GitHub repository, the authors are not really anonymous for this submission. This is a serious concern in terms of fairness to authors of other submissions. 
+%
+%2. This reviewer installed the code on Ubuntu and she/he was able to get the test examples up and running fairly easily. So, the library is readily available and usable.
+%
+%3. The results in the paper imply two contributions:
+%(1) a well-integrated solution for verification of Chisel designs using a high-level language.
+%(2) increase in productivity of the verification engineer
+%The first contribution is clear and solid. However, the second contribution can only be established by conducting a study involving verification engineers that are not developers of this tool. That is missing from the paper.
+%
+%4. The algorithms presented in the paper are not very novel and the paper does not claim any such novelty. For example, the paper replaces their implementation of CSP Solving based on "Stuart Russel's book" by an existing implementation. As a minor point, the book has two authors; it is customary to refer to both authors if a book or paper has only two authors.
+%
+%In summary, this paper presents a tool that is publicly available and is likely to be useful.
+%
+%
+%
+%----------------------- REVIEW 4 ---------------------
+%SUBMISSION: 222
+%TITLE: ChiselVerify: An Open-Source Hardware Verification Library for Chisel and Scala
+%AUTHORS: Andrew Dobis, Tjark Petersen, Kasper Hesse Rasmussen, Enrico Tolotto, Hans Damsgaard, Simon Thye Andersen, Richard Lin and Martin Schoeberl
+%
+%----------- Overall evaluation -----------
+%SCORE: 0 (borderline paper)
+%----- TEXT:
+%This paper proposes a verification library for the hardware accelerators designed with Chisel and Scala.
+%
+%I can see a good amount of engineering efforts for chisel verification at a higher level than in Verilog. And the whole framework is open-sourced.
+%
+%However, the weakest part of the paper is the evaluation, which decreases the claimed benefits of the framework. The full evaluation is only showing with a simple sorting unit. This use case is too simple.
+%
+%It would be great to see the paper have a larger design case and a more complex setting with this amount of work. Also, the evaluation does not include the improvements, either in time or the efficiency of the proposed framework over the existing verification methods.
+%
+%
+%
+%----------------------- REVIEW 5 ---------------------
+%SUBMISSION: 222
+%TITLE: ChiselVerify: An Open-Source Hardware Verification Library for Chisel and Scala
+%AUTHORS: Andrew Dobis, Tjark Petersen, Kasper Hesse Rasmussen, Enrico Tolotto, Hans Damsgaard, Simon Thye Andersen, Richard Lin and Martin Schoeberl
+%
+%----------- Overall evaluation -----------
+%SCORE: -1 (weak reject)
+%----- TEXT:
+%The main purpose of this paper is to present a new way of verifying hardware designs with a proposed open-source library called ChiselVerify. The paper also provides background information and evidence of why it seems that digital design is the up-and-coming state of art and why we need better tools for it to be more efficient. It also provides a detail of how the library was designed and then used in a use case study provided by Microchip.
+%Strengths:
+%+The paper provides a good background of why it is important to invest time into digital design verification and seeks to provide a solution to help facilitate towards that direction. The flow and structure of the paper is easy to follow and does not cause confusion. 
+%+The paper also provides a use case of the proposed library to show that it is effective for real industry use.
+%Reviewer suggestions and Weaknesses:
+%- One thing holding the paper back and making it a weak success is the lack of quantitative evidence when it claims the proposed library increases productivity. A comparison using other standard methods to perform the use case could offer some more clear advantages, even saying why the authors couldn’t use other methods for the use case would help with the productivity claim. Another thing that could be added is a table that clearly states which methods are able to preform the verification processes outlined in section III (i.e. functional coverage, constrained random verification, and bus functional models.)
+%Comments for author
+%- While the claim about Moore’s Law is a strong hook in the introduction, there really isn’t that much else provided to back that claim up. As is, if it and its citation source removed the paper loses no information and is not really changed significantly.

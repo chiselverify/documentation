@@ -52,7 +52,7 @@
 %\title{Towards Verification of Digital Circuits with\\
 %SystemVerilog/UVM and Chisel/Scala}
 
-\title{Open-Source Fuzzing-based Verification\\ with Chisel and Scala}
+\title{Functional Coverage-Driven Fuzzing for Chisel Designs}
 
 \author{
 
@@ -149,7 +149,7 @@ As of 2017, it has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
 UVM can be seen as a first step toward having standardized test-benches.
 
 At the time of writing, very little published work was done in the realm of fuzzing for RTL circuits.
-One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). This work differs from what we present in this paper in two main ways. First off, RFuzz uses a very simple coverage metric that is independent of the DUT (Device Under Test), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools made available by ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}. This makes RFuzz a blackbox fuzzer and  our solution closer to a greybox fuzzer. Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our solution focuses as well on the generation of coherent random programs, allowing one to test a processor more accurately. 
+One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). This work differs from what we present in this paper in two main ways. First off, RFuzz uses a very simple coverage metric that is independent of the DUT (Device Under Test), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools made available by ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}. This makes RFuzz a blackbox fuzzer and our solution closer to a greybox fuzzer. Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our solution focuses as well on the generation of coherent random programs, allowing one to test a processor more accurately. 
 
 An other important project in the realm of fuzzing is AFL (American Fuzzy Lop)\todo{cite AFL}, which is a statement coverage driven fuzzer for software developed by researchers at Google. AFL is similar in many ways to RFuzz and to our solution, since it is also a mutation-based fuzzer. However, the main difference is obvious, AFL is a fuzzer for software, while the two other fuzzers are for RTL circuits. This doesn't change the fact that many of the internals of our are similar to those of AFL.
 
@@ -168,7 +168,7 @@ As far as we know, our solution, which is part of the verification library Chise
 \section{Open-Source Tools}
 \label{sec:tools}
 
-Our work is based on the methods and heuristics used in AFL. 
+Our work is based on the methods and heuristics used in AFL, which we reimplement in Scala in order to use it along with other Chisel verification libraries like ChiselTest~\cite{chisel:tester2} and ChiselVerify.
 To understand this tool, we must first describe how mutation-based fuzzing works.
 
 \subsection{Mutation-based fuzzing}
@@ -181,7 +181,7 @@ Mutation-based fuzzing is a form of blackbox fuzzing, i.e.\ fuzzing where the en
 \label{fig:mut-fuzz}
 \end{figure}
 
-\ref{fig:mut-fuzz} shows that in mutation-based fuzzing, we start by defining well-formed inputs, a.k.a.\ seeds, and a coverage metric. 
+Figure~\ref{fig:mut-fuzz} shows that, in mutation-based fuzzing, we start by defining well-formed inputs, a.k.a.\ seeds, and a coverage metric. 
 We then mutate the seeds based on coverage feedback from a previous test in order to obtain new coverage results. 
 The fuzzing stops once a target coverage percentage is reached.
 
@@ -192,9 +192,7 @@ We can then define a fuzzer with 3 elements:
 \item \textbf{Fuzz engine}, which handles test mutation and coverage-feedback analysis.
 \end{itemize}
 
-\rewrite{Our project plans to use mainly open-source tools, as we believe that only the open-source
-movement can lead to tools for agile hardware development and open libraries for IPs
-and verification components.
+\rewrite{
 
 \subsection{Chisel}
 
@@ -226,7 +224,7 @@ demonstrating a module's behavior from a temporal perspective.}
 
 \subsection{ChiselVerify}
 
-The presented library is part of the ChiselVerify project~\cite{verify:chisel:2020, dobis2021opensource}, available
+The presented fuzzer is part of the ChiselVerify project~\cite{verify:chisel:2020, dobis2021opensource}, available
 at \url{https://github.com/chiselverify}.
 
 \subsection{Simulators}
@@ -255,6 +253,45 @@ in a ScalaTest component, and a simple \code{sbt test} will execute all the test
 
 
 \section{Fuzzing with Chisel}
+The main goal of this project is to enable the fuzzing of RTL circuits implemented in Chisel, while using functional coverage as a driving metric.
+We must thus implement our own fuzzing engine, based on the work done in RFuzz and AFL. 
+We will now present the fuzzer's current structure.
+
+\subsection{Fuzzing algorithm}  
+The fuzzer works in five main phases:  
+\begin{itemize}
+\item Interpret user-defined input files as bit-streams and load them into a queue.
+\item Select the next file from said queue.
+\item Mutate the file, using multiple passes of first deterministic then non-deterministic mutation techniques.  
+\item Run the test and retrieve coverage results. 
+\item Compare results to previous ones to determine if the new test was interesting or not. Add to the corpus of interesting tests if needed and repeat. 
+\end{itemize}  
+
+We will now discuss each of these points in detail.  
+\subsection{Input file definition} 
+Initial inputs are defined by the user and will be the base seeds of the test corpus.
+This is done by defining a set of files that each contain a sequence of inputs to the DUT.
+These seeds can be in any form, but will always be interpreted as binary files.
+We define the input size as the sum of the bit length of all input signals of the DUT.
+
+\begin{lstlisting}[captionpos=b,caption={Basic DUT with two 32 bit inputs, one 64 input, as well as a 32 bit output.},label={lst:dutexample},language=scala]
+class DUT extends Module {
+    val io = IO(new Bundle {
+        val inA = Input(UInt(32.W))
+        val inB = Input(UInt(32.W))
+        val inC = Input(UInt(64.W))
+        val out = Output(UInt(32.W))
+    })
+    //...
+}
+\end{lstlisting}
+For example, listing~\ref{lst:dutexample} has an input size of \texttt{32 + 32 + 64 = 128} bits.
+
+
+
+\subsection{Mutation engine}
+
+\subsection{Result definition and comparison}
 
 \todo{This shall become our main section}
 
@@ -284,7 +321,7 @@ a non-trivial circuit for testing.
 
 The discussed fuzzing techniques can not only be applied to verify classical digital circuits but also processors where instead of input sequences, a program is generated and mutated to maximize the functional coverage of the circuit. This requires a constraint random program generator which can be interfaced by a fuzz engine and a coverage collector which can extract coverage data from the generated program. 
 
-As a part of the chiselverify framework, we have started to develope a constraint random assembly program generator with the long term goal of combining it with the developed fuzz engine to give access to mutation based fuzzing in chisel/scala for processor verification.
+As a part of the chiselverify framework, we have started to develop a constraint random assembly program generator with the long term goal of combining it with the developed fuzz engine to give access to mutation based fuzzing in chisel/scala for processor verification.
 
 There are existing solutions for constrained random program generation, notably the open-source RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. An implementation in the chisel/scala framework will have the advantage of keeping all communication between the constraint random program generator, the fuzz engine and the coverage collector in the same language. Furthermore, our implementation will not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
 
@@ -307,8 +344,11 @@ We plan also to regularly publish it on Maven.
 \section{Conclusion}
 \label{sec:conclusion}
 
-This work-in-progress paper is a  initial sketch of supporting testing and verification
-of digital designs described in Chisel with fuzzing.
+This work-in-progress paper is an initial sketch of supporting testing and verification
+of digital designs described in Chisel with fuzzing. 
+Inspired by ideas introduced by the software world, we presented a version of mutation-based fuzzing driven by a hardware-oriented coverage metric.
+This allows a fuzzer generate tests that are more interesting for RTL designs and give the user more control over its behavior. 
+Our plans are now to continue our work by enabling constrained generation of programs in order to test processor designs, thus orienting fuzzing towards RTL design verification.
 
 
 

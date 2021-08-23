@@ -271,9 +271,9 @@ We will now discuss each of these points in detail.
 \subsection{Input file definition} 
 Initial inputs are defined by the user and will be the base seeds of the test corpus.
 This is done by defining a set of files that each contain a sequence of inputs to the DUT.
-These seeds can be in any form, but will always be interpreted as binary files.
-We define the input size as the sum of the bit length of all input signals of the DUT.
+These seeds can be in any form (e.g.\ PNG, XML, BMP, ZIP , etc. ), but will always be interpreted as binary files.
 
+We define the input size as the sum of the bit length of all input signals of the DUT.
 \begin{lstlisting}[captionpos=b,caption={Basic DUT with two 32 bit inputs, one 64 input, as well as a 32 bit output.},label={lst:dutexample},language=scala]
 class DUT extends Module {
     val io = IO(new Bundle {
@@ -285,15 +285,34 @@ class DUT extends Module {
     //...
 }
 \end{lstlisting}
-For example, listing~\ref{lst:dutexample} has an input size of \texttt{32 + 32 + 64 = 128} bits.
-
-
+For example, listing~\ref{lst:dutexample} has an input size of $32 + 32 + 64 = 128$ bits.
+An input for this would thus be a 128 bit binary sequence, where the first 32 bits would be \texttt{inA}, second 32 bits \texttt{inB} and last 64 bits \texttt{inC}.
+In order to define timing in our tests we can simply concatenate a second 128 bit sequence to the first one.
+This second sequence will be fed to the DUT a single cycle later, thus creating a 2 cycle long test.
+The total duration of a test is thus defined by the input file's bit-length divided by the input size of the DUT.
 
 \subsection{Mutation engine}
+\todo{Talk about AFL's mutation techniques.}
 
 \subsection{Result definition and comparison}
+\todo{Talk about how to define a result and how to compare two results together and remove obsolete entries. Result = (Test, values hit) and \texttt{res1} $\subseteq$ \texttt{res2} $\Leftrightarrow$  \texttt{res1}'s values have also been hit in \texttt{res2}}
 
-\todo{This shall become our main section}
+\subsection{Fuzzer interface}
+The interface for our fuzzer is defined as follows:
+\begin{lstlisting}[captionpos=b,caption={Interface for the ChiselVerify fuzzer. It takes as parameter a \texttt{dut} and \texttt{chiselverify.coverage.CoverageReporter}, which is the verification plan used to define the functional coverage that will drive the fuzzing. It also takes in a target coverage percentage between 0 and 100, which defaults to 100, and a timeout which is set by default to 1'000'000 inputs. The second set of parameters are a result output file name, where all of the interesting tests and their resulting hit values will be written, as well as a variable number of file paths, which will be used as seeds for the mutation engine. },label={lst:dutexample},language=scala]
+object Fuzzer {
+    def launch[T <: MultiIOModule](
+        dut: T, 
+        funCov: CoverageReporter, 
+        target : Int = 100,
+        timeout : BigInt = BigInt(1000000)
+    )(
+        result: String
+        seeds: String*
+    ) : Int
+}
+\end{lstlisting}
+The fuzzer itself will run either until the target coverage or the timeout is reached. The value returned is the final coverage percentage attained during the fuzzing.
 
 \section{First Experiments}
 \label{sec:eval}

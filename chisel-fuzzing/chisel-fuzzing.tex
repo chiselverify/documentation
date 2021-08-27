@@ -69,11 +69,12 @@ adobis@student.ethz.ch, s186083@student.dtu.dk, masca@dtu.dk}
 
 \begin{abstract}
 
-Verification of Digital Systems must be done in ever tighter time constraints due to the rise of domain-specific hardware accelerators.
-To combat this, we must learn from agile techniques used software engineers and bring them to the hardware realm.
+Verification of digital systems must verified in ever tighter time constraints due to the rise of domain-specific hardware accelerators.
+To combat this, we can learn from agile techniques used in software engineering and bringing them to the hardware design.
 In this mindset, Chisel, a hardware construction language embedded in Scala, was developed as a tool to accelerate the implementation of digital designs.
-Following this path, we developed a high level verification library named ChiselVerify, bringing tools such as Functional Coverage to the Chisel ecosystem.
+Following this path, we developed a high-level verification library named ChiselVerify, bringing tools such as functional coverage to the Chisel ecosystem.
 Using this tool, we propose a functional coverage-driven mutation-based fuzzer for Chisel designs.
+\martin{I do not understand the following sentence. It is also a bit too long.}
 Experiments on the Leros accumulator ALU show that the additional dut information inherent in functional coverage enables the fuzzer to attain a target coverage percentage in less iterations than when using branch coverage.
 
 \end{abstract}
@@ -92,67 +93,49 @@ digital design, verification, fuzzing, coverage
 
 In recent years, we have seen an increase in the demands for high performance computing systems.  
 This comes with an increase in the need for domain-specific hardware accelerators.  
-Designing these is time-consuming and error prone, which is why researchers have been focusing on increasing the efficiency of Hardware Verification tools to fight this added time constraint.
+\martin{Following: why do we increase the efficiency of verification when the HW design is time-consuming?}
+Designing these is time-consuming and error prone, which is why researchers have been focusing on increasing the efficiency of hardware verification tools to fight this added time constraint.
 This has lead to the introduction of verifications methods, such as constrained random verification and functional coverage~\cite{verify:chisel:2020, dobis2021opensource}, into high level hardware construction languages, like the Scala-embedded language Chisel~\cite{chisel:dac2012, chisel:book} .
 These tools, inspired by the more hardware-centric approach given in SystemVerilog and UVM, enable basic verification, where the user has to handle the writing of all tests by hand.
-To improve the efficiency of these tools, we propose a form of dynamic verification, based on coverage-driven mutation-based fuzzing techniques found in the Software world.
+To improve the efficiency of these tools, we propose a form of dynamic verification, based on coverage-driven mutation-based fuzzing techniques found in the software world.
+\martin{General question: why using ``RTL design'' and not just ``hardware design'', or ``digital design''?}
 This allows for optimal fuzzing for RTL designs using functional coverage as a metric to drive the fuzzing.
 
-This paper describes a research project that aims to develop an optimal functional coverage-driven mutation-based fuzzing tool to test RTL circuits.
+This paper describes a research project that aims to develop an optimal \martin{optimal is a very ambitious aim; maybe not achievable. When do we know when it is optimal?} functional coverage-driven mutation-based fuzzing tool to test RTL circuits.
 We plan on building upon this tool to enable constrained random program generation allowing for fuzzing to be used to test processors.
 
 This paper is organized in six sections: % The following section presents related work.
-Section~\ref{sec:related}  Presents related work.
+Section~\ref{sec:related}  presents related work.
 Section~\ref{sec:tools} describes the open-source tools that we use in our project.
-Section~\ref{xxx} presents our open-source fuzzing library, which is part of ChiselVerify.
+Section~\ref{sec:fuzz} presents our open-source fuzzing library, which is part of ChiselVerify.
+\martin{Really VHDL and Verilog?}
 Section~\ref{sec:eval} evaluates our approach with a small design example written in Chisel, VHDL,
 and Verilog.
 Section~\ref{sec:conclusion} concludes.
 
 
-%\rewrite{Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have brought object-oriented programming
-%into the digital design and verification process. SystemVerilog, an extension of Verilog, adds object-oriented concepts for the non synthesizable verification code.
-%Chisel is a ``Hardware Construction Language'', embedded in Scala, to describe digital circuits.
-%Circuits described in Chisel can be tested and verified with a Chisel testing framework and Scala tests.
-%Scala/Chisel brings object-oriented and functional programming into the world of
-%digital design.
-%
-%
-%This paper describes a research project that aims to build a testing framework in Scala
-%that takes the best methods from the Universal Verification Methodology (UVM) and
-%decades of experience in software testing.
-%Furthermore, we aim to build on open-source projects only. Therefore, our
-%work is open-source as well.
-%
-%The main contribution of this paper is
-%
-%This paper is organized in six sections: % The following section presents related work.
-%Section~\ref{sec:related}  Presents related work.
-%Section~\ref{sec:tools} describes the open-source tools that we use in our project.
-%Section~\ref{xxx} presents our open-source fuzzing library, which is part of ChiselVerify.
-%Section~\ref{sec:eval} evaluates our approach with a small design example written in Chisel, VHDL,
-%and Verilog.
-%Section~\ref{sec:conclusion} concludes.}
-%
-
-
 \section{Related Work}
 \label{sec:related}
-We will now present work related to current developments in hardware verification and fuzzing for RTL circuits.
+%We will now present work related to current developments in hardware verification and fuzzing for RTL circuits.
 %
 %\martin{What does SV and UVM bring on the table related to fuzzing? Someone must have tried it.}
 %\andrew{Fuzzing is a very software thing to do, it's only been noticed by verification engineers in recent years, the only "completed" work I've found on fuzzing for hardware is Kevin's stuff. Everything else is very conceptual and not complete.}
+% \martin{Great then there is room for us to develop further :-)}
 
 The Universal Verification Methodology (UVM) is a methodology for testing and verifying of digital circuits.
 UVM is implemented as a SystemVerilog library and utilizes the fact that SystemVerilog uses object-oriented programming when designing testbenches.
 Using object-oriented patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionality.
-As of 2017, it has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
+As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
 UVM is a first step towards truly standardized test-benches.
 
+\martin{General: avoid ``very'' in technical writing. Also avoid isn't and other more slang like terms.}
+\martin{Andrew, feel free to remove my comments when you read it. To keep the paper somehow clean.}
 At the time of writing, very little published work was done in the realm of fuzzing for RTL circuits.
-One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). This work differs from what we present in this paper in two ways. First, RFuzz uses a very simple coverage metric that is independent of the DUT (Device Under Test), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}. Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random programs, allowing one to test a processor more efficiently. 
+One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). RFuzz differs from what we present in this paper in two ways. First, RFuzz uses a simple coverage metric that is independent of the device under test (DUT), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}.
+\martin{Random ``program'' generation comes here as a surprise. Up to now the reader did not know that we generate programs. Tjark, maybe you can add this into the introduction.}
+Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random programs, allowing one to test a processor more efficiently. 
 
-An other important project in the realm of fuzzing is AFL (American Fuzzy Lop)~\cite{afl:repo}, which is a statement coverage driven fuzzer for software developed by researchers at Google. AFL is similar in many ways to RFuzz and to our solution, since it is also a mutation-based fuzzer. However, the main difference is obvious, AFL is a fuzzer for software, while the two other fuzzers are for RTL circuits. This doesn't change the fact that many of the internals of our are similar to those of AFL.
+An other important project in the realm of fuzzing is American fuzzy loop (AFL)~\cite{afl:repo}, which is a statement coverage driven fuzzer for software developed by researchers at Google. AFL is similar in many ways to RFuzz and to our solution, since it is also a mutation-based fuzzer. However, the main difference is obvious, AFL is a fuzzer for software, while the two other fuzzers are for RTL circuits. This doesn't change the fact that many of the internals of our are similar to those of AFL.
 
 As far as we know, our solution, which is part of the verification library ChiselVerify, is the only mutation-based fuzzer for RTL circuits that uses functional coverage to drive the test generation.
 
@@ -178,7 +161,7 @@ Mutation-based fuzzing is a form of blackbox fuzzing, i.e.\ fuzzing where the en
 \begin{figure}
   \centering
     \includegraphics[width=0.7\linewidth]{mutation-fuzzing.pdf}
-    \caption{Mutation-based fuzzing feedback loop. First start with a test, i.e.\ set of inputs, then mutate the test, execute it and evaluate how it effected the coverage. If the coverage changed, then the test is interesting else it isn't.}
+    \caption{Mutation-based fuzzing feedback loop. First start with a test, i.e.\, with a set of inputs, then mutate the test, execute it and evaluate how it effected the coverage. If the coverage changed, then the test is interesting else it is not.}
 \label{fig:mut-fuzz}
 \end{figure}
 
@@ -234,6 +217,7 @@ ChiselTest and our solution work using Treadle as a simulator.
 %\todo{Check what ScalaCheck can offer.}
 
 \section{Fuzzing with Chisel}
+\label{sec:fuzz}
 The main goal of this project is to enable the fuzzing of RTL circuits implemented in Chisel, while using functional coverage as a driving metric.
 The mutation engine is taken form AFL using the Java Native Interface (JNI).
 We will now present the fuzzer's current structure.
@@ -412,6 +396,6 @@ Our plans are now to continue our work by enabling constrained generation of pro
 \bibliographystyle{plain}
 % Please do not add any references to msbib.bib.
 % They get lost when I 'generate' is again (see Makefile)
-\bibliography{../chisel-uvm,../msbib}
+\bibliography{../chisel-uvm,../msbib,fuzzing}
 
 \end{document}

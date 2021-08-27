@@ -99,7 +99,7 @@ To improve the efficiency of these tools, we propose a form of dynamic verificat
 This allows for optimal fuzzing for RTL designs using functional coverage as a metric to drive the fuzzing.
 
 This paper describes a research project that aims to develop an optimal functional coverage-driven mutation-based fuzzing tool to test RTL circuits.
-We the plan on building upon this tool to enable constrained random program generation allowing for fuzzing to be used to test processors.
+We plan on building upon this tool to enable constrained random program generation allowing for fuzzing to be used to test processors.
 
 This paper is organized in six sections: % The following section presents related work.
 Section~\ref{sec:related}  Presents related work.
@@ -360,7 +360,27 @@ The discussed fuzzing techniques can also be applied to processors where instead
 This requires a constrained random program generator which can be interfaced by a fuzzer and used as an alternative mutation engine.
 This will result in more efficient processor fuzzing, since it will only generate legal instructions. 
 
+<<<<<<< HEAD
 As a part of the ChiselVerify project, we have started to develop a constrained random assembly program generator with the goal of combining it with the developed fuzzer to ameliorate processor mutation-based fuzzing in Chisel.
+=======
+\subsection{Constrained Random Program Generation}
+
+The discussed fuzzing techniques can not only be applied to verify classical digital circuits but also 
+processors where instead of input sequences, a program is generated and mutated to maximize the 
+functional coverage of the circuit. This requires a constraint random program generator which can 
+be interfaced by a fuzz engine and a coverage collector which can extract coverage data from the 
+generated program. 
+
+As a part of the chiselverify framework, we have started to develop a constraint random assembly 
+program generator with the long term goal of combining it with the developed fuzz engine to give 
+access to mutation based fuzzing in chisel/scala for processor verification.
+
+There are existing solutions for constrained random program generation, notably the open-source 
+RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. An implementation in 
+the chisel/scala framework will have the advantage of keeping all communication between the 
+constraint random program generator, the fuzz engine and the coverage collector in the same 
+language. Furthermore, our implementation will not limit itself to one ISA but will provide 
+a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
 
 There are existing solutions for constrained random program generation, notably the open-source RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. 
 An implementation in scala will have the advantage of keeping all internal communications in the same language. 

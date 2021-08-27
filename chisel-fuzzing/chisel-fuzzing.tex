@@ -61,7 +61,7 @@
 \IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
 \textit{Technical University of Denmark}\\
 Lyngby, Denmark \\
-andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, masca@dtu.dk}
+adobis@student.ethz.ch, s186083@student.dtu.dk, masca@dtu.dk}
 }
 
 
@@ -69,23 +69,24 @@ andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, masca@dtu.dk}
 
 \begin{abstract}
 
-Verification of Digital Systems ...
+Verification of Digital Systems must be done in ever tighter time constraints due to the rise of domain-specific hardware accelerators.
+To combat this, we must learn from agile techniques used software engineers and bring them to the hardware realm.
+In this mindset, Chisel, a hardware construction language embedded in Scala, was developed as a tool to accelerate the implementation of digital designs.
+Following this path, we developed a high level verification library named ChiselVerify, bringing tools such as Functional Coverage to the Chisel ecosystem.
+Using this tool, we propose a functional coverage-driven mutation-based fuzzer for Chisel designs.
+Experiments on the Leros accumulator ALU show that the additional dut information inherent in functional coverage enables the fuzzer to attain a target coverage percentage in less iterations than when using branch coverage.
 
 \end{abstract}
 
 \begin{IEEEkeywords}
-digital design, verification, fuzzing
+digital design, verification, fuzzing, coverage
 \end{IEEEkeywords}
-
-\martin{We aim for \url{https://woset-workshop.github.io/WOSET2020.html}}
-
-\section{TODO}
-
-Ref our last WOSET paper
-
-\todo{Rewrite all what is left over now, as this is a copy of the last WOSET paper and from the verify paper}
-
-
+%\martin{We aim for \url{https://woset-workshop.github.io/WOSET2020.html}}
+%\section{TODO}
+%
+%Ref our last WOSET paper
+%
+%\todo{Rewrite all what is left over now, as this is a copy of the last WOSET paper and from the verify paper}
 \section{Introduction}
 \label{sec:intro}
 
@@ -138,18 +139,18 @@ Section~\ref{sec:conclusion} concludes.
 \section{Related Work}
 \label{sec:related}
 We will now present work related to current developments in hardware verification and fuzzing for RTL circuits.
-
-\martin{What does SV and UVM bring on the table related to fuzzing? Someone must have tried it.}
-\andrew{Fuzzing is a very software thing to do, it's only been noticed by verification engineers in recent years, the only "completed" work I've found on fuzzing for hardware is Kevin's stuff. Everything else is very conceptual and not complete.}
+%
+%\martin{What does SV and UVM bring on the table related to fuzzing? Someone must have tried it.}
+%\andrew{Fuzzing is a very software thing to do, it's only been noticed by verification engineers in recent years, the only "completed" work I've found on fuzzing for hardware is Kevin's stuff. Everything else is very conceptual and not complete.}
 
 The Universal Verification Methodology (UVM) is a methodology for testing and verifying of digital circuits.
 UVM is implemented as a SystemVerilog library and utilizes the fact that SystemVerilog uses object-oriented programming when designing testbenches.
 Using object-oriented patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionality.
 As of 2017, it has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
-UVM can be seen as a first step toward having standardized test-benches.
+UVM is a first step towards truly standardized test-benches.
 
 At the time of writing, very little published work was done in the realm of fuzzing for RTL circuits.
-One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). This work differs from what we present in this paper in two main ways. First off, RFuzz uses a very simple coverage metric that is independent of the DUT (Device Under Test), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools made available by ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}. This makes RFuzz a blackbox fuzzer and our solution closer to a greybox fuzzer. Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our solution focuses as well on the generation of coherent random programs, allowing one to test a processor more accurately. 
+One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). This work differs from what we present in this paper in two ways. First, RFuzz uses a very simple coverage metric that is independent of the DUT (Device Under Test), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}. Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random programs, allowing one to test a processor more efficiently. 
 
 An other important project in the realm of fuzzing is AFL (American Fuzzy Lop)\todo{cite AFL}, which is a statement coverage driven fuzzer for software developed by researchers at Google. AFL is similar in many ways to RFuzz and to our solution, since it is also a mutation-based fuzzer. However, the main difference is obvious, AFL is a fuzzer for software, while the two other fuzzers are for RTL circuits. This doesn't change the fact that many of the internals of our are similar to those of AFL.
 
@@ -173,10 +174,10 @@ To understand this tool, we must first describe how mutation-based fuzzing works
 
 \subsection{Mutation-based fuzzing}
 Mutation-based fuzzing is a form of blackbox fuzzing, i.e.\ fuzzing where the engine does not know about the program or device it is testing.
-
+%\todo{Make figure denser.}
 \begin{figure}
   \centering
-    \includegraphics[width=0.8\linewidth]{mutation-fuzzing.pdf}
+    \includegraphics[width=0.7\linewidth]{mutation-fuzzing.pdf}
     \caption{Mutation-based fuzzing feedback loop. First start with a test, i.e.\ set of inputs, then mutate the test, execute it and evaluate how it effected the coverage. If the coverage changed, then the test is interesting else it isn't.}
 \label{fig:mut-fuzz}
 \end{figure}
@@ -192,35 +193,26 @@ We can then define a fuzzer with 3 elements:
 \item \textbf{Fuzz engine}, which handles test mutation and coverage-feedback analysis.
 \end{itemize}
 
-\rewrite{
-
 \subsection{Chisel}
-
-Chisel is a hardware construction language embedded in Scala~\cite{chisel:dac2012}.
-Chisel allows the user to write hardware generators in Scala, an object-oriented and functional language. For hardware generation and testing, the full Scala language and Scala and Java
-libraries are available.
-
-Chisel is solely a hardware \emph{construction} language, and thus all valid Chisel code
-maps to synthesizable hardware.
-By separating the hardware construction and hardware verification languages,
-it becomes impossible to write non-synthesizable hardware and in turn, speeds up the design process.
-As Scala and Java's full power is available to the verification engineer,
-the verification process is also made more efficient.
+Our project focuses on RTL circuits designed in Chisel.
+Chisel is a hardware construction language embedded in Scala~\cite{chisel:dac2012} that generates Verilog as a final output.
+Chisel also generates code in an intermediate representation named \texttt{FIRRTL}\footnote{\url{https://github.com/freechipsproject/firrtl}}.(Flexible Intermediate Representation for RTL).
+Chisel allows the user to describe RTL circuits in a high-level manner, using functional tools and libraries from Scala in order to minimize the amount of code needed to describe a circuit.
+Since Chisel is a pure hardware \emph{construction} language, all valid Chisel code maps to synthesizable hardware.
+Chisel also enables the verification engineer to use the full power of Scala and Java in a Chisel test-bench, thus making the verification more efficient.
 
 \subsection{ChiselTest}
+ 
+ There a many ways to test a Chisel design, but the most common are to write test-benches for the output Verilog.
+ This is often done using either standard Verilog test-benches or more complex ones using SystemVerilog with UVM.
+ 
+ChiselTest~\cite{chisel:tester2}, a nonsynthesizable testing framework for Chisel, offers another solution by allowing one to directly test the Chisel code in a usable and simple way.
+ChiselTest works as a Scala library that allows the user to interface directly with the simulator with operations like \texttt{peek} (view the value of a wire), \texttt{poke} (write a value to a wire) and \texttt{step} (increment the clock).
+%These tests are simple imperative Scala programs in which one line runs after the next.
+In order to gain access to concurrency, the library also offers a \texttt{fork} method.
 
-While Chisel ultimately produces Verilog, which can be tested with industry-standard tools and processes, those generally force the user to pick between simple but limited (e.g., Verilog testbenches) or complex but powerful (e.g., UVM testbenches).
-
-ChiselTest~\cite{chisel:tester2}, a nonsynthesizable testing framework for Chisel, instead emphasizes on usability and simplicity while providing ways to scale up complexity.
-
-Fundamentally, ChiselTest is a Scala library that provides access into the simulator through operations like poke (write value into circuit), peek (read value from circuit, into the test framework), and step (advance time).
-As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
-This structure uses the latest programming language developments that have been implemented into Scala and provides a clean and concise interface, unlike approaches that attempt to reinvent the wheel like UVM.
-
-Furthermore, ChiselTest tries to enable testing best practices from software engineering.
-Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
-Furthermore, a clear and clean test code also enables the test-as-documentation pattern,
-demonstrating a module's behavior from a temporal perspective.}
+ChiselTest tries to enable best practices from software engineering by having lightweight syntax, allowing one to easily write small targeted unit tests.
+Our project uses ChiselTest as a backend in order to access the simulator throughout the fuzzing cycle.
 
 \subsection{ChiselVerify}
 
@@ -229,32 +221,21 @@ at \url{https://github.com/chiselverify}.
 
 \subsection{Simulators}
 
-\rewrite{While Chisel designs can be simulated with any simulator that accepts Verilog input, there are trade-offs involved in choosing simulators.
-Commercial simulators require expensive licenses, while the open-source Verilator has a high time cost for compilation despite being efficient per-cycle.
-On the other hand, Treadle\footnote{\url{https://github.com/freechipsproject/treadle}} is a simulator that operates at the level of Chisel's intermediate representation, FIRRTL\footnote{\url{https://github.com/freechipsproject/firrtl}}.
-Simulators like Treadle avoid the step of generating Verilog code and compiling from Verilog, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
+Chisel designs can be simulated by simulating the output Verilog or FIRRTL code.
+The first one can be done using any available Verilog simulator.
+Most of them, however, are proprietary and thus need expensive licenses in order to be used. 
+The main open-source option is \texttt{verilator}~\cite{verilator}, which has a high compilation cost but has a good per-cycle efficiency.
 
-Verilator has the benefit of compiling the Verilog code before simulating it. This is much faster compared to event-driven simulators but also limits the capabilities, as it only works on synchronous designs. Verilator claims to be on par or faster than the ``Big 3'' simulators on single thread. However, it also supports multi-threaded simulation, which can greatly improve simulation times for large designs~\cite{verilator}.}
+The other option is to use a FIRRTL simulator, the main one being Treadle\footnote{\url{https://github.com/freechipsproject/treadle}}.
+Treadle operates on FIRRTL and thus allows one to avoid generating Verliog code, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
+ChiselTest and our solution work using Treadle as a simulator. 
+%This allows us to have more control over the process by writing our own \texttt{FIRRTL} compiler passes, allowing for the gathering of specific coverage data.
 
-
-\subsection{Scala}
-
-\rewrite{The test environment and the driving code is written in Scala. Scala, with its
-compatibility with Java, has a very rich open-source library ecosystem.
-If you need a tool, e.g., an ELF file reader to load a binary, there will be a Java
-library available for it.
-
-Furthermore, we can use all the testing libraries that have been developed for
-software development. A popular library is ScalaTest.\footnote{\url{https://www.scalatest.org/}}
-A Chisel tester can be embedded
-in a ScalaTest component, and a simple \code{sbt test} will execute all the tests.}
-
-\todo{Check what ScalaCheck can offer.}
-
+%\todo{Check what ScalaCheck can offer.}
 
 \section{Fuzzing with Chisel}
 The main goal of this project is to enable the fuzzing of RTL circuits implemented in Chisel, while using functional coverage as a driving metric.
-We must thus implement our own fuzzing engine, based on the work done in RFuzz and AFL. 
+The mutation engine is taken form AFL using the Java Native Interface (JNI).
 We will now present the fuzzer's current structure.
 
 \subsection{Fuzzing algorithm}  
@@ -270,8 +251,7 @@ The fuzzer works in five main phases:
 We will now discuss each of these points in detail.  
 \subsection{Input file definition} 
 Initial inputs are defined by the user and will be the base seeds of the test corpus.
-This is done by defining a set of files that each contain a sequence of inputs to the DUT.
-These seeds can be in any form (e.g.\ PNG, XML, BMP, ZIP , etc. ), but will always be interpreted as binary files.
+This is done by defining a set of binary seed files that each contain a sequence of inputs for the DUT.
 
 We define the input size as the sum of the bit length of all input signals of the DUT.
 \begin{lstlisting}[captionpos=b,caption={Basic DUT with two 32 bit inputs, one 64 input, as well as a 32 bit output.},label={lst:dutexample},language=scala]
@@ -281,9 +261,7 @@ class DUT extends Module {
         val inB = Input(UInt(32.W))
         val inC = Input(UInt(64.W))
         val out = Output(UInt(32.W))
-    })
-    //...
-}
+ })}
 \end{lstlisting}
 For example, listing~\ref{lst:dutexample} has an input size of $32 + 32 + 64 = 128$ bits.
 An input for this would thus be a 128 bit binary sequence, where the first 32 bits would be \texttt{inA}, second 32 bits \texttt{inB} and last 64 bits \texttt{inC}.
@@ -292,74 +270,107 @@ This second sequence will be fed to the DUT a single cycle later, thus creating 
 The total duration of a test is thus defined by the input file's bit-length divided by the input size of the DUT.
 
 \subsection{Mutation engine}
+Our fuzzer uses AFL's fuzzing engine, which works using multiple passes of both deterministic and non-deterministic mutation techniques.
 \todo{Talk about AFL's mutation techniques.}
 
 \subsection{Result definition and comparison}
-\todo{Talk about how to define a result and how to compare two results together and remove obsolete entries. Result = (Test, values hit) and \texttt{res1} $\subseteq$ \texttt{res2} $\Leftrightarrow$  \texttt{res1}'s values have also been hit in \texttt{res2}}
+Throughout the fuzzing cycle, data is accumulated in the form of pairs containing both the test's input bit string and the values of the hits that they generated for each \texttt{cover} construct defined in the verification plan~\cite{dobis2021opensource}.
+These \texttt{(Test, hit values)} pairs are then used to identify whether or not an input bit string was interesting.
+An interesting input is defined as any input that generated a set of hit values that is not a subset of an existing interesting result.
+These results also contain a total obtained functional coverage, which is the average coverage over all defined \texttt{cover} constructs in the verification plan.
+The coverage allows us to know when to stop fuzzing and output a final result.
+
+%\todo{Talk about how to define a result and how to compare two results together and remove obsolete entries. Result = (Test, values hit) and \texttt{res1} $\subseteq$ \texttt{res2} $\Leftrightarrow$  \texttt{res1}'s values have also been hit in \texttt{res2}}
 
 \subsection{Fuzzer interface}
 The interface for our fuzzer is defined as follows:
 \begin{lstlisting}[captionpos=b,caption={Interface for the ChiselVerify fuzzer. It takes as parameter a \texttt{dut} and \texttt{chiselverify.coverage.CoverageReporter}, which is the verification plan used to define the functional coverage that will drive the fuzzing. It also takes in a target coverage percentage between 0 and 100, which defaults to 100, and a timeout which is set by default to 1'000'000 inputs. The second set of parameters are a result output file name, where all of the interesting tests and their resulting hit values will be written, as well as a variable number of file paths, which will be used as seeds for the mutation engine. },label={lst:dutexample},language=scala]
 object Fuzzer {
-    def launch[T <: MultiIOModule](
+    def apply[T <: MultiIOModule](
         dut: T, 
         funCov: CoverageReporter, 
         target : Int = 100,
-        timeout : BigInt = BigInt(1000000)
-    )(
-        result: String
-        seeds: String*
-    ) : Int
+        timeout : BigInt = BigInt(1000000))
+        (result: String
+        seeds: String*) : Int
 }
 \end{lstlisting}
 The fuzzer itself will run either until the target coverage or the timeout is reached. The value returned is the final coverage percentage attained during the fuzzing.
 
 \section{First Experiments}
 \label{sec:eval}
-
-\martin{Can we make a quick and dirty (dumb) fuzzing with Leros?}
+%
+%\martin{Can we make a quick and dirty (dumb) fuzzing with Leros?}
+%\martin{Hopefully not just the ALU, maybe the whole processor}
 
 Although this is a work-in-progress report, we have started with an evaluation.
 
-\martin{Hopefully not just the ALU, maybe the whole processor}
-
-We used an ALU with an accumulator from the Leros processor~\cite{leros:arcs2019}
+For our evaluation, we used an ALU with an accumulator from the Leros processor~\cite{leros:arcs2019}
 as our device-under-test (DUT).
 The example is simple, but has a combinational part and state in a register, being
 a non-trivial circuit for testing.
 
+We start by creating a verification plan using functional coverage tools from ChiselVerify.
+\begin{lstlisting}[captionpos=b,caption={Simple verification plan for the leros ALU. Since this is still a work-in-progress, the verification plan is simple and only contains basic cover points. The functional coverage code is also abridged since it is not our main focus in this paper.},label={lst:lerosfuncov},language=scala]
+val cr = new CoverageReporter(dut)
+cr.register(
+    cover("op", dut.input.op)(
+        bin("nop", 0 to 0),
+        //[...] Bins for each operation
+        bin("shr", 7 to 7)),
+    cover("din", dut.input.din)(
+        bin("0xF", 0 to 0xF),
+        //[...] Cover all ranges
+        bin("0xFFFF", 0xFFF to 0xFFFF)),
+    cover("accu", dut.output.accu)(
+        //[...] Same as din
+    cover("ena", dut.input.ena)(
+        bin("disabled", 0 to 0),
+        bin("enabled", 1 to 1)))
+\end{lstlisting}
+Listing~\ref{lst:lerosfuncov} shows a verification plan that covers all possible values for the ALU's inputs.
+Once the verification plan is defined, we create a binary input file.
+To do that, we write a series of simple operations for the ALU to perform and encode them in a binary format stored in seed files.
+\begin{lstlisting}[captionpos=b,caption={Basic ALU operations; dut.io.op is 3 bits wide and din is 8 bits wide. Each binary input in the example is separated with a whitespace for clarity.},label={lst:binops},language=C]
+//32 + 25, done by loading 32 and adding 25 
+//op = 6; din = 0x20; 
+//op = 1; din = 0x19;
+//op = 0; din = 0;
 
+//Binary input stream:
+110 00100000 001 00011001 000 00000000
+\end{lstlisting}
+Listing~\ref{lst:binops} is a basic binary seed saved in a file named \texttt{seed.bin}.
+All that is left is to run the fuzzer on our design with the given seed.
+\begin{lstlisting}[captionpos=b,caption={Call to the fuzzer using the setup previously described.},label={lst:fuzzcall},language=scala]
+Fuzzer(dut, cr)("output.txt", "seed.bin")
+\end{lstlisting}
 
-
-
-
+\todo{Obtain max coverage results with basic seed and discuss.}
+We see that we need more seeds in order to obtain better maximum coverage results. 
+The reason for that is that with a single seed, the initial corpus will always be a continuous mutation of the same test and it is thus more likely to obtain invalid inputs.
+Adding more input seeds covering all possible operations increased the maximum coverage result to \todo{insert percentage} using the same timeout.
+The execution time is slower than RFuzz with the same seeds, since they have the benefit of FPGA acceleration.
+However, our coverage target is attained using \todo{get iterations} iterations where RFuzz requires \todo{get iterations} iterations to reach the same coverage goal.
+This shows that the use of functional coverage, instead of the edge coverage used in RFuzz and AFL, will lead to less iterations required to obtain a satisfactory coverage percentage, since functional coverage gives the fuzzer more information about the internals of the DUT it is testing.
 
 \subsection{The Road Ahead}
+Since this project is still a work-in-progress, the evaluation has still only been done with simple designs, such as an ALU.
+The discussed fuzzing techniques can also be applied to processors where instead of input sequences, a coherent program is generated and mutated to maximize the functional coverage of the circuit. 
+This requires a constrained random program generator which can be interfaced by a fuzzer and used as an alternative mutation engine.
+This will result in more efficient processor fuzzing, since it will only generate legal instructions. 
 
-\subsection{Constrained Random Program Generation}
+As a part of the ChiselVerify project, we have started to develop a constrained random assembly program generator with the goal of combining it with the developed fuzzer to ameliorate processor mutation-based fuzzing in Chisel.
 
-The discussed fuzzing techniques can not only be applied to verify classical digital circuits but also processors where instead of input sequences, a program is generated and mutated to maximize the functional coverage of the circuit. This requires a constraint random program generator which can be interfaced by a fuzz engine and a coverage collector which can extract coverage data from the generated program. 
-
-As a part of the chiselverify framework, we have started to develop a constraint random assembly program generator with the long term goal of combining it with the developed fuzz engine to give access to mutation based fuzzing in chisel/scala for processor verification.
-
-There are existing solutions for constrained random program generation, notably the open-source RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. An implementation in the chisel/scala framework will have the advantage of keeping all communication between the constraint random program generator, the fuzz engine and the coverage collector in the same language. Furthermore, our implementation will not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
-
-\tjark{patterns}
-
-
-\todo{ScalaCheck}
-
-This work-in-progress paper is a first sketch of the ideas to...
-
+There are existing solutions for constrained random program generation, notably the open-source RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. 
+An implementation in scala will have the advantage of keeping all internal communications in the same language. 
+Our implementation will not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
 
 \subsection{Source Access}
 
 The library for this project is available on GitHub:\\ \url{https://github.com/chiselverify}.
 We plan also to regularly publish it on Maven.
-
-\todo{Publish it and provide the info here.}
-
-
+%\todo{Publish it and provide the info here.}
 \section{Conclusion}
 \label{sec:conclusion}
 
@@ -368,14 +379,10 @@ of digital designs described in Chisel with fuzzing.
 Inspired by ideas introduced by the software world, we presented a version of mutation-based fuzzing driven by a hardware-oriented coverage metric.
 This allows a fuzzer generate tests that are more interesting for RTL designs and give the user more control over its behavior. 
 Our plans are now to continue our work by enabling constrained generation of programs in order to test processor designs, thus orienting fuzzing towards RTL design verification.
-
-
-
-
-\subsection*{Acknowledgment}
-
-\martin{Do we have something here?}
-
+%
+%\subsection*{Acknowledgment}
+%
+%\martin{Do we have something here?}
 
 \bibliographystyle{plain}
 % Please do not add any references to msbib.bib.

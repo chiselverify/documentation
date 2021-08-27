@@ -152,7 +152,7 @@ UVM is a first step towards truly standardized test-benches.
 At the time of writing, very little published work was done in the realm of fuzzing for RTL circuits.
 One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). This work differs from what we present in this paper in two ways. First, RFuzz uses a very simple coverage metric that is independent of the DUT (Device Under Test), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}. Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random programs, allowing one to test a processor more efficiently. 
 
-An other important project in the realm of fuzzing is AFL (American Fuzzy Lop)\todo{cite AFL}, which is a statement coverage driven fuzzer for software developed by researchers at Google. AFL is similar in many ways to RFuzz and to our solution, since it is also a mutation-based fuzzer. However, the main difference is obvious, AFL is a fuzzer for software, while the two other fuzzers are for RTL circuits. This doesn't change the fact that many of the internals of our are similar to those of AFL.
+An other important project in the realm of fuzzing is AFL (American Fuzzy Lop)~\cite{afl:repo}, which is a statement coverage driven fuzzer for software developed by researchers at Google. AFL is similar in many ways to RFuzz and to our solution, since it is also a mutation-based fuzzer. However, the main difference is obvious, AFL is a fuzzer for software, while the two other fuzzers are for RTL circuits. This doesn't change the fact that many of the internals of our are similar to those of AFL.
 
 As far as we know, our solution, which is part of the verification library ChiselVerify, is the only mutation-based fuzzer for RTL circuits that uses functional coverage to drive the test generation.
 
@@ -271,8 +271,14 @@ The total duration of a test is thus defined by the input file's bit-length divi
 
 \subsection{Mutation engine}
 Our fuzzer uses AFL's fuzzing engine, which works using multiple passes of both deterministic and non-deterministic mutation techniques.
-\todo{Talk about AFL's mutation techniques.}
-
+The engine first starts by applying  the following series of deterministic mutation techniques:
+\begin{itemize}
+\item \textbf{Walking bit or byte flips}: Sequencially walk through each bit string row, either bit by bit or byte by byte, and flip either 1, 2 or 4 bits or bytes per pass.
+\item \textbf{Simple arithmetics}: Add or subtract values to the bit string. This is usually done by doing multiple incrementation or decrementations at different bytes throughout the string.
+\item \textbf{Known integers}: Use preset interesting integer values (like 0x7F or 0xFF) to replace bytes throughout the string.
+\end{itemize}
+After using the above deterministic mutation methods, the engine moves on to non-deterministic mutations like stacked tweaks or test case splicing, which are covered in detail in AFL's documentation~\cite{afl:fuzzingtechniques}.
+%\todo{Talk about AFL's mutation techniques.}
 \subsection{Result definition and comparison}
 Throughout the fuzzing cycle, data is accumulated in the form of pairs containing both the test's input bit string and the values of the hits that they generated for each \texttt{cover} construct defined in the verification plan~\cite{dobis2021opensource}.
 These \texttt{(Test, hit values)} pairs are then used to identify whether or not an input bit string was interesting.
@@ -351,7 +357,7 @@ We see that we need more seeds in order to obtain better maximum coverage result
 The reason for that is that with a single seed, the initial corpus will always be a continuous mutation of the same test and it is thus more likely to obtain invalid inputs.
 Adding more input seeds covering all possible operations increased the maximum coverage result to \todo{insert percentage} using the same timeout.
 The execution time is slower than RFuzz with the same seeds, since they have the benefit of FPGA acceleration.
-However, our coverage target is attained using \todo{get iterations} iterations where RFuzz requires \todo{get iterations} iterations to reach the same coverage goal.
+However, our coverage target is attained using \todo{get exact iterations} iterations where RFuzz requires \todo{get iterations} iterations to reach the same coverage goal.
 This shows that the use of functional coverage, instead of the edge coverage used in RFuzz and AFL, will lead to less iterations required to obtain a satisfactory coverage percentage, since functional coverage gives the fuzzer more information about the internals of the DUT it is testing.
 
 \subsection{The Road Ahead}
@@ -360,27 +366,26 @@ The discussed fuzzing techniques can also be applied to processors where instead
 This requires a constrained random program generator which can be interfaced by a fuzzer and used as an alternative mutation engine.
 This will result in more efficient processor fuzzing, since it will only generate legal instructions. 
 
-<<<<<<< HEAD
 As a part of the ChiselVerify project, we have started to develop a constrained random assembly program generator with the goal of combining it with the developed fuzzer to ameliorate processor mutation-based fuzzing in Chisel.
-=======
-\subsection{Constrained Random Program Generation}
-
-The discussed fuzzing techniques can not only be applied to verify classical digital circuits but also 
-processors where instead of input sequences, a program is generated and mutated to maximize the 
-functional coverage of the circuit. This requires a constraint random program generator which can 
-be interfaced by a fuzz engine and a coverage collector which can extract coverage data from the 
-generated program. 
-
-As a part of the chiselverify framework, we have started to develop a constraint random assembly 
-program generator with the long term goal of combining it with the developed fuzz engine to give 
-access to mutation based fuzzing in chisel/scala for processor verification.
-
-There are existing solutions for constrained random program generation, notably the open-source 
-RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. An implementation in 
-the chisel/scala framework will have the advantage of keeping all communication between the 
-constraint random program generator, the fuzz engine and the coverage collector in the same 
-language. Furthermore, our implementation will not limit itself to one ISA but will provide 
-a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
+%=======
+%\subsection{Constrained Random Program Generation}
+%
+%The discussed fuzzing techniques can not only be applied to verify classical digital circuits but also 
+%processors where instead of input sequences, a program is generated and mutated to maximize the 
+%functional coverage of the circuit. This requires a constraint random program generator which can 
+%be interfaced by a fuzz engine and a coverage collector which can extract coverage data from the 
+%generated program. 
+%
+%As a part of the chiselverify framework, we have started to develop a constraint random assembly 
+%program generator with the long term goal of combining it with the developed fuzz engine to give 
+%access to mutation based fuzzing in chisel/scala for processor verification.
+%
+%There are existing solutions for constrained random program generation, notably the open-source 
+%RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. An implementation in 
+%the chisel/scala framework will have the advantage of keeping all communication between the 
+%constraint random program generator, the fuzz engine and the coverage collector in the same 
+%language. Furthermore, our implementation will not limit itself to one ISA but will provide 
+%a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
 
 There are existing solutions for constrained random program generation, notably the open-source RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. 
 An implementation in scala will have the advantage of keeping all internal communications in the same language. 

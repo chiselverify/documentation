@@ -78,8 +78,6 @@ Experiments on the Leros accumulator ALU show that using functional coverage ena
 
 \end{abstract}
 
-\martin{Nice paper. In general I think we need to explain functional coverage to understand this work.}
-
 \begin{IEEEkeywords}
 digital design, verification, fuzzing, coverage
 \end{IEEEkeywords}
@@ -123,6 +121,10 @@ AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
 RFuzz, as well as our own solution, is based on AFL. 
 The key difference is that AFL is a fuzzer for software, while the two other fuzzers are for digital circuits.
 This impacts the way a test is defined, interpreted and mutated~\cite{rfuzz2018}.
+
+As for random program generation, the open-source RISC-V DV framework \cite{riscvdv}, built using python and SystemVerilog, is a notable existing solution. 
+However, an implementation in Scala will have the advantage of keeping all internal communications in the same language. 
+Our implementation will also not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
 
 As far as we know, our solution, which is part of the verification library ChiselVerify, is the only mutation-based fuzzer for digital circuits that uses functional coverage to drive the test generation.
 
@@ -188,7 +190,13 @@ Our project uses ChiselTest as a backend in order to access the simulator throug
 
 The presented fuzzer is part of the ChiselVerify project~\cite{verify:chisel:2020, dobis2021opensource}, available
 at \url{https://github.com/chiselverify}.
-\martin{this is too short for its own heading.}
+
+ChiselVerify's functional coverage tool is used as the driving metric of our fuzzer.
+Functional coverage is a hardware-oriented coverage metric that helps verify is certain features of a given specification have been tested thoroughly.
+These features are defined in what's called a \textit{verification plan}~\cite{spear2008systemverilog}.
+This is defined using a set of \texttt{cover} constructs. 
+A \texttt{cover} construct is associated to one or many DUT ports, and contains \texttt{bins} defining a range or a condition to sample over.
+A \texttt{hit} is considered when a value is sampled for the port that is either contained in the bin's range or validates its condition.
 
 \subsection{Simulators}
 
@@ -204,11 +212,8 @@ ChiselTest and our solution use Treadle as a simulator.
 
 %\todo{Check what ScalaCheck can offer.}
 
-\martin{Maybe we should introduce functional coverage here as well (as part of ChiselVerify). the reader probably does not know about functional coverage.}
-
 \section{Fuzzing with Chisel}
 \label{sec:fuzz}
-\martin{are we fuzzing digital circuits or are we fuzzing the test vectors?}
 The main goal of this project is to enable the fuzzing of digital circuits implemented in Chisel, while using functional coverage as a driving metric.
 The mutation engine is taken from AFL using the Java Native Interface (JNI).
 We will now present the fuzzer's current structure.
@@ -240,8 +245,8 @@ class DUT extends Module {
 \end{lstlisting}
 For example, Listing~\ref{lst:dutexample} has an input size of $32 + 32 + 64 = 128$ bits.
 An input for this would thus be a 128 bit binary sequence, where the first 32 bits would be \texttt{inA}, second 32 bits \texttt{inB} and last 64 bits \texttt{inC}.
-\martin{I do not understand the following sentence, how timing and a second 128 bit vector relate.}
-In order to define timing in our tests we can simply concatenate a second 128 bit sequence to the first one.
+The fuzzer considers a single continuous bit string as a test and will parse by considering each \texttt{input sized} segment as a cycle of values.
+This means that, in order to define timing in our tests, we can simply concatenate a second 128 bit sequence to the first one.
 This second sequence will be fed to the DUT a single cycle later, thus creating a 2 cycle long test.
 The total duration of a test is thus defined by the input file's bit-length divided by the input size of the DUT.
 
@@ -256,7 +261,6 @@ The engine first starts by applying  the following series of deterministic mutat
 After using the above deterministic mutation methods, the engine moves on to non-deterministic mutations like stacked tweaks or test case splicing, which are covered in detail in AFL's documentation~\cite{afl:fuzzingtechniques}.
 %\todo{Talk about AFL's mutation techniques.}
 %\subsection{Result definition and comparison}
-\martin{The reader has no idea what the cover construct is here.}
 Throughout the fuzzing cycle, data is accumulated in the form of pairs containing both the test's input bit string and the values of the hits that they generated for each \texttt{cover} construct defined in the verification plan~\cite{dobis2021opensource}.
 These \texttt{(Test, hit values)} pairs are then used to identify whether or not an input bit string was interesting.
 An interesting input is defined as any input that generated a set of hit values that is not a subset of an existing interesting result.
@@ -267,20 +271,23 @@ The coverage allows us to know when to stop fuzzing and output a final result.
 
 %\subsection{Fuzzer interface}
 The interface for our fuzzer is defined as follows:
-\begin{lstlisting}[captionpos=b,caption={Interface for the ChiselVerify fuzzer. It takes as parameter a \texttt{dut} and \texttt{chiselverify.coverage.CoverageReporter}, which is the verification plan used to define the functional coverage that will drive the fuzzing. It also takes in a target coverage percentage between 0 and 100, which defaults to 100, and a timeout which is set by default to 1'000'000. The second set of parameters are a result output file name, where all of the interesting tests and their resulting hit values will be written, as well as a variable number of file paths, which will be used as seeds for the mutation engine. },label={lst:dutexample},language=scala]
+\begin{lstlisting}[captionpos=b,caption={Interface for the ChiselVerify fuzzer. It takes as parameter a \texttt{dut}, \texttt{chiselverify.coverage.CoverageReporter}, which is the verification plan used to define the functional coverage that will drive the fuzzing, and a golden model, which is used to find buggy results. It also takes in a target coverage percentage between 0 and 100, which defaults to 100, and a timeout which is set by default to 1'000'000. The second set of parameters are a result output file name, where all of the interesting tests and their resulting hit values will be written, a bug output file name, as well as a variable number of file paths, which will be used as seeds for the mutation engine. },label={lst:dutexample},language=scala]
 object Fuzzer {
     def apply[T <: MultiIOModule](
         dut: T, 
         funCov: CoverageReporter, 
+        goldModel: List[BigInt] => Boolean,
         target : Int = 100,
         timeout : BigInt = BigInt(1000000))
-        (result: String
+        (result: String,
+        bugResult: String,
         seeds: String*) : Int
 }
 \end{lstlisting}
-The fuzzer itself will run either until the target coverage or the timeout is reached. The value returned is the final coverage percentage attained during the fuzzing.
-\martin{I guess I am missing something here. Where is it checked that the result is OK or not? Is it about comparing the
-HW design agains a golden model?}
+The fuzzer itself will run either until the target coverage or the timeout is reached. 
+A golden model is also used in order to verify if an input string triggered a buggy behavior.
+If buggy behavior is detected, meaning that an obtained result doesn't match the golden model's result, then a buggy result is written to the \texttt{bugResult} file.
+The value returned is the final coverage percentage attained during the fuzzing.
 
 \section{Initial Experiments}
 \label{sec:eval}
@@ -315,7 +322,7 @@ cr.register(
 \end{lstlisting}
 Listing~\ref{lst:lerosfuncov} shows a verification plan that covers all possible values for the ALU's inputs.
 Once the verification plan is defined, we create a binary input file.
-\martin{what is the binary input file?}
+This is how the fuzzer's seeds are defined.
 To do that, we write a series of simple operations for the ALU to perform and encode them in a binary format stored in seed files.
 \begin{lstlisting}[captionpos=b,caption={Basic ALU operations; dut.io.op is 3 bits wide and din is 8 bits wide. Each binary input in the example is separated with a whitespace for clarity.},label={lst:binops},language=C]
 //32 + 25, done by loading 32 and adding 25 
@@ -333,13 +340,10 @@ Fuzzer(dut, cr)("output.txt", "seed.bin")
 \end{lstlisting}
 
 \todo{Obtain max coverage results with basic seed and discuss.}
-We see that we need more seeds in order to obtain better maximum coverage results.
-\martin{better vs. maximum?}
+We see that we need more seeds in order to obtain higher maximum coverage results.
 The reason for that is that with a single seed, the initial corpus will always be a continuous mutation of the same test and it is thus more likely to obtain invalid inputs.
 Adding more input seeds covering all possible operations increased the maximum coverage result to \todo{insert percentage} using the same timeout.
-\martin{I would simply drop the following. It comes from nowhere.}
-The execution time is slower than RFuzz with the same seeds, since they have the benefit of FPGA acceleration.
-However, our coverage target is attained using \todo{get exact iterations} iterations where RFuzz requires \todo{get iterations} iterations to reach the same coverage goal.
+Our coverage target is attained using \todo{get exact iterations} iterations where RFuzz requires \todo{get iterations} iterations to reach the same coverage goal.
 This shows that the use of functional coverage, instead of the edge coverage used in RFuzz and AFL, will lead to less iterations required to obtain a satisfactory coverage percentage, since functional coverage gives the fuzzer more information about the internals of the DUT it is testing.
 
 \section{Future Work}
@@ -349,31 +353,6 @@ This requires a constrained random program generator which can be interfaced by 
 This will result in more efficient processor fuzzing, since it will only generate legal instructions. 
 
 As a part of the ChiselVerify project, we have started to develop a constrained random assembly program generator with the goal of combining it with the developed fuzzer to ameliorate processor mutation-based fuzzing in Chisel.
-%=======
-%\subsection{Constrained Random Program Generation}
-%
-%The discussed fuzzing techniques can not only be applied to verify classical digital circuits but also 
-%processors where instead of input sequences, a program is generated and mutated to maximize the 
-%functional coverage of the circuit. This requires a constraint random program generator which can 
-%be interfaced by a fuzz engine and a coverage collector which can extract coverage data from the 
-%generated program. 
-%
-%As a part of the chiselverify framework, we have started to develop a constraint random assembly 
-%program generator with the long term goal of combining it with the developed fuzz engine to give 
-%access to mutation based fuzzing in chisel/scala for processor verification.
-%
-%There are existing solutions for constrained random program generation, notably the open-source 
-%RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. An implementation in 
-%the chisel/scala framework will have the advantage of keeping all communication between the 
-%constraint random program generator, the fuzz engine and the coverage collector in the same 
-%language. Furthermore, our implementation will not limit itself to one ISA but will provide 
-%a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
-
-\martin{this is related work and should be put there.}
-There are existing solutions for constrained random program generation, notably the open-source RISC-V DV framework \cite{riscvdv} built using python and SystemVerilog. 
-An implementation in Scala will have the advantage of keeping all internal communications in the same language. 
-Our implementation will not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
-
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -383,7 +362,6 @@ of digital designs described in Chisel with fuzzing.
 Inspired by ideas introduced by the software world, we presented a version of mutation-based fuzzing driven by a hardware-oriented coverage metric.
 This allows a fuzzer to generate tests that are more interesting for digital designs and give the user more control over its behavior. 
 Our plans are to continue our work by enabling constrained generation of programs in order to test processor designs.
-%, thus orienting fuzzing towards digital design verification.
 
 \subsection{Source Access}
 

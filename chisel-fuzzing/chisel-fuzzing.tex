@@ -192,11 +192,10 @@ The presented fuzzer is part of the ChiselVerify project~\cite{verify:chisel:202
 at \url{https://github.com/chiselverify}.
 
 ChiselVerify's functional coverage tool is used as the driving metric of our fuzzer.
-Functional coverage is a hardware-oriented coverage metric that helps verify is certain features of a given specification have been tested thoroughly.
-These features are defined in what's called a \textit{verification plan}~\cite{spear2008systemverilog}.
-This is defined using a set of \texttt{cover} constructs. 
+Functional coverage is a hardware-oriented coverage metric that helps verify how thoroughly certain features of a given specification have been tested.
+These features are defined in what's called a \textit{verification plan}~\cite{spear2008systemverilog}, which is defined using a set of \texttt{cover} constructs. 
 A \texttt{cover} construct is associated to one or many DUT ports, and contains \texttt{bins} defining a range or a condition to sample over.
-A \texttt{hit} is considered when a value is sampled for the port that is either contained in the bin's range or validates its condition.
+A \texttt{hit} is considered when a value sampled for the port is either contained in the bin's range or validates its condition.
 
 \subsection{Simulators}
 
@@ -276,7 +275,7 @@ object Fuzzer {
     def apply[T <: MultiIOModule](
         dut: T, 
         funCov: CoverageReporter, 
-        goldModel: List[BigInt] => Boolean,
+        goldModel: List[BigInt] => List[BigInt],
         target : Int = 100,
         timeout : BigInt = BigInt(1000000))
         (result: String,

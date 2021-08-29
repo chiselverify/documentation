@@ -111,20 +111,21 @@ Chisel and Scala}
 
 
 \begin{abstract}
-Performance increase with general-purpose processors has come to a halt.
-We can no longer depend on Moore's Law to increase computing performance.
-The only way to achieve higher performance or lower energy consumption
-is by building domain-specific hardware accelerators.
-To efficiently design and verify those domain-specific accelerators, we need
-agile hardware development. One of the main obstacles when proposing such a modern method
-is the lack of modern tools to attack it. To verify a design in such a time-constrained development
-method, one needs to have efficient tools both for design and verification.
+Modern digital hardware is becoming ever more complex. The development of %Performance increase with general-purpose processors has come to a halt.
+different application-specific accelerators rather than traditional %We can no longer depend on Moore's Law to increase computing performance.
+general purpose processors calls for advanced development methods %The only way to achieve higher performance or lower energy consumption
+not only for design, but equally so for subsequent verification. %is by building domain-specific hardware accelerators.
+Recently, this has made engineers propose an agile hardware development flow. %To efficiently design and verify those domain-specific accelerators, we need
+However, one of the main obstacles when proposing such a method is the lack of %agile hardware development. One of the main obstacles when proposing such a modern method
+efficient tools to attack it. %is the lack of modern tools to attack it. To verify a design in such a time-constrained development
+%method, one needs to have efficient tools both for design and verification.
 
-This paper thus proposes ChiselVerify, an open-source library for verifying
-circuits described in Chisel. It builds on top of the Chisel
-hardware construction language and uses Scala to drive the verification process.
-ChiselVerify increases the productivity of the verification engineer by allowing hardware testing to be done in a modern high-level programming environment.
-The solution is well integrated into the existing Chisel universe, making it an extension of currently existing testing libraries.
+\hjd{Maybe the transition between paragraphs could be smoother here.} With agile hardware design already being enabled through the Chisel hardware %This paper thus proposes ChiselVerify, an open-source library for verifying
+construction language, we instead focus our attention on the verification flow. %circuits described in Chisel. It builds on top of the Chisel
+Thus, this paper proposes ChiselVerify, an open-source library for verifying %hardware construction language and uses Scala to drive the verification process.
+circuits described in Chisel. It builds on top of Chisel and uses Scala to drive %ChiselVerify increases the productivity of the verification engineer by allowing hardware testing to be done in a modern high-level programming environment.
+the verification process. The solution is well integrated into the existing Chisel 
+universe, making it an extension of currently existing testing libraries.
 
 
 %We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
@@ -139,11 +140,11 @@ digital design, verification, Chisel, Scala
 \section{TODO}
 
 \begin{itemize}
-\item REVIEW 1: Re-write abstract and introduction - remove anything not related to verification. Remove negative wording on Verilog and VHDL. Re-consider necessity of section III.A and Fig. 2. Switch to Manager/Subordinate terminology. Need for a more advanced use case.
+\item REVIEW 1: Re-write abstract and introduction - remove anything not related to verification. Remove negative wording on Verilog and VHDL. Re-consider necessity of section III.A and Fig. 2. Need for a more advanced use case.
 \item REVIEW 2: Include ChiselTest and ChiselVerify in Fig. 1. Re-write sections 4, 5 and 6, and ensure close connection to introduction. Add a few words on ChiselVerify as an agile development tool. Need for a more advanced use case (with comparison to UVM). Remove filler sentences.
-\item REVIEW 3: Prove claimed productivity increase. Re-write reference to "Stuart Russel's book". 
+\item REVIEW 3: Prove claimed productivity increase.
 \item REVIEW 4: Need for a more advanced use case.
-\item REVIEW 5: Prove claimed productivity increase. Add table of available methods (section III). Remove Moore's law statements.
+\item REVIEW 5: Prove claimed productivity increase. Add table of available methods (section III).
 \end{itemize}
 
 
@@ -295,19 +296,19 @@ Hence, it is imperative to make accelerator design accessible for software devel
 By adapting hardware accelerator design to the methods and tools of contemporary software design,
 it is possible to bridge both domains catering to a more uniform hardware/software development process.
 
-A few years ago, the two main design languages, Verilog and VHDL, dominated the
-design and testing of digital circuits.
-%However, both languages are decades behind
-%modern languages for software development.
-However, compared to software development and testing, digital design and testing methods/tools 
-lack several decades of development.
-We thus developed a method and concrete tools for agile hardware development.
-ChiselVerify combines tools, languages, development, and testing methods from the last decades in
-software development and applies them to hardware design.
-
-Therefore, we aim to raise the tooling level for a digital design to increase productivity.
-ChiselVerify is based on the hardware construction language Chisel~\cite{chisel:dac2012},
-which itself is embedded in Scala.
+Many hardware engineers are switching away from the traditional hardware description %A few years ago, the two main design languages, Verilog and VHDL, dominated the
+languages (HDLs), i.e., VHDL and Verilog, to SystemVerilog. And while SystemVerilog %design and testing of digital circuits.
+does extend Verilog with object-oriented features for verification, its hardware %%However, both languages are decades behind
+description flow remains the same as with Verilog. Thus, it does not fit an agile %%modern languages for software development.
+development flow. %However, compared to software development and testing, digital design and testing methods/tools 
+Chisel~\cite{chisel:dac2012}, a new hardware construction language embedded in Scala, %lack several decades of development.
+on the other hand, sees to solve these issues by providing full support for %We thus developed a method and concrete tools for agile hardware development.
+object-oriented programming. However, Chisel is missing efficient verification tools %ChiselVerify combines tools, languages, development, and testing methods from the last decades in
+with limited functionality available in the corresponding ChiselTest package~\cite{chisel:tester2}. %software development and applies them to hardware design.
+%
+%Therefore, we aim to raise the tooling level for a digital design to increase productivity.
+%ChiselVerify is based on the hardware construction language Chisel~\cite{chisel:dac2012},
+%which itself is embedded in Scala.
 
 
 %Using the power and flexibility of Chisel Blackboxes, our tool can be used to verify
@@ -316,13 +317,17 @@ which itself is embedded in Scala.
 %used using the Java JNI. Our work builds upon existing open-source projects and 
 %is thus also open-source.
 
-We developed a verification framework in Scala.
-This framework is inspired by the Universal Verification Method (UVM) but leverages Scala's conciseness with the
-combination of object-oriented and functional programming.
-An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
-showed that a test written with UVM was about 800 lines of code, where a Scala-based
-test was around 80 lines of code~\cite{verify:chisel:2020}.
-However, UVM supports more functionalities than a plain ChiselTest~\cite{chisel:tester2} in Scala.
+As such, we choose to base our work on Chisel and ChiselTest, and aim to raise %We developed a verification framework in Scala.
+the tooling level for a digital design. We have developed a verification framework %This framework is inspired by the Universal Verification Method (UVM) but leverages Scala's conciseness with the
+inspired by the Universal Verification Method (UVM), but implemented by leveraging %combination of object-oriented and functional programming.
+Scala's conciseness and support for both object-oriented and functional programming. %An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
+Our framework, ChiselVerify, supports both coverage-oriented and constraint %showed that a test written with UVM was about 800 lines of code, where a Scala-based
+random verification flows with more features than those available in UVM. %test was around 80 lines of code~\cite{verify:chisel:2020}.
+%However, UVM supports more functionalities than a plain ChiselTest~\cite{chisel:tester2} in Scala.
+
+As a showcase, we have verified an industrial use case, a min-heap, utilizing 
+ChiselVerify to check as many features of the min-heap with as few lines of 
+verification code as possible.
 
 %Within our verification framework, we support mixed language verification.
 %Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
@@ -347,11 +352,11 @@ However, UVM supports more functionalities than a plain ChiselTest~\cite{chisel:
 The main contribution of this paper is ChiselVerify~\footnote{Link removed for anonymity.}, an open-source verification library for hardware designs.
 
 The paper is organized into 6 sections.
-Section 2 describes related work.
-Section 3 describes background on hardware verification.
-Section 4 describes our solution for enabling verification in Chisel, namely ChiselVerify.
-Section 5 explores ChiselVerify on an industry-provided use case.
-Section 6 concludes.
+Section II describes related work.
+Section III describes background on hardware verification.
+Section IV describes our solution for enabling verification in Chisel, namely ChiselVerify.
+Section V explores ChiselVerify on an industry-provided use case.
+Section VI concludes.
 
 \section{Related Work}
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
@@ -362,7 +367,7 @@ for those test benches. However, in contrast to Chisel, the object-oriented addi
 used for hardware description.
 SystemVerilog contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage, in a manner similar to what we have developed. SystemVerilog can thus be used, along with the generated Verilog code, for the verification of a Chisel design. However, this is much more cumbersome than the purely Scala-based workflow that our solution offers. When it comes to functional coverage, our solution offers several features that SystemVerilog does not. For example more interesting \texttt{CoverPoints} that can take temporal relations into account and generalized functional bins that work using purely user-defined hit conditions, whilst SystemVerilog only offers bins that cover value ranges or transitions. These more advanced features are possible thanks to the functional nature of Scala. 
 
-The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test benches on top of SystemVerilog. It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. However, it is verbose, and even a simple test requires around 1000 lines of SystemVerilog code. UVM thus requires a decent initial time-investment but is reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM's methods differ so much from more traditional test benches, makes it less accessible than the simpler approach done by ChiselTest.
+The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test benches on top of SystemVerilog. It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. However, it is verbose, and even a simple test requires around 1000 lines of SystemVerilog code. UVM thus requires a significant initial time-investment but is reusable once it gets up and running. This method can be used to verify Chisel designs, however the fact that UVM's methods differ so much from more traditional test benches, makes it less accessible than the simpler approach done by ChiselTest.
 
 
 Other projects have also focused on applying software testing techniques to hardware verification. RFuzz~\cite{rfuzz2018} focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e. randomized testing, where the random seeds are updated depending on certain coverage results) on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. This work offers a different type of solution. While we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. RFuzz uses functional coverage tools in order to guide its randomized testing. A similar result could be obtained by combining the Constrained Random Verification and Functional Coverage tools that are available in ChiselVerify.
@@ -588,7 +593,7 @@ This allows for a final percentage to be shown alongside the number of hits.
 These features allow for the definition of complex verification plans that can be used to represent any given specification, making it possible to verify the correct testing of any design.
 In addition, supporting a coverage measure directly in the testing tool also enables modern verification strategies such as constrained random verification.
 
-\subsection{Constrained Random Verification}
+\subsection{Constrained Random Verification (CRV)}
 
 \martin{We never mention that we are using someone elses solver. This is on
 the boarder to cheating.}
@@ -625,9 +630,8 @@ the boarder to cheating.}
 %paradigm allows the creation of general-purpose models that can be constrained to perform domain-specific functions. 
 
 To make best use of a coverage-driven verification flow, one needs access to CRV tools. Such tools are, as explained 
-before, included in SystemVerilog, and we provide another implementation in ChiselVerify. An initial attempt at 
-implementing a custom CSP solver in Scala based on backtracing and arc consistency, as described in Stuart Russel's book on modern AI~
-\cite{russell2002artificial}, performed poorly. Instead, ChiselVerify provides a wrapper to an existing CSP solver, named JaCoP~\cite{jacop2013}, and 
+before, included in SystemVerilog, and we provide another implementation in ChiselVerify. ChiselVerify 
+provides a wrapper to an existing CSP solver, named JaCoP~\cite{jacop2013}, and 
 a domain-specific language, which allows users to declare and randomize objects.
 
 %SystemVerilog serves as an inspiration for our work, but we diverge from SystemVerilog by exploiting the functional nature of Scala. We have implemented a CSP solver in Scala based on the method described in~\cite{russell2002artificial}. The implementation is composed of two main components. The first one is the CSP solver itself, which uses a combination of backtracking and arc consistency to generate solutions for well-defined problems. The second component is a domain-specific language, which allows users to declare and randomize objects.
@@ -635,11 +639,11 @@ a domain-specific language, which allows users to declare and randomize objects.
 \subsubsection{Constraint Programming with ChiselVerify}
 To begin writing constrained random objects using our library, one must define a \texttt{class} that extends the \texttt{RandObj} trait while initializing it with a \texttt{Model}. A \texttt{Model} represents a database in which all of the \texttt{RandObj}'s random variables and constraints are stored. This \texttt{RandObj} will then contain all of the constraints and random variables we will use in our constrained random tests. Thus, there are two main constructs that can be defined inside of a \texttt{RandObj}: random variables and constraints.
 
-\paragraph{Random variables} There are two main types of random variables that can be defined inside of a \texttt{RandObj}: \texttt{Rand} and \texttt{Randc}. Both types are declared using a lower and an upper bound. \texttt{Rand} random variables  are regular uniformly distributed values found between the given upper and lower bounds. \texttt{Randc} represents a random-cyclic variable, meaning that the values found between the lower and upper bound will not be repeated until all of the values have been covered. For example, if we create a \texttt{Randc(0, 5)}, we will never get the same value twice if we sample it six times, however, on the 7th sampling, the cycle will be reset, and we will start to re-obtain old values.
+\paragraph{Random variables} There are two main types of random variables that can be defined inside of a \texttt{RandObj}: \texttt{Rand} and \texttt{Randc} \hjd{Andrew, can you update this?}. Both types are declared using a lower and an upper bound. \texttt{Rand} random variables  are regular uniformly distributed values found between the given upper and lower bounds. \texttt{Randc} represents a random-cyclic variable, meaning that the values found between the lower and upper bound will not be repeated until all of the values have been covered. For example, if we create a \texttt{Randc(0, 5)}, we will never get the same value twice if we sample it six times, however, on the 7th sampling, the cycle will be reset, and we will start to re-obtain old values.
 
 \paragraph{Constraints} Once all of the random variables have been declared, we can start declaring constraints for these variables. Constraints can either be defined alone or in \texttt{ConstraintGroup}s. Constraint operators are preceded by the \texttt{\#} symbol. These constraints can be on a single random variable or an expression containing multiple variables, like for example, a constraint can contain the subtraction of two random variables. Conditional constraints may also be defined using the \texttt{IfCond} and \texttt{ElseC} constructs. All of these constraints can then be enabled and disabled when needed throughout the test suite.
 
-\paragraph{Using a RandObj} When we defined our random variables and their constraints, we can use them in our tests. First, we instantiate the previously defined \texttt{RandObj} and then randomize it using the \texttt{randomize} method which returns \texttt{true} if the constraints were able to be solved by the CSP solver. The random variables can then be accessed using their respective \texttt{value()} methods. We will show how to use the constrained random verification tool with a simple example shown in Listing~\ref{lst:randobjscala}.
+\paragraph{Using a RandObj} When we defined our random variables and their constraints, we can use them in our tests. First, we instantiate the previously defined \texttt{RandObj} and then randomize it using the \texttt{randomize} method which returns \texttt{true} if the constraints were able to be solved by the CSP solver. The random variables can then be accessed using their respective \texttt{value()} methods. %We will show how to use the constrained random verification tool with a simple example shown in Listing~\ref{lst:randobjscala}.
 
 %As an example, consider listing~\ref{lst:randobjscala} which shows the declaration of a NoC packet (or frame) random bundle with four fields; the packet type \texttt{pType}, the packet length \texttt{len}, whether the packet will be repeated \texttt{noRepeat}, and the packet payload \texttt{payload}. The packet type takes one of three possible values declared in a separate enumeration object \texttt{pktType}. Constraints are declared as \texttt{constraintBlock}s including one or more unary or binary constraints, which are functions operating on the random fields. In this case, different constraints apply to the \texttt{len} field depending on the packet type field \texttt{pType}.
 
@@ -718,10 +722,10 @@ The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible int
 
 \martin{Is it really specified that write address has to be sent before the data?
 I guess those channels are independent.}
-Consider, for example, a write transaction of 16 data elements. First, the master provides transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel, then the master transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the slave indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}.
+Consider, for example, a write transaction of 16 data elements. First, the manager provides transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel, then the manager transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the subordinate indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}.
 
 \subsubsection{Implementation}
-Our implementation of an AXI4 BFM includes bundles defining the five different channels, abstract classes representing both master and slave entities, transaction-related classes, and the BFM itself, the \texttt{FunctionalMaster} class. The BFM is parameterized with a DUT that extends a \texttt{Slave} class and provides a simple, transaction-level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx}, which do precisely as their names indicate; create and enqueue write and read transactions.
+Our implementation of an AXI4 BFM includes bundles defining the five different channels, abstract classes representing both manager and subordinate entities, transaction-related classes, and the BFM itself, the \texttt{FunctionalManager} class. The BFM is parameterized with a DUT that extends a \texttt{Subordinate} class and provides a simple, transaction-level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx}, which do precisely as their names indicate; create and enqueue write and read transactions.
 
 Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the methods mentioned above (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. When, for example, a write transaction is enqueued, and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
 
@@ -732,7 +736,7 @@ class MemoryTester extends FlatSpec with ChiselScalatestTester {
   behavior of "My Memory module"
   it should "write and read" in {
     test(new Memory()) { dut =>
-      val bfm = new FunctionalMaster(dut)
+      val bfm = new FunctionalManager(dut)
       bfm.createWriteTrx(0, Seq.fill(16)(0x7FFFFFFF), len = 15, size = 2)
       bfm.createReadTrx(0, len = 15, size = 2)
     }
@@ -742,7 +746,7 @@ class MemoryTester extends FlatSpec with ChiselScalatestTester {
 
 \section{Use Case: Sorting in Hardware}
 
-In our research, we received a use case from Microchip in the form of a specification.
+In our research, we received a use case from Microchip~\cite{microchip} in the form of a specification.
 We implemented and used it to evaluate our verification library.
 
 \subsection{Specification}

@@ -537,12 +537,12 @@ For example, gathering the same functional coverage data using UVM required the 
 \end{itemize}  
 The UVM subscriber must then be used inside of a whole UVM test-bench, which itself contains many other classes and constructs.
 This also holds for UVM's random objects.
-For comparison, our Scala functional coverage took 12 lines to define.
-Its UVM counterpart took 84 lines, only including the \texttt{uvm\_subscriber} class.
-Using our Scala-based solution, we have minimized the amount of code needed to use these functionalities. 
-For functional coverage, all that needs to be done is to define the verification plan and sample it.
-CRV can be done by only defining the random object. 
-UVM does not offer any predefined bus functional models.
+For comparison, our ChiselVerify test-bench is defined with just 24 lines of code,
+while its UVM counterpart takes up 96 lines, including only the \texttt{uvm\_subscriber} class.
+This is a major saving and provides a good indication of how our Scala-based solution minimizes the amount of code needed to utilize advanced verification features. \\
+In summary, for functional coverage, all that needs to be done is to define a verification plan and sample it during a test, and
+CRV can be done by defining just a random object. 
+%UVM does not offer any predefined bus functional models.
 
 \section{Conclusion}
 In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software-like ecosystem for hardware design. 

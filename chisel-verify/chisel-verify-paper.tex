@@ -90,17 +90,17 @@ Chisel and Scala}
 \IEEEauthorblockA{No Institute Given}
 }
 
-%\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
-%Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
-%\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
-%\textit{Technical University of Denmark}\\
-%Lyngby, Denmark \\\\
-%\textit{Department of Electrical Engineering and Computer Sciences} \\
-%\textit{UC Berkeley}\\
-%Berkeley, CA \\\\
-%andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, s190057@student.dtu.dk, \\
-%s163915@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
-%}
+\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
+Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
+\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+\textit{Technical University of Denmark}\\
+Lyngby, Denmark \\\\
+\textit{Department of Electrical Engineering and Computer Sciences} \\
+\textit{UC Berkeley}\\
+Berkeley, CA \\\\
+andrew.dobis@alumni.epfl.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, s190057@student.dtu.dk, \\
+s163915@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
+}
 
 
 \begin{document}
@@ -117,12 +117,11 @@ general purpose processors calls for advanced development methods %The only way 
 not only for design, but equally so for subsequent verification. %is by building domain-specific hardware accelerators.
 Recently, this has made engineers propose an agile hardware development flow. %To efficiently design and verify those domain-specific accelerators, we need
 However, one of the main obstacles when proposing such a method is the lack of %agile hardware development. One of the main obstacles when proposing such a modern method
-efficient tools to attack it. %is the lack of modern tools to attack it. To verify a design in such a time-constrained development
+efficient tools for verification. %is the lack of modern tools to attack it. To verify a design in such a time-constrained development
 %method, one needs to have efficient tools both for design and verification.
 
-\hjd{Maybe the transition between paragraphs could be smoother here.} With agile hardware design already being enabled through the Chisel hardware %This paper thus proposes ChiselVerify, an open-source library for verifying
-construction language, we instead focus our attention on the verification flow. %circuits described in Chisel. It builds on top of the Chisel
-Thus, this paper proposes ChiselVerify, an open-source library for verifying %hardware construction language and uses Scala to drive the verification process.
+\hjd{Maybe the transition between paragraphs could be smoother here.} With agile hardware design already being enabled through the Chisel, we focus our attention on the verification flow.
+This paper proposes ChiselVerify, an open-source library for verifying %hardware construction language and uses Scala to drive the verification process.
 circuits described in Chisel. It builds on top of Chisel and uses Scala to drive %ChiselVerify increases the productivity of the verification engineer by allowing hardware testing to be done in a modern high-level programming environment.
 the verification process. The solution is well integrated into the existing Chisel 
 universe, making it an extension of currently existing testing libraries.
@@ -794,7 +793,7 @@ With this, we brought functional coverage, constrained random verification, and 
 
 \subsection*{Source Access}
 
-This work is in open source and hosted at GitHub: \textit{Link removed for anonymity}%\url{https://github.com/chiselverify/chiselverify}
+This work is in open source and hosted at GitHub: \url{https://github.com/chiselverify/chiselverify}
 
 %\subsection*{Acknowledgment}
 %This work has been performed as part of the

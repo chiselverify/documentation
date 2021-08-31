@@ -48,11 +48,11 @@
 \newcommand{\hjd}[1]{{\color{pink} Hans: #1}}
 
 % uncomment following for final submission
-\renewcommand{\todo}[1]{}
-\renewcommand{\martin}[1]{}
-\renewcommand{\simon}[1]{}
-\renewcommand{\kasper}[1]{}
-\renewcommand{\ducky}[1]{}
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\simon}[1]{}
+%\renewcommand{\kasper}[1]{}
+%\renewcommand{\ducky}[1]{}
 
 
 
@@ -106,8 +106,8 @@ hans.damsgaard@tuni.fi, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dt
 \begin{document}
 
 \maketitle
-\thispagestyle{plain}
-\pagestyle{plain}
+\thispagestyle{empty}
+\pagestyle{empty}
 
 
 \begin{abstract}
@@ -117,7 +117,7 @@ general purpose processors calls for advanced development methods %The only way 
 not only for design, but equally so for subsequent verification. %is by building domain-specific hardware accelerators.
 Recently, this has made engineers propose an agile hardware development flow. %To efficiently design and verify those domain-specific accelerators, we need
 However, one of the main obstacles when proposing such a method is the lack of %agile hardware development. One of the main obstacles when proposing such a modern method
-efficient tools to attack it. %is the lack of modern tools to attack it. To verify a design in such a time-constrained development
+efficient tools for verification. %is the lack of modern tools to attack it. To verify a design in such a time-constrained development
 %method, one needs to have efficient tools both for design and verification.
 
 Chisel, a high-level hardware construction language, was introduce in order to combat this lack.
@@ -386,7 +386,7 @@ Adding an ``expected number of hits'' to each condition allows for a final perce
 These features allow for the definition of complex verification plans that can be used to represent any given specification, making it possible to verify the correct testing of any design.
 In addition, supporting a coverage measure directly in the testing tool also enables modern verification strategies such as constrained random verification.
 
-\subsection{Constrained Random Verification (CRV)}
+\subsection{Constrained Random Verification}
 
 To make best use of a coverage-driven verification flow, one needs access to CRV tools. 
 Such tools are, as explained before, included in SystemVerilog, and we provide another implementation in ChiselVerify. 

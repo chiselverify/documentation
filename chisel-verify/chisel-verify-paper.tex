@@ -48,11 +48,11 @@
 \newcommand{\hjd}[1]{{\color{pink} Hans: #1}}
 
 % uncomment following for final submission
-\renewcommand{\todo}[1]{}
-\renewcommand{\martin}[1]{}
-\renewcommand{\simon}[1]{}
-\renewcommand{\kasper}[1]{}
-\renewcommand{\ducky}[1]{}
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\simon}[1]{}
+%\renewcommand{\kasper}[1]{}
+%\renewcommand{\ducky}[1]{}
 
 
 
@@ -106,8 +106,8 @@ Chisel and Scala}
 \begin{document}
 
 \maketitle
-\thispagestyle{plain}
-\pagestyle{plain}
+\thispagestyle{empty}
+\pagestyle{empty}
 
 
 \begin{abstract}
@@ -141,7 +141,7 @@ digital design, verification, Chisel, Scala
 
 \begin{itemize}
 \item REVIEW 1: Re-write abstract and introduction - remove anything not related to verification. Remove negative wording on Verilog and VHDL. Re-consider necessity of section III.A and Fig. 2. Need for a more advanced use case.
-\item REVIEW 2: Include ChiselTest and ChiselVerify in Fig. 1. Re-write sections 4, 5 and 6, and ensure close connection to introduction. Add a few words on ChiselVerify as an agile development tool. Need for a more advanced use case (with comparison to UVM). Remove filler sentences.
+\item REVIEW 2: Include ChiselTest and ChiselVerify in Fig. 1. Re-write introduction paragraphs 4, 5, and 6. Add a few words on ChiselVerify as an agile development tool. Need for a more advanced use case (with comparison to UVM). Remove filler sentences.
 \item REVIEW 3: Prove claimed productivity increase.
 \item REVIEW 4: Need for a more advanced use case.
 \item REVIEW 5: Prove claimed productivity increase. Add table of available methods (section III).
@@ -349,7 +349,7 @@ verification code as possible.
 %All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
 
 
-The main contribution of this paper is ChiselVerify~\footnote{Link removed for anonymity.}, an open-source verification library for hardware designs.
+The main contribution of this paper is ChiselVerify~\footnote{\textit{Link removed for anonymity.}}, an open-source verification library for hardware designs.
 
 The paper is organized into 6 sections.
 Section II describes related work.
@@ -414,7 +414,7 @@ A verification plan that includes these three components tells the coverage repo
 \end{figure*}
 
 
-\subsubsection{Constrained Random Verification}
+\subsubsection{Constrained Random Verification (CRV)}
 As described earlier, the complexity of digital design is increasing with the capacity of the silicon. Traditionally, verification engineers would write a number of directed tests each focusing on one or more of a component's functionalities, but this approach becomes impractical for larger designs. Instead, a uniformly randomized verification methodology may be applied; constrained random verification is a combined effort of constraint programming and coverage-based methodologies.
 With constrained random inputs a relatively small test suite can, statistically, cover many of a component's functionalities. 
 In addition, the constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied~\cite{MehtaCRV2018}.
@@ -593,10 +593,10 @@ This allows for a final percentage to be shown alongside the number of hits.
 These features allow for the definition of complex verification plans that can be used to represent any given specification, making it possible to verify the correct testing of any design.
 In addition, supporting a coverage measure directly in the testing tool also enables modern verification strategies such as constrained random verification.
 
-\subsection{Constrained Random Verification (CRV)}
+\subsection{Constrained Random Verification}
 
-\martin{We never mention that we are using someone elses solver. This is on
-the boarder to cheating.}
+%\martin{We never mention that we are using someone elses solver. This is on
+%the boarder to cheating.}
 
 %\begin{lstlisting}[caption={Random object in SystemVerilog}, label={lst:randobjsysv}]
 %typedef enum {UNICAST=11,MULTICAST,BROADCAST} pkt_type;
@@ -695,22 +695,22 @@ operation to a transaction level. In this work, we provide an example BFM for AX
 \cite{axi4standard}.
 
 \subsubsection{Introduction to AXI4}
-The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of several transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on classic ready-valid handshaking. It is designed with memories in focus that supports multiple outstanding transactions and out-of-order completion. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, as shown in Figure~\ref{fig:axi4w}. The read channels are \textit{Read Address} and \textit{Read Data} shown in Figure~\ref{fig:axi4r}.
+The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of several transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on ready-valid handshaking. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}, while the read channels are \textit{Read Address} and \textit{Read Data}.
 % Ms does not understand what the simplification is
 % shows how the different channels can be simplified into a write transaction and a read transaction.
 
-\begin{figure*}[t]
-  \centering
-  \subfloat[Write channels.\label{fig:axi4w}]{
-    \includegraphics[width=0.45\linewidth]{WriteTrx.pdf}
-  }
-  \hfill
-  \subfloat[Read channels.\label{fig:axi4r}]{
-    \includegraphics[width=0.45\linewidth]{ReadTrx.pdf}
-  }
-  \label{fig:axi4}
-  \caption{An overview of the channels defined in the AXI4 standard.}
-\end{figure*}
+%\begin{figure*}[t]
+%  \centering
+%  \subfloat[Write channels.\label{fig:axi4w}]{
+%    \includegraphics[width=0.45\linewidth]{WriteTrx.pdf}
+%  }
+%  \hfill
+%  \subfloat[Read channels.\label{fig:axi4r}]{
+%    \includegraphics[width=0.45\linewidth]{ReadTrx.pdf}
+%  }
+%  \label{fig:axi4}
+%  \caption{An overview of the channels defined in the AXI4 standard.}
+%\end{figure*}
 
 %\begin{itemize}
 %  \item \textit{Write Address} for transferring transaction attributes from master to slave
@@ -720,9 +720,9 @@ The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible int
 %  \item \textit{Read Data} for transferring read data from slave to master
 %\end{itemize}
 
-\martin{Is it really specified that write address has to be sent before the data?
-I guess those channels are independent.}
-Consider, for example, a write transaction of 16 data elements. First, the manager provides transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel, then the manager transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the subordinate indicates the status of the transaction over the \textit{Write Response} channel. The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. A full description is available in \cite{axi4standard}.
+%\martin{Is it really specified that write address has to be sent before the data?
+%I guess those channels are independent.}
+Consider, for example, a write transaction of 16 data elements in which the manager first provides the transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel followed by the 16 data elements one at a time over the \textit{Write Data} channel. Finally, the subordinate indicates the status of the transaction over the \textit{Write Response} channel. Beware that the write data may be transferred prior to the transaction attributes due to channel independence, and similarly, the \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time~\cite{axi4standard}.
 
 \subsubsection{Implementation}
 Our implementation of an AXI4 BFM includes bundles defining the five different channels, abstract classes representing both manager and subordinate entities, transaction-related classes, and the BFM itself, the \texttt{FunctionalManager} class. The BFM is parameterized with a DUT that extends a \texttt{Subordinate} class and provides a simple, transaction-level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx}, which do precisely as their names indicate; create and enqueue write and read transactions.
@@ -794,7 +794,7 @@ With this, we brought functional coverage, constrained random verification, and 
 
 \subsection*{Source Access}
 
-This work is in open source and hosted at GitHub: \url{https://github.com/chiselverify/chiselverify}
+This work is in open source and hosted at GitHub: \textit{Link removed for anonymity}%\url{https://github.com/chiselverify/chiselverify}
 
 %\subsection*{Acknowledgment}
 %This work has been performed as part of the

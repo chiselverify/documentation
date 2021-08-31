@@ -85,17 +85,17 @@
 \title{ChiselVerify: An Open-Source Hardware Verification Library for
 Chisel and Scala}
 
-\author{
-\IEEEauthorblockN{No Author Given}
-\IEEEauthorblockA{No Institute Given}
-}
+%\author{
+%\IEEEauthorblockN{No Author Given}
+%\IEEEauthorblockA{No Institute Given}
+%}
 
-\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Hans Jakob Damsgaard, Kasper Juul Hesse Rasmussen, \\
-Enrico Tolotto, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
-\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+\author{\IEEEauthorblockN{Andrew Dobis\IEEEauthorrefmark{1}, Tjark Petersen\IEEEauthorrefmark{1}, Hans Jakob Damsgaard\IEEEauthorrefmark{1}, Kasper Juul Hesse Rasmussen\IEEEauthorrefmark{1}, \\
+Enrico Tolotto\IEEEauthorrefmark{1}, Simon Thye Andersen\IEEEauthorrefmark{1}, Richard Lin\IEEEauthorrefmark{2}, Martin Schoeberl\IEEEauthorrefmark{1}}\\
+\IEEEauthorblockA{\IEEEauthorrefmark{1}\textit{Department of Applied Mathematics and Computer Science} \\
 \textit{Technical University of Denmark}\\
 Lyngby, Denmark \\\\
-\textit{Department of Electrical Engineering and Computer Sciences} \\
+\IEEEauthorrefmark{2}\textit{Department of Electrical Engineering and Computer Sciences} \\
 \textit{UC Berkeley}\\
 Berkeley, CA \\\\
 adobis@student.ethz.ch, s186083@student.dtu.dk, hans.damsgaard@tuni.fi, s183735@student.dtu.dk, \\
@@ -218,7 +218,7 @@ In contrast to ChiselVerify, \texttt{chisel3.formal} proposes way of testing bas
 These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. 
 These formal checks can then be verified by calling the \texttt{verify(module)} function. 
 
-This approach is similar to software contracts in Scala, like the ones enabled by ScalaCheck~\todo{cite scala check}. 
+This approach is similar to software contracts in Scala, like the ones enabled by ScalaCheck~\cite{scalacheck}. 
 The main difference between our solution and this one is that here the rules are written on a per-module basis and are thus directly linked to the Chisel code, while our solution focuses on checking that a suite of test-benches is testing the right things. 
 The \texttt{chisel3.formal} package has also been extended in \texttt{kiwi-formal}~\cite{chisel:kiwi-formal} and \texttt{dank-formal}~\cite{chisel:dank-formal}, each adding their own additional formal rule templates. 
 
@@ -507,7 +507,7 @@ Due to the simple interface of the priority queue, which only consists of two bo
 The functional coverage report was then used to check how well the inputs were spread over the spectrum of possibilities and to check whether certain input combinations were applied to the DUT at some point throughout the test. 
 As an example, the timed coverage feature made it easy to check whether the \texttt{valid} input of the DUT was revoked at some point within 10 clock cycles after issuing an operation by adding the following cross-coverage group:
 
-\begin{lstlisting}[language=scala, caption={A timed cover construct.}, label={lst:axitest}]
+\begin{lstlisting}[language=scala, caption={A timed cover construct.}, label={lst:timedcover}]
 cover("timed_valid", dut.io.valid, dut.io.valid)(
   Eventually(10))(
     cross("revoked_valid_under_op", 1 to 1, 0 to 0))

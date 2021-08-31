@@ -90,16 +90,16 @@ Chisel and Scala}
 \IEEEauthorblockA{No Institute Given}
 }
 
-\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Kasper Juul Hesse Rasmussen, Enrico Tolotto, \\
-Hans Jakob Damsgaard, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
+\author{\IEEEauthorblockN{Andrew Dobis, Tjark Petersen, Hans Jakob Damsgaard, Kasper Juul Hesse Rasmussen, \\
+Enrico Tolotto, Simon Thye Andersen, Richard Lin, Martin Schoeberl}\\
 \IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
 \textit{Technical University of Denmark}\\
 Lyngby, Denmark \\\\
 \textit{Department of Electrical Engineering and Computer Sciences} \\
 \textit{UC Berkeley}\\
 Berkeley, CA \\\\
-adobis@student.ethz.ch, s186083@student.dtu.dk, s183735@student.dtu.dk, s190057@student.dtu.dk, \\
-hans.damsgaard@tuni.fi, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
+adobis@student.ethz.ch, s186083@student.dtu.dk, hans.damsgaard@tuni.fi, s183735@student.dtu.dk, \\
+s190057@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
 }
 
 
@@ -117,10 +117,10 @@ general purpose processors calls for advanced development methods %The only way 
 not only for design, but equally so for subsequent verification. %is by building domain-specific hardware accelerators.
 Recently, this has made engineers propose an agile hardware development flow. %To efficiently design and verify those domain-specific accelerators, we need
 However, one of the main obstacles when proposing such a method is the lack of %agile hardware development. One of the main obstacles when proposing such a modern method
-efficient tools for verification. %is the lack of modern tools to attack it. To verify a design in such a time-constrained development
+efficient tools. %is the lack of modern tools to attack it. To verify a design in such a time-constrained development
 %method, one needs to have efficient tools both for design and verification.
 
-Chisel, a high-level hardware construction language, was introduce in order to combat this lack.
+Chisel, a high-level hardware construction language, was introduced in order to combat this lack.
 Since this already enables agile hardware design, we instead focus our attention on the verification flow. %circuits described in Chisel. It builds on top of the Chisel
 Thus, this paper proposes ChiselVerify, an open-source library for verifying %hardware construction language and uses Scala to drive the verification process.
 circuits described in Chisel. It builds on top of Chisel and uses Scala to drive %ChiselVerify increases the productivity of the verification engineer by allowing hardware testing to be done in a modern high-level programming environment.
@@ -169,8 +169,8 @@ As such, we choose to base our work on Chisel and ChiselTest, and aim to raise %
 the tooling level for a digital design. We have developed a verification framework %This framework is inspired by the Universal Verification Method (UVM) but leverages Scala's conciseness with the
 inspired by the Universal Verification Method (UVM), but implemented by leveraging %combination of object-oriented and functional programming.
 Scala's conciseness and support for both object-oriented and functional programming. %An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
-Our framework, ChiselVerify, supports both coverage-oriented and constraint %showed that a test written with UVM was about 800 lines of code, where a Scala-based
-random verification flows with more features than those available in UVM. %test was around 80 lines of code~\cite{verify:chisel:2020}.
+Our framework, ChiselVerify, supports both coverage-oriented and constrained %showed that a test written with UVM was about 800 lines of code, where a Scala-based
+random verification (CRV) flows with more features than those available in UVM. %test was around 80 lines of code~\cite{verify:chisel:2020}.
 %However, UVM supports more functionalities than a plain ChiselTest~\cite{chisel:tester2} in Scala.
 
 As a showcase, we have verified an industrial use case, a min-heap, utilizing 
@@ -190,8 +190,8 @@ Section VI concludes.
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
 
 SystemVerilog is an extension of Verilog. Many non-synthesizable extensions are intended
-to write more advanced test benches. SystemVerilog adds object-oriented programming
-for those test benches. However, in contrast to Chisel, the object-oriented addition cannot be
+to write more advanced test-benches. SystemVerilog adds object-oriented programming
+for those test-benches. However, in contrast to Chisel, the object-oriented addition cannot be
 used for hardware description.
 SystemVerilog offers certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage. 
 When it comes to functional coverage, our solution differs in several ways from SystemVerilog. 
@@ -206,7 +206,7 @@ UVM's structure differs from most traditional test-benches, making it less acces
 
 Other projects have also focused on applying software testing techniques to hardware verification. 
 RFuzz~\cite{rfuzz2018} focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. 
-This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e. randomized testing, where the random seeds are mutated depending on certain coverage results) on digital circuits. 
+This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e., randomized testing, where the random seeds are mutated depending on certain coverage results) on digital circuits. 
 The coverage metrics used in this solution are automated and based on branch coverage. 
 This work offers a different type of solution. 
 While we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. 
@@ -228,14 +228,14 @@ As far as we know, ChiselVerify is the only verification framework allowing for 
 \label{sec:background}
 
 This section presents a brief overview of what hardware verification is. 
-We will also talk about Chisel and the current solutions that exist in it with regards to the verification of digital designs.
+We also briefly present Chisel and the current solutions that exist in it with regards to the verification of digital designs.
 
 \subsection{Verification of Digital Designs}
 Verification of digital designs refers to the testing of a design before it has been taped-out~\cite{spear2008systemverilog}. 
 SystemVerilog~\cite{SystemVerilog} is one of the main languages used for verification.
 The language enables verification engineers to define constraint-driven randomized test-benches and define metrics to gather functional coverage data related to a test suite. 
 However, being embedded in a low-level language makes writing tests quite complex. 
-The three main verification features that we are interested in are: functional coverage, Constrained random verification, and bus functional modeling.
+The three main verification features that we are interested in are: functional coverage, constrained random verification, and bus functional modeling.
 
 \subsubsection{Functional Coverage}
 One of the main tools used in verification is test coverage. 
@@ -245,8 +245,8 @@ Functional coverage enables the measurement of how correctly the specification h
 This is measured relative to a verification plan, which includes the following components:
 
 \begin{itemize}
-  \item \texttt{Bin}: Ranges of values that should be tested for (i.e., expected values of a given port).
-  \item \texttt{Cover} constuct: Port that needs to be sampled in the coverage report, defined using a set of \texttt{bin}s.
+  \item \texttt{Bin}s: Ranges of values that should be tested for (i.e., expected values of a given port).
+  \item \texttt{Cover} constructs: Ports that need to be sampled in the coverage report, defined using a set of \texttt{bin}s.
 \end{itemize}
 
 \begin{figure*}
@@ -257,7 +257,7 @@ This is measured relative to a verification plan, which includes the following c
 \end{figure*}
 
 \subsubsection{Constrained Random Verification}
-Constrained Random Verification allows the verification engineer to create random variables which generated values that verify a set of associated constraints.
+CRV allows the verification engineer to create random variables which generate values that satisfy a set of associated constraints.
 With constrained random inputs, a relatively small test suite can, statistically, cover many of a component's functionalities. 
 In addition, the constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied~\cite{MehtaCRV2018}.
 
@@ -269,14 +269,14 @@ SystemVerilog has native support for constrained random data types and a built-i
 Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method.
 
 \subsubsection{Bus Functional Models}
-A Bus Functional Model is an abstract model of a standardized interface, or a bus of multiple signals, that can be interacted with using transactions. 
-Many synthesis tools, including Xilinx's Vivado, provide IP generators whose output IP blocks are equipped with such standard interfaces. 
-Verification of components with such interfaces is most easily handled with these bus functional models (BFMs), which abstract reading and writing of signals to a transaction level. 
-This thus enables simpler and safer less-verbose interactions with standardized interfaces like I2C or AXI.
+A bus functional model (BFM) is an abstract model of a (standardized) interface that enables interacting with manager or subordinate components at a transaction level rather than at the level of individual wires.
+Many synthesis tools, including Xilinx's Vivado, provide IP generators whose output IP blocks are equipped with such interfaces. 
+%Verification of components with such interfaces is most easily handled with these bus functional models (BFMs), which abstract reading and writing of signals to a transaction level. 
+BFMs thus enable simpler, safer, and less verbose interactions with interfaces like, e.g., AXI.
 
 \subsection{Digital Design with Chisel}
 Our verification library is used for designs described in Chisel.
-Chisel is a ``Hardware Construction Language'' embedded in Scala, used to describe digital circuits~\cite{chisel:dac2012}.
+Chisel is a ``hardware construction language'' embedded in Scala, used to describe digital circuits~\cite{chisel:dac2012}.
 This language is more high-level than the traditional hardware description languages, such as VHDL or Verilog, and enables object-oriented and functional programming in the context of digital design.
 
 Since Chisel and Scala are executing on the Java virtual machine (JVM), they have an excellent interoperability with Java. 
@@ -447,15 +447,9 @@ operation to a transaction level. In this work, we provide an example BFM for AX
 \cite{axi4standard}.
 
 \subsubsection{Introduction to AXI4}
-The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. 
-Operations, known as transactions, consist of several transfers across either set of channels. 
-All channels share a common clock and active-low reset, and base their transfers on classic ready-valid handshaking. 
-It is designed with memories in focus that supports multiple outstanding transactions and out-of-order completion. 
+The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on ready-valid handshaking. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}. The read channels are \textit{Read Address} and \textit{Read Data}.
 
-Consider, for example, a write transaction of 16 data elements. 
-First, the manager provides transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel, then the manager transfers the 16 data elements one at a time over the \textit{Write Data} channel, and finally, the subordinate indicates the status of the transaction over the \textit{Write Response} channel. 
-The \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time. 
-A full description is available in the AXI4 stanrdard~\cite{axi4standard}.
+Consider, for example, a write transaction of 16 data elements in which the manager first provides the transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel followed by the 16 data elements one at a time over the \textit{Write Data} channel. Finally, the subordinate indicates the status of the transaction over the \textit{Write Response} channel. Beware that the write data may be transferred prior to the transaction attributes due to channel independence, and similarly, the \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time~\cite{axi4standard}.
 
 \subsubsection{Implementation}
 Our implementation of an AXI4 BFM includes bundles defining the five different channels, abstract classes representing both manager and subordinate entities, transaction-related classes, and the BFM itself, the \texttt{FunctionalManager} class. The BFM is parameterized with a DUT that extends a \texttt{Subordinate} class and provides a simple, transaction-level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx}, which do precisely as their names indicate; create and enqueue write and read transactions.
@@ -463,7 +457,7 @@ Our implementation of an AXI4 BFM includes bundles defining the five different c
 Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the methods mentioned above (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. When, for example, a write transaction is enqueued, and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
 
 \subsubsection{A Test Example}
-Consider as an example using the BFM to test a module called \texttt{Memory}, which is shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction. Beware that due to channel independence, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+Consider as an example using the BFM to test a module called \texttt{Memory}, as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction. Beware that due to channel independence, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
 \begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
 class MemoryTester extends FlatSpec with ChiselScalatestTester {
   behavior of "My Memory module"
@@ -488,9 +482,9 @@ We implemented and used it to evaluate our verification library.
 The provided use case is a hardware implementation of a priority queue, which can be used in real-time systems requiring scheduling capabilities. 
 For instance, timestamps for deadlines can be inserted and sorted such that the host system has access to the closest deadline.
 
-Internally, the hardware priority queue relies, on a min-heap tree data structure. 
+Internally, the hardware priority queue relies on a min-heap tree data structure. 
 The run-times of insertion and removal operations, both having a complexity of $O(\log_k N)$ where $N$ is the number of elements and $k$ the number children per node, are bound by the depth of the tree. 
-By increasing the number of children $k$ per node, the depth, as well the run-times, can be reduced.
+By increasing $k$, the depth of the tree, as well the run-times, can be reduced.
 
 In order to remove elements from the priority queue, a reference ID is needed. 
 Therefore, a reference ID must be added to each element by the priority queue's user.
@@ -541,7 +535,7 @@ For example, gathering the same functional coverage data using UVM required the 
     \item Define \texttt{build\_phase} and \texttt{write} functions.
     \item Define the coverage class constructor.
 \end{itemize}  
-This UVM subscriber must then be used inside of a whole UVM testbench, which itself contains many other classes and constructs.
+The UVM subscriber must then be used inside of a whole UVM test-bench, which itself contains many other classes and constructs.
 This also holds for UVM's random objects.
 For comparison, our Scala functional coverage took 12 lines to define.
 Its UVM counterpart took 84 lines, only including the \texttt{uvm\_subscriber} class.
@@ -566,7 +560,7 @@ This work is in open source and hosted at GitHub:\\ \url{https://github.com/chis
 %``High-Level Design and Verification of Digital Systems''.
 
 \bibliographystyle{IEEEtran}
-\bibliography{../msbib,../chisel-uvm,../funding/ftp-chisel/testing}
+\bibliography{../msbib,../chisel-uvm}%,../funding/ftp-chisel/testing}
 
 
 \end{document}

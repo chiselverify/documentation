@@ -8,6 +8,29 @@
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{comment}
+
+\usepackage{listings}
+\lstset{
+	columns=fullflexible,
+	%        basicstyle=\ttfamily\footnotesize,
+	basicstyle=\ttfamily\small,      
+	%columns=fullflexible, keepspaces=true,
+	numbers=left,    
+	numberblanklines=false,
+	captionpos=b,
+	%	breaklines=true,
+	escapeinside={@}{@},
+	numbersep=5pt,
+	language=C,
+	tabsize=2,
+	breakatwhitespace=true,
+	breaklines=true,
+	deletekeywords={for},
+	%        keywordstyle=\ttfamily
+	numbersep=5pt,
+	xleftmargin=.10in,
+	%xrightmargin=.25in
+}
 %\usepackage{flushend} % even out the last page, but use only at the end when there is a bibliography
 
 \newcommand{\code}[1]{{\small{\texttt{#1}}}}
@@ -128,16 +151,6 @@ Our implementation will also not limit itself to one ISA but will provide a gene
 
 As far as we know, our solution, which is part of the verification library ChiselVerify, is the only mutation-based fuzzer for digital circuits that uses functional coverage to drive the test generation.
 
-%\rewrite{Other projects have also focused on applying software testing techniques to hardware verification. RFuzz~\cite{rfuzz2018} focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e. randomized testing, where the random seeds are updated depending on certain coverage results) on RTL circuits. The coverage metrics used in this solution are automated and based on branch coverage. This work offers a different type of solution. While we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. RFuzz uses functional coverage tools in order to guide its randomized testing. A similar result could be obtained by combining the Constrained Random Verification and Functional Coverage tools that are available in ChiselVerify.
-
-%\texttt{Chisel3.formal}  is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. The approach taken here is quite different from what we have developed. Rather than creating a set of tools that supplement the current chisel testing pipeline, \texttt{chisel3.formal} rather proposes a different way of testing, based around defining a set of formal checks that a design must pass in order to be considered as functional. These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. These formal checks can then be verified by calling the \texttt{verify(module)} function. 
-%
-%This approach is similar to software contracts in Scala. The main difference between our solution and this one is that here the rules are written on a per-module basis and are thus directly linked to the Chisel code, while our solution rather focuses on checking that a suite of test-benches are testing the right things. The \texttt{chisel3.formal} package has also been extended in \texttt{kiwi-formal}~\cite{chisel:kiwi-formal} and \texttt{dank-formal}~\cite{chisel:dank-formal}, leading to multiple different versions of it, each adding their own additional formal rule templates. 
-%
-%As far as we know, ChiselVerify is the only verification framework allowing for the easy use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.}
-
-
-
 \section{Open-Source Tools}
 \label{sec:tools}
 
@@ -146,7 +159,6 @@ Our work is based on the methods and heuristics used in AFL, which we reimplemen
 
 \subsection{Mutation-based Fuzzing}
 Mutation-based fuzzing is a form of blackbox fuzzing, i.e., fuzzing where the fuzzing engine does not know about the program or device it is testing.
-%\todo{Make figure denser.}
 \begin{figure}
   \centering
     \includegraphics[width=0.9\linewidth]{mutation-fuzzing.pdf}
@@ -180,7 +192,6 @@ This may be done with standard Verilog test-benches or writing more complex ones
  
 ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel, offers another solution by allowing one to directly test the Chisel code in a usable and simple way.
 ChiselTest works as a Scala library that allows the user to interface directly with the simulator with operations like \texttt{peek} (view the value of a wire), \texttt{poke} (write a value to a wire) and \texttt{step} (increment the clock).
-%These tests are simple imperative Scala programs in which one line runs after the next.
 In order to write concurrent test-benches, the library also offers a \texttt{fork} method.
 
 ChiselTest tries to enable best practices from software engineering by having lightweight syntax, allowing one to easily write small targeted unit tests.
@@ -207,9 +218,6 @@ The main open-source option is \texttt{verilator}~\cite{verilator}, which has a 
 The second option is to use a FIRRTL simulator, the main one being Treadle.\footnote{\url{https://github.com/freechipsproject/treadle}}
 Treadle operates on FIRRTL and thus allows one to avoid generating Verilog code, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
 ChiselTest and our solution use Treadle as a simulator. 
-%This allows us to have more control over the process by writing our own \texttt{FIRRTL} compiler passes, allowing for the gathering of specific coverage data.
-
-%\todo{Check what ScalaCheck can offer.}
 
 \section{Fuzzing with Chisel}
 \label{sec:fuzz}
@@ -217,7 +225,6 @@ The main goal of this project is to enable the fuzzing of digital circuits imple
 The mutation engine is taken from AFL using the Java Native Interface (JNI).
 We will now present the fuzzer's current structure.
 
-%\subsection{Fuzzing Algorithm}  
 The fuzzer works in five main phases:  
 \begin{itemize}
 \item Interpret user-defined input files as bit-streams and load them into a queue.
@@ -227,8 +234,6 @@ The fuzzer works in five main phases:
 \item Compare the results to the previous ones to determine if the new test was interesting or not. Add the test to the corpus of interesting tests if needed and repeat. 
 \end{itemize}  
 
-%We will now discuss each of these points in detail.  
-%\subsection{Input file definition} 
 Initial inputs are defined by the user and will be the base seeds of the test corpus.
 This is done by defining a set of binary seed files that each contain a sequence of inputs for the DUT.
 
@@ -249,7 +254,6 @@ This means that, in order to define timing in our tests, we can simply concatena
 This second sequence will be fed to the DUT a single cycle later, thus creating a 2 cycle long test.
 The total duration of a test is thus defined by the input file's bit-length divided by the input size of the DUT.
 
-%\subsection{Mutation engine}
 Our fuzzer uses AFL's fuzzing engine, which uses multiple passes of both deterministic and non-deterministic mutation techniques.
 The engine first starts by applying  the following series of deterministic mutation techniques:
 \begin{itemize}
@@ -258,17 +262,14 @@ The engine first starts by applying  the following series of deterministic mutat
 \item \textbf{Known integers}: Use preset interesting integer values (like 0x7F or 0xFF) to replace bytes throughout the string.
 \end{itemize}
 After using the above deterministic mutation methods, the engine moves on to non-deterministic mutations like stacked tweaks or test case splicing, which are covered in detail in AFL's documentation~\cite{afl:fuzzingtechniques}.
-%\todo{Talk about AFL's mutation techniques.}
-%\subsection{Result definition and comparison}
+
 Throughout the fuzzing cycle, data is accumulated in the form of pairs containing both the test's input bit string and the values of the hits that they generated for each \texttt{cover} construct defined in the verification plan~\cite{dobis2021opensource}.
 These \texttt{(Test, hit values)} pairs are then used to identify whether or not an input bit string was interesting.
 An interesting input is defined as any input that generated a set of hit values that is not a subset of an existing interesting result.
 These results also contain a total obtained functional coverage, which is the average coverage over all defined \texttt{cover} constructs in the verification plan.
 The coverage allows us to know when to stop fuzzing and output a final result.
 
-%\todo{Talk about how to define a result and how to compare two results together and remove obsolete entries. Result = (Test, values hit) and \texttt{res1} $\subseteq$ \texttt{res2} $\Leftrightarrow$  \texttt{res1}'s values have also been hit in \texttt{res2}}
 
-%\subsection{Fuzzer interface}
 The interface for our fuzzer is defined as follows:
 \begin{lstlisting}[captionpos=b,caption={Interface for the ChiselVerify fuzzer. It takes as parameter a \texttt{dut}, \texttt{chiselverify.coverage.CoverageReporter}, which is the verification plan used to define the functional coverage that will drive the fuzzing, and a golden model, which is used to find buggy results. It also takes in a target coverage percentage between 0 and 100, which defaults to 100, and a timeout which is set by default to 1'000'000. The second set of parameters are a result output file name, where all of the interesting tests and their resulting hit values will be written, a bug output file name, as well as a variable number of file paths, which will be used as seeds for the mutation engine. },label={lst:dutexample},language=scala]
 object Fuzzer {

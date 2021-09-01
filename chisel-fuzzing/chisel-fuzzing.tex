@@ -113,7 +113,7 @@ Designing these is time-consuming and error prone, which is why researchers have
 This has lead to the introduction of verifications methods, such as constrained random verification and functional coverage~\cite{verify:chisel:2020, dobis2021opensource}, into high level hardware construction languages, like the Scala-embedded language Chisel~\cite{chisel:dac2012, chisel:book} .
 These tools, inspired by the more hardware-centric approach given in SystemVerilog and UVM, enable basic verification where the user has to handle the writing of all tests by hand.
 To improve the efficiency of these tools, we propose a form of dynamic verification, based on coverage-driven mutation-based fuzzing techniques found in the software world.
-This allows for optimal fuzzing for digital designs using functional coverage as a metric to drive the fuzzing.
+This enables fuzzing for digital designs using functional coverage as a driving metric.
 
 This paper describes a research project that aims to develop a functional coverage-driven mutation-based fuzzing tool to test digital circuits.
 Furthermore, we plan to build on this tool to generate constrained random programs so that fuzzing can be used to test processors.
@@ -131,13 +131,13 @@ Section~\ref{sec:conclusion} concludes.
 
 The Universal Verification Methodology (UVM) is a methodology for testing and verifying of digital circuits.
 UVM is implemented as a SystemVerilog library and utilizes the fact that SystemVerilog uses object-oriented programming when designing test-benches.
-Using object-oriented patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionality.
+Using object-oriented patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionalities.
 As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
-UVM is a first step towards truly standardized test-benches.
+UVM is a first step towards standardizing test-bench writing.
 
 At the time of writing, little published work was done in the realm of fuzzing for digital circuits.
-One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on digital circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). RFuzz differs from what we present in this paper in two ways. First, RFuzz uses a simple coverage metric that is independent of the device under test (DUT), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}.
-Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random generated programs to test a processor.
+One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on digital circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020), and differs from what we present in this paper in two ways. First, RFuzz uses a simple coverage metric that is independent of the device under test (DUT), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}.
+Another difference is in the randomized program generation, while RFuzz generates random bit streams, our goal is to focus as well on the generation of coherent random generated programs to test a processor.
 
 American fuzzy loop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
 AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
@@ -147,7 +147,7 @@ This impacts the way a test is defined, interpreted and mutated~\cite{rfuzz2018}
 
 As for random program generation, the open-source RISC-V DV framework \cite{riscvdv}, built using python and SystemVerilog, is a notable existing solution. 
 However, an implementation in Scala will have the advantage of keeping all internal communications in the same language. 
-Our implementation will also not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
+We also plan on providing a general infrastructure for RISC architectures, while ISA definitions will be kept as libraries, allowing our implementation not to be limited by a single ISA.
 
 As far as we know, our solution, which is part of the verification library ChiselVerify, is the only mutation-based fuzzer for digital circuits that uses functional coverage to drive the test generation.
 
@@ -158,7 +158,7 @@ Our work is based on the methods and heuristics used in AFL, which we reimplemen
 %To understand this tool, we must first describe how mutation-based fuzzing works.
 
 \subsection{Mutation-based Fuzzing}
-Mutation-based fuzzing is a form of blackbox fuzzing, i.e., fuzzing where the fuzzing engine does not know about the program or device it is testing.
+Mutation-based fuzzing is a form of blackbox fuzzing, i.e., fuzzing without knowledge about the program or device it is testing.
 \begin{figure}
   \centering
     \includegraphics[width=0.9\linewidth]{mutation-fuzzing.pdf}
@@ -180,7 +180,7 @@ We can then define a fuzzer with 3 elements:
 \subsection{Chisel}
 Our project focuses on digital circuits designed in Chisel.
 Chisel is a hardware construction language embedded in Scala~\cite{chisel:dac2012} that generates Verilog as a final output.
-Chisel also generates code in an intermediate representation named \texttt{FIRRTL}\footnote{\url{https://github.com/freechipsproject/firrtl}}.(Flexible Intermediate Representation for RTL).
+Chisel also generates code in an intermediate representation named \texttt{FIRRTL}\footnote{\url{https://github.com/freechipsproject/firrtl}}(Flexible Intermediate Representation for RTL).
 Chisel allows the user to describe digital circuits in a high-level manner, using functional tools and libraries from Scala in order to minimize the amount of code needed to describe a circuit.
 Since Chisel is a pure hardware \emph{construction} language, all valid Chisel code maps to synthesizable hardware.
 Chisel also enables the verification engineer to use the full power of Scala and Java in a Chisel test-bench, thus making the verification more efficient.
@@ -217,7 +217,7 @@ The main open-source option is \texttt{verilator}~\cite{verilator}, which has a 
 
 The second option is to use a FIRRTL simulator, the main one being Treadle.\footnote{\url{https://github.com/freechipsproject/treadle}}
 Treadle operates on FIRRTL and thus allows one to avoid generating Verilog code, which can vastly reduce the setup time for tests and efficiently run suites of many short tests.
-ChiselTest and our solution use Treadle as a simulator. 
+ChiselTest and our solution both use Treadle as a simulator. 
 
 \section{Fuzzing with Chisel}
 \label{sec:fuzz}
@@ -238,8 +238,8 @@ The fuzzer works in five main phases:
 Initial inputs are defined by the user and will be the base seeds of the test corpus.
 This is done by defining a set of binary seed files that each contain a sequence of inputs for the DUT.
 
-We define the input size as the sum of the bit length of all input signals of the DUT.
-\begin{lstlisting}[captionpos=b,caption={Basic DUT with two 32 bit inputs, one 64 input, as well as a 32 bit output.},label={lst:dutexample},language=scala]
+We define the input size as the sum of the bit lengths of all DUT input signals.
+\begin{lstlisting}[captionpos=b,caption={DUT with two 32 bit inputs, one 64 input, and a 32 bit output.},label={lst:dutexample},language=scala]
 class DUT extends Module {
     val io = IO(new Bundle {
         val inA = Input(UInt(32.W))
@@ -250,7 +250,7 @@ class DUT extends Module {
 \end{lstlisting}
 For example, Listing~\ref{lst:dutexample} has an input size of $32 + 32 + 64 = 128$ bits.
 An input for this would thus be a 128 bit binary sequence, where the first 32 bits would be \texttt{inA}, second 32 bits \texttt{inB} and last 64 bits \texttt{inC}.
-The fuzzer considers a single continuous bit string as a test and will parse by considering each \texttt{input sized} segment as a cycle of values.
+The fuzzer considers a single continuous bit string as a test and will parse it by considering each \texttt{input sized} segment as a cycle of values.
 This means that, in order to define timing in our tests, we can simply concatenate a second 128 bit sequence to the first one.
 This second sequence will be fed to the DUT a single cycle later, thus creating a 2 cycle long test.
 The total duration of a test is thus defined by the input file's bit-length divided by the input size of the DUT.
@@ -322,10 +322,9 @@ cr.register(
         bin("enabled", 1 to 1)))
 \end{lstlisting}
 Listing~\ref{lst:lerosfuncov} shows a verification plan that covers all possible values for the ALU's inputs.
-Once the verification plan is defined, we create a binary input file.
-This is how the fuzzer's seeds are defined.
+Once the verification plan is defined, we create a binary input file, defining a seed for the fuzzer.
 To do that, we write a series of simple operations for the ALU to perform and encode them in a binary format stored in seed files.
-\begin{lstlisting}[captionpos=b,caption={Basic ALU operations; dut.io.op is 3 bits wide and din is 8 bits wide. Each binary input in the example is separated with a whitespace for clarity.},label={lst:binops},language=C]
+\begin{lstlisting}[captionpos=b,caption={Basic ALU operations; dut.io.op is 3 bits wide and din is 8 bits wide. For clarity, a whitespace separates each input.},label={lst:binops},language=C]
 //32 + 25, done by loading 32 and adding 25 
 //op = 6; din = 0x20; 
 //op = 1; din = 0x19;
@@ -341,15 +340,15 @@ Fuzzer(dut, cr)("output.txt", "seed.bin")
 \end{lstlisting}
 
 %\todo{Obtain max coverage results with basic seed and discuss.}
-Running the fuzzer with listing~\ref{lst:binops} as an input results in a timeout.
-The reason for that is that with a single seed, the initial corpus will always be a continuous mutation of the same test and it is thus less likely to generate interesting results.
+Running the fuzzer, with listing~\ref{lst:binops} as an input, results in a timeout.
+Indeed, with a single seed, the initial corpus will always be a continuous mutation of the same test and it is thus less likely to generate interesting results.
 Adding more input seeds covering all possible operations increases results in a higher maximum coverage using the same timeout.
 Further evaluation is planned, using the same fuzzer driven by edge coverage in order to compare the bugs detected using each coverage metric.
-We also expect that the use of functional coverage will lead to less iterations required to obtain a satisfactory coverage percentage, since functional coverage gives the fuzzer more information about the internals of the DUT it is testing, 
+We also expect the use of functional coverage to lead to less iterations required to obtain a satisfactory coverage percentage, due to the additional information inherently contained in this metric. 
 
 \section{Future Work}
 Since this project is still a work-in-progress, the evaluation has still only been done with simple designs, such as an ALU.
-The discussed fuzzing techniques can also be applied to processors where instead of input sequences, a coherent program is generated and mutated to maximize the functional coverage of the circuit. 
+The discussed fuzzing techniques can also be applied to processors where, instead of input sequences, a coherent program is generated and mutated to maximize the functional coverage of the circuit. 
 This requires a constrained random program generator which can be interfaced by a fuzzer and used as an alternative mutation engine.
 This will result in more efficient processor fuzzing, since it will only generate legal instructions. 
 
@@ -367,7 +366,7 @@ Our plans are to continue our work by enabling constrained generation of program
 \subsection{Source Access}
 
 The library for this project is available on GitHub:\\ \url{https://github.com/chiselverify}.
-We plan also to regularly publish it on Maven.
+We plan also to regularly publish it on Maven\footnote{https://mvnrepository.com/artifact/io.github.chiselverify/chiselverify}.
 %\todo{Publish it and provide the info here.}
 
 \bibliographystyle{plain}

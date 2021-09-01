@@ -97,7 +97,7 @@ To combat this, we can learn from agile techniques used in software engineering 
 In this mindset, Chisel, a hardware construction language embedded in Scala, was developed as a tool to accelerate the implementation of digital designs.
 Following this path, we developed a high-level verification library named ChiselVerify, bringing tools such as functional coverage to the Chisel ecosystem.
 Using this tool, we propose a functional coverage-driven mutation-based fuzzer for Chisel designs.
-Experiments on the Leros accumulator ALU show that using functional coverage enables the fuzzer to attain a target coverage percentage in less iterations than when using branch coverage.
+Initial experiments are done on the Leros accumulator ALU.
 
 \end{abstract}
 
@@ -222,7 +222,8 @@ ChiselTest and our solution use Treadle as a simulator.
 \section{Fuzzing with Chisel}
 \label{sec:fuzz}
 The main goal of this project is to enable the fuzzing of digital circuits implemented in Chisel, while using functional coverage as a driving metric.
-The mutation engine is taken from AFL using the Java Native Interface (JNI).
+As a first attempt, we used AFL's mutation engine using the Java Native Interface (JNI).
+In order to reduce compilation time, we chose to reimplement a subset of AFL's mutation techniques using Scala.
 We will now present the fuzzer's current structure.
 
 The fuzzer works in five main phases:  
@@ -254,21 +255,21 @@ This means that, in order to define timing in our tests, we can simply concatena
 This second sequence will be fed to the DUT a single cycle later, thus creating a 2 cycle long test.
 The total duration of a test is thus defined by the input file's bit-length divided by the input size of the DUT.
 
-Our fuzzer uses AFL's fuzzing engine, which uses multiple passes of both deterministic and non-deterministic mutation techniques.
-The engine first starts by applying  the following series of deterministic mutation techniques:
+Our fuzzer implements a subset of AFL's fuzzing engine, which uses multiple passes of both deterministic and non-deterministic mutation techniques.
+The engine first starts by applying the following series of deterministic mutation techniques:
 \begin{itemize}
 \item \textbf{Walking bit or byte flips}: Sequentially walk through each bit string row, either bit by bit or byte by byte, and flip either 1, 2 or 4 bits or bytes per pass.
-\item \textbf{Simple arithmetics}: Add or subtract values to the bit string. This is usually done by doing multiple incrementation or decrementations at different bytes throughout the string.
+\item \textbf{Simple arithmetics}: Add or subtract values to the bit string. This is usually done by doing multiple incrementations or decrementations at different bytes throughout the string.
 \item \textbf{Known integers}: Use preset interesting integer values (like 0x7F or 0xFF) to replace bytes throughout the string.
 \end{itemize}
-After using the above deterministic mutation methods, the engine moves on to non-deterministic mutations like stacked tweaks or test case splicing, which are covered in detail in AFL's documentation~\cite{afl:fuzzingtechniques}.
+After using the above deterministic mutation methods, AFL moves on to non-deterministic mutations like stacked tweaks or test case splicing, which are covered in detail in AFL's documentation~\cite{afl:fuzzingtechniques}.
+Our implementation currently only implements deterministic methods, but we plan on implementing non-deterministic methods in the future.
 
 Throughout the fuzzing cycle, data is accumulated in the form of pairs containing both the test's input bit string and the values of the hits that they generated for each \texttt{cover} construct defined in the verification plan~\cite{dobis2021opensource}.
 These \texttt{(Test, hit values)} pairs are then used to identify whether or not an input bit string was interesting.
 An interesting input is defined as any input that generated a set of hit values that is not a subset of an existing interesting result.
 These results also contain a total obtained functional coverage, which is the average coverage over all defined \texttt{cover} constructs in the verification plan.
 The coverage allows us to know when to stop fuzzing and output a final result.
-
 
 The interface for our fuzzer is defined as follows:
 \begin{lstlisting}[captionpos=b,caption={Interface for the ChiselVerify fuzzer. It takes as parameter a \texttt{dut}, \texttt{chiselverify.coverage.CoverageReporter}, which is the verification plan used to define the functional coverage that will drive the fuzzing, and a golden model, which is used to find buggy results. It also takes in a target coverage percentage between 0 and 100, which defaults to 100, and a timeout which is set by default to 1'000'000. The second set of parameters are a result output file name, where all of the interesting tests and their resulting hit values will be written, a bug output file name, as well as a variable number of file paths, which will be used as seeds for the mutation engine. },label={lst:dutexample},language=scala]
@@ -339,12 +340,12 @@ All that is left is to run the fuzzer on our design with the given seed.
 Fuzzer(dut, cr)("output.txt", "seed.bin")
 \end{lstlisting}
 
-\todo{Obtain max coverage results with basic seed and discuss.}
-We see that we need more seeds in order to obtain higher maximum coverage results.
-The reason for that is that with a single seed, the initial corpus will always be a continuous mutation of the same test and it is thus more likely to obtain invalid inputs.
-Adding more input seeds covering all possible operations increased the maximum coverage result to \todo{insert percentage} using the same timeout.
-Our coverage target is attained using \todo{get exact iterations} iterations where RFuzz requires \todo{get iterations} iterations to reach the same coverage goal.
-This shows that the use of functional coverage, instead of the edge coverage used in RFuzz and AFL, will lead to less iterations required to obtain a satisfactory coverage percentage, since functional coverage gives the fuzzer more information about the internals of the DUT it is testing.
+%\todo{Obtain max coverage results with basic seed and discuss.}
+Running the fuzzer with listing~\ref{lst:binops} as an input results in a timeout.
+The reason for that is that with a single seed, the initial corpus will always be a continuous mutation of the same test and it is thus less likely to generate interesting results.
+Adding more input seeds covering all possible operations increases results in a higher maximum coverage using the same timeout.
+Further evaluation is planned, using the same fuzzer driven by edge coverage in order to compare the bugs detected using each coverage metric.
+We also expect that the use of functional coverage will lead to less iterations required to obtain a satisfactory coverage percentage, since functional coverage gives the fuzzer more information about the internals of the DUT it is testing, 
 
 \section{Future Work}
 Since this project is still a work-in-progress, the evaluation has still only been done with simple designs, such as an ALU.

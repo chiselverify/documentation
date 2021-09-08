@@ -38,7 +38,7 @@
 \newcommand{\todo}[1]{{\it TODO: #1}}
 \newcommand{\note}[1]{{\it Note: #1}}
 \newcommand{\martin}[1]{{\color{blue} Martin: #1}}
-\newcommand{\jens}[1]{{\color{green} Jens: #1}}
+\newcommand{\alceste}[1]{{\color{green} Alceste: #1}}
 
 % uncomment following for final submission
 %\renewcommand{\todo}[1]{}
@@ -519,9 +519,17 @@ we will translate VHDL into Verilog.
 %% several program transformers previously for testing floating-point
 %% computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
 
+\martin{Add temporal properties (temporal logic)}
 
+\todo{Look at \url{https://github.com/chiselverify/chiselverify/wiki/Timed-Assertions}}
+
+\martin{Generate tests from properties.}
+
+\martin{WE probably remove the following}
 
 \paragraph{Learning Specification from Historical Bug Patterns.}
+
+
 We will consider generating specifications from previously known bug
 patterns.  We will collaborate with our hardware engineers to explore
 a history of hardware issues triggered by software defects and get
@@ -654,20 +662,9 @@ and tools for systems engineering of computing systems, embedded systems-on-a-ch
 Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
 synthetic biology (molecular computing). 
 
-{\bf Kasper Hesse (KH)} is student at DTU with a strong background in digital design.
-He has already some knowledge in UVM and can therefore help the project to be productive
-from day one.
+{\bf Alceste  (AS)} is 
 
-{\bf Zhoulai Fu (ZF)} is an assistant professor at ITU. His research
-spans programming language theory and software engineering
-techniques. Related to this project, he worked on developing
-constraint solving and automated testing techniques in achieving high
-coverage and detecting bugs in numerical programs.
-
-{\bf Peter Sestoft (PS)} is professor and head of department at the IT University of Copenhagen.
-His research focus is programming languages, and especially functional, parallel, domain-specific
-and declarative languages, their description, formal modeling, analysis, transformation, and implementation.
-Most of his books have appeared with leading international academic publishers.
+{\bf Martin  ()} is 
 
 {\bf PhD1/2} we are looking for two PhD candidates with a background in computer engineering
 with interest in digital design and programming languages.
@@ -836,7 +833,7 @@ milestone label font=\footnotesize,
 \small
 \bibliographystyle{abbrv}
 %\bibliography{myown,jsp,noc,misc,msbib}
-\bibliography{../msbib,testing,../chisel-uvm}
+\bibliography{../../msbib,../hw-as-a-service/testing,../chisel-uvm}
 
 \end{document}
 

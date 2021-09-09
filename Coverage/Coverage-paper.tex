@@ -237,7 +237,7 @@ During this optimization process the original Chisel description goes through th
 Throughout this optimisation process, custom FIRRTL compiler passes, known as \textit{Transforms}, can be used to modify the design. 
 This is often done when trying to apply simplifications to the design to make the generated hardware more optimal~\cite{firrtl}.  
 
-Figure~\ref{fig:chisel} shows an overview of the Chisel compilation pipeline and the different stages the code goes through before being converted into a usable format. \todo{Perhaps replace with the new figure from the ChiselVerify paper?}
+Figure~\ref{fig:chisel} shows an overview of the Chisel compilation pipeline and the different stages the code goes through before being converted into a usable format. It also indicates the placement of our coverage tools as part of the ChiselVerify package.
 
 \subsection{Test Coverage}
 In software development, test coverage is used as a metric to measure the completeness of a testing suite. 
@@ -245,7 +245,7 @@ In recent years, these techniques, originally used for software, have been broug
 In this paper, we will mostly focus on two key approaches to test coverage: statement coverage and functional coverage. 
 %Nonetheless, we briefly mention closely related and more thorough coverage metrics here.
 
-\paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific design, statement coverage will give a quantitative measure of our testing progress. It measures which percentage of statements in our code have been executed during the test. This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested. \todo{Re-evaluate this last sentence. Perhaps be clearer about the drawbacks of statement coverage alone?}
+\paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific design, statement coverage will give a quantitative measure of our testing progress. It measures which percentage of statements in our code have been executed during the test. This metric is widely used in the software world and may be ported directly to the hardware world. However, it should be taken with a grain of salt and not as the sole metric for how thorough one's testing was, since it only provides information about which lines were tested and not how well they were tested~\cite{hdlverify}. %This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested. 
 
 Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent metrics. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit~\cite{hdlverify}. %For example, consider the code snippets below. The left Verilog snippet presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right VHDL snippet presents an implicit block starting with the \texttt{wait}-statement which may never be passed~\cite{hdlverify}.
 
@@ -271,7 +271,7 @@ Related metrics are line and block coverage. Line coverage measures execution of
 %\end{minipage}
 
 More elaborate metrics include path and expression coverage. Figure~\ref{fig:expr} shows examples of both. Path coverage focuses on whether all possible paths through a piece of code have been executed. 
-Expression coverage takes this one step further checking whether all possible combinations of true checks are executed. The left code snippet in Figure~\ref{fig:expr} shows an example of path coverage, while the right code snippet shows expression coverage. One must note that the finer the granularity, the greater the computational requirements. For simple designs, statement coverage is generally sufficient~\cite{hdlverify}. \hjd{Check up on this and explain more.}
+Expression coverage takes this one step further checking whether all possible combinations of true checks are executed. The left code snippet in Figure~\ref{fig:expr} shows an example of path coverage, while the right code snippet shows expression coverage. One must note that the finer the granularity, the greater the computational requirements~\cite{hdlverify}. %For simple designs, statement coverage is generally sufficient. \hjd{Check up on this and explain more.}
 
 \begin{figure}
     \centering
@@ -289,7 +289,7 @@ realistic input patterns to the DUT.
 Once a plan is defined, we sample the different points defined in the specification during the testing process to obtain results in the form of: \textit{``test suite T covered a total of x\% of the values specified by point P in specification A"}. 
 
 \subsection{What to Aim For}
-The greatest pitfall is the idea of needing to hit 100\,\% coverage, regardless of the coverage type considered. Indeed, for the majority of cases, reaching 100\,\% statement coverage is unreasonable due to computational requirements or impossible due to statements not meant to be executed. Instead, one should aim for fully exercising the most important code blocks of one's design; thus, targeting high functional coverage. \hjd{Motivate using statement coverage at all.}
+The greatest pitfall is the idea of needing to hit 100\,\% coverage, regardless of the coverage type considered. Indeed, for the majority of cases, reaching 100\,\% statement coverage is unreasonable due to computational requirements or impossible due to statements not meant to be executed. Instead, one should aim for fully exercising the most important code blocks of one's design; thus, targeting high functional coverage. Statement coverage can still be useful, however, as it indicates whether certain sections of one's code are not executed. 
 
 Additionally, one should keep in mind that coverage metrics only indicate the thoroughness of one's verification suite, neither its correctness nor its completeness. Designing a good verification plan is therefore of the utmost importance~\cite{hdlverify}.
 
@@ -391,7 +391,7 @@ We implemented this on top of the existing \texttt{ChiselTest}~\cite{chisel:test
 \subsection{Cross Coverage}
 Basic coverage relations between multiple ports can be defined using a \texttt{CrossPoint}. 
 This allows one to associate a set of ports to a set of ranges of equal size.  
-A sample of the ports is considered a hit if all of the port values are contained in their associated ranges. \todo{Expand on usefulness of this measure.} %A hit is then considered if each of the ports was sampled with a value that is contained in its associated range.  
+A sample of the ports is considered a hit if all of the port values are contained in their associated ranges. This is particularly useful for checking whether all interesting combinations of values on a set of ports were tested~\cite{hdlverify}. An example being injection of valid and corrupt packets on all ports of a NoC router. %A hit is then considered if each of the ports was sampled with a value that is contained in its associated range.  
 %Using this construct, the user has a way to gather information about the interactions between multiple ports.  
 
 \subsection{Timed Coverage}
@@ -403,7 +403,7 @@ Delayed coverage relations between two ports can be defined using a \texttt{Time
 \end{itemize}  
 \todo{Consider a figure here.} %Using these constructs, one can add timing-based information to the verification plan.
 
-\subsection{Conditional Coverage}
+\subsection{Conditional Coverage} \label{sec:conditional_coverage}
 Working in Scala allows us to use functions as higher-order objects. 
 %This means that we can have bins that are defined using arbitrary predicates rather than specific value ranges. 
 We exploit this and provide a \texttt{CoverCondition} construct which may be used to gather coverage information on an arbitrary number of ports with a user-defined predicate. %This was thus enabled with our \texttt{CoverCondition} object.
@@ -426,7 +426,7 @@ We also provide this predication functionality for regular bins to enable them t
 %    \item \texttt{TimedCross} is defined using two ports, a set of cross bins and a delay.
 %    \item \texttt{CoverCondition} is defined using an arbitrary number of ports and a predicate.
 %\end{itemize}
-Using the aforementioned elements, users can define accurate representations of their specifications in the form of verification plans. The following listing shows an example verification plan utilizing all of the tools to verify a device under test (DUT) denoted \texttt{dut}:
+Using the aforementioned elements, users can define accurate representations of their specifications in the form of verification plans. The following listing shows an example verification plan utilizing all of the tools to verify a device under test (DUT) denoted \texttt{dut}: \todo{Hasn't the API changed?}
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter(dut)
 cr.register(
@@ -479,7 +479,7 @@ Range 3 to 3) HAS 1 HIT(S) = 100,00%
 ============================================
 ============================================
 \end{verbatim}
-The above report shows each point with its user-defined name and the bins it contains. These are then associated to a number of hits and, whenever possible \todo{Add explaining sentence here.}, a coverage percentage.
+The above report shows each point with its user-defined name and the bins it contains. These are then associated to a number of hits and, whenever possible (as described in section~\ref{sec:conditional_coverage}), a coverage percentage.
 Another option would be, for example if we want to do automated constraint modifications depending on coverage results, to generate the coverage report as a Scala \texttt{case class} and then to use its \texttt{binNcases} method to get numerical and reusable coverage results.  
 
 \section{Evaluation}
@@ -544,7 +544,7 @@ All that needs to be done is to define the verification plan and sample it.
 In total our Scala functional coverage took 12 lines to define.
 Its UVM counterpart took 84 lines, only including the \texttt{uvm\_subscriber} class. \todo{Insert total LOC of UVM model.}
 The functional coverage results were the same for both of the verification plans, the Scala one verified the Chisel design and UVM verified the generated Verilog.
-This shows that our coverage solution is on-par with existing coverage solutions, even being more concise and introducing new functionalities like purely conditional coverage, which is only possible using Scala's functional nature. \todo{Perhaps re-write this sentence to make it clear that it is \textit{only} the conditional coverage that requires Scala's functional nature.}
+This shows that our coverage solution performs on-par with existing coverage solutions, even being more concise and introducing new functionalities like purely conditional coverage; the latter being enabled by Scala's functional nature. 
 \todo{Perhaps expand with statement coverage example.}
 
 %As a way of evaluating our coverage solution in Scala, a use-case provided by Microchip was developed and verified using the functional coverage constructs presented in the previous section. It also gave the opportunity to assess how well a complete design process conducted only in Scala/Chisel works with the added features. The use-case is a heap-based priority queue which is meant to be used for scheduling purposes in real-time systems. Values referring to a specific clock cycle number in a specific super cycle can be inserted as well as removed. The priority queue sorts all enqueued values such that the value referring to the next clock cycle number that will be encountered is presented to the host system. 
@@ -607,7 +607,7 @@ We would like to thank the researchers at Berkeley who are constantly working on
 \subsection*{Source Access}
 
 \todo{Add source pointers in final version. Not possible now due to double-blind review.}
-\martin{There is an anonymous Git  possible. We have the pointer in one of the reviews.}
+\martin{There is an anonymous Git  possible. We have the pointer in one of the reviews.} \hjd{Can't do this either - our README has a bibtex entry with our names in it.}
 
 \bibliographystyle{IEEEtran}
 \bibliography{coverage.bib,../msbib,../chisel-uvm.bib}

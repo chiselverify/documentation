@@ -38,7 +38,7 @@
 \newcommand{\todo}[1]{{\it TODO: #1}}
 \newcommand{\note}[1]{{\it Note: #1}}
 \newcommand{\martin}[1]{{\color{blue} Martin: #1}}
-\newcommand{\jens}[1]{{\color{green} Jens: #1}}
+\newcommand{\alceste}[1]{{\color{green} Alceste: #1}}
 
 % uncomment following for final submission
 %\renewcommand{\todo}[1]{}
@@ -112,6 +112,36 @@
 %\subsection{Popular Abstract}
 %
 %Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The main issue is the usage of old tools compared to tools for programming those devices. This project aims to apply tools and methods from software development to hardware development to increase productivity. Danish firms will benefit from the results of this project.
+
+
+\section{Notes}
+
+\subsection{Feedback from Last Year}
+
+\begin{itemize}
+\item Hypothesis is missing
+\item Not enough science
+\item State-of-the art is not good, mainly description of tools
+\item Scientific qualification is not high enough, especial the senior ones ???
+\item Missing succes criteria
+\item CV is too long (shall be 2 pages according to 4.3.1) Read also what it shall contain.
+\end{itemize}
+
+\subsection{Meeting notes}
+
+V. Herdt, D. Grosse, H. M. Le, R. Drechsler, Verifying Instruction Set Simulators using Coverage-guided Fuzzing.
+
+\url{https://www.informatik.uni-bremen.de/agra/doc/konf/2019DATE_Verifying_Instruction_Set_Simulators_using_Coverage-guided_Fuzzing.pdf}
+
+Fuzzing naive does not work, we take the idea, but we apply it on a higher level (e.g., instructions)
+
+Liqued types to improve testing
+
+\url{http://goto.ucsd.edu/~rjhala/papers/liquid_types.html}
+
+Sail for cosimulation
+
+Sail to Chisel
 
 \section{Introduction and Objectives}
 \label{sec:objectives}
@@ -556,9 +586,17 @@ we will translate VHDL into Verilog.
 %% several program transformers previously for testing floating-point
 %% computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
 
+\martin{Add temporal properties (temporal logic)}
 
+\todo{Look at \url{https://github.com/chiselverify/chiselverify/wiki/Timed-Assertions}}
+
+\martin{Generate tests from properties.}
+
+\martin{WE probably remove the following}
 
 \paragraph{Learning Specification from Historical Bug Patterns.}
+
+
 We will consider generating specifications from previously known bug
 patterns.  We will collaborate with our hardware engineers to explore
 a history of hardware issues triggered by software defects and get
@@ -691,20 +729,9 @@ and tools for systems engineering of computing systems, embedded systems-on-a-ch
 Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
 synthetic biology (molecular computing). 
 
-{\bf Kasper Hesse (KH)} is student at DTU with a strong background in digital design.
-He has already some knowledge in UVM and can therefore help the project to be productive
-from day one.
+{\bf Alceste  (AS)} is 
 
-{\bf Zhoulai Fu (ZF)} is an assistant professor at ITU. His research
-spans programming language theory and software engineering
-techniques. Related to this project, he worked on developing
-constraint solving and automated testing techniques in achieving high
-coverage and detecting bugs in numerical programs.
-
-{\bf Peter Sestoft (PS)} is professor and head of department at the IT University of Copenhagen.
-His research focus is programming languages, and especially functional, parallel, domain-specific
-and declarative languages, their description, formal modeling, analysis, transformation, and implementation.
-Most of his books have appeared with leading international academic publishers.
+{\bf Martin  ()} is 
 
 {\bf PhD1/2} we are looking for two PhD candidates with a background in computer engineering
 with interest in digital design and programming languages.
@@ -873,7 +900,7 @@ milestone label font=\footnotesize,
 \small
 \bibliographystyle{abbrv}
 %\bibliography{myown,jsp,noc,misc,msbib}
-\bibliography{../../msbib,testing,../../chisel-uvm}
+\bibliography{../../msbib,../hw-as-a-service/testing,../chisel-uvm,testing}
 
 \end{document}
 

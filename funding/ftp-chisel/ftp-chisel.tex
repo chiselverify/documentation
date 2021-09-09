@@ -186,6 +186,12 @@ testing methods for hardware testing}.
 We will build a combination of open-source tools for verifying
 circuits described in mixed languages (VHDL, SystemVerilog, and Chisel).
 It builds on top of the Chisel hardware construction language and uses Scala to drive the verification. 
+
+\paragraph{Hypotheses}
+\martin{write: more productive when using SW tools, methods, languages}
+The properties of interest for a hardware design can be expressed using a temporal logic \cite{Baier2008} (e.g., Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) or similar formalisms, or derived from ISA specifications. Random test generation can adequately cover a hardware design by being guided by properties of interests, and by the design itself.
+
+
 %We will explore the testing strategy used in UVM in the context of verifying hardware described in Chisel.
 
 %This project proposes a research project that aims at building a testing framework
@@ -251,6 +257,8 @@ the verification process is also made more efficient.
 
 %On open source collection of SystemVerilog classes build the Universal Verification Method,
 %which is becoming popular in industry.
+
+\todo{Following is a copy from a paper. Cut down.}
 SystemVerilog has become a complex language with more than 250 keywords, and it is unclear
 which tools support which language constructs for hardware description.
 In contrast with Chisel, when the program compiles, it is synthesizable hardware.
@@ -262,7 +270,26 @@ With Chisel on Scala we have the choice of different integrated development envi
 testing infrastructure (e.g., ScalaTest), and many free libraries.
 
 
+The Universal Verification Methodology (UVM) is a methodology for testing and verifying of digital circuits.
+UVM is implemented as a SystemVerilog library and utilizes the fact that SystemVerilog uses object-oriented programming when designing test-benches.
+Using object-oriented patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionality.
+As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
+UVM is a first step towards truly standardized test-benches.
 
+At the time of writing, little published work was done in the realm of fuzzing for digital circuits.
+One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on digital circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). RFuzz differs from what we present in this paper in two ways. First, RFuzz uses a simple coverage metric that is independent of the device under test (DUT), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}.
+Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random generated programs to test a processor.
+
+\martin{Is this the same as below, or are there more than one Google fuzing projects.}
+American fuzzy loop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
+AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
+RFuzz, as well as our own solution, is based on AFL. 
+The key difference is that AFL is a fuzzer for software, while the two other fuzzers are for digital circuits.
+This impacts the way a test is defined, interpreted and mutated~\cite{rfuzz2018}.
+
+As for random program generation, the open-source RISC-V DV framework \cite{riscvdv}, built using python and SystemVerilog, is a notable existing solution. 
+However, an implementation in Scala will have the advantage of keeping all internal communications in the same language. 
+Our implementation will also not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
 %Chisel and Scala are executing on the Java virtual machine and therefore have a very good
 %interoperability with Java. Therefore, we can leverage a large pool of Java libraries for
 %hardware design and  verification.
@@ -323,7 +350,7 @@ Randomised test generation has emerged as one of the most successful approaches
 for assessing the correctness of software components. Two key techniques are \emph{fuzzing} and \emph{property-based testing}.
 
 \emph{Fuzzing} is based on the random generation of random test inputs,
-and on the observation of program behaviour (successful termination or crash) and code coverage
+and on the observation of program behavior (successful termination or crash) and code coverage
 to generate further random inputs \cite{takanen2018fuzzing,DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
 Google's OSS-Fuzz project, for example, has filed over 20 000 bugs in 300 open source
 projects (as of June 2020)~\cite{web:oss-fuzz}.
@@ -345,13 +372,12 @@ Using ScalaCheck, we may call this property \texttt{"concatLength"} and write it
 \noindent%
 ScalaCheck will produce sets of random strings \texttt{a} and \texttt{b}, and report an error if it finds a pair that does not satisfy \texttt{"concatLength"}. On the one hand, this technique is more refined than fuzzing, because it has an explicit notion of correctness (expressed by properties); on the other hand, it treats the software under test (like operator \texttt{+++} in the example above) as a black box, hence the random test sample may not achieve adequate coverage of the implementation.
 
+\martin{I don't think this fits into State-of-the-art.}
 \paragraph{Vision and challenges.}
 Fuzzing and property-based testing techniques may inspire new, more efficient methods for validating hardware designs.
 Unfortunately, their adaptation from the software realm to the hardware realm is far from trivial. 
 Software fuzzing is based on the actual execution of the program under test; such a program can run at (near-)full speed, and can be easily distributed over thousands of testing nodes via cloud-based fuzzing tools like Google's ClusterFuzz \cite{web:clusterfuzz}.  Instead, hardware designs would be tested while running on a simulator, with decreased performance; moreover, the state space of the design can be extremely large (beyond the reach of any cloud-based systems), and naive random test may not achieve adequate coverage. Property-based testing can (in principle) mitigate the issue: the properties of interest could be used to restrict the testing space; however, there are two open problems: how to express the properties of interest for hardware designs, and how to generate test sets with adequate coverage.
 
-\paragraph{Hypotheses.}
-\emph{The properties of interest for a hardware design can be expressed using a temporal logic \cite{Baier2008} (e.g., Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) or similar formalisms, or derived from ISA specifications. Random test generation can adequately cover a hardware design by being guided by properties of interests, and by the design itself.}
 }% end \color{blue}
 
 %% \paragraph{Determining Specification.}
@@ -594,16 +620,6 @@ we will translate VHDL into Verilog.
 
 \martin{WE probably remove the following}
 
-\paragraph{Learning Specification from Historical Bug Patterns.}
-
-
-We will consider generating specifications from previously known bug
-patterns.  We will collaborate with our hardware engineers to explore
-a history of hardware issues triggered by software defects and get
-patterns from which we generate specification.  Such bug patterns in
-Java, for example, can be found in \cite{web:findbugs_bugs}.  This
-step will generate specification in a syntax-driven way, relating to
-the expected functional behavior of the hardware.
 
 
 
@@ -767,7 +783,6 @@ with interest in digital design and programming languages.
       Prepare2                    & 3   & PhD2      & Explore related work on property-based testing and ScalaCheck.                   \\
       Spec          & 6   & PhD2      & Collaborate with hardware developers to manually inject both valid and faulty specifications. \\
       Testing & 6   & PhD2      & Develop property-based testing the specifications with ScalaCheck.                                                      \\
-      Bugbase           & 3   & PhD2      & Create a database from historical bug patterns from hardware development.                   \\
       Implement              & 6   & PhD2      & Implement a program transformer to convert the bug patterns into %
   additional, meaningful  specification in code (\`a la FindBugs or ScalaFix).                                                                 \\
 %      Implement              & 6   & PhD2      & Implement a user-friendly tool for automating the testing process.                            \\
@@ -826,6 +841,11 @@ For an assessment of the project's success, we plan the following milestones:
 can be used for exploration and evaluation of the results with the industrial use cases.
 
 \textbf{M4} (Month 48): The project has finished, and two PhD theses have been handed in.
+
+\paragraph*{Success Criteria}
+
+\martin{write on: productivity increase by a factor of 2. But hard to measure, we will compare
+the LoC between UVM and ChiselVerify and it should be 1/3.}
 
 %\vspace{-5mm}
 \begin{figure*}

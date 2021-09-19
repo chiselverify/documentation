@@ -440,24 +440,18 @@ Using the aforementioned elements, users can define accurate representations of 
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter(dut)
 cr.register(
-  CoverPoint("accu", dut.io.accu)(
-    Bins("lo10", 0 until 10),
-    Bins("First100odd", 0 until 100,  Condition("onlyOdd", 
-      { case Seq(x) => x % 2 != 0 })
-    )
-  ),
-  CoverCondition("aAndB", dut.io.outA, dut.io.outB)(
-    Condition("asuptobAtLeast100", 
-      { case Seq(a, b) => a > b }, 
-      /* expectedHits = */ 100
-    ),
-  ),
-  CrossPoint("accuAndTest", dut.io.accu, dut.io.test)(
-    CrossBin("both1", 1 to 1, 1 to 1)
-  ),
-  TimedCross("timedAB", dut.io.outA, dut.io.count)(Exactly(3))(
-    CrossBin("ExactlyBoth3", 3 to 3, 3 to 3)
-  ) 
+  cover("accu", dut.io.accu)(
+    bin("lo10", 0 until 10),
+    bin("First100odd", 0 until 100,
+      { case Seq(x) => x % 2 != 0 }))),
+  cover("aAndB", dut.io.outA, dut.io.outB)(
+    bin("asuptobAtLeast100", 
+      condition = { case Seq(a, b) => a > b }, 
+      expectedHits = 100),),
+  cover("accuAndTest", dut.io.accu, dut.io.test)(
+    cross("both1", Seq(1 to 1, 1 to 1))),
+  cover("timedAB", dut.io.outA, dut.io.count)(Exactly(3))(
+    cross("ExactlyBoth3", Seq(3 to 3, 3 to 3))) 
 )
 \end{lstlisting}
 %The above code snippet shows an example of how to define a verification plan using the presented framework.

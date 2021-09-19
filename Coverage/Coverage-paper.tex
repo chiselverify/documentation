@@ -109,14 +109,14 @@
 %\martin{Title: Do we really restrict ourself to Chisel Designs? Maybe more general Digital Designs.}
 
 \begin{abstract}
-Ever-increasing performance demands are pushing hardware designers towards designing domain-specific accelerators. We must thus find a way to improve the overall efficiency of the hardware design and verification cycles. The design efficiency was improved with the introduction of Chisel. However, verification efficiency has yet to be tackled.
+Ever-increasing performance demands are pushing hardware designers towards designing domain-specific accelerators. This has created a demand for improving the overall efficiency of the hardware design and verification cycles. The design efficiency was improved with the introduction of Chisel. However, verification efficiency has yet to be tackled.
 One method that can increase verification efficiency is the use of various types of coverage measures.\\
 In this paper, we present our open-source, coverage-related verification tools targeting digital designs described in Chisel. %We create a new method allowing for statement coverage at an intermediate representation of Chisel designs.
 Specifically, we have created a new method allowing for statement coverage at an intermediate representation of Chisel, %We also describe our solution for gathering functional coverage on a Chisel design.
-and several methods for gathering functional coverage utilizing the functional nature of Scala. We evaluate our approach with an industrial use case.
+and several methods for gathering functional coverage utilizing the functional nature of Scala. We evaluate our approach with an industrial use case and compare it to its equivalent written in SystemVerilog.
 
 \begin{IEEEkeywords}
-Hardware Verification, Code Coverage, Chisel, Scala.
+Hardware Verification, Statement Coverage, Functional Coverage, Chisel, Scala.
 \end{IEEEkeywords}
 
 \end{abstract}
@@ -163,14 +163,14 @@ Hardware Verification, Code Coverage, Chisel, Scala.
 \label{sec:objectives}
 As time passes, contemporary hardware design is met with tighter and tighter development and verification time-constraints. This is added to the fact that, with the halting of Moore's law, hardware designers are turning to domain-specific accelerators in order to keep up with the ever-increasing performance demands~\cite{henn-patt:turing:2019}. This means that more and more hardware must be designed from scratch in shorter and shorter time periods~\cite{domain-hw-acc:2020}.  To help meet these demands, researchers at the University of California in Berkeley proposed Chisel~\cite{chisel:dac2012}, a Scala embedded high-level hardware construction language.
 
-This solution is powerful, but is still lacking in verification functionalities. One of the main tools needed for the verification of digital systems is coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into multiple distinct categories, but we will focus on the following two: statement and functional coverage. Statement coverage defines a quantitative measure of the testing progress, \textit{``how many lines of code have been tested?"}, whereas functional coverage gives a rather qualitative measure, \textit{``which functionalities have we tested?"}~\cite{spear2008systemverilog}.
+This solution is powerful, but is still lacking in verification functionalities. One of the main tools needed for the verification of digital systems is coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into multiple distinct categories, but we will focus on the following two: statement and functional coverage. Statement coverage defines a quantitative measure of the testing progress, \textit{``how many lines of code have been tested?"}, whereas functional coverage gives a rather qualitative measure, \textit{``which functionalities have been tested?"}~\cite{spear2008systemverilog}.
 
 %\martin{shall write some words on the different languages levels.}
 
-In this paper, we explore how to use existing tools, both for Scala and for Verilog, in order to obtain statement coverage in Chisel. We will start by presenting code coverage at the Scala level. Second, we will briefly discuss how to use Verilator~\cite{verilator} in order to enable statement coverage of the generated Verilog description. Third, we will show our solution for getting statement coverage of the FIRRTL intermediate representation~\cite{firrtl}. In total, these measures represent test coverage of different language levels of a Chisel design.
+In this paper, we explore how to use existing tools, both for Scala and for Verilog, in order to obtain statement coverage in Chisel. We will start by presenting code coverage at the Scala level. Second, we will briefly discuss how to use Verilator~\cite{verilator} in order to enable statement coverage of the generated Verilog description. Third, we will show our solution for getting statement coverage of the so-called Flexible Internal Representation of Register Transfer Level (FIRRTL) intermediate representation~\cite{firrtl}. In total, these measures represent test coverage of different language levels of a Chisel design.
 
 Moreover, we will present our solution for gathering functional coverage of a Chisel design directly in Scala. %We provide a brief introduction to Chisel and FIRRTL needed to fully appreciate our solution. Initial work on verification with Chisel has been presented in a previous paper~\cite{blind}. %\cite{verify:chisel:2020}. 
-Finally, we evaluate our coverage solutions with an industry-provided use case to illustrate its efficiency. The solutions are shown to reduce the amount of code (measured in lines of code) needed to gather functional coverage on a Chisel design in comparison to using SystemVerilog with UVM~\cite{uvm2015}.
+Finally, we evaluate our coverage solutions with an industry-provided use case to illustrate its efficiency. The solutions are shown to reduce the amount of code (measured in lines of code) needed to gather functional coverage on a Chisel design in comparison to using SystemVerilog extended by Universal Verification Methodology (UVM) techniques~\cite{uvm2015}.
 %Note that a discussion could be had on the usefulness of coverage information at certain levels of abstraction (i.e. high-level coverage might not be interesting when using hardware generators), but for now this is left up for the reader to decide.
 
 The paper is organized as follows.
@@ -186,16 +186,16 @@ Section VIII concludes.
 
 %\martin%\martin{The references are too many web links and too few papers.}
 
-SystemVerilog, a mostly non-synthesisable extension of the Verilog Hardware Description Language (HDL), contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}. These can be used when working with the Verilog description generated by Chisel. Developers of the Chisel language have been currently working on trying to make these constructs available directly in the language, thus making them possible to use without having to write SystemVerilog testbenches. This resulted in a \texttt{cover} statement being introduced in an experimental verification library as part of the Chisel 3.4.0 release~\cite{chisel3.4release_notes}. This \texttt{cover} statement was then given an equivalent at the FIRRTL level, which then maps down to SystemVerilog rather than plain Verilog. There is yet to be mainstream support for this new construct by FIRRTL execution engines like Treadle, which would explain why it remains experimental. Our solution greatly differs from this approach, since we try to utilise pre-existing language features from Chisel/Scala in order to enable coverage in the simplest possible manner.   
+SystemVerilog, a mostly non-synthesisable extension of the Verilog Hardware Description Language (HDL), contains certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}. These can be used when working with the Verilog description generated by Chisel. Developers of the Chisel language have been working on trying to make these constructs available directly in the language, thus making them possible to use without having to write SystemVerilog testbenches. This resulted in a \texttt{cover} statement being introduced in an experimental verification library as part of the Chisel 3.4.0 release~\cite{chisel3.4release_notes}. This \texttt{cover} statement was then given an equivalent at the FIRRTL level, which then maps down to SystemVerilog rather than plain Verilog. There is yet to be mainstream support for this new construct by FIRRTL execution engines like Treadle\footnote{Available at \url{https://github.com/chipsalliance/treadle}}, which would explain why it remains experimental. Our solution greatly differs from this approach, since we try to utilise pre-existing language features from Chisel/Scala in order to enable coverage in the simplest possible manner.   
   
-A possible solution to obtaining Statement coverage for Chisel, is to rely on the generated Verilog code. 
+A possible solution to obtaining statement coverage for Chisel, is to rely on the generated Verilog code. 
 This can be simulated by any Verilog simulator or directly synthesized by any vendor-specific development tool. 
 As part of the Chisel development tools, \texttt{ChiselTest} allows simulating a Chisel design transformed to Verilog using the Verilator~\cite{verilator} back-end.
 Verilator is an open-source simulator which supports three types of coverage: line coverage (similar to statement coverage), toggle coverage (i.e., whether signals have taken on both binary values), and SystemVerilog assertions property coverage. 
 These can be enabled using a few simulation parameters in Verilator~\cite{tolotto2020}.
-The simulator then generates a coverage report in a SystemPerl~\cite{SystemPerl} coverage report file.
+The simulator then generates a coverage report in a SystemPerl coverage report file~\cite{SystemPerl}.
 
-SystemVerilog is widely used in the scope of the Universal Verification Methodology (UVM)~\cite{uvm2015}. 
+SystemVerilog is widely used in the scope of UVM~\cite{uvm2015}. 
 Using SystemVerilog, a verification plan may be defined using the following constructs: \texttt{Bin}, which defines a range of values that should be tested for, \texttt{CoverPoint}, which defines a port that needs to be sampled in the coverage report and \texttt{CoverGroup}, which defines a set of \texttt{CoverPoint}s that need to be sampled at the same time. 
 SystemVerilog also supports cross coverage, a special kind of \texttt{CoverPoint} where a hit is only considered when two or more \texttt{CoverPoint}s have specific values at the same time.
 Coverage is sampled whenever the \texttt{sample} method is called on a \texttt{CoverGroup}. 
@@ -206,7 +206,7 @@ Baxter describes a method for collecting statement coverage of RTL languages~\ci
 
 We defend the idea of creating verification methods in Scala (in open-source), rather than relying on an external language, since it improves the overall cohesion of the Chisel/Scala ecosystem. 
 This thus saves the verification engineers time and improves overall efficiency of the verification process, which is our main goal. 
-Following that same idea, we briefly mention the work conducted in parallel to the research presented in this paper on constructing a hardware verification library for Chisel entirely in Scala, namely ChiselVerify~\cite{blind} %~\cite{chiselverify}
+Following that same idea, we briefly mention the work conducted in parallel to the research presented in this paper on constructing a hardware verification library for Chisel entirely in Scala, namely \texttt{ChiselVerify}~\cite{blind} %~\cite{chiselverify}
 .
 
 \section{Background}
@@ -230,7 +230,7 @@ Scala also allows for both functional and object-oriented programming constructs
 \end{figure*}
 
 \subsection{FIRRTL}
-In a Chisel design, the source code is first compiled into an intermediate representation, named Flexible Intermediate Representation for RTL (FIRRTL), RTL being short for Register Transfer Level.
+In a Chisel design, the source code is first compiled into an intermediate representation named FIRRTL. 
 This is used as a sort of ``optimization layer" before being converted into the final Verilog form. 
 During this optimization process the original Chisel description goes through three different intermediate representation layers:
 \begin{itemize}
@@ -238,10 +238,10 @@ During this optimization process the original Chisel description goes through th
 \item Mid-FIRRTL, which is a form where abstract constructs are simplified, i.e., loops are unrolled and arrays are flattened.
 \item Low-FIRRTL, which maps to RTL code with high-level conditional statements turned into multiplexers.
 \end{itemize}
-Throughout this optimisation process, custom FIRRTL compiler passes, known as \textit{Transforms}, can be used to modify the design. 
+Throughout this optimization process, custom FIRRTL compiler passes, known as \textit{Transforms}, can be used to modify the design. 
 This is often done when trying to apply simplifications to the design to make the generated hardware more optimal~\cite{firrtl}.  
 
-Figure~\ref{fig:chisel} shows an overview of the Chisel compilation pipeline and the different stages the code goes through before being converted into a usable format. It also indicates the placement of our coverage tools as part of the ChiselVerify package.
+Figure~\ref{fig:chisel} shows an overview of the Chisel compilation pipeline and the different stages the code goes through before being converted into a usable format. It also indicates the placement of our coverage tools as part of the \texttt{ChiselVerify} package.
 
 \subsection{Test Coverage}
 In software development, test coverage is used as a metric to measure the completeness of a testing suite. 
@@ -251,7 +251,7 @@ In this paper, we will mostly focus on two key approaches to test coverage: stat
 
 \paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific design, statement coverage will give a quantitative measure of our testing progress. It measures which percentage of statements in our code have been executed during the test. This metric is widely used in the software world and may be ported directly to the hardware world. However, it should be taken with a grain of salt and not as the sole metric for how thorough one's testing was, since it only provides information about which lines were tested and not how well they were tested~\cite{hdlverify}. %This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested. 
 
-Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent metrics. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit~\cite{hdlverify}. %For example, consider the code snippets below. The left Verilog snippet presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right VHDL snippet presents an implicit block starting with the \texttt{wait}-statement which may never be passed~\cite{hdlverify}.
+Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit~\cite{hdlverify}. %For example, consider the code snippets below. The left Verilog snippet presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right VHDL snippet presents an implicit block starting with the \texttt{wait}-statement which may never be passed~\cite{hdlverify}.
 
 %\noindent\begin{minipage}{0.45\linewidth}
 %\begin{lstlisting}[language=verilog]{verilogBlock}
@@ -293,28 +293,28 @@ realistic input patterns to the DUT.
 Once a plan is defined, we sample the different points defined in the specification during the testing process to obtain results in the form of: \textit{``test suite T covered a total of x\% of the values specified by point P in specification A"}. 
 
 \subsection{What to Aim For}
-The greatest pitfall is the idea of needing to hit 100\,\% coverage, regardless of the coverage type considered. Indeed, for the majority of cases, reaching 100\,\% statement coverage is unreasonable due to computational requirements or impossible due to statements not meant to be executed. Instead, one should aim for fully exercising the most important code blocks of one's design; thus, targeting high functional coverage. Statement coverage can still be useful, however, as it indicates whether certain sections of one's code are not executed. 
+The greatest pitfall is the idea of needing to hit 100\,\% statement coverage. Indeed, for the majority of cases, reaching 100\,\% statement coverage is unreasonable due to computational requirements or impossible due to statements not meant to be executed. Instead, one should aim for fully exercising the most important code blocks of one's design; thus, targeting high functional coverage. Statement coverage can still be useful, however, as it indicates whether certain sections of one's code are not executed. 
 
 Additionally, one should keep in mind that coverage metrics only indicate the thoroughness of one's verification suite, neither its correctness nor its completeness. Designing a good verification plan is therefore of the utmost importance~\cite{hdlverify}.
 
 \subsection{Coverage in Chisel} 
 %Up until recently, the main Chisel developers have mostly focused their energy on getting Chisel up to the standards imposed by mainstream HDLs like VHDL or Verilog. 
 Verification features are mostly lacking from the Chisel package. 
-The most common way to test a design implemented in Chisel, is by using ChiselTest~\cite{chisel:tester2}. 
+The most common way to test a design implemented in Chisel, is by using \texttt{ChiselTest}~\cite{chisel:tester2}. 
 This is a testing framework for Chisel that gives access to a simple \texttt{peek}, \texttt{poke} and \texttt{expect} testing interface. 
-ChiselTest also helps the user create golden models, to test their design against, entirely in Scala or by using the Java Native Interface (JNI) with already defined models written in, e.g., C. This is further supported by a simple \texttt{fork} functionality for easy concurrency.  
+\texttt{ChiselTest} also helps the user create golden models, to test their design against, entirely in Scala or by using the Java Native Interface (JNI) with already defined models written in, e.g., C. This is further supported by a simple \texttt{fork} functionality for easy concurrency.  
 This framework, however, is lacking in verification functionalities and does not give the user any way to gather coverage on a Chisel design.
-Hence, if one wants to gather test coverage on a current Chisel design, they need to rely on basic Scala software coverage tools (which we explore in more detail in a later section). 
+Hence, if one wants to gather test coverage on a current Chisel design, they need to rely on basic Scala software coverage tools (which we explore in more detail in the next section). 
 We are, therefore, introducing coverage solutions that are specifically tailored for Chisel.
 
 \section{Applying an Existing Tool}
-We will start with measuring coverage at a high level (i.e., coverage of the Scala/Chisel code itself). Scala and ScalaTest have some coverage functionalities for software testing built-in, specifically, we have looked at the Scoverage plugin~\cite{scoverage}. Scoverage supports statement and branch coverage. We note that according to the Chisel3 GitHub page, Scoverage should work with Chisel~\cite{chisel:scoverage}.
+We will start with measuring coverage at a high level (i.e., coverage of the Scala/Chisel code itself). Scala and its corresponding software testing framework ScalaTest have some coverage functionalities built-in, specifically, we have looked at the Scoverage plugin~\cite{scoverage}. Scoverage supports statement and branch coverage. We note that according to the Chisel3 GitHub page, Scoverage should work with Chisel~\cite{chisel:scoverage}.
 
 %%\martin{This actually does coverage of the Chisel hardware generation, not the Chisel hardware itself. It tests the generator, which is important as well.} Fixed.
 
 To enable coverage, the Scoverage plugin must be added to the Scala project, including optional arguments.
 %'s \textit{plugins.sbt} file, and a number of optional arguments may be included in the project's \textit{build.sbt} file -- the arguments specify whether coverage is enabled, a targeted coverage percentage, etc.
-An example configuration is provided below:
+An example configuration is provided below:\newpage
 \begin{verbatim}
 coverageEnabled := true
 coverageMinimum := 70
@@ -402,7 +402,7 @@ Delayed coverage relations between two ports can be defined using a \texttt{Time
 \begin{itemize}
  \item \texttt{Exactly} delay, a hit will only be considered if the second point is sampled in its range at exactly the given number of cycles after the first point was.
  \item \texttt{Eventually} delay, a hit will be considered if the second point is sampled in its range at any point within the given number of cycles after the first point was.  
- \item \texttt{Always} delay, a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was sampled.
+ \item \texttt{Always} delay, a hit will be considered if the second point is sampled in its range during every cycle for a given number of cycles after the first point was.
 \end{itemize}  
 The delay types are illustrated in figure~\ref{fig:delay}. Green dots indicate when the second point must be sampled in its range for it to be considered a hit. %Using these constructs, one can add timing-based information to the verification plan.
 
@@ -436,7 +436,7 @@ We also provide this predication functionality for regular bins to enable them t
 %    \item \texttt{TimedCross} is defined using two ports, a set of cross bins and a delay.
 %    \item \texttt{CoverCondition} is defined using an arbitrary number of ports and a predicate.
 %\end{itemize}
-Using the aforementioned elements, users can define accurate representations of their specifications in the form of verification plans. The following listing shows an example verification plan utilizing all of the tools to verify a device under test (DUT) denoted \texttt{dut}: \todo{Hasn't the API changed?}
+Using the aforementioned elements, users can define accurate representations of their specifications in the form of verification plans. The following listing shows an example verification plan utilizing all of the tools to verify a device under test (DUT) denoted \texttt{dut}: 
 \begin{lstlisting}[language=scala]
 val cr = new CoverageReporter(dut)
 cr.register(
@@ -489,7 +489,7 @@ Another option would be, for example if we want to do automated constraint modif
 \section{Evaluation}
 %\todo{Expand efficiency measure beyond LOC. Possibly in API complexity or similar.}
 %%\martin{Could be more} \hjd{Let's switch to the Leros AluAccu that Kasper has written a UVM test for.}
-To evaluate our new coverage tools that we include in our ChiselVerify package, we will verify an ALU accumulator module which is found at the center of processors implementing the Leros ISA~\cite{leros:comp:2019}. We first use our Scala coverage tools and then compare to the same done using SystemVerilog with UVM. %To evaluate our new Coverage tools, we will verify an accumulator ALU for the Leros ISA~\cite{leros:comp:2019} using at first our Scala coverage tools, then compare it to the same done using SystemVerilog with UVM.  
+To evaluate our new coverage tools that we include in our \texttt{ChiselVerify} package, we will verify an ALU accumulator module which is found at the center of processors implementing the Leros ISA~\cite{leros:comp:2019}. We first use our Scala coverage tools and then compare to the same done using SystemVerilog with UVM. %To evaluate our new Coverage tools, we will verify an accumulator ALU for the Leros ISA~\cite{leros:comp:2019} using at first our Scala coverage tools, then compare it to the same done using SystemVerilog with UVM.  
  The ALU accumulator supports operations such as \texttt{add}, \texttt{load}, \texttt{shiftRight} and bitwise operations. %The ALU is a simple accumulator, that supports operations such as \texttt{add}, \texttt{sub}, \texttt{and}, \texttt{or}, \texttt{xor}, \texttt{load} and \texttt{shiftRight}.   
  In order to test this entirely, we need to try all operations on the \texttt{op} input and all input value corner cases on the \texttt{din} input. %In order to test this entirely, we would need to try all operations, defined by the \texttt{op} input, and all corner cases for the input values, using the \texttt{din} input.  
  A good verification plan would thus capture what we just described.  
@@ -511,14 +511,14 @@ cr.register(
 \end{lstlisting}
 In the above code snippet, we registered a \texttt{CoverGroup} that ensures that the edge cases of all operations are tested.
 Here, the implicit \texttt{defaultRange} and \texttt{DefaultBin} functions are used to cover all possible values for the \texttt{dut.io.op} port.
-All that is left now is to call \texttt{cr.sample()} once per cycle in our \texttt{ChiselTest}.
+All that is left now is to call \texttt{cr.sample()} once per cycle in our \texttt{ChiselTest} test class.
 
 %\martin{I am not sure if we should show UVM code here.}
 In order to do the same with UVM, we need to:  
 \begin{itemize}
-    \item Create a UVM-subscriber based coverage class
-    \item Instantiate the current DUT %(\texttt{LerosAlu lalu = new;})
-    \item Declare the verification plan
+    \item Create a UVM-subscriber based coverage class.
+    \item Instantiate the current DUT. %(\texttt{LerosAlu lalu = new;})
+    \item Declare the verification plan.
     %covergroup cg_post_rst;
 %	UPDOWN: coverpoint cmd.reset {
 %		bins updown = (1 => 0);
@@ -539,10 +539,10 @@ In order to do the same with UVM, we need to:
 %	}
 %endgroup: cg_all_zeros_ones
 %    \end{lstlisting}
-    \item Define \texttt{build\_phase} and \texttt{write} functions
-    \item Define the coverage class constructor
+    \item Define \texttt{build\_phase} and \texttt{write} functions.
+    \item Define the coverage class constructor.
 \end{itemize}  
-This UVM subscriber must then be used inside of a whole UVM testbench, which itself contains many other classes and constructs.
+The UVM subscriber class must then be used inside of a whole UVM testbench, which itself contains many other classes and constructs.
 Using our Scala-based coverage solution, we have minimized the amount of work needed to gather functional coverage. 
 All that needs to be done is to define the verification plan and sample it.
 In total our Scala functional coverage took 12 lines to define.
@@ -602,7 +602,7 @@ This shows that our coverage solution performs on-par with existing coverage sol
 %\hjd{Just an attempt at cutting things down even more.}
 In this paper, we described the lack of coverage-oriented verification tools 
 for Chisel designs and showed that existing Scala tools do not have acceptable coverage features. To 
-address this, we implemented extensions to the Treadle simulator and the ChiselTest framework 
+address this, we implemented extensions to the Treadle simulator and the \texttt{ChiselTest} framework 
 to enable statement and functional coverage measurements. Finally, we showed that the implemented 
 framework enables less verbose and more advanced verification suites than possible in existing tools. 
 These features include \texttt{Bin}s defined by an arbitrary predicate, and \texttt{cover} constructs that take timing delays into account. 
@@ -612,7 +612,7 @@ These features include \texttt{Bin}s defined by an arbitrary predicate, and \tex
 We would like to thank the researchers at Berkeley who are constantly working on making Chisel a more ubiquitous hardware construction language and for the feedback related to the work done on adding coverage to Treadle.
 
 \subsection*{Source Access}
-The source code for ChiselVerify is available at\\ \url{https://anonymous.4open.science/r/chiselverify-71E4}.
+The source code for \texttt{ChiselVerify} is available at\\ \url{https://anonymous.4open.science/r/chiselverify-71E4}.
 %\todo{Add source pointers in final version. Not possible now due to double-blind review.}
 %\martin{There is an anonymous Git  possible. We have the pointer in one of the reviews.} \hjd{Can't do this either - our README has a bibtex entry with our names in it.}
 

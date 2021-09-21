@@ -114,36 +114,6 @@
 %Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The main issue is the usage of old tools compared to tools for programming those devices. This project aims to apply tools and methods from software development to hardware development to increase productivity. Danish firms will benefit from the results of this project.
 
 
-\section{Notes}
-
-\subsection{Feedback from Last Year}
-
-\begin{itemize}
-\item Hypothesis is missing
-\item Not enough science
-\item State-of-the art is not good, mainly description of tools
-\item Scientific qualification is not high enough, especial the senior ones ???
-\item Missing succes criteria
-\item CV is too long (shall be 2 pages according to 4.3.1) Read also what it shall contain.
-\end{itemize}
-
-\subsection{Meeting notes}
-
-V. Herdt, D. Grosse, H. M. Le, R. Drechsler, Verifying Instruction Set Simulators using Coverage-guided Fuzzing.
-
-\url{https://www.informatik.uni-bremen.de/agra/doc/konf/2019DATE_Verifying_Instruction_Set_Simulators_using_Coverage-guided_Fuzzing.pdf}
-
-Fuzzing naive does not work, we take the idea, but we apply it on a higher level (e.g., instructions)
-
-Liqued types to improve testing
-
-\url{http://goto.ucsd.edu/~rjhala/papers/liquid_types.html}
-
-Sail for cosimulation
-
-Sail to Chisel
-
-Check also overlap with HaaS proposal
 
 \section{Introduction and Objectives}
 \label{sec:objectives}
@@ -557,31 +527,12 @@ We will add a method to specify \textit{functional coverage points}, also known 
 We will develop an object-oriented and functional framework for verification in Scala.
 This framework is inspired by UVM, but will leverage Scala's conciseness with the
 combination of object-oriented programming with functional programming.
-%An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
-%showed the that a test written with UVM was about 800 lines of code, where a Scala based
-%test was around 80 lines of code~\cite{verify:chisel:2020}.
+An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
+showed the that a test written with UVM was about 800 lines of code, where a Scala based
+test was around 80 lines of code~\cite{verify:chisel:2020}.
 %However, UVM supports more functionality that a plain ChiselTest in Scala.
-%
-Within our verification framework, we will support mixed language verification.
-Verilog can easily be combined with Chisel, as Chisel generates Verilog, and
-we will use ChiselTest as a driver for the open-source Verilog simulator Verlator.
-With Yosys synthesis suite~\cite{Yosys} and GHDL~\cite{ghdl}
-we will translate VHDL into Verilog.
 
-%A verification method is only usable when it can handle mixed-source designs.
-%This means a Scala driven method must be able to test components written in Verilog,
-%VHDL, and SystemVerilog.
-%
-%Chisel has support for black boxes, which allows the use of Verilog code within the Chisel design.
-%Therefore, it is relatively easy to integrate Verilog components when wrapped into a black box.
-%However, this forces Chisel to use Verilator instead of Treadle to run the simulation, impacting
-%startup time.
-%
-%Chisel does not fully support VHDL. It can support VHDL using VCS, but there is no
-%open-source solution available for VHDL simulation. For companies with a lot of source code written in VHDL this is a concern, as they must be able to integrate their existing IP in a Scala/Chisel based design and verification workflow.
-%All major commercial simulation and synthesis tools support mixed-language designs, but no open-source tools exist that provide the same functionality.
-%
-%To alleviate this issue, the open-source Yosys synthesis suite \cite{Yosys} can be used. Yosys is an open-source digital hardware synthesis suite for Verilog. Yosys also has a variety of plugins, one of these being a plugin for using GHDL \cite{ghdl}, an open-source VHDL simulator. By using Yosys in conjunction with GHDL, VHDL files are compiled to an RTL-based intermediate representation, which is then written to a Verilog file using Yosys. GHDL has full support for IEEE 1076 VHDL 1987, 1993, 2002, and a subset of 2008. The workflow can be seen in Figure \ref{fig:VHDL2Verilog}. A working solution named VHDL2Verilog has been made for this, which has been tested with certain simple VHDL designs \cite{vhdl2verilog}.
+
 
 
 
@@ -595,26 +546,6 @@ we will translate VHDL into Verilog.
 
 
 
-%% Let us consider this one below as a bonus WP in our backyard.
-%% \subsection{WP2} 
-%% We can then consider to generate specification automatically, \`a la
-%% sanitizers used in the compiler techniques. This WP focuses on
-%% low-level properties derived from the program syntax, {\em, e.g.},
-%% accessing an array should be within a bound, or performing an
-%% arithmetic calculation should not overflow.
-
-
-
-%% \paragraph{MS2.} The milestone in this WP is to develop a program transformer
-%% that injects in the software source, or its binary form, a list of
-%% low-level specifications.
-
-%% Related to this WP, our project collaborator Zhoulai Fu (together with
-%% a hired security hacker) used sanitizers to find more than 200 bugs in
-%% the Robot Operating System
-%% (ROS)~\cite{web:ros-sanitizer-logs}. Besides, Zhoulai Fu has developed
-%% several program transformers previously for testing floating-point
-%% computation~\cite{DBLP:conf/pldi/FuS19,DBLP:conf/oopsla/FuBS15}.
 
 \martin{Add temporal properties (temporal logic)}
 
@@ -716,7 +647,7 @@ Comcores is interested in improving the throughput with SDH.
 
 \paragraph*{Human Resources}
 
-For the SDH project, we request funding of two PhD students and a student researcher.
+For the SDH project, we request funding of one PhD student.
 Each of the senior researchers will contribute to the SDH research project.
 %
 %We intend to build a group with one PhD student, one postdoc, and
@@ -727,7 +658,7 @@ Each of the senior researchers will contribute to the SDH research project.
 %university in scope and standard, and are fundamental principles underlying DTU's
 %expectations of respect and equality''.
 As the already named researchers are all male, we will actively search
-for female researchers for the PhD positions.
+for a female researcher for the PhD positions.
 %However, the PhD position will be announced openly and men and women
 %will have equal opportunities for applying.
 
@@ -737,7 +668,7 @@ for female researchers for the PhD positions.
 During his stay
 at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
 Martin has {\bf written the Chisel textbook}~\cite{chisel:book}, which has been translated
-into Chinese and Japanese. Martin is a {\bf member of the Technical Advisory Committee for
+into Chinese, Japanese, and Vietnamese. Martin is a {\bf member of the Technical Advisory Committee for
 Chisel} and therefore keeps the work of SDH in sync with the Chisel main development.
 Martin is part of the regular Chisel developer meeting and a meeting on verification with
 UC Berkeley researchers and developers from SiFive, a startup in silicon valley.
@@ -751,35 +682,12 @@ synthetic biology (molecular computing).
 
 {\bf Alceste  (AS)} is 
 
-{\bf Martin Berger ()} is 
+{\bf Martin Berger ()} works on processor verification at Huawei's Cambridge Research Center.
+He is interested to apply the results of this project to processor verification.
 
-     ---------------------- Martin Berger ----------------------
 
-
-I'm currently working full time for Huawei's Cambridge Research Center
-processor verification.
-
-I am also the officiaL RISC-V "golden Sail model" maintainer.
-
-I am also a senior lecturer in Informatics at the University of Sussex,
-currently on a sabbatical, where I successfully supervised 3 PhD
-students, and I'm currently supervising 2 more.  My background is in
-programming languages, compilers and typing systems for parallel
-computation, as well as verification of programs. I have extensive
-teaching experience in various subjects, including networking, operating
-systems, compilers and software engineering.  Before joining the
-University of Sussex I was a postdoc at Imperial College and Queen Mary,
-University of London. I received a PhD in computing from Imperial
-College, an undergraduate degree (Diplom Informatiker) from Technical
-University Berlin.
-
-My publications can be found at
-
-   https://martinfriedrichberger.net/
-   https://scholar.google.co.uk/citations?user=GCz-DJ0AAAAJ
-
-{\bf PhD1/2} we are looking for two PhD candidates with a background in computer engineering
-with interest in digital design and programming languages.
+{\bf PhD} we are looking for one PhD candidate with a background in computer engineering
+with an interest in digital design and programming languages.
 
 %\subsection*{Experimental Facilities}
 %
@@ -801,25 +709,14 @@ with interest in digital design and programming languages.
       \toprule
       Task                   & PM  & Person    & Description                                                                                   \\
       \midrule
-      Recruiting             & 1   & MS and PS & Recruiting of the two PhDs.                                                                    \\
+      Recruiting             & 1   & MS and JM & Recruiting of the PhD.                                                                    \\
       \midrule
-      UVM                    & 3   & KH        & Develop a UVM verification example on a complex multicore device.          \\
-      Prepare1                & 3   & PhD1      & Exploring related work and learning Chisel, SystemVerilog, and UVM.                           \\
-      Cover                  & 6   & PhD1      & Adding constraint random testing and coverage to ChiselTest.                     \\
-      Generate               & 6   & PhD1      & Developing a hardware generator methodology by using functional programming in Scala.         \\
-      Framework              & 9   & PhD1      & Development of an object-oriented and functional testing framework.                      \\
-      \midrule
-      Prepare2                    & 3   & PhD2      & Explore related work on property-based testing and ScalaCheck.                   \\
-      Spec          & 6   & PhD2      & Collaborate with hardware developers to manually inject both valid and faulty specifications. \\
-      Testing & 6   & PhD2      & Develop property-based testing the specifications with ScalaCheck.                                                      \\
-      Implement              & 6   & PhD2      & Implement a program transformer to convert the bug patterns into %
-  additional, meaningful  specification in code (\`a la FindBugs or ScalaFix).                                                                 \\
-%      Implement              & 6   & PhD2      & Implement a user-friendly tool for automating the testing process.                            \\
-      \midrule
-      Explore                & 2x4 & PhD1/2    & Detect and report bugs with the implemented tool and incorporate their feedback into a detailed
-      empirical bug study.                                                                                                                      \\
-      Eval                   & 2x4 & PhD1/2    & Evaluation of the results collected with the industry use cases.                                                     \\
-      Thesis                 & 4   & PhD1/2    & Thesis writing und submission.                                                                \\
+      Prepare                & 3   & PhD      & Exploring related work on property-based testing and fuzzing, and learning Chisel.                           \\
+      Generate               & 6   & PhD      & Developing a hardware generator methodology by using functional programming in Scala.         \\
+      Framework              & 9   & PhD      & Development of an object-oriented and functional testing framework.                      \\
+      Testing & 6   & PhD      & Develop property-based testing to ChiselVerify.                                                      \\
+      Eval                   & 6 & PhD    & Evaluation of the results collected with the industry use cases.                                                     \\
+      Thesis                 & 6   & PhD    & Thesis writing und submission.                                                                \\
       \midrule
       TeachSW                 &  2  & JM            & Make Chisel and its design methods accessible for software designers. \\
       Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
@@ -862,14 +759,14 @@ For each task, the time is given in person-months (PM). The Gantt chart shows
 the project schedule.
 For an assessment of the project's success, we plan the following milestones:
 
-\textbf{M1} (Month 6): The PhD students are selected and employed.
+\textbf{M1} (Month 6): The PhD student is selected and employed.
 
 \textbf{M2} (Month 15): Tools have been learned, and first artifacts have been developed.
 
 \textbf{M3} (Month 30): All development has been finished, and the different components
 can be used for exploration and evaluation of the results with the industrial use cases.
 
-\textbf{M4} (Month 48): The project has finished, and two PhD theses have been handed in.
+\textbf{M4} (Month 48): The project has finished, and one PhD theses has been handed in.
 
 \paragraph*{Success Criteria}
 
@@ -950,6 +847,40 @@ milestone label font=\footnotesize,
 \bibliographystyle{abbrv}
 \bibliography{../../msbib,testing}
 
+\newpage
+
+\section{Notes}
+
+\subsection{Feedback from Last Year}
+
+\begin{itemize}
+\item Hypothesis is missing
+\item Not enough science
+\item State-of-the art is not good, mainly description of tools
+\item Scientific qualification is not high enough, especial the senior ones ???
+\item Missing succes criteria
+\item CV is too long (shall be 2 pages according to 4.3.1) Read also what it shall contain.
+\end{itemize}
+
+\subsection{Meeting notes}
+
+V. Herdt, D. Grosse, H. M. Le, R. Drechsler, Verifying Instruction Set Simulators using Coverage-guided Fuzzing.
+
+\url{https://www.informatik.uni-bremen.de/agra/doc/konf/2019DATE_Verifying_Instruction_Set_Simulators_using_Coverage-guided_Fuzzing.pdf}
+
+Fuzzing naive does not work, we take the idea, but we apply it on a higher level (e.g., instructions)
+
+Liqued types to improve testing
+
+\url{http://goto.ucsd.edu/~rjhala/papers/liquid_types.html}
+
+Sail for cosimulation
+
+Sail to Chisel
+
+Check also overlap with HaaS proposal
+
+
 \end{document}
 
 \newpage
@@ -988,89 +919,3 @@ milestone label font=\footnotesize,
 
 
 One option would be for us to deliver test cases and discussions of what is needed for our company. 
-
-
-
-\subsection{TODO}
-
-Send proposal draft proposal and of August to Jesper, Thomas, ...
-
-\section{From InfinIT}
-
-Digital systems are already an integral part of our life. These systems are built out of microprocessors, application specific integrated circuits (ASICs), and field-programmable gate arrays (FPGAs). Several companies in Denmark are building digital systems. To increase competitivity of those companies, we need tools and methods to increase the productivity in designing and especially testing digital systems. Compared to software development and testing, digital design and testing methods and tools lack several decades of development. Within this project we plan to leverage software development and testing methods for digital design. This project explores the hardware construction language Chisel with Scala and the Universal Verification Method (UVM) with SystemVerilog for design and test of digital systems.
-
-
-
-UVM is becoming an industry standard for design verification. On the other hand there is an active development on a new hardware construction language, called Chisel. Chisel is embedded in Scala to write so-called hardware generators. Chisel is also called: software defined hardware. Another feature of the Chisel/Scala combination is to write models of the environment of the hardware design in Scala. As an example take a network interface (e.g., Ethernet) written as a high-level model in Scala connected to a microprocessor written in Chisel. With this example we are able to develop and test network code on the microprocessor, which is our digital design under test.
-
-
-
-As a first step we will explore and compare the two approaches: UVM/SystemVerilog and Chisel/Scala. When we generate hardware from Chisel, we generate a Verilog description of the digital circuit. This Verilog description can further be tested within UVM (plain Verilog is valid SystemVerilog). As a next step, we will explore how test, simulation, and verification code written in Scala to develop the Chisel description of the digital circuit can be reused at the UVM level to test the generated Verilog description of the circuit.
-
-
-Modern software techniques can be applied on testing where plausible. For example, fuzzing is a mature solution for producing random and yet meaningful inputs to trigger program failures. Symbolic execution explores program paths systematically via constraint solving.
-
-
-
-We are in contact with the developers of Chisel at the University of California in Berkeley, and especially with Richard Lin, who is developing the new testing framework for Chisel. Richard is interested in this project and the integration with UVM. Therefore, we agreed to have a cooperation meeting during the project at UC Berkeley.
-
-
-
-The project fits into the Infinit topic of IoT. The things of IoT are digital systems, often small and application specific systems. Application specific systems are built out of digital systems either with a dedicated ASIC or an FPGA.
-
-
-
-This mini-project will be executed in close cooperation with Microchip, WSA, Synopsys, and Syosil. 
-
-
-
-The students involved in the research project well then be well educated future engineers for digital system design and verification.
-
-
-
-3. Aktiviteter (beskriv) 1. Learning and exploring SystemVerilog/UVM (with Synopsys)
-2. Learning and exploring Chisel/Scala
-3. Defining two use cases together with Microchip
-4. Developing the two use-cases in Chisel and SystemVerilog with a comparison
-5. Developing the verification environment including high-level models of the environment in UVM and Chisel/Scala with a comparison
-6. Application of the UVM verification of the Chisel generated Verilog code
-7. Scala based testing and verification on top of UVM
-8. Develop an open course on verification of digital systems for DTU and use in industry
-
-
-
-
-4. MilestonesKnowledge of the tools30/4/2020Definitions of the use cases31/5/2020Use cases developed30/7/2020Verification and high-level models developed31/8/2020Cross verification from Scala to UVM functional, course material finalize31/10/2020
-
-5. Deltagere
-
-
-
-DTU, CVR-nr. 30 06 09 46, Martin Schoeberl (project lead) (masca@dtu.dk) and Jan Madsen (jama@dtu.dk)
-DTU will develop the use cases and the verification environment with UVM and Chisel/Scala. DTU will transfer knowledge on Chisel to Microchip and WSA.
-ITU, CVR-nr. 29 05 77 53, Peter Sestoft (sestoft@itu.dk) and Zhoulai Fu (zhfu@itu.dk)
-ITU will apply methods from software testing to digital hardware verification.
-Aarhus Universitet, CVR-nr: 31119103, Farshad Moradi (moradi@eng.au.dk)
-AU will explore UVM verification of Chisel generated Verilog code.
-Microchip Semiconductor Corp. A/S, CVR-nr. 24224694, Thomas Aakjer (Thomas.Aakjer@microchip.com)
-Microchip will provide use cases for the research in design and verification where DTU can explore Chisel with Scala.
-WS Audiology Denmark A/S, CVR-nr. 40296638, Ketil Julsgaard (ketil.julsgaard@wsa.com)
-WSA will provide digital-signal processing use cases for cosimulation of a Chisel description with a high-level description.
-Synopsys, CVR-nr. 25600568, Martine Chegaray (Martine.Chegaray@synopsys.com)
-Synopsis will provide the tools for UVM for the project and guide the usage.
-Syosil Aps, CVR-nr. 29399417, Jacob Sander Andersen (jacob@syosil.com)
-Syosil will support the researchers with education in using UVM.
-
-
-6. Resultater og vision for 
-
-The vision of the project is a highly productive method for designing and (more importantly) verification of digital systems by a combination of the modern hardware construction language Chisel/Scala with the industry standard UVM.
-7. Videnspredning
-
-The research work will be documented by publications and presented at relevant conferences (for example DATE), funded by other means, not by this project.
-
-At the end of the project we will present the method at a workshop open for Danish industry in digital system design.
-
-The new development and verification method will be used and taught in courses on digital electronics at DTU.
-
-\end{document}

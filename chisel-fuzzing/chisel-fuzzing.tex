@@ -145,6 +145,8 @@ RFuzz, as well as our own solution, is based on AFL.
 The key difference is that AFL is a fuzzer for software, while the two other fuzzers are for digital circuits.
 This impacts the way a test is defined, interpreted and mutated~\cite{rfuzz2018}.
 
+\todo{We shall also mention \cite{DBLP:journals/corr/abs-2102-02308}}
+
 As for random program generation, the open-source RISC-V DV framework \cite{riscvdv}, built using python and SystemVerilog, is a notable existing solution. 
 However, an implementation in Scala will have the advantage of keeping all internal communications in the same language. 
 We also plan on providing a general infrastructure for RISC architectures, while ISA definitions will be kept as libraries, allowing our implementation not to be limited by a single ISA.

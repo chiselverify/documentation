@@ -128,8 +128,8 @@ the design right at the first tape-out. Thorough testing and verification of the
 
 To efficiently develop and verify those accelerators, we can learn from software development trends such as agile software development~\cite{agile:manifesto}.
 We believe that {\bf we need to adapt to agile hardware development}~\cite{henn-patt:turing:2019}.
-
-Furthermore, as accelerators become part of the cloud service, i.e., FPGAs in the cloud,
+%
+As accelerators become part of the cloud service, i.e., FPGAs in the cloud,
 software developers will increasingly need to adapt critical algorithms to FPGAs to enhance performance.
 Hence, it is imperative to make accelerator design accessible for software developers.
 By adapting hardware accelerator design to the methods and tools of contemporary software design,
@@ -155,13 +155,13 @@ them in the first place.
 Therefore, this project's central focus is on {\bf applying software
 testing methods for hardware testing}.
 
-We will build a combination of open-source tools for verifying
-circuits described in mixed languages (VHDL, SystemVerilog, and Chisel).
-It builds on top of the Chisel hardware construction language and uses Scala to drive the verification. 
+%We will build a combination of open-source tools for verifying
+%circuits described in mixed languages (VHDL, SystemVerilog, and Chisel).
+%It builds on top of the Chisel hardware construction language and uses Scala to drive the verification. 
 
-\paragraph{Hypotheses}
-\martin{write: more productive when using SW tools, methods, languages}
-The properties of interest for a hardware design can be expressed using a temporal logic \cite{Baier2008} (e.g., Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) or similar formalisms, or derived from ISA specifications. Random test generation can adequately cover a hardware design by being guided by properties of interests, and by the design itself.
+\paragraph{Hypothesis} Our hypothesis is that using tools, methods, and languages from the
+software domain to describe and verify digital circuits will {\bf considerably increase the productivity}
+of digital design and verification engineers.
 
 
 %We will explore the testing strategy used in UVM in the context of verifying hardware described in Chisel.
@@ -242,30 +242,6 @@ With Chisel on Scala we have the choice of different integrated development envi
 testing infrastructure (e.g., ScalaTest), and many free libraries.
 
 
-The Universal Verification Methodology (UVM) is a methodology for testing and verifying of digital circuits.
-UVM is implemented as a SystemVerilog library and utilizes the fact that SystemVerilog uses object-oriented programming when designing test-benches.
-Using object-oriented patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionality.
-As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
-UVM is a first step towards truly standardized test-benches.
-
-At the time of writing, little published work was done in the realm of fuzzing for digital circuits.
-One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on digital circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). RFuzz differs from what we present in this paper in two ways. First, RFuzz uses a simple coverage metric that is independent of the device under test (DUT), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}.
-Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random generated programs to test a processor.
-
-\martin{Is this the same as below, or are there more than one Google fuzing projects.}
-American fuzzy loop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
-AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
-RFuzz, as well as our own solution, is based on AFL. 
-The key difference is that AFL is a fuzzer for software, while the two other fuzzers are for digital circuits.
-This impacts the way a test is defined, interpreted and mutated~\cite{rfuzz2018}.
-Trippel et al. use AFL to apply software fuzzing to hardware~\cite{DBLP:journals/corr/abs-2102-02308}.
-As hardware contains state, test input has to be applied for several clock cycles to activate state transitions.
-They transform the one-dimensional test input, generated by AFL, to a sequence of inputs applied
-on sequential clock cycles.
-
-As for random program generation, the open-source RISC-V DV framework \cite{riscvdv}, built using python and SystemVerilog, is a notable existing solution. 
-However, an implementation in Scala will have the advantage of keeping all internal communications in the same language. 
-Our implementation will also not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
 %Chisel and Scala are executing on the Java virtual machine and therefore have a very good
 %interoperability with Java. Therefore, we can leverage a large pool of Java libraries for
 %hardware design and  verification.
@@ -319,6 +295,32 @@ Furthermore, ChiselTest tries to enable testing best practices from software eng
 Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
 A clear and clean test code also enables the test-as-documentation pattern,
 demonstrating a module's behavior from a temporal perspective.
+
+The Universal Verification Methodology (UVM) is a methodology for testing and verifying of digital circuits.
+UVM is implemented as a SystemVerilog library and utilizes the fact that SystemVerilog uses object-oriented programming when designing test-benches.
+Using object-oriented patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionality.
+As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
+UVM is a first step towards truly standardized test-benches.
+
+At the time of writing, little published work was done in the realm of fuzzing for digital circuits.
+One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on digital circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020). RFuzz differs from what we present in this paper in two ways. First, RFuzz uses a simple coverage metric that is independent of the device under test (DUT), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, dobis2021opensource}.
+Another difference is in the randomized program generation, while RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random generated programs to test a processor.
+
+\martin{Is this the same as below, or are there more than one Google fuzing projects.}
+American fuzzy loop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
+AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
+RFuzz, as well as our own solution, is based on AFL. 
+The key difference is that AFL is a fuzzer for software, while the two other fuzzers are for digital circuits.
+This impacts the way a test is defined, interpreted and mutated~\cite{rfuzz2018}.
+Trippel et al. use AFL to apply software fuzzing to hardware~\cite{DBLP:journals/corr/abs-2102-02308}.
+As hardware contains state, test input has to be applied for several clock cycles to activate state transitions.
+They transform the one-dimensional test input, generated by AFL, to a sequence of inputs applied
+on sequential clock cycles.
+
+As for random program generation, the open-source RISC-V DV framework \cite{riscvdv}, built using python and SystemVerilog, is a notable existing solution. 
+However, an implementation in Scala will have the advantage of keeping all internal communications in the same language. 
+Our implementation will also not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
+
 
 {\color{blue}%
 \paragraph{Automatic test generation for software.}
@@ -466,6 +468,9 @@ it was also used by Ericsson to test its media
 proxy~\cite{DBLP:conf/erlang/ArtsHJW06}, by Volvo to test car
 communications protocols~\cite{DBLP:conf/icst/ArtsHNS15}.
 
+The properties of interest for a hardware design can be expressed using a temporal logic \cite{Baier2008} (e.g., Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) or similar formalisms. Those properties can be translated into
+timed assertions for the testing.
+Random test generation can adequately cover a hardware design by being guided by properties of interests, and by the design itself.
 
 
 
@@ -534,6 +539,7 @@ combination of object-oriented programming with functional programming.
 An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
 showed the that a test written with UVM was about 800 lines of code, where a Scala based
 test was around 80 lines of code~\cite{verify:chisel:2020}.
+Frist steps towards ChiselVerify are described in~\cite{ChiselVerify:2021}.
 %However, UVM supports more functionality that a plain ChiselTest in Scala.
 
 
@@ -547,40 +553,6 @@ test was around 80 lines of code~\cite{verify:chisel:2020}.
 %\item WP on VHDL generation from Chisel for better verification
 %\item p69: HDL models are SW projects
 %\end{itemize}
-
-
-
-
-\martin{Add temporal properties (temporal logic)}
-
-\todo{Look at \url{https://github.com/chiselverify/chiselverify/wiki/Timed-Assertions}}
-
-\martin{Generate tests from properties.}
-
-\martin{WE probably remove the following}
-
-
-
-
-%% Related to this, our collaborator Zhoulai Fu has worked on a
-%% comprehensive study of developing bug finders by learning from history
-%% bug patterns in the Robot Operating
-%% System~\cite{nielsenFSW2020dependencybugs} 
-
-
-%% Let us consider this as another backyard WP.
-%% \subsection{WP5} We plan to deploy our automated testing solution  in a continuous
-%% integration service, presumably on the cloud, such as Jenkins or
-%% Travis~\cite{DBLP:journals/tse/GallabaM20}. For each code commit, the
-%% service will automatically generate the specification as implemented
-%% in WP2 and WP3, and then will generate test data with a fuzzing engine
-%% as in WP4.
-
-%% \paragraph{MS5.} The milestone is to have the server established that implements
-%% the workflow. It should produce a detailed status report for each
-%% commit.  A similar kind of status report can be found in Google's
-%% OSS-Fuzz (Continuous Fuzzing for Open Source
-%% Software)~\cite{web:oss-fuzz} for example.
 
 
 \paragraph*{Dissemination and Publication}
@@ -628,8 +600,8 @@ Danish industry in digital design for ASICs and FPGAs is currently in transition
 test benches written in VHDL and Verilog to a verification method based on constraint random
 test generation with tools such as UVM. Therefore, the SDH project is just-in-time to support this
 transition.
-
-Following {\bf seven companies are interested in the SDH project} and support it with use cases.
+%
+Following {\bf eight companies are interested in the SDH project} and support it with use cases.
 Teledyne is interested in exploring Chisel for development and testing with the compatibility of VHDL and Verilog.
 Microchip is interested in using Chisel to improve the design throughput and
 provides a hardware use case to sort Ethernet packets according to their deadlines.
@@ -638,6 +610,7 @@ WSAudiology provides a decimation filter use case for our verification framework
 Napatech will follow the project and offer challenges to the project.
 Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
 Comcores is interested in improving the throughput with SDH.
+Huawei 
 
 
 %\paragraph*{Use Cases}
@@ -684,11 +657,11 @@ and tools for systems engineering of computing systems, embedded systems-on-a-ch
 Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
 synthetic biology (molecular computing). 
 
-{\bf Alceste  (AS)} is 
+{\bf Alceste Scalas} is assistant professor at DTU Compute. His research interest is in
+formal methods and programming languages to id software design, development, and verification. 
 
-{\bf Martin Berger ()} works on processor verification at Huawei's Cambridge Research Center.
+{\bf Martin Berger} works on processor verification at Huawei's Cambridge Research Center.
 He is interested to apply the results of this project to processor verification.
-
 
 {\bf PhD} we are looking for one PhD candidate with a background in computer engineering
 with an interest in digital design and programming languages.
@@ -774,72 +747,74 @@ can be used for exploration and evaluation of the results with the industrial us
 
 \paragraph*{Success Criteria}
 
-\martin{write on: productivity increase by a factor of 2. But hard to measure, we will compare
-the LoC between UVM and ChiselVerify and it should be 1/3.}
+We aim to increase the productivity by a factor of two. However, measuring productivity directly
+is not trivial as it varies between developers. Therefore, we will approximate it by comparing the
+lines of code between two implementations and test done in UVM and with ChiselVerify.
 
-%\vspace{-5mm}
-\begin{figure*}
-\centering
-\begin{ganttchart}[vgrid,hgrid,bar/.style={fill=gray},
-x unit=3mm, % horizontal squeezing
-%y unit chart=5mm, % vertical squeezing
-y unit title=8mm,y unit chart=4.5mm, milestone top shift=.15, milestone height=.2mm, % very tight format
-title label font=\footnotesize,
-bar label font=\footnotesize,
-milestone label font=\footnotesize,
-]{1}{48}
-% labels
-%\gantttitle{\textbf{\normalsize{RTAI Gantt chart}}}{42} \\
-\gantttitlelist{1,...,48}{1} \\
-% tasks, groups and milestones
-\ganttbar[name=r1]{Recruiting}{1}{6} \\
-\ganttmilestone[name=m1]{Milestone 1}{6} \\
-\ganttbar[name=t1]{UVM}{1}{9} \\
-\ganttbar[name=t2]{Prepare1}{7}{9} \\
-\ganttbar[name=t3]{Cover}{10}{15} \\
-\ganttmilestone[name=m2]{Milestone 2}{15} \\
-\ganttbar[name=t4]{Generate}{16}{21} \\
-\ganttbar[name=t41]{Framework}{22}{30} \\
-\ganttbar[name=t5]{Perpare2}{7}{9} \\
-\ganttbar[name=t6]{Spec}{10}{15} \\
-\ganttbar[name=t7]{Testing}{16}{21} \\
-\ganttbar[name=t8]{Bugbase}{22}{24} \\
-\ganttbar[name=t9]{Implement}{25}{30} \\
-\ganttmilestone[name=m3]{Milestone 3}{30} \\
-\ganttbar[name=t10]{Explore}{31}{34} \\
-\ganttbar[name=t11]{Eval}{35}{39} \\
-\ganttbar[name=t12]{Thesis}{40}{48} \\
-\ganttbar[name=t13]{TeachSW}{40}{46} \\
-\ganttbar[name=t14]{Chapter}{40}{46} \\
-\ganttmilestone[name=m4]{Milestone 4}{48}
 
-% relations
-\ganttlink{r1}{m1}
-\ganttlink{m1}{t2}
-\ganttlink{t1}{m2}
-\ganttlink{t2}{t3}
-\ganttlink{t3}{m2}
-\ganttlink{m2}{t4}
-\ganttlink{t4}{t41}
-\ganttlink{t41}{m3}
-
-\ganttlink{m1}{t5}
-\ganttlink{t5}{t6}
-\ganttlink{t6}{m2}
-\ganttlink{m2}{t7}
-\ganttlink{t7}{t8}
-\ganttlink{t8}{t9}
-\ganttlink{t9}{m3}
-\ganttlink{m3}{t10}
-\ganttlink{t10}{t11}
-\ganttlink{t11}{m4}
-\ganttlink{t12}{m4}
-\ganttlink{t13}{m4}
-
-\end{ganttchart}
-
-\caption{The Gantt chart of SDH}\label{fig:gantt}
-\end{figure*}
+%%\vspace{-5mm}
+%\begin{figure*}
+%\centering
+%\begin{ganttchart}[vgrid,hgrid,bar/.style={fill=gray},
+%x unit=3mm, % horizontal squeezing
+%%y unit chart=5mm, % vertical squeezing
+%y unit title=8mm,y unit chart=4.5mm, milestone top shift=.15, milestone height=.2mm, % very tight format
+%title label font=\footnotesize,
+%bar label font=\footnotesize,
+%milestone label font=\footnotesize,
+%]{1}{48}
+%% labels
+%%\gantttitle{\textbf{\normalsize{RTAI Gantt chart}}}{42} \\
+%\gantttitlelist{1,...,48}{1} \\
+%% tasks, groups and milestones
+%\ganttbar[name=r1]{Recruiting}{1}{6} \\
+%\ganttmilestone[name=m1]{Milestone 1}{6} \\
+%\ganttbar[name=t1]{UVM}{1}{9} \\
+%\ganttbar[name=t2]{Prepare1}{7}{9} \\
+%\ganttbar[name=t3]{Cover}{10}{15} \\
+%\ganttmilestone[name=m2]{Milestone 2}{15} \\
+%\ganttbar[name=t4]{Generate}{16}{21} \\
+%\ganttbar[name=t41]{Framework}{22}{30} \\
+%\ganttbar[name=t5]{Perpare2}{7}{9} \\
+%\ganttbar[name=t6]{Spec}{10}{15} \\
+%\ganttbar[name=t7]{Testing}{16}{21} \\
+%\ganttbar[name=t8]{Bugbase}{22}{24} \\
+%\ganttbar[name=t9]{Implement}{25}{30} \\
+%\ganttmilestone[name=m3]{Milestone 3}{30} \\
+%\ganttbar[name=t10]{Explore}{31}{34} \\
+%\ganttbar[name=t11]{Eval}{35}{39} \\
+%\ganttbar[name=t12]{Thesis}{40}{48} \\
+%\ganttbar[name=t13]{TeachSW}{40}{46} \\
+%\ganttbar[name=t14]{Chapter}{40}{46} \\
+%\ganttmilestone[name=m4]{Milestone 4}{48}
+%
+%% relations
+%\ganttlink{r1}{m1}
+%\ganttlink{m1}{t2}
+%\ganttlink{t1}{m2}
+%\ganttlink{t2}{t3}
+%\ganttlink{t3}{m2}
+%\ganttlink{m2}{t4}
+%\ganttlink{t4}{t41}
+%\ganttlink{t41}{m3}
+%
+%\ganttlink{m1}{t5}
+%\ganttlink{t5}{t6}
+%\ganttlink{t6}{m2}
+%\ganttlink{m2}{t7}
+%\ganttlink{t7}{t8}
+%\ganttlink{t8}{t9}
+%\ganttlink{t9}{m3}
+%\ganttlink{m3}{t10}
+%\ganttlink{t10}{t11}
+%\ganttlink{t11}{m4}
+%\ganttlink{t12}{m4}
+%\ganttlink{t13}{m4}
+%
+%\end{ganttchart}
+%
+%\caption{The Gantt chart of SDH}\label{fig:gantt}
+%\end{figure*}
 
 
 
@@ -883,6 +858,10 @@ Sail for cosimulation
 Sail to Chisel
 
 Check also overlap with HaaS proposal
+
+\subsection{More Notes}
+
+\todo{Look at \url{https://github.com/chiselverify/chiselverify/wiki/Timed-Assertions}}
 
 
 \end{document}

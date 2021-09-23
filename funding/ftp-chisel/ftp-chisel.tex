@@ -205,17 +205,11 @@ SystemVerilog~\cite{SystemVerilog}, as an extension to Verilog, adds features fr
 for the hardware description and object-oriented features for verification.
 Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have
 brought object-oriented programming into the digital design and verification process.
-
-Chisel is a ``Hardware Construction Language'' embedded in Scala, to describe digital circuits~\cite{chisel:dac2012}.
-Scala/Chisel brings object-oriented and functional programming into the world of digital design.
-For hardware generation and testing, the full Scala language and Scala and Java libraries are available.
-As Scala and Java's full power is available to the verification engineer,
-the verification process is also made more efficient.
-
-SystemVerilog has become a complex language with more than 250 keywords, and it is unclear
-which tools support which language constructs for hardware description.
-In contrast with Chisel, when the program compiles, it is synthesizable hardware.
-Chisel is a small language, where the cheat sheet fits on two pages.
+Chisel is a ``Hardware Construction Language'' embedded in Scala and
+brings object-oriented and functional programming into the world of digital design.
+SystemVerilog has become a complex language with more than 250 keywords
+and different tools supportinf different subsets of the full specification.
+In contrast, Chisel is a small language.
 The power of Chisel comes from the embedding in Scala.
 With Chisel on Scala we have the choice of different integrated development environments (IDE),
 testing infrastructure (e.g., ScalaTest), and many free libraries.
@@ -228,7 +222,6 @@ libraries at Maven servers.
 Randomised test generation has emerged as one of the most successful approaches
 for assessing the correctness of software components.
 Two key techniques are \emph{fuzzing} and \emph{property-based testing}.
-
 \emph{Fuzzing} is based on the random generation of random test inputs,
 and on the observation of program behavior (successful termination or crash) and code coverage
 to generate further random inputs \cite{takanen2018fuzzing,DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
@@ -236,53 +229,46 @@ Google's OSS-Fuzz project, for example, has filed over 20 000 bugs in 300 open s
 projects (as of June 2020)~\cite{web:oss-fuzz}.
 American fuzzy loop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
 AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
-
 \emph{Property-based testing} generates random tests based on the specification of a component under observation.
 Many implementation are based on the seminal paper \cite{DBLP:conf/icfp/ClaessenH00} --- including, e.g., ScalaCheck.
-For example, suppose we implement a new operator \texttt{+++} for concatenating two strings:
-to check its correctness, we may want to ensure that for any two strings \texttt{a} and \texttt{b},
-the result of \texttt{a\,+++\,b} is a string whose length is the sum of \texttt{a}'s and \texttt{b}'s lengths.
-Using ScalaCheck, we may call this property \texttt{"concatLength"} and write it as:
-%
-\noindent%
-\begin{lstlisting}[language=Scala,numbers=none]
-  property("concatLength") = forAll { (a: String, b: String) =>
-    (a +++ b).length == (a.length + b.length)
-  }
-\end{lstlisting}
-%
-\noindent%
-ScalaCheck will produce sets of random strings \texttt{a} and \texttt{b}, and report an error if it finds a pair that does not satisfy \texttt{"concatLength"}. On the one hand, this technique is more refined than fuzzing, because it has an explicit notion of correctness (expressed by properties); on the other hand, it treats the software under test (like operator \texttt{+++} in the example above) as a black box, hence the random test sample may not achieve adequate coverage of the implementation.
+%For example, suppose we implement a new operator \texttt{+++} for concatenating two strings:
+%to check its correctness, we may want to ensure that for any two strings \texttt{a} and \texttt{b},
+%the result of \texttt{a\,+++\,b} is a string whose length is the sum of \texttt{a}'s and \texttt{b}'s lengths.
+%Using ScalaCheck, we may call this property \texttt{"concatLength"} and write it as:
+%%
+%\noindent%
+%\begin{lstlisting}[language=Scala,numbers=none]
+%  property("concatLength") = forAll { (a: String, b: String) =>
+%    (a +++ b).length == (a.length + b.length)
+%  }
+%\end{lstlisting}
+%%
+%\noindent%
+%ScalaCheck will produce sets of random strings \texttt{a} and \texttt{b}, and report an error if it finds a pair that does not satisfy \texttt{"concatLength"}. On the one hand, this technique is more refined than fuzzing, because it has an explicit notion of correctness (expressed by properties); on the other hand, it treats the software under test (like operator \texttt{+++} in the example above) as a black box, hence the random test sample may not achieve adequate coverage of the implementation.
 
 
 \paragraph{Hardware Testing Methods.}
 
 The digital design described in Chisel can be tested and verified with
 ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel.
-ChiselTest emphasizes usability and simplicity while providing ways to scale up complexity.
-ChiselTest tries to enable testing best practices from software engineering.
-Its lightweight syntax encourages writing targeted unit tests by making small tests easy.
-
-The \textit{Universal Verification Methodology} (UVM) was created as a standardized way
-of writing test-benches on top of SystemVerilog. 
+The \textit{Universal Verification Methodology} (UVM) was created to write test-benches on top of SystemVerilog. 
 It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}.
 As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
 UVM is a first step towards truly standardized test-benches.
-
-One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on digital circuits.
-RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random generated programs to test a processor.
-
+RFuzz~\cite{rfuzz2018}, lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation.
+RFuzz only generates random bit streams, our goal is to focus as well on the generation of coherent random
+test vectors.
 Trippel et al. use AFL to apply software fuzzing to hardware~\cite{DBLP:journals/corr/abs-2102-02308}.
 As hardware contains state, test input has to be applied for several clock cycles to activate state transitions.
 They transform the one-dimensional test input, generated by AFL, to a sequence of inputs applied
 on sequential clock cycles.
 
-As for random program generation, the open-source RISC-V DV framework \cite{riscvdv}, built using python and SystemVerilog, is a notable existing solution. 
-However, an implementation in Scala will have the advantage of keeping all internal communications in the same language. 
-Our implementation will also not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
-
-Furthermore, continuous integration~\cite{duvall2007continuous} 
-implements an agile method that automatically runs manually written
+%As for random program generation, the open-source RISC-V DV framework \cite{riscvdv}, built using python and SystemVerilog, is a notable existing solution. 
+%However, an implementation in Scala will have the advantage of keeping all internal communications in the same language. 
+%Our implementation will also not limit itself to one ISA but will provide a general infrastructure for RISC architectures and ISA definitions will be kept as libraries.
+%
+%Furthermore, continuous integration~\cite{duvall2007continuous} 
+%implements an agile method that automatically runs manually written
 
 
 \section{Research Plan}
@@ -500,20 +486,21 @@ for a female researcher for the PhD positions.
 %His research interest is in computer architecture for real-time systems.
 During his stay
 at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
-Martin has {\bf written the Chisel textbook}~\cite{chisel:book}, which has been translated
+Martin has {\bf written the Chisel textbook}~\cite{chisel:book}\footnote{see
+\url{http://www.imm.dtu.dk/~masca/chisel-book.html}}, which has been translated
 into Chinese, Japanese, and Vietnamese. Martin is a {\bf member of the Technical Advisory Committee for
 Chisel} and therefore keeps the work of SDH in sync with the Chisel main development.
-Martin is part of the regular Chisel developer meeting and a meeting on verification with
-UC Berkeley researchers and developers from SiFive, a startup in silicon valley.
+Martin is part of the regular Chisel developer meeting with
+UC Berkeley researchers and developers from SiFive, a silicon valley startup.
 
 
+{\bf Alceste Scalas} is associate professor at DTU Compute. His research interest is in formal methods and programming languages to aid software design, development, and verification. He has relevant experience with the Scala programming language and has been invited to the Scala World 2019 developers' conference.
+%; most of his top-level scientific publications have companion peer-reviewed software artifacts implemented in Scala.
 {\bf Jan Madsen (JM)} is professor and deputy director of DTU Compute.
 His research spans methods
 and tools for systems engineering of computing systems, embedded systems-on-a-chip,
 Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
 synthetic biology (molecular computing). 
-{\bf Alceste Scalas} is assistant professor at DTU Compute. His research interest is in
-formal methods and programming languages to id software design, development, and verification. 
 {\bf Martin Berger} works on processor verification at Huawei's Cambridge Research Center.
 He is interested to apply the results of this project to processor verification.
 {\bf PhD} we are looking for one PhD candidate with a background in computer engineering
@@ -592,11 +579,11 @@ can be used for exploration and evaluation of the results with the industrial us
 
 \textbf{M4} (Month 48): The project has finished, and one PhD theses has been handed in.
 
-\paragraph*{Success Criteria}
+\paragraph*{Success Criteria:}
 
 We aim to increase the productivity by a factor of two. However, measuring productivity directly
 is not trivial as it varies between developers. Therefore, we will approximate it by comparing the
-lines of code between two implementations and test done in UVM and with ChiselVerify.
+lines of code between two implementations and test done in SystemVerilog/UVM and with Chisel/ChiselVerify.
 
 
 %%\vspace{-5mm}

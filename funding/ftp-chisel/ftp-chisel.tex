@@ -205,12 +205,12 @@ SystemVerilog~\cite{SystemVerilog}, as an extension to Verilog, adds features fr
 for the hardware description and object-oriented features for verification.
 Recent advances with SystemVerilog and Chisel \cite{chisel:dac2012, chisel:book} have
 brought object-oriented programming into the digital design and verification process.
-Chisel is a ``Hardware Construction Language'' embedded in Scala and
-brings object-oriented and functional programming into the world of digital design.
 SystemVerilog has become a complex language with more than 250 keywords
 and different tools supportinf different subsets of the full specification.
 In contrast, Chisel is a small language.
-The power of Chisel comes from the embedding in Scala.
+The power of Chisel comes from the embedding in Scala~\cite{Scala}.
+Chisel is a ``Hardware Construction Language'' embedded in Scala and
+brings object-oriented and functional programming into the world of digital design.
 With Chisel on Scala we have the choice of different integrated development environments (IDE),
 testing infrastructure (e.g., ScalaTest), and many free libraries.
 Open source hardware components in Chisel can be organized like software
@@ -230,7 +230,7 @@ projects (as of June 2020)~\cite{web:oss-fuzz}.
 American fuzzy loop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
 AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
 \emph{Property-based testing} generates random tests based on the specification of a component under observation.
-Many implementation are based on the seminal paper \cite{DBLP:conf/icfp/ClaessenH00} --- including, e.g., ScalaCheck.
+Many implementation are based on the seminal paper \cite{DBLP:conf/icfp/ClaessenH00}, including, e.g., ScalaCheck~\cite{ScalaCheck}.
 %For example, suppose we implement a new operator \texttt{+++} for concatenating two strings:
 %to check its correctness, we may want to ensure that for any two strings \texttt{a} and \texttt{b},
 %the result of \texttt{a\,+++\,b} is a string whose length is the sum of \texttt{a}'s and \texttt{b}'s lengths.
@@ -380,7 +380,7 @@ combination of object-oriented programming with functional programming.
 An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
 showed the that a test written with UVM was about 800 lines of code, where a Scala based
 test was around 80 lines of code~\cite{verify:chisel:2020}.
-Frist steps towards ChiselVerify are described in~\cite{ChiselVerify:2021}.
+Frist steps towards the verification framework \emph{ChiselVerify} are described in~\cite{ChiselVerify:2021}.
 %However, UVM supports more functionality that a plain ChiselTest in Scala.
 
 
@@ -447,7 +447,7 @@ Teledyne is interested in exploring Chisel for development and testing with the 
 Microchip is interested in using Chisel to improve the design throughput and
 provides a hardware use case to sort Ethernet packets according to their deadlines.
 Synopsys provides tool support for the project.
-WSAudiology provides a decimation filter use case for our verification framework.
+WSAudiology provides a decimation filter use case.
 Napatech will follow the project and offer challenges to the project.
 Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
 Comcores is interested in improving the throughput with SDH.
@@ -494,7 +494,7 @@ Martin is part of the regular Chisel developer meeting with
 UC Berkeley researchers and developers from SiFive, a silicon valley startup.
 
 
-{\bf Alceste Scalas} is associate professor at DTU Compute. His research interest is in formal methods and programming languages to aid software design, development, and verification. He has relevant experience with the Scala programming language and has been invited to the Scala World 2019 developers' conference.
+{\bf Alceste Scalas (AS)} is associate professor at DTU Compute. His research interest is in formal methods and programming languages to aid software design, development, and verification. He has relevant experience with the Scala programming language. % and has been invited to the Scala World 2019 developers' conference.
 %; most of his top-level scientific publications have companion peer-reviewed software artifacts implemented in Scala.
 {\bf Jan Madsen (JM)} is professor and deputy director of DTU Compute.
 His research spans methods
@@ -503,7 +503,7 @@ Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip)
 synthetic biology (molecular computing). 
 {\bf Martin Berger} works on processor verification at Huawei's Cambridge Research Center.
 He is interested to apply the results of this project to processor verification.
-{\bf PhD} we are looking for one PhD candidate with a background in computer engineering
+{\bf NN PhD} We are looking for one PhD candidate with a background in computer engineering
 with an interest in digital design and programming languages.
 
 %\subsection*{Experimental Facilities}
@@ -528,14 +528,15 @@ with an interest in digital design and programming languages.
       \midrule
       Recruiting             & 1   & MS and JM & Recruiting of the PhD.                                                                    \\
       \midrule
-      Prepare                & 3   & PhD      & Exploring related work on property-based testing and fuzzing, and learning Chisel.                           \\
+      Prepare                & 3   & PhD      & Exploring related work on property-based testing and fuzzing, and learning Chisel and UVM.                           \\
       DigDesign               & 6   & PhD      & Developing a hardware generator methodology by using functional programming in Scala.         \\
       Framework              & 9   & PhD      & Development of an object-oriented and functional testing framework.                      \\
-      Testing & 6   & PhD      & Develop property-based testing to ChiselVerify.                                                      \\
-      Eval                   & 6 & PhD    & Evaluation of the results collected with the industry use cases.                                                     \\
+      Testing & 6   & PhD      & Develop property-based testing for ChiselVerify.                                                      \\
+      Eval                   & 6 & PhD    & Evaluation of the tools with the industrial use cases.                                                     \\
       Thesis                 & 6   & PhD    & Thesis writing und submission.                                                                \\
       \midrule
       TeachSW                 &  2  & JM            & Make Chisel and its design methods accessible for software designers. \\
+      TypeSys                &    2   &  AS  & Develop a stronger type system for Chisel towards Chisel 4. \\
       Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
       \bottomrule
     \end{tabular}
@@ -566,7 +567,7 @@ with an interest in digital design and programming languages.
 %be collected to measure comprehensiveness of our tests.
 
 
-The project is divided into several tasks, each planned in person-months (PM).
+The project is divided into several tasks (Table~\ref{tab:packages}), each planned in person-months (PM).
 %The Gantt chart shows the project schedule.
 For an assessment of the project's success, we have following milestones:
 
@@ -581,9 +582,9 @@ can be used for exploration and evaluation of the results with the industrial us
 
 \paragraph*{Success Criteria:}
 
-We aim to increase the productivity by a factor of two. However, measuring productivity directly
-is not trivial as it varies between developers. Therefore, we will approximate it by comparing the
-lines of code between two implementations and test done in SystemVerilog/UVM and with Chisel/ChiselVerify.
+We aim to increase the productivity by a factor of two. Measuring productivity directly
+is not trivial, as it varies between developers. Therefore, we will approximate it by comparing the
+lines of code of the design and test between SystemVerilog/UVM and Chisel/ChiselVerify.
 
 
 %%\vspace{-5mm}
@@ -660,6 +661,7 @@ lines of code between two implementations and test done in SystemVerilog/UVM and
 \bibliographystyle{abbrv}
 \bibliography{../../msbib,testing,../../chisel-uvm}
 
+\end{document}
 \newpage
 
 \section{Notes}

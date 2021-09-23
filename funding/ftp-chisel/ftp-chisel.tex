@@ -140,16 +140,16 @@ design and testing of digital circuits.
 %However, both languages are decades behind
 %modern languages for software development.
 However, digital design and testing methods and tools lag by several decades of development
-compared to software development and testing.\footnote{Chris Lattner, The Golden Age of Compilers in an era of Hardware/Software co-design, invited talk at ASPLOS 2021.}
-Within this project, we plan to
-{\bf introduce software development and testing methods for digital design.}
+compared to software development and testing.\footnote{Chris Lattner, The Golden Age of Compilers in an era of Hardware/Software co-design. Invited talk, ASPLOS 2021.}
+With this project, we plan to
+{\bf\color{red}introduce methods inspired by software development and testing into the realm of digital design.}
 This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
 and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
 the design and test of digital systems.
 
 This project aims to develop a method and concrete tools for agile hardware development.
-We will use software development tools, languages, development, and testing methods
-from the last decades and apply them to hardware design.
+{\color{red}We will take inspiration from software development tools, languages, and testing methods
+from the last decades and explore their applicability for hardware design.}
 We aim to {\bf raise the tooling level for a digital design to increase productivity}.
 Time for verifying (testing) digital systems is about double the time of developing
 them in the first place.
@@ -160,7 +160,7 @@ testing methods for hardware testing}.
 %circuits described in mixed languages (VHDL, SystemVerilog, and Chisel).
 %It builds on top of the Chisel hardware construction language and uses Scala to drive the verification. 
 
-\paragraph{Hypothesis:} We hypothesize is that using tools, methods, and languages from the
+\paragraph{Hypothesis:} using tools, methods, and languages from the
 software domain to describe and verify digital circuits will {\bf considerably increase the productivity}
 of digital design and verification engineers.
 
@@ -224,14 +224,14 @@ Randomized test generation has emerged as one of the most successful approaches
 for assessing the correctness of software components.
 Two essential techniques are \emph{fuzzing} and \emph{property-based testing}.
 \emph{Fuzzing} is based on generating random test inputs and observing program
-behavior (successful termination or crash); code coverage
-can guide the generation of random inputs \cite{takanen2018fuzzing,DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
+behavior (successful termination or crash); code coverage can be used to
+guide the generation of random inputs \cite{takanen2018fuzzing,DBLP:journals/tse/BohmePR19,DBLP:conf/pldi/FuS17}.
 Google's OSS-Fuzz project, for example, has filed over 20 000 bugs in 300 open source
 projects (as of June 2020)~\cite{web:oss-fuzz}.
 American fuzzy loop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
 AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
 \emph{Property-based testing} generates random tests based on the specification of a component under observation.
-Many implementations follow the idea from the seminal paper \cite{DBLP:conf/icfp/ClaessenH00}, including, e.g., ScalaCheck~\cite{ScalaCheck}.
+Many implementations follow the idea from the seminal paper \cite{DBLP:conf/icfp/ClaessenH00}, including, e.g., ScalaCheck~\cite{nilsson2014scalacheck}.
 %For example, suppose we implement a new operator \texttt{+++} for concatenating two strings:
 %to check its correctness, we may want to ensure that for any two strings \texttt{a} and \texttt{b},
 %the result of \texttt{a\,+++\,b} is a string whose length is the sum of \texttt{a}'s and \texttt{b}'s lengths.
@@ -253,12 +253,12 @@ Many implementations follow the idea from the seminal paper \cite{DBLP:conf/icfp
 The digital design described in Chisel can be tested and verified with
 ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel.
 The \textit{Universal Verification Methodology} (UVM) was created to write test-benches on top of SystemVerilog. 
-It allows creating reusable test benches (i.e., using the same test for multiple designs)~\cite{uvm2015}.
+It allows creating reusable test benches (i.e., using the same test for multiple designs)~\cite{uvm2015b}.
 As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
 RFuzz~\cite{rfuzz2018}, led by UC Berkeley researchers, focuses on ``coverage-guided fuzz mutational testing.''
 This method relies on FPGA-accelerated simulation.
 RFuzz generates random bitstreams.
-Trippel et al. use AFL to apply software fuzzing to hardware~\cite{DBLP:journals/corr/abs-2102-02308}.
+Trippel et al.~use AFL to apply software fuzzing to hardware~\cite{DBLP:journals/corr/abs-2102-02308}.
 As hardware contains state, test input must be applied for several clock cycles to activate state transitions.
 They transform the one-dimensional test input generated by AFL to a sequence of inputs applied
 on sequential clock cycles. The tool detects bugs by checking invariants, described as assertions, during simulation.
@@ -332,15 +332,16 @@ hardware description.
 \paragraph{Hardware Fuzzing Techniques.}
 
 Fuzzing and property-based testing techniques will inspire new, more efficient methods for validating hardware designs.
-Software fuzzing is based on the actual execution of the program under test; such a program can run at (near-)full
-speed and be easily distributed over thousands of testing nodes via cloud-based fuzzing tools like Google's
-ClusterFuzz.~\cite{web:clusterfuzz}.
 We will add support for hardware fuzzing-based testing to ChiselTest~\cite{chisel:tester2}.
-We will develop property-based testing by exploring ScalaCheck and adding
-temporal assertions to the DUT.
-We will express the properties of interest for a hardware design using temporal logic \cite{Baier2008} (e.g., Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) or similar formalisms. A tool will translate those properties into
-timed assertions for the testing.
-Properties of interest can guide random test generation to cover a hardware design adequately.
+We will develop property-based testing by {\color{red}adopting ScalaCheck as a starting point for test generation}, and adding
+temporal assertions to the {\color{red}device under testing}.
+We will express the properties of interest for a hardware design using temporal logic \cite{Baier2008} (e.g., Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) or similar formalisms. A tool will translate such properties into
+temporal assertions for the testing.
+Properties of interest can guide random test generation {\color{red}toward producing a reduced number of randomized tests, while still covering a hardware design adequately.}
+{\color{red}%
+We will take inspiration from Google's
+ClusterFuzz~\cite{web:clusterfuzz}
+to explore the distribution of hardware design fuzzing over multiple of testing nodes on a cloud.}
 
 %Unfortunately, their adaptation from the software realm to the hardware realm is far from trivial. 
 %  Instead, hardware designs would be tested while running on a simulator, with decreased performance; moreover, the state space of the design can be extremely large (beyond the reach of any cloud-based systems), and naive random test may not achieve adequate coverage. Property-based testing can (in principle) mitigate the issue: the properties of interest could be used to restrict the testing space; however, there are two open problems: how to express the properties of interest for hardware designs, and how to generate test sets with adequate coverage.
@@ -487,8 +488,7 @@ for a female researcher for the PhD positions.
 %His research interest is in computer architecture for real-time systems.
 During his stay
 at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
-Martin has {\bf written the Chisel textbook}~\cite{chisel:book}\footnote{see
-\url{http://www.imm.dtu.dk/~masca/chisel-book.html}}, which has been translated
+Martin has {\bf written the Chisel textbook}~\cite{chisel:book}\footnote{\url{http://www.imm.dtu.dk/~masca/chisel-book.html}}, which has been translated
 into Chinese, Japanese, and Vietnamese. Martin is a {\bf member of the Technical Advisory Committee for
 Chisel} and therefore keeps the work of SDH in sync with the development of Chisel.
 Martin is part of the regular Chisel developer meeting with
@@ -504,7 +504,7 @@ Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip)
 synthetic biology (molecular computing). 
 {\bf Martin Berger (MB)} works on processor verification at Huawei's Cambridge Research Center.
 He is interested in applying the results of this project to processor verification.
-{\bf NN PhD} We are looking for one PhD candidate with a background in computer engineering
+{\bf NN PhD}: we are looking for one PhD candidate with a background in computer engineering
 with an interest in digital design and programming languages.
 
 %\subsection*{Experimental Facilities}
@@ -537,7 +537,7 @@ with an interest in digital design and programming languages.
       Thesis                 & 6   & PhD    & Thesis writing und submission.                                                                \\
       \midrule
       TeachSW                 &  2  & JM            & Make Chisel and its design methods accessible for software designers. \\
-      TypeSys                &    1 + 1   &  AS + MB & Design a specification language for property tests using temporal logic. \\
+      {\color{red}SpecLang}                &    1 + 1   &  AS + MB & Design a specification language for property tests using temporal logic. \\
       Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
       \bottomrule
     \end{tabular}

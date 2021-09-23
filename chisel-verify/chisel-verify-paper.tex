@@ -347,7 +347,7 @@ cr.register(
 \end{lstlisting}
 
 Listing~\ref{lst:basicfuncov} is an example of how to define a verification plan using our functional coverage tool. 
-One concept used here is \textit{cross coverage}m defined using a \texttt{cover} construct on multiple ports. 
+One concept used here is \textit{cross coverage} defined using a \texttt{cover} construct on multiple ports. 
 Cross coverage allows one to specify coverage relations between different ports. 
 This means that a cross defined between, e.g., \texttt{dut.io.a} and \texttt{dut.io.b} will be used to gather information about when \texttt{a} and \texttt{b} cover specific values simultaneously~\cite{spear2008systemverilog}.
 In listing~\ref{lst:basicfuncov}, we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.

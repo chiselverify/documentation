@@ -139,7 +139,7 @@ At the time of writing, little published work was done in the realm of fuzzing f
 One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on digital circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020), and differs from what we present in this paper in two ways. First, RFuzz uses a simple coverage metric that is independent of the device under test (DUT), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, ChiselVerify:2021}.
 Another difference is in the randomized program generation, while RFuzz generates random bit streams, our goal is to focus as well on the generation of coherent random generated programs to test a processor.
 
-American fuzzy loop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
+American fuzzy lop (AFL)~\cite{afl:repo} is a mutation-based fuzzer for software developed by researchers at Google. 
 AFL uses a form of branch coverage, known as edge coverage, as a driving metric.
 RFuzz, as well as our own solution, is based on AFL. 
 The key difference is that AFL is a fuzzer for software, while the two other fuzzers are for digital circuits.

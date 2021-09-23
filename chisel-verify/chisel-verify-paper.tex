@@ -161,8 +161,8 @@ The design of these accelerators is often complex, and their development is time
 In order to combat this added time-constraint, we can learn from software development trends such as agile software development~\cite{agile:manifesto}, and adapt to agile hardware development~\cite{henn-patt:turing:2019}.
 Chisel~\cite{chisel:dac2012}, a Scala-embedded hardware construction language, was introduced in order to move digital circuit description to a more software-like high-level language. 
 
-Many hardware engineers are switching away from the traditional hardware description %A few years ago, the two main design languages, Verilog and VHDL, dominated the
-languages (HDLs), i.e., VHDL and Verilog, to SystemVerilog. And while SystemVerilog %design and testing of digital circuits.
+Hardware design is dominated by the traditional hardware description languages (HDLs), Verilog and VHDL, and %Many hardware engineers are switching away from the traditional hardware description %A few years ago, the two main design languages, Verilog and VHDL, dominated the
+the more recent SystemVerilog. But while SystemVerilog  %languages (HDLs), i.e., VHDL and Verilog, to SystemVerilog. And while SystemVerilog %design and testing of digital circuits.
 does extend Verilog with object-oriented features for verification, its hardware %%However, both languages are decades behind
 description flow remains the same as with Verilog. Thus, it does not fit an agile %%modern languages for software development.
 development flow. %However, compared to software development and testing, digital design and testing methods/tools 
@@ -347,7 +347,7 @@ cr.register(
 \end{lstlisting}
 
 Listing~\ref{lst:basicfuncov} is an example of how to define a verification plan using our functional coverage tool. 
-One concept used here is \textit{cross coverage}m defined using a \texttt{cover} construct on multiple ports. 
+One concept used here is \textit{cross coverage} defined using a \texttt{cover} construct on multiple ports. 
 Cross coverage allows one to specify coverage relations between different ports. 
 This means that a cross defined between, e.g., \texttt{dut.io.a} and \texttt{dut.io.b} will be used to gather information about when \texttt{a} and \texttt{b} cover specific values simultaneously~\cite{spear2008systemverilog}.
 In listing~\ref{lst:basicfuncov}, we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.

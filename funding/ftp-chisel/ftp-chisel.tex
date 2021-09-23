@@ -142,13 +142,13 @@ design and testing of digital circuits.
 However, digital design and testing methods and tools lag by several decades of development
 compared to software development and testing.\footnote{Chris Lattner, The Golden Age of Compilers in an era of Hardware/Software co-design. Invited talk, ASPLOS 2021.}
 With this project, we plan to
-{\bf\color{red}introduce methods inspired by software development and testing into the realm of digital design.}
+{\bf introduce methods inspired by software development and testing into the realm of digital design.}
 This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
 and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
 the design and test of digital systems.
 
 This project aims to develop a method and concrete tools for agile hardware development.
-{\color{red}We will take inspiration from software development tools, languages, and testing methods
+{We will take inspiration from software development tools, languages, and testing methods
 from the last decades and explore their applicability for hardware design.}
 We aim to {\bf raise the tooling level for a digital design to increase productivity}.
 Time for verifying (testing) digital systems is about double the time of developing
@@ -333,15 +333,14 @@ hardware description.
 
 Fuzzing and property-based testing techniques will inspire new, more efficient methods for validating hardware designs.
 We will add support for hardware fuzzing-based testing to ChiselTest~\cite{chisel:tester2}.
-We will develop property-based testing by {\color{red}adopting ScalaCheck as a starting point for test generation}, and adding
-temporal assertions to the {\color{red}device under testing}.
+We will develop property-based testing by {\bf adopting ScalaCheck as a starting point for test generation}, and adding
+temporal assertions to the {device under testing}.
 We will express the properties of interest for a hardware design using temporal logic \cite{Baier2008} (e.g., Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) or similar formalisms. A tool will translate such properties into
 temporal assertions for the testing.
-Properties of interest can guide random test generation {\color{red}toward producing a reduced number of randomized tests, while still covering a hardware design adequately.}
-{\color{red}%
+Properties of interest can guide random test generation {toward producing a reduced number of randomized tests, while still covering a hardware design adequately.}
 We will take inspiration from Google's
 ClusterFuzz~\cite{web:clusterfuzz}
-to explore the distribution of hardware design fuzzing over multiple of testing nodes on a cloud.}
+to explore the distribution of hardware design fuzzing over multiple of testing nodes on a cloud.
 
 %Unfortunately, their adaptation from the software realm to the hardware realm is far from trivial. 
 %  Instead, hardware designs would be tested while running on a simulator, with decreased performance; moreover, the state space of the design can be extremely large (beyond the reach of any cloud-based systems), and naive random test may not achieve adequate coverage. Property-based testing can (in principle) mitigate the issue: the properties of interest could be used to restrict the testing space; however, there are two open problems: how to express the properties of interest for hardware designs, and how to generate test sets with adequate coverage.

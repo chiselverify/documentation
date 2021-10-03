@@ -112,7 +112,7 @@ s190057@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dt
 
 \IEEEpubidadjcol
 
-\thispagestyle{empty}
+%\thispagestyle{empty}
 \pagestyle{empty}
 
 \begin{abstract}
@@ -216,7 +216,7 @@ The coverage metrics used in this solution are automated and based on branch cov
 This work offers a different type of solution. 
 While we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. 
 RFuzz uses functional coverage tools in order to guide its randomized testing. 
-Current work is also being done, in the scope of the ChiselVerify project, on coverage driven mutational fuzzing for digital circuits, however this is out of the scope of this paper.
+Current work is also being done, in the scope of the ChiselVerify project, on coverage driven mutational fuzzing for digital circuits~\cite{verify:fuzzing:2021}, however this is out of the scope of this paper.
 
 \texttt{Chisel3.formal}  is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. 
 In contrast to ChiselVerify, \texttt{chisel3.formal} proposes way of testing based around defining a set of formal checks that a design must pass in order to be considered as correct. 
@@ -228,9 +228,6 @@ The main difference between our solution and this one is that here the rules are
 The \texttt{chisel3.formal} package has also been extended in \texttt{kiwi-formal}~\cite{chisel:kiwi-formal} and \texttt{dank-formal}~\cite{chisel:dank-formal}, each adding their own additional formal rule templates. 
 
 As far as we know, ChiselVerify is the only verification framework allowing for the easy use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
-
-\martin{Maybe we should already reference our WOSET paper here as well: \cite{verify:fuzzing:2021}}
-
 \section{Background}
 \label{sec:background}
 
@@ -423,15 +420,13 @@ class Packet extends RandObj(new Model(3)) {
     val idx = rand(0, 10)
     val size = rand(1, 100)
     val len = rand(1, 100)
-    val payload: Array[Rand] = Array.tabulate(11)(
- 	rand(1, 100)
-    )
+    val payload: Array[Rand] = Array.tabulate(11)(rand(1, 100))
 
     //Example Constraint with operations
-    val single: Constraint = (payload(0) == (len - size))
+    val s: Constraint = (payload(0) == (len - size))
 	
     //Example conditional constraint
-    val conditional = IfCon(len == 1) {
+    val cond = IfCon(len == 1) {
         payload.size == 3
     } ElseC {
         payload.size == 10
@@ -465,18 +460,17 @@ Internally, the BFM makes use of ChiselTest's multithreading features to allow f
 
 \subsubsection{A Test Example}
 Consider as an example using the BFM to test a module called \texttt{Memory}, as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction. Beware that due to channel independence, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+%class MemoryTester extends FlatSpec with ChiselScalatestTester {
+  %behavior of "My Memory module"
+  %it should "write and read" in {
 \begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
-class MemoryTester extends FlatSpec with ChiselScalatestTester {
-  behavior of "My Memory module"
-  it should "write and read" in {
+//[...] ChiselTest class delcaration
     test(new Memory()) { dut =>
       val bfm = new FunctionalManager(dut)
       bfm.createWriteTrx(0, Seq.fill(16)
       	(0x7FFFFFFF), len = 15, size = 2)
       bfm.createReadTrx(0, len = 15, size = 2)
     }
-  }
-}
 \end{lstlisting}
 
 \section{Use Case: Sorting in Hardware}

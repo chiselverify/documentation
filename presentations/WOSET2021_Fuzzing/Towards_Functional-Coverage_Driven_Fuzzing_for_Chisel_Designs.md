@@ -51,9 +51,13 @@ This fuzzer works in 5 phases:
 4. Run the test, the ouptuts of the test are then compared to a golden model's ouptut and if they match, we retrive coverage results otherwise we report the bug.  
 5. Compare the coverage result with the previous ones, determine if the test was interesting and add it to the corups.  
 
+### Defining a test
+
 It's important to explain what we define as a test. The main difference with a software fuzzer's test is that here we need a way to define timing. This is done by stepping the clock between every input_sized segment in an input file. The input_size is the sum of all of the DUT's input's bit-lengths. So given a DUT with two 32 bit and one 64 bit input the input_size would be 128 bits. 
 
-Now let's talk about the mutation engine. A first attempt, was to directly use AFL's engine by interfacing into it usign the Java Native Interface. However this increased the compilation and added dependencies to the project, which we want to avoid. A solution to that was to reimplement a subset of AFL's mutation engine in Scala and adapt it to work well within our fuzzer. The mutation engine works by running a set of deterministic then non deterministic mutation passes. Currently we have only implemented deterministic passes, but are working on adding non-deterministic ones as well.  
+### Mutation Engine
+
+Now let's talk about the mutation engine. A first attempt, was to directly use AFL's engine by interfacing into it using the Java Native Interface. However this increased the compilation time and added dependencies to the project, which we want to avoid. A solution to that was to reimplement a subset of AFL's mutation engine in Scala and adapt it to work well within our fuzzer. The mutation engine works by running a set of deterministic then non deterministic mutation passes. Currently we have only implemented deterministic passes, but are working on adding non-deterministic ones as well.  
   
 ## Initial Experiments  
 We tested our implementation on the Leros Accumulator ALU. This has two inputs, one 3 bit operation and an 8 bit data input, as well as a 16 bit accumulated output. Our goal is to check every operation with the most interesting operands.  
@@ -64,13 +68,13 @@ To do this we need to
 3. run the fuzzer with the preexisting golden model.    
 
 
-The verification plan is defined using a set of cover constructs which tell us which ranges of values we want to expect for each operation. Functional coverage allows us to have coarse and fine-grained coverage information about our test, which is beneficial for the input mutation. After the verification plan is defined, we define an input seed, here it simply computes 32 + 25. Finally we call the fuzzer by giving it the DUT, coverage reporter, golden model and then the output and seed file names.   
+The verification plan is defined using a set of cover constructs which tell us which ranges of values we want to expect for each operation. Functional coverage allows us to have both coarse and fine-grained coverage information about our test, which is beneficial for the input mutation. After the verification plan is defined, we define an input seed, here it simply computes 32 + 25. Finally we call the fuzzer by giving it the DUT, coverage reporter, golden model and then the output and seed file names.   
   
 These initial tests have so far shown non-conclusive results, due to the fact that the fuzzer still only has deterministic mutation passes and thus can't really be compared to any other fuzzer yet. Work is being done on enabling the use of edge coverage on our fuzzer in order to compare it with the functional coverage counterpart. We expect that functional coverage will lead to a faster converging fuzzer, however the low effeciency of our Functional Coverage to still leaves a lot of room for improvement.  
   
 ## Conclusion  
 
-The paper we presented is a sketch of how to support testing and verification of digital designs described in Chisel with fuzzing driven by a data-filled metric. It is also a basis for a more detailed performance evaluation when all mutation techniques are added. Current work is also being done in extending the fuzzing methods for constrained random code generation.  
+The paper we presented is a sketch of how to support testing and verification of digital designs described in Chisel with fuzzing driven by a hardware-centric metric. It is also a basis for a more detailed performance evaluation when all mutation techniques are added. Current work is also being done in extending the fuzzing methods for constrained random code generation.  
   
 Here are the references for the fuzzers I presented.  
 This fuzzer is part of the chiselVerify project which you can find on github.

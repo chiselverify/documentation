@@ -111,7 +111,7 @@ In recent years, we have seen an increase in the demands for high performance co
 This comes with an increase in the need for domain-specific hardware accelerators.  
 Designing these is time-consuming and error prone, which is why researchers have been focusing on increasing the efficiency of hardware design and verification tools to fight this added time constraint.
 This has lead to the introduction of verifications methods, such as constrained random verification and functional coverage~\cite{verify:chisel:2020, dobis2021opensource}, into high level hardware construction languages, like the Scala-embedded language Chisel~\cite{chisel:dac2012, chisel:book} .
-These tools, inspired by the more hardware-centric approach given in SystemVerilog and UVM, enable basic verification where the user has to handle the writing of all tests by hand.
+These tools, inspired by the more hardware-centric approach given in SystemVerilog and UVM~\cite{IEEE:18002}, enable basic verification where the user has to handle the writing of all tests by hand.
 To improve the efficiency of these tools, we propose a form of dynamic verification, based on coverage-driven mutation-based fuzzing techniques found in the software world.
 This enables fuzzing for digital designs using functional coverage as a driving metric.
 
@@ -128,12 +128,6 @@ Section~\ref{sec:conclusion} concludes.
 
 \section{Related Work}
 \label{sec:related}
-
-The Universal Verification Methodology (UVM) is a methodology for testing and verifying of digital circuits.
-UVM is implemented as a SystemVerilog library and utilizes the fact that SystemVerilog uses object-oriented programming when designing test-benches.
-Using object-oriented patterns such as inheritance and polymorphism, the verification engineer can design generic components that can be extended and modified to provide application-specific functionalities.
-As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
-UVM is a first step towards standardizing test-bench writing.
 
 At the time of writing, little published work was done in the realm of fuzzing for digital circuits.
 One project, named RFuzz~\cite{rfuzz2018} and lead by researchers at UC Berkeley, focuses on ``coverage-guided fuzz mutational testing''. This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing on digital circuits. The coverage metrics used in this solution are automated and based on branch coverage. RFuzz is currently no longer in development (last commit is from July 2020), and differs from what we present in this paper in two ways. First, RFuzz uses a simple coverage metric that is independent of the device under test (DUT), while we guide our fuzzing using functional coverage, which inherently contains information about the DUT. Functional coverage is obtained using tools from ChiselVerify~\cite{verify:chisel:2020, ChiselVerify:2021}.

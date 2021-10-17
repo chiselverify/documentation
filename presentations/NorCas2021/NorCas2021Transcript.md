@@ -10,7 +10,7 @@ Let's now present the necessary background for our work.
 
 ### Verification  
 Let's start by setting what we consider as Verification of digital systems:
-Verification relates to work the testing of a design before it has been taped out. But more specifically, _verifying a desing means guaranteeing that the expected features, as described in the specification, have been correctly implemented and have the correct behavior._   
+Verification relates to the testing of a design before it has been taped out. But more specifically, _verifying a desing means guaranteeing that the expected features, as described in the specification, have been correctly implemented and have the correct behavior._   
 In other wordsm Verification tools are what allow to verify that the tests we are writing “test the right things”.  
   
 Let's now talk about the Universal Verification Methodology or UVM. This is a standardized method for writting tests in SystemVerilog and allows one to write reusable testbenches. This is one of the most common verification methodologies used today.   

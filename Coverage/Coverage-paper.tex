@@ -619,3 +619,218 @@ The source code for \texttt{ChiselVerify} is available at\\ \url{https://anonymo
 \bibliographystyle{IEEEtran}
 \bibliography{coverage.bib,../msbib,../chisel-uvm.bib}
 \end{document}
+
+============================================================================ 
+DATE 2022 Reviews for Submission #301
+============================================================================ 
+
+Title: Enabling Coverage-Based Verification of Digital Designs
+Authors: Andrew Dobis, Enrico Tolotto, Hans Jakob Damsgaard, Kasper Juul 
+Hesse Rasmussen, Tjark Petersen and Martin Schoeberl
+
+
+============================================================================
+                            REVIEWER #1
+============================================================================
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+                           Overall Value: -1
+
+Summary of ideas
+---------------------------------------------------------------------------
+This paper presents open-source, coverage-related verification tools 
+targeting digital designs described in Chisel. The authors proposd a novel 
+method, which allows statement coverage at an intermediate representation 
+of Chisel and collection of functional coverage utilizing the functional 
+nature of Scala.
+---------------------------------------------------------------------------
+
+
+Strong points
+---------------------------------------------------------------------------
+The topic of this paper is interesting.
+---------------------------------------------------------------------------
+
+
+Weak points
+---------------------------------------------------------------------------
+However, the following parts need further improvements. 
+
+1: The title of this paper seems confusing and not attractive . It is hard 
+for me to figure out some relation with Chisel. 
+
+2: Figure 1 and figure 2 clearly introduce the Chisel pipeline and 
+coverage criteria. However, the paper lacks similar figures to demonstrate 
+the proposed method. 
+
+3: The author should conducted more experiments on large industrial 
+designs using the proposed method. It is hard for me to figure out the 
+effectiveness of the proposed method.
+---------------------------------------------------------------------------
+
+
+
+============================================================================
+                            REVIEWER #2
+============================================================================
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+                           Overall Value: -1
+
+Summary of ideas
+---------------------------------------------------------------------------
+The goal of this paper is to explore how to use existing tools to obtain 
+statement coverage in Chisel.  After a state of the art,  they present 
+chisel and the intermediate version named FIRRTL, and the different kinds 
+of coverage. They explain the limitation of the coverage plugin  scoverage 
+that already exists. 
+They propose to work at the FIRRT level to execute statement coverage.  
+The functional coverage is performed using a similar approach than in 
+System Verilog or UVM and different kinds of coverage are proposed 
+(cross-coverage, timed coverage, conditional coverage).
+---------------------------------------------------------------------------
+
+
+Strong points
+---------------------------------------------------------------------------
+The new functionalities are applied on  a chisel design to prove the 
+effectiveness of the approach
+---------------------------------------------------------------------------
+
+
+Weak points
+---------------------------------------------------------------------------
+It is very difficult to see the innovation proposed in this paper.  The 
+novelty is not really clear and the details of the implementation are not 
+given. The size of the functional coverage in Scala is smaller than in 
+UVM, but if we compare the size of the Scala design and the Verilog 
+design. Is it the same ratio?
+---------------------------------------------------------------------------
+
+
+Other comments
+---------------------------------------------------------------------------
+Minor remarks: 
+I don' t understand Arrows on Fig2
+---------------------------------------------------------------------------
+
+
+
+============================================================================
+                            REVIEWER #3
+============================================================================
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+                           Overall Value: -1
+
+Summary of ideas
+---------------------------------------------------------------------------
+The paper proposes a tool and techniques to define and measure statement 
+and functional coverage in Chisel. Specifically, they describe a method 
+for instrumenting the FIRRTL for statement coverage and enhance ChiselTest 
+with functional coverage constructs that resemble the SystemVerilog 
+coverage construct
+---------------------------------------------------------------------------
+
+
+Strong points
+---------------------------------------------------------------------------
++ Address an important topic of coverage for high-level design in Chisel
+---------------------------------------------------------------------------
+
+
+Weak points
+---------------------------------------------------------------------------
+- Many missing details
+---------------------------------------------------------------------------
+
+
+Other comments
+---------------------------------------------------------------------------
+The paper addresses an important issue of coverage in Chisel. It proposes 
+to add statement coverage at the FIRRTL level and functional coverage 
+constructs in the Chisel source code that are activated by extension to 
+ChiselTest which is also responsible for collecting and presenting the 
+coverage data.
+
+There are many important aspects to this work that are missing from the 
+paper. For the statement coverage, it is not clear at what level of FIRRTL 
+the instrumentation is done. The method used in the paper relies on 
+extending multiplexers to collect coverage data, similar to [11], but these 
+multiplexers are available only at the lower level of FIRRTL, where the 
+relation to the Chisel source code is lost. Therefore, it is not clear how 
+this data can be mapped to the Chisel source code. In addition, one of the 
+advantages the authors claim for their method is that it does not rely on 
+specific vendor tools for collecting coverage. But their method relies, in 
+a similar manner, on an extension to Treadle.
+
+For the functional coverage, the authors do not specify how the coverage 
+constructs are mapped into executable code that can be added to 
+simulations. The one paragraph dedicated to this before Section VI-A is 
+not enough.
+
+Chisel already have functional coverage support added in Chisel 3.4.0. Even 
+though this version of Chisel is not widely used and supported by popular 
+tools, it will become so eventually. Therefore, the authors should provide 
+a detailed comparison between their approach and the Chisel coverage. For 
+example, the representation of the coverage constructs in the FIRRTL can be 
+a big advantage to the Chisel coverage.
+
+Some of the authors notations and definitions of coverage seem to be 
+imprecise. For example, the authors claim that statement coverage is 
+quantitative, while functional coverage is qualitative. This is not true. 
+All coverage measures are quantitative, but they differ in the measures 
+whose quantity they assess. In that sense, coverage reports that state that 
+x\% of statements are executed (or y\% of cover points are reached) is 
+useless because it does not identify the holes in the coverage. 100\% 
+coverage is a worthy target  when unreachable statements or coverage 
+points are marked. Even when 100\% coverage is not practical specific 
+coverage targets (that are more than one \% number) should be stated. 
+Expression coverage is not an extension of path coverage. Path coverage 
+looks at the execution paths that include many branching statements, while 
+expression coverage looks at a single expression in a branching statement 
+and all combinations of subexpressions in it. Finally, the time!
+ d coverage in Section VI-B uses a simple form of temporal logic. The 
+ authors should look at and reference the work done in connecting coverage 
+ and temporal logic in both SVA and PSL.
+---------------------------------------------------------------------------
+
+
+
+============================================================================
+                            REVIEWER #4
+============================================================================
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+                           Overall Value: -1
+
+Summary of ideas
+---------------------------------------------------------------------------
+The paper extends the preexisting Treadle simulator and the ChiselTest 
+framework to enable statement and functional coverage measurements.
+---------------------------------------------------------------------------
+
+
+Strong points
+---------------------------------------------------------------------------
+The extension is simple, but is shows additional information that is very 
+useful to the designers. 
+The verificaton plan is simple to define and the annotated output and 
+reports are simple to understand.
+---------------------------------------------------------------------------
+
+
+Weak points
+---------------------------------------------------------------------------
+There is not much experimental evaluation
+The impression is that this is a simple extension. While useful, it seems 
+more at the level of a tool extension than a research paper.
+---------------------------------------------------------------------------

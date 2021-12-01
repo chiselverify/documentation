@@ -1,0 +1,509 @@
+% DFF template for Latex and A4 paper.
+% 12pt Times New Roman on 1.5 line spacing and 2 cm margins.
+
+% ----------------------------------------------------------------------
+
+% Either format with
+%    pdflatex projectdescription.tex
+% Or if you use dvips and ps2pdf, remember to specify A4 paper:
+%    latex  projectdescription
+%    dvips  -ta4 projectdescription -o projectdescription.ps
+%    ps2pdf -sPAPERSIZE=a4 projectdescription.ps
+
+% ----------------------------------------------------------------------
+
+\documentclass[fleqn,12pt]{article}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{times}
+\usepackage[danish,english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage{graphicx}         % For PDF figures
+% \usepackage[dvips]{graphicx}  % For EPS figures, using dvips + ps2pdf
+
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black]{hyperref}
+\usepackage{booktabs}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit}
+\usetikzlibrary{shapes,backgrounds}
+\usetikzlibrary{arrows,fit,automata,positioning,decorations,calc}
+\usetikzlibrary{spy}
+\usetikzlibrary{matrix,chains,decorations.pathreplacing}
+\usepackage{pgfgantt}
+
+\newcommand{\code}[1]{{\textsf{#1}}}
+
+% Adding comments in the text during writing process
+\newcommand{\todo}[1]{{\it TODO: #1}}
+\newcommand{\note}[1]{{\it Note: #1}}
+\newcommand{\martin}[1]{{\color{blue} Martin: #1}}
+\newcommand{\alceste}[1]{{\color{green} Alceste: #1}}
+
+% uncomment following for final submission
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\note}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\jens}[1]{}
+
+
+
+
+%%% ZF
+\usepackage{listings}
+\lstset{
+	columns=fullflexible,
+	%        basicstyle=\ttfamily\footnotesize,
+	basicstyle=\ttfamily\small,      
+	%columns=fullflexible, keepspaces=true,
+	numbers=left,    
+	numberblanklines=false,
+	captionpos=b,
+	%	breaklines=true,
+	escapeinside={@}{@},
+	numbersep=5pt,
+	language=C,
+	tabsize=2,
+	breakatwhitespace=true,
+	breaklines=true,
+	deletekeywords={for},
+	%        keywordstyle=\ttfamily
+	numbersep=5pt,
+	xleftmargin=.10in,
+	%xrightmargin=.25in
+}
+
+
+
+\begin{document}
+% Empirically this seems to match MS Word's idea of 1.5 line spacing.
+% DO NOT CHANGE
+\setlength{\baselineskip}{1.44\baselineskip}
+
+% ----------------------------------------------------------------------
+% Enter the title of the project and your name
+
+\begin{center}
+  {\LARGE\bf DFF Project Description }\\[1ex]
+  %https://dtudk.zoom.us/j/61032875012
+  {\LARGE\bf Verification of Digital Hardware}\\[1ex]
+  {\large Martin Schoeberl, DTU Compute}\\[1ex]
+ \end{center}
+
+% ----------------------------------------------------------------------
+% Delete the instruction
+
+%\noindent
+%The length of the project description must not exceed the number of pages indicated for the specific instrument in the Call, excl. a brief list of references, whether it includes figures/tables or not. \emph{You must use Times New Roman; 12 point font size; 1.5 line spacing; and with a right, left, top and bottom margin of at least 2 cm. The requirements for font size also apply to any footnotes, tables and figure texts.}  This template is formatted accordingly. In the "Confirmation" \ section of the application form, you must confirm that your project description observes the permitted maximum length, before you can submit your application. The Council will disregard any portions of the project description that exceed the permitted maximum length. 
+%
+%Please note that the summary of the project should only be included in the application form (under the section "Title and scientific content"). The summary should therefore not be included in the project description.
+% Delete the instruction
+
+% ----------------------------------------------------------------------
+% Begin writing your project description
+
+%\section{Abstract for the application -- do not include in this document}
+%
+%Performance increase with general-purpose processors has come to a halt. We can no longer depend on Moore's Law to increase computing performance. The only way to achieve higher performance or lower energy consumption is by building domain-specific hardware accelerators. These accelerators can be built in ASICs or in FPGAs in the cloud. To efficiently design and verify those domain-specific accelerators, we need agile hardware development.
+%
+%
+%This project aims to develop a method and concrete tools for agile hardware development. We will use tools, languages, development, and testing methods from the last decades in software development and apply them to hardware design. We aim to raise the tooling level for a digital design to increase productivity. Time for verifying (testing) of digital systems is about double the time of developing them in the first place. Therefore, this project's central focus is on applying software development testing methods to hardware development.
+%
+%\subsection{Popular Abstract}
+%
+%Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The main issue is the usage of old tools compared to tools for programming those devices. This project aims to apply tools and methods from software development to hardware development to increase productivity. Danish firms will benefit from the results of this project.
+
+
+
+\section{Introduction and Objectives}
+\label{sec:objectives}
+
+\martin{Rewrite, this is a copy}
+
+We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
+Performance increase with general-purpose processors has come to a halt.
+Building domain-specific hardware accelerators are the only way to achieve
+higher performance or lower energy consumption~\cite{domain-hw-acc:2020}.
+These accelerators can be built as chips or in field-programmable gate arrays (FPGAs).
+We cannot update or patch chips. Therefore, thorough testing and verification of the design are mandatory.
+
+We can learn from software development trends such as agile software development
+to efficiently develop and verify those accelerators~\cite{agile:manifesto}.
+We believe that {\bf we need to adapt to agile hardware development}~\cite{henn-patt:turing:2019}.
+%
+As accelerators become part of the cloud service, i.e., FPGAs in the cloud,
+software developers will increasingly need to adapt critical algorithms to FPGAs to enhance performance.
+%Hence, it is imperative to make accelerator design accessible for software developers.
+By adapting hardware accelerator design to the methods and tools of contemporary software design,
+it is possible to bridge both domains catering to a more uniform hardware/software development process.
+
+Until a few years, the two main design languages Verilog and VHDL dominated the
+design and testing of digital circuits.
+%However, both languages are decades behind
+%modern languages for software development.
+However, digital design and testing methods and tools lag by several decades of development
+compared to software development and testing.\footnote{Chris Lattner, The Golden Age of Compilers in an era of Hardware/Software co-design. Invited talk, ASPLOS 2021.}
+With this project, we plan to
+{\bf introduce methods inspired by software development and testing into the realm of digital design.}
+This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
+and...
+
+We aim to {\bf raise the tooling level for a digital design to increase productivity}.
+Time for verifying (testing) digital systems is about double the time of developing
+them in the first place.
+Therefore, this project's central focus is on {\bf applying software
+testing methods for hardware testing}.
+
+%We will build a combination of open-source tools for verifying
+%circuits described in mixed languages (VHDL, SystemVerilog, and Chisel).
+%It builds on top of the Chisel hardware construction language and uses Scala to drive the verification. 
+
+\paragraph{Hypothesis:} using tools, methods, and languages from the
+software domain to describe and verify digital circuits will {\bf considerably increase the productivity}
+of digital design and verification engineers.
+
+
+
+\section{Background and State-of-the-Art}
+\label{sec:background}
+
+
+%\begin{itemize}
+%\item Verification (check what is current praxis)
+%\item cocotb
+%\item See pull request for ref to constraint random generation
+%\item Related work \url{http://koo.corpus.cam.ac.uk/drafts/tndjg-008-transactional-modelling-in-chisel.html}
+%\item SV OOP is not available for synthesize, functional coverage, another test case could be my S4NOC, reference models are usually written in SystemC to avoid licenses cost for the SW developer
+%\end{itemize}
+
+\paragraph{Digital Testing and Verification.}
+VHDL and Verilog are the classic hardware description languages, first appeared in the 1980s.
+SystemVerilog~\cite{SystemVerilog}, as an extension to Verilog, adds features from VHDL
+for the hardware description and object-oriented features for verification.
+
+The digital design described in Chisel can be tested and verified with
+ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel.
+The \textit{Universal Verification Methodology} (UVM) was created to write test-benches on top of SystemVerilog. 
+It allows creating reusable test benches (i.e., using the same test for multiple designs)~\cite{uvm2015b}.
+As of 2017, UVM has been standardized as IEEE 1800.2~\cite{IEEE:18002}.
+RFuzz~\cite{rfuzz2018}, led by UC Berkeley researchers, focuses on ``coverage-guided fuzz mutational testing.''
+This method relies on FPGA-accelerated simulation.
+RFuzz generates random bitstreams.
+Trippel et al.~use AFL to apply software fuzzing to hardware~\cite{DBLP:journals/corr/abs-2102-02308}.
+
+
+\paragraph{Formal Verification of Software.}
+
+
+
+
+
+\section{Research Plan}
+
+As prerequisites, all researchers involved in this project will need to learn
+languages and tools involved in the project and related work.
+%They will learn about the Scala programming language and ScalaCheck
+%(a Scala implementation of the property-based testing) on the software side.
+%On the hardware side,
+%the researchers need to get familiar with Chisel, SystemVerilog, and
+%UVM.
+
+
+\paragraph{Advanced Digital Design.}
+
+Scala with functional programming is an excellent basis for developing a methodology for
+advanced digital design.
+So-called hardware generators can significantly increase the productivity of hardware designers.
+A hardware generator is a program that can generate a configurable
+hardware description.
+
+
+\paragraph{Formal Verification.}
+
+
+
+
+
+\paragraph{Verification Framework.}
+
+\martin{A copy, rethink and rewrite}
+
+We will develop an object-oriented and functional framework for verification in Scala.
+This framework is inspired by UVM, but will leverage Scala's conciseness with the
+combination of object-oriented programming with functional programming.
+An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
+showed that a test written with UVM was about 800 lines of code, where a Scala-based
+test was around 80 lines of code~\cite{verify:chisel:2020}.
+We describe the first steps towards the verification framework \emph{ChiselVerify} in~\cite{ChiselVerify:2021}.
+%However, UVM supports more functionality that a plain ChiselTest in Scala.
+
+
+
+
+
+%\begin{itemize}
+%\item Bus functional models
+%\item Multiple languages
+%\item Still talk about a small example taking it through all variations
+%\item WP on VHDL generation from Chisel for better verification
+%\item p69: HDL models are SW projects
+%\end{itemize}
+
+
+\paragraph*{Dissemination and Publication}
+
+Scientific results will be published and presented at international
+conferences (e.g., DATE, DAC, CAV, FPL, ISCAS, FPGA) and in relevant scientific journals
+and two PhD theses.
+%We expect that most tasks will result in at least one publication.
+%One PhD theses will publish the results from the project.
+We aim to publish in open access, to a large extent, in the gold open access model.
+%However, publishers such as ACM also allow publishing in green open access
+%at no additional cost, where a pre-print version of a paper can be uploaded,
+%for example, to ArXiv.
+
+The results from the project will be available as open-source under the
+industry-friendly BSD license.
+%Open-source research projects attract
+%other researchers, developers, and industrial partners
+%to use and build on the results of the project.
+A project web site will host the project documentation, the published papers, and the design's source code.
+We will provide unrestricted and cost-free digital access to all research and development results.
+%
+We will use the developed method and tools to train a new generation of HW/SW engineers
+at DTU.
+In the middle of the project, we will have a coordination workshop with the project partners.
+In the end, we will organize a design and verification workshop, including a hands-on tutorial,
+open to all interested companies and students from DTU and other universities.
+
+\section{Practical Feasibility}
+
+%The Embedded Systems Engineering section at DTU Compute provides
+%the intellectual environment and the infrastructure (e.g., regression test server...) that we need for an ambitious research project.
+%Furthermore, DTU Compute provides the infrastructure (e.g., an automatic test
+%environment for regressions tests, web server).
+
+%\paragraph*{Internationalization}
+%
+%\todo{Still waiting from SiFive for an ok for a stay.}
+
+
+
+\paragraph*{Industrial Cooperation}
+
+\martin{rewrite}
+The Danish industry in digital design for ASICs and FPGAs is currently transitioning from using traditional
+test benches written in VHDL and Verilog to a verification method based on constraint random
+test generation with tools such as UVM. Therefore, this project is just-in-time to support this
+transition.
+%
+Following {\bf eight companies are interested in the proposed project} and support it with use cases.
+%Teledyne is interested in exploring Chisel for development and testing with the compatibility of VHDL and Verilog.
+%Microchip is interested in using Chisel to improve the design throughput and
+%provides a hardware use case to sort Ethernet packets according to their deadlines.
+%Synopsys provides tool support for the project.
+%WSAudiology provides a decimation filter use case.
+%Napatech will follow the project and offer challenges to the project.
+%Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
+%Comcores is interested in improving the throughput with SDH.
+%Huawei will follow the project within informal discussions.
+
+
+%\paragraph*{Use Cases}
+%
+%We will have several non-trivial use cases from industry and from our own development to verify
+%our development.
+%Microchip provides the specification of a hardware sorting algorithm.
+%From WSA we will use a decimation filter written in VHDL.
+%From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
+%to explore concurrent, transaction based verification.
+
+\paragraph*{Human Resources}
+
+For the SDH project, we request funding for one PhD student.
+Each of the senior researchers will contribute to the SDH research project.
+%
+%We intend to build a group with one PhD student, one postdoc, and
+%two senior researchers at DTU.
+%
+%Quoted from the Diversity and Gender statement at DTU:
+%``Diversity, equal treatment, and equality are integral to DTU, being an international
+%university in scope and standard, and are fundamental principles underlying DTU's
+%expectations of respect and equality''.
+As the already named researchers are all male, we will actively search
+for a female researcher for the PhD positions.
+%However, the PhD position will be announced openly and men and women
+%will have equal opportunities for applying.
+
+
+{\bf Martin Schoeberl (MS)} is associate professor at DTU Compute and is the PI.
+%His research interest is in computer architecture for real-time systems.
+During his stay
+at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
+Martin has {\bf written the Chisel textbook}~\cite{chisel:book}\footnote{\url{http://www.imm.dtu.dk/~masca/chisel-book.html}}, which has been translated
+into Chinese, Japanese, and Vietnamese. Martin is a {\bf member of the Technical Advisory Committee for
+Chisel} and therefore keeps the work of SDH in sync with the development of Chisel.
+Martin is part of the regular Chisel developer meeting with
+UC Berkeley researchers and developers from SiFive, a silicon valley startup.
+
+
+{\bf Eun-Young Kang (AYK)} is associate professor at the University of Southern Denmark.
+Her research interest is in...
+
+
+\martin{Maybe Martin and Alceste} {\bf Martin Berger (MB)} works on processor verification at Huawei's Cambridge Research Center.
+He is interested in applying the results of this project to processor verification.
+{\bf NN PhD}: we are looking for one PhD candidate with a background in computer engineering
+with an interest in digital design and programming languages.
+
+
+
+%\vspace{-2mm}
+\begin{table*}% [h!]
+{\small
+  \begin{center}
+    \begin{tabular}{lccp{110mm}l}
+      \toprule
+      Task                   & PM  & Person    & Description                                                                                   \\
+      \midrule
+      Recruiting             & 1   & MS and  & Recruiting of the PhD.                                                                    \\
+      \midrule
+      Prepare                & 3   & PhD      & Exploring related work on property-based testing and fuzzing, and learning Chisel and UVM.                           \\
+      DigDesign               & 6   & PhD      & Developing a hardware generator methodology by using functional programming in Scala.         \\
+      Framework              & 9   & PhD      & Development of an object-oriented and functional testing framework.                      \\
+      Testing & 6   & PhD      & Develop property-based testing for ChiselVerify.                                                      \\
+      Eval                   & 6 & PhD    & Evaluation of the tools with the industrial use cases.                                                     \\
+      Thesis                 & 6   & PhD    & Thesis writing und submission.                                                                \\
+      \midrule
+      TeachSW                 &  2  & JM            & Make Chisel and its design methods accessible for software engineers. \\
+      SpecLang                &    1 + 1   &  AS + MB & Design a specification language for property tests using temporal logic. \\
+      Chapter                & 2   & MS        & Adding a chapter on verification to the Chisel book~\cite{chisel:book}.                       \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \caption{\martin{Placeholder copy from other proposal, we want two PhDs}}\label{tab:packages}
+}
+\end{table*}
+
+
+
+
+
+%\vspace{-5mm}
+\paragraph*{Tasks, Milestones, and Timetable}
+
+
+%\paragraph{MS1.} The milestone is to have a empirical study on the effectiveness of our approach. In particular,  we will consider testing  two kinds of properties. The first kind is injected faults, of which we will measure our capability in detecting the faults. Another category is the expected code behavior, on which our approach should  pass without raising  warnings. 
+%
+%
+%\paragraph{MS2.} We will create  a database from historical  bug patterns.
+%A program transformer will be implemented to convert the bug patterns
+%into code specification. The generated specification for our benchmark
+%should be validated by our hardware developers, with which a
+%refinement step can be introduced to improve the database.
+%
+%\paragraph{MS3.} The milestone  is to have a list of bugs reported, and a detailed case study (whether the bugs are
+%trivial, false alarms, for example) Besides, coverage statistics will
+%be collected to measure comprehensiveness of our tests.
+
+
+The project is divided into several tasks (Table~\ref{tab:packages}), each planned in person months (PM).
+%The Gantt chart shows the project schedule.
+For an assessment of the project's success, we have the following milestones:
+
+\textbf{M1} (Month 6): The PhD student is selected and employed.
+
+\textbf{M2} (Month 15): Tools have been learned, and initial artifacts have been developed.
+
+\textbf{M3} (Month 30): All development has been finished, and the different components
+can be used for exploration and evaluation of the results with the industrial use cases.
+
+\textbf{M4} (Month 48): The project has finished, and one PhD theses has been handed in.
+
+\paragraph*{Success Criteria:}
+We aim to increase productivity by a factor of two.
+
+
+%%\vspace{-5mm}
+%\begin{figure*}
+%\centering
+%\begin{ganttchart}[vgrid,hgrid,bar/.style={fill=gray},
+%x unit=3mm, % horizontal squeezing
+%%y unit chart=5mm, % vertical squeezing
+%y unit title=8mm,y unit chart=4.5mm, milestone top shift=.15, milestone height=.2mm, % very tight format
+%title label font=\footnotesize,
+%bar label font=\footnotesize,
+%milestone label font=\footnotesize,
+%]{1}{48}
+%% labels
+%%\gantttitle{\textbf{\normalsize{RTAI Gantt chart}}}{42} \\
+%\gantttitlelist{1,...,48}{1} \\
+%% tasks, groups and milestones
+%\ganttbar[name=r1]{Recruiting}{1}{6} \\
+%\ganttmilestone[name=m1]{Milestone 1}{6} \\
+%\ganttbar[name=t1]{UVM}{1}{9} \\
+%\ganttbar[name=t2]{Prepare1}{7}{9} \\
+%\ganttbar[name=t3]{Cover}{10}{15} \\
+%\ganttmilestone[name=m2]{Milestone 2}{15} \\
+%\ganttbar[name=t4]{Generate}{16}{21} \\
+%\ganttbar[name=t41]{Framework}{22}{30} \\
+%\ganttbar[name=t5]{Perpare2}{7}{9} \\
+%\ganttbar[name=t6]{Spec}{10}{15} \\
+%\ganttbar[name=t7]{Testing}{16}{21} \\
+%\ganttbar[name=t8]{Bugbase}{22}{24} \\
+%\ganttbar[name=t9]{Implement}{25}{30} \\
+%\ganttmilestone[name=m3]{Milestone 3}{30} \\
+%\ganttbar[name=t10]{Explore}{31}{34} \\
+%\ganttbar[name=t11]{Eval}{35}{39} \\
+%\ganttbar[name=t12]{Thesis}{40}{48} \\
+%\ganttbar[name=t13]{TeachSW}{40}{46} \\
+%\ganttbar[name=t14]{Chapter}{40}{46} \\
+%\ganttmilestone[name=m4]{Milestone 4}{48}
+%
+%% relations
+%\ganttlink{r1}{m1}
+%\ganttlink{m1}{t2}
+%\ganttlink{t1}{m2}
+%\ganttlink{t2}{t3}
+%\ganttlink{t3}{m2}
+%\ganttlink{m2}{t4}
+%\ganttlink{t4}{t41}
+%\ganttlink{t41}{m3}
+%
+%\ganttlink{m1}{t5}
+%\ganttlink{t5}{t6}
+%\ganttlink{t6}{m2}
+%\ganttlink{m2}{t7}
+%\ganttlink{t7}{t8}
+%\ganttlink{t8}{t9}
+%\ganttlink{t9}{m3}
+%\ganttlink{m3}{t10}
+%\ganttlink{t10}{t11}
+%\ganttlink{t11}{m4}
+%\ganttlink{t12}{m4}
+%\ganttlink{t13}{m4}
+%
+%\end{ganttchart}
+%
+%\caption{The Gantt chart of SDH}\label{fig:gantt}
+%\end{figure*}
+
+
+
+
+
+\newpage
+\newpage
+\small
+\bibliographystyle{abbrv}
+\bibliography{../../msbib,testing,../../chisel-uvm}
+
+%\end{document}
+\newpage
+
+\section{Notes}
+
+Place for notes
+
+\end{document}
+

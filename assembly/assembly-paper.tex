@@ -1,0 +1,219 @@
+\documentclass[conference]{IEEEtran}
+
+
+\usepackage{cite}
+\usepackage[colorlinks=false,bookmarks=false]{hyperref}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{cleveref}	% Needed for correctly referencing listings
+
+
+% fatter TT font
+\renewcommand*\ttdefault{txtt}
+
+
+%%% ZF
+\usepackage{listings}
+\lstset{
+	columns=fullflexible,
+	%        basicstyle=\ttfamily\footnotesize,
+	basicstyle=\ttfamily\small,      
+	%columns=fullflexible, keepspaces=true,
+	numbers=left,    
+	numberblanklines=false,
+	captionpos=b,
+	%	breaklines=true,
+	escapeinside={@}{@},
+	numbersep=5pt,
+	language=C,
+	tabsize=2,
+	breakatwhitespace=true,
+	breaklines=true,
+	deletekeywords={for},
+	%        keywordstyle=\ttfamily
+	numbersep=5pt,
+	xleftmargin=.10in,
+	%xrightmargin=.25in
+}
+
+\newcommand{\longlist}[3]{{\lstinputlisting[float, caption={#2}, label={#3}, frame=tb, captionpos=b]{#1}}}
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+
+
+\title{Constrained Random Assembly Test Program Generation for Processor Verification}
+
+\author{
+\IEEEauthorblockN{Tjark Petersen, Martin Schoeberl}
+\IEEEauthorblockA{\textit{Department of Applied Mathematics and Computer Science} \\
+\textit{Technical University of Denmark}\\
+Lyngby, Denmark \\
+s186083@student.dtu.dk, masca@dtu.dk}
+}
+
+
+\begin{document}
+
+\IEEEoverridecommandlockouts
+
+\maketitle
+
+\pagestyle{empty}
+
+\begin{abstract}
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+digital design, verification, Chisel, Scala
+\end{IEEEkeywords}
+
+
+\section{Introduction}
+\label{sec:introduction}
+Constrained randomized testing is a powerful tool to increase the efficiency of a verification engineer. 
+One test case can capture a variety of different test values and each new test run provides greater 
+confidence in the correct behavior of the feature of interest. In contrast, a simple directed test 
+only shows correct behavior for some specific test values.
+
+The methodology of constrained random testing has found its way into the verification of digital 
+circuits, where the stimuli applied to a device under test are generated randomly following a set 
+constraints. When it comes to the verification of the digital circuit of a processor this method 
+is not suitable though, since the element determining most of the circuit behavior is the memory 
+which contains the actual program run on the processor. Here a framework is needed which to some 
+extend knows about the targeted instruction set and the randomizable portions of an individual 
+instruction. This framework can be extended to provide a full processor verification suite which 
+automatically generates instruction sequences for the purpose of verifying the correct behavior 
+of a processor implementation.
+
+\section{Related Work}
+
+Many solutions to the automation of test generation have been proposed, \todo{commercial products, riscv-torture and riscv-dv}
+
+% https://research.ibm.com/haifa/dept/vst/tgt-activities.shtml
+% https://github.com/ucb-bar/riscv-torture
+% https://github.com/google/riscv-dv
+
+Those often come inside of a big verification framework. This projects aims at providing a 
+small and easy to use interface inside of Scala which can be used for quick unit test like 
+programs which can be used to test Chisel processor implementations.
+
+These frameworks are relatively heavy to deploy and enforce their own way of co-simulation (???).
+
+
+In this paper a more lightweight framework is proposed which only focuses on the test generation 
+for different instruction sets. It aims to provide an easy to use and randomized alternative to 
+directed assembly test programs used for the basic verification of a processor. The low-overhead 
+generation process of the proposed framework allows it to be used in a unit test like manner, 
+where many isolated features can be tested in their own test case, but where the specific 
+instructions are randomized within the bounds of the given constrains.
+
+
+\section{The generation framework}
+
+
+The problem of constraint random test program generation for different instruction sets comes with 
+two key sub-problems. On the one hand a general language model for the different potential target 
+languages needs to be formulated. On the other hand, a decision has to be made concerning which 
+parameters and traits of the generated program sequence should be constrainable and in what form.
+
+Due to the inherent low level of abstraction in assembly code, a model capturing different target 
+instruction sets can be quite simple. An instruction set consists of different instructions having 
+their own mnemonic, operands, syntax and semantics. The operands can be randomized inside their 
+respective domains.
+
+When it comes to the constraining of a program sequence, two levels can be identified: instruction 
+level constraints and program level constraints. The former applies to randomizable operands inside 
+of an instruction whose domains can be further limited by constraints. The latter concerns potential 
+relational constraints between adjacent instructions in a program or the overall distribution of 
+instructions with respect to a parameter like for instance a specific category they fit into. 
+Furthermore, a mixture between fixed instructions and randomly selected instructions in a program 
+sequence could be a desired form of constraining a program.
+
+To tackle the this problem, a construct named \textit{Pattern} is introduced. A pattern contains 
+a sequence of instructions, where some of them are specific instructions with potentially specific 
+operands whereas others portions of the pattern are left to be filled in randomly. Some of the 
+items in the pattern sequence can be a pattern themselves, creating a nested system of patterns. 
+This resembles a tree with nodes being patterns or instructions and where actual instructions are 
+the leafs. In order to generate a program sequence from a pattern, it invokes a \texttt{produce} 
+method on all its sequence items. This creates a call chain down through the tree until an instruction 
+is met which just produces a copy of itself.
+
+
+In order for a potential user to set only some operands of an instruction when describing a pattern, 
+an interface is needed. Furthermore, an instruction needs to remember whether and which operands 
+have been set, so that a randomized copy maintains the same operand value. This is achieved using 
+the Scala \texttt{Option} type. Instructions have optional parameters for their operands which by 
+default are set to \texttt{None}. At class initialization for each operand either a random value 
+inside the operand domain or a passed initializer different from \texttt{None} is chosen. An example 
+of this behavior can be seen in listing \todo{fix} where the immediate operand of the Risc-V 
+load immediate instruction can be left blank and filled in randomly.
+
+
+\begin{lstlisting}{scala}
+val forLoop = Pattern(implicit c => Seq(
+ LI(t1,0),
+ LI(t2),
+ Label("ForLoopStart"),
+ Instruction.fillWithCategory(10)
+                  (Category.Arithmetic),
+ ADDI(t1,t1,1),
+ BLT(t1,t2,LabelRecord("ForLoopStart")),
+ Instruction.fill(10)
+))
+\end{lstlisting}
+
+
+In listing \todo{fix} it can be seen that the instruction sequence is actually defined 
+inside an anonymous function which takes an argument \texttt{c} that is declared implicit in the 
+function context. This argument is the \texttt{GeneratorContext} which is passed down implicitly 
+through all \texttt{produce} calls in order to give access to mutable state like for instance the 
+current program counter, as well as access to functions which produce new random instructions.
+
+% the generation user interface
+
+% the generation context
+
+% patterns and instructions 
+% patterns -> code reuse
+
+% isa definitions
+
+% Label insertion
+
+As a way to control the instruction stream from a higher level of abstraction, a category system is introduced.
+
+A test generator can be instantiated given an instruction set and a set of constraints. The constraint 
+system is easily extendable and includes for now interfaces to constrain the following parameters:
+\begin{itemize}
+    \item category distribution
+    \item 
+\end{itemize}
+
+
+\section{Evaluation}
+
+% non-architectural specific -> might be harder to capture some behavior but Patterns are quite flexible
+
+
+
+
+
+\section{Conclusion}
+The framework could be extended to use fuzzing techniques to automatically generate interesting test using a generation-metric collection-mutation loop. For this a mutation interface would have to be added to the framework.
+
+\subsection*{Source Access}
+
+This work is in open source and hosted at GitHub:\\ \url{https://github.com/chiselverify/chiselverify}.
+We plan also to regularly publish it on Maven.\footnote{https://mvnrepository.com/artifact/io.github.chiselverify/chiselverify}
+
+\subsection*{Acknowledgment}
+
+
+\bibliographystyle{IEEEtran}
+%\bibliography{../msbib,../chisel-uvm}%,../funding/ftp-chisel/testing}
+
+
+\end{document}

@@ -181,11 +181,11 @@ as well as novel tools and methods for defining and gathering functional coverag
 
 The paper is organized as follows.
 The following section presents related work.
-Section III presents the background required to understand our work, including the Chisel pipeline and various coverage methodologies. 
-Section IV discusses how existing tools, in the Scala and Verilog ecosystems, can be used to gather statement coverage of a Chisel design.  
+Section III presents background on Chisel and various coverage methodologies. 
+Section IV discusses how existing tools can be used to gather statement coverage of a Chisel design.  
 Section V presents our work on adding statement coverage at the FIRRTL level. 
 Section VI then presents our Scala-based functional coverage framework.  
-In section VII, we evaluate our solution by using it to test an industry provided use-case, then contrasting the results to a similar test written in SystemVerilog with UVM. 
+In section VII, we evaluate our solution by comparing to similar tests written in SystemVerilog with UVM. 
 Section VIII concludes.
 
 \section{Related Work}
@@ -196,9 +196,8 @@ SystemVerilog, a mostly non-synthesisable extension of the Verilog Hardware Desc
   
 A possible solution to obtaining statement coverage for Chisel, is to rely on the generated Verilog code. 
 %This can be simulated by any Verilog simulator or directly synthesized by any vendor-specific development tool. 
-As part of the Chisel development tools, \texttt{ChiselTest} allows simulating a Chisel design transformed to Verilog using the Verilator~\cite{verilator} back-end.
-Verilator is an open-source simulator which supports three types of coverage: line coverage (similar to statement coverage), toggle coverage (i.e., whether signals have taken on both binary values), and SystemVerilog assertions property coverage. 
-These can be enabled using a few simulation parameters in Verilator~\cite{tolotto2020}.
+As part of the Chisel development tools, \texttt{ChiselTest} allows simulating a Chisel design transformed to Verilog using the open-source Verilator~\cite{verilator} back-end.
+Some coverage metrics can be enabled using a few simulation parameters in Verilator~\cite{tolotto2020}.
 The simulator then generates a coverage report in a SystemPerl coverage report file~\cite{SystemPerl}.
 
 SystemVerilog is widely used in the scope of UVM~\cite{uvm2015}. 
@@ -320,13 +319,13 @@ We will start with measuring coverage at a high level (i.e., coverage of the Sca
 
 To enable coverage, the Scoverage plugin must be added to the Scala project, including optional arguments.
 %'s \textit{plugins.sbt} file, and a number of optional arguments may be included in the project's \textit{build.sbt} file -- the arguments specify whether coverage is enabled, a targeted coverage percentage, etc.
-An example configuration of the Scoverage plugin is provided below:
-\begin{verbatim}
-coverageEnabled := true
-coverageMinimum := 70
-coverageFailOnMinimum := false
-coverageHighlighting := true
-\end{verbatim}
+%An example configuration of the Scoverage plugin is provided below:
+%\begin{verbatim}
+%coverageEnabled := true
+%coverageMinimum := 70
+%coverageFailOnMinimum := false
+%coverageHighlighting := true
+%\end{verbatim}
 % Running a test is still just a matter of running e.g. \texttt{sbt test}, while generating a coverage report requires running \texttt{sbt coverageReport} afterwards, as Scoverage otherwise simply generates coverage databases.
 Running the test and coverage reporter tool will create a graphical coverage report in a set of HTML files. The report may optionally include the original source files with statements that were executed during the test marked in green. The global coverage results are also printed to \texttt{stdout}.
 %in the terminal:

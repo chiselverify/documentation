@@ -116,7 +116,7 @@ Ever-increasing performance demands are pushing hardware designers towards desig
 One method that can increase verification efficiency is the use of various types of coverage measures.\\
 In this paper, we present our open-source, coverage-related verification tools targeting digital designs described in Chisel. %We create a new method allowing for statement coverage at an intermediate representation of Chisel designs.
 Specifically, we have created a new method allowing for statement coverage at an intermediate representation of Chisel, %We also describe our solution for gathering functional coverage on a Chisel design.
-and several methods for gathering functional coverage utilizing the functional nature of Scala. We evaluate our approach with an industrial use case and compare it to existing coverage solutions from SystemVerilog.
+and several methods for gathering functional coverage utilizing the functional nature of Scala. We evaluate our approach by comparing it to existing coverage solutions from SystemVerilog.
 
 \begin{IEEEkeywords}
 Hardware Verification, Statement Coverage, Functional Coverage, Chisel, Scala.
@@ -166,7 +166,7 @@ Hardware Verification, Statement Coverage, Functional Coverage, Chisel, Scala.
 \label{sec:objectives}
 As time passes, contemporary hardware design is met with tighter and tighter development and verification time-constraints. Additionally, hardware designers are turning to domain-specific accelerators in order to keep up with the ever-increasing performance demands~\cite{henn-patt:turing:2019}. This means that more and more hardware must be designed from scratch in shorter and shorter time periods~\cite{domain-hw-acc:2020}.  To help meet these demands, researchers at the University of California in Berkeley proposed Chisel~\cite{chisel:dac2012}, a Scala embedded high-level hardware construction language.
 
-This solution is powerful, but is still lacking in verification functionalities. One of the main tools needed for the verification of digital systems is coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into multiple distinct categories, but we will focus on the following two: statement and functional coverage. Statement coverage defines a measure for \textit{``how many lines of code have been tested?"}, whereas functional coverage gives a measure for \textit{``which functionalities have been tested?"}~\cite{spear2008systemverilog}.
+This solution is powerful, but is still lacking in verification functionalities. One of the main tools needed for the verification of digital systems is coverage. This allows verification engineers to measure their progress throughout the testing process and have an idea of how effective their tests actually are. Coverage can be separated into multiple distinct categories, but we will focus on the following two: statement and functional coverage. Statement coverage defines a measure for \textit{``how many code statements have been tested?"}, whereas functional coverage gives a measure for \textit{``which functionalities have been tested?"}~\cite{spear2008systemverilog}.
 
 %\martin{shall write some words on the different languages levels.}
 
@@ -257,7 +257,7 @@ In this paper, we will mostly focus on two key approaches to test coverage: stat
 
 \paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific design, statement coverage will give a quantitative measure of our testing progress. It measures which percentage of statements in our code have been executed during the test. This metric is widely used in the software world and may be ported directly to the hardware world. However, it should be taken with a grain of salt and not as the sole metric for how thorough one's testing was, since it only provides information about which lines were tested and not how well they were tested~\cite{hdlverify}. %This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested. 
 
-Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit~\cite{hdlverify}. %For example, consider the code snippets below. The left Verilog snippet presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right VHDL snippet presents an implicit block starting with the \texttt{wait}-statement which may never be passed~\cite{hdlverify}.
+%Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit~\cite{hdlverify}. %For example, consider the code snippets below. The left Verilog snippet presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right VHDL snippet presents an implicit block starting with the \texttt{wait}-statement which may never be passed~\cite{hdlverify}.
 
 %\noindent\begin{minipage}{0.45\linewidth}
 %\begin{lstlisting}[language=verilog]{verilogBlock}
@@ -280,15 +280,15 @@ Related metrics are line and block coverage. Line coverage measures execution of
 %\end{lstlisting}
 %\end{minipage}
 
-More elaborate metrics include path and expression coverage. Figure~\ref{fig:expr} shows examples of both. Path coverage focuses on whether all possible paths through a piece of code have been executed. 
-Expression coverage takes this one step further checking whether all possible combinations of true checks are executed. The left code snippet in Figure~\ref{fig:expr} shows an example of path coverage, while the right code snippet shows expression coverage. One must note that the finer the granularity, the greater the computational requirements~\cite{hdlverify}. %For simple designs, statement coverage is generally sufficient. \hjd{Check up on this and explain more.}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\textwidth]{Coverage_example.pdf}
-    \caption{Example of (left) path and (right) expression coverage.}
-\label{fig:expr}
-\end{figure}
+%More elaborate metrics include path and expression coverage. Figure~\ref{fig:expr} shows examples of both. Path coverage focuses on whether all possible paths through a piece of code have been executed. 
+%Expression coverage takes this one step further checking whether all possible combinations of true checks are executed. The left code snippet in Figure~\ref{fig:expr} shows an example of path coverage, while the right code snippet shows expression coverage. One must note that the finer the granularity, the greater the computational requirements~\cite{hdlverify}. %For simple designs, statement coverage is generally sufficient. \hjd{Check up on this and explain more.}
+%
+%\begin{figure}
+%    \centering
+%    \includegraphics[width=0.5\textwidth]{Coverage_example.pdf}
+%    \caption{Example of (left) path and (right) expression coverage.}
+%\label{fig:expr}
+%\end{figure}
 
 \paragraph{Functional Coverage} If we are looking to measure the completeness of a test suite, we need to ask the following question: \textit{``are we even testing the right thing?"}. 
 In the hardware world, engineers usually implement designs based on pre-determined specifications, so when testing, we should also have a metric for how well we are implementing the specification. 
@@ -299,7 +299,7 @@ realistic input patterns to the DUT.
 Once a plan is defined, we sample the different points defined in the specification during the testing process to obtain results in the form of: \textit{``test suite T covered a total of x\% of the values specified by point P in specification A"}. 
 
 \subsection{What to Aim For}
-The greatest pitfall is the idea of needing to hit 100\,\% statement coverage. Indeed, for the majority of cases, reaching 100\,\% statement coverage is unreasonable due to computational requirements or impossible due to statements not meant to be executed. Instead, one should aim for fully exercising the most important code blocks of one's design; thus, targeting high functional coverage. Statement coverage can still be useful, however, as it indicates whether certain sections of one's code are not executed. 
+The greatest pitfall is the idea of needing to hit 100\,\% statement coverage. Indeed, for the majority of cases, reaching 100\,\% statement coverage is unreasonable due to computational requirements or impossible due to statements not meant to be executed. Instead, one should aim for fully exercising the most important features of one's design; thus, targeting high functional coverage. Statement coverage can still be useful, however, as it indicates whether certain sections of one's code are not executed. 
 
 Additionally, one should keep in mind that coverage metrics only indicate the thoroughness of one's verification suite, neither its correctness nor its completeness. Designing a good verification plan is therefore of the utmost importance~\cite{hdlverify}.
 

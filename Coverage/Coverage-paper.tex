@@ -254,7 +254,7 @@ In recent years, these techniques, originally used for software, have been broug
 In this paper, we will mostly focus on two key approaches to test coverage: statement coverage and functional coverage. 
 %Nonetheless, we briefly mention closely related and more thorough coverage metrics here.
 
-\paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific design, statement coverage will give a quantitative measure of our testing progress. It measures which percentage of statements in our code have been executed during the test. This metric is widely used in the software world and may be ported directly to the hardware world. However, it should be taken with a grain of salt and not as the sole metric for how thorough one's testing was, since it only provides information about which lines were tested and not how well they were tested~\cite{hdlverify}. %This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested. 
+\paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific design, statement coverage is a common measurement for the testing progress. It measures which percentage of statements in our code have been executed during the test. This metric is widely used in the software world and may be ported directly to the hardware world. However, it should be taken with a grain of salt and not as the sole metric for how thorough one's testing was, since it only provides information about which code statements were tested and not how well they were tested~\cite{hdlverify}. %This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested. 
 
 %Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit~\cite{hdlverify}. %For example, consider the code snippets below. The left Verilog snippet presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right VHDL snippet presents an implicit block starting with the \texttt{wait}-statement which may never be passed~\cite{hdlverify}.
 
@@ -350,8 +350,8 @@ This results in a particular branch coverage percentage which can be mapped to a
 
 %\martin{Baxter should be in related work. Not stating here that we base on it.}
 Baxter describes a method for collecting statement coverage for arbitrary languages~\cite{branch-cov-made-easy:2002}, which we adapt for Hardware Description Languages. 
-The idea is to extend each multiplexer of a design with additional outputs, known as coverage validators, which are set depending on the paths taken by each multiplexer
-During testing, the ports are sampled and used for checking whether a certain multiplexer path was taken. 
+The idea is to extend each multiplexer of a design with additional outputs, known as \textit{coverage validators}, which are set depending on the paths taken by each multiplexer using \textit{coverage expressions}.
+During testing, the ports are sampled and used for checking whether a certain multiplexer path was taken.
 This results in a particular branch coverage percentage which can be mapped to a statement coverage percentage.
 
 We implement this using and simply extend each multiplexer in the expanded FIRRTL code by the required extra ports. %. The idea is to extend each multiplexer in the design by additional outputs. These new ports, known as coverage validators, are set depending on the paths taken by each multiplexer. These ports are then sampled during testing and used for checking whether a certain multiplexer path was taken. This results in a particular branch coverage percentage which may be mapped to a statement coverage percentage.%The solution that was used to implement statement coverage is based on a method presented by Baxter~\cite{branch-cov-made-easy:2002}. The idea is to add additional outputs for each multiplexer in the design. These new ports, which we will call \textit{Coverage Validators}, are set depending on the paths taken by each multiplexer. That information is then gathered at the end of each test and maintained throughout a test suite. Once the testing process is finished, we use the output values gathered from the \textit{Coverage Validators} to check whether or not a certain multiplexer path was taken during the test, resulting in a branch coverage percentage. This percentage can then be mapped to a statement coverage percentage.
@@ -628,7 +628,7 @@ These features include \texttt{Bin}s defined by an arbitrary predicate, and \tex
 We would like to thank the researchers at Berkeley who are constantly working on making Chisel a more ubiquitous hardware construction language and for the feedback related to the work done on adding coverage to Treadle.
 
 \subsection*{Source Access}
-The source code for \texttt{ChiselVerify} is available at\\ \url{https://anonymous.4open.science/r/chiselverify-71E4}.
+The source code for \texttt{ChiselVerify} is available at\\ \url{https://github.com/chiselverify/chiselverify}.
 %\todo{Add source pointers in final version. Not possible now due to double-blind review.}
 %\martin{There is an anonymous Git  possible. We have the pointer in one of the reviews.} \hjd{Can't do this either - our README has a bibtex entry with our names in it.}
 

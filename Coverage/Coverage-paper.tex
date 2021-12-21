@@ -117,7 +117,7 @@ Ever-increasing performance demands are pushing hardware designers towards desig
 One method that can increase verification efficiency is the use of various types of coverage measures.\\
 In this paper, we present our open-source, coverage-related verification tools targeting digital designs described in Chisel. %We create a new method allowing for statement coverage at an intermediate representation of Chisel designs.
 Specifically, we have created a new method allowing for statement coverage at an intermediate representation of Chisel, %We also describe our solution for gathering functional coverage on a Chisel design.
-and several methods for gathering functional coverage utilizing the functional nature of Scala. We evaluate our approach by comparing it to existing coverage solutions from SystemVerilog.
+and several methods for gathering functional coverage utilizing the functional nature of Scala.
 
 \begin{IEEEkeywords}
 Hardware Verification, Statement Coverage, Functional Coverage, Chisel, Scala.
@@ -174,7 +174,7 @@ This solution is powerful, but is still lacking in verification functionalities.
 In this paper, we explore how to use existing tools, both for Scala and for Verilog, in order to obtain statement coverage in Chisel. We will start by presenting code coverage at the Scala level. Second, we will briefly discuss how to use Verilator~\cite{verilator} in order to enable statement coverage of the generated Verilog description. Third, we will show our solution for getting statement coverage of the so-called Flexible Internal Representation of Register Transfer Level (FIRRTL) intermediate representation~\cite{firrtl}. In total, these measures represent test coverage of different language levels of a Chisel design.
 
 Moreover, we will present our solution for gathering functional coverage of a Chisel design directly in Scala. %We provide a brief introduction to Chisel and FIRRTL needed to fully appreciate our solution. Initial work on verification with Chisel has been presented in a previous paper~\cite{blind}. %\cite{verify:chisel:2020}. 
-Finally, we evaluate our coverage solutions with an industry-provided use case to illustrate its efficiency. The solutions are shown to reduce the amount of code (measured in lines of code) needed to gather functional coverage on a Chisel design in comparison to using SystemVerilog extended by Universal Verification Methodology (UVM) techniques~\cite{uvm2015}.
+Finally, we evaluate our coverage solutions with an example use case to illustrate its efficiency. The solutions are shown to reduce the amount of code (measured in lines of code) needed to gather functional coverage on a Chisel design in comparison to using SystemVerilog extended by Universal Verification Methodology (UVM) techniques~\cite{uvm2015}.
 %Note that a discussion could be had on the usefulness of coverage information at certain levels of abstraction (i.e. high-level coverage might not be interesting when using hardware generators), but for now this is left up for the reader to decide.
 
 The contributions of this paper are a method for extending FIRRTL execution engines for gathering statement coverage, 
@@ -226,12 +226,12 @@ After that, we will give an introduction to statement and functional coverage.
 Chisel is a hardware construction language embedded in the functional and object-oriented programming language Scala~\cite{chisel:dac2012, chisel:book, Scala}. 
 A Chisel design generates a Verilog description that can then be synthesized using existing tooling. 
 Chisel syntax is rooted in Scala. As a result, it enables the description of hardware in a high-level manner. 
-Scala also allows for both functional and object-oriented programming constructs, which makes it possible to organize a design very intuitively using Scala classes and objects, and to use the power of higher-order functions to simplify descriptions thanks to constructs like \textit{mappings} or \textit{reductions}.
+Scala also allows for both functional and object-oriented programming constructs, which makes it possible to organize a design very intuitively using Scala classes and objects, and to use the power of functions as first-order objects to simplify descriptions thanks to constructs like \textit{mappings} or \textit{reductions}.
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=0.8\textwidth]{Chisel_FIRRTL_VERILOG.pdf}
-    \caption{Overview of the Chisel pipeline. Chisel code is first given to the FIRRTL compiler, where it is transformed by a series of ``lowering passes''. It is then output by the compiler in a low-level form, where only hardware primitives are used without loops. It is then used to either emit Verilog or simulate using an execution engine like Treadle.}
+    \includegraphics[width=0.8\textwidth]{Chisel_FIRRTL_VERILOG_Coverage.pdf}
+    \caption{Overview of the Chisel pipeline. Chisel code is first given to the FIRRTL compiler, where it is transformed by a series of ``lowering passes''. It is then output by the compiler in a low-level form, where only hardware primitives are used without loops. Our Functional Coverage library works as an intermediate between the Chisel source and ChiselTest. The optional custom FIRRTL pass, modifies the loFIRRTL code being fed into Treadle.}
 \label{fig:chisel}
 \end{figure*}
 
@@ -247,7 +247,7 @@ During this optimization process the original Chisel description goes through th
 Throughout this optimization process, custom FIRRTL compiler passes, known as \textit{Transforms}, can be used to modify the design. 
 This is often done when trying to apply simplifications to the design to make the generated hardware more optimal~\cite{firrtl}.  
 
-Figure~\ref{fig:chisel} shows an overview of the Chisel compilation pipeline and the different stages the code goes through before being converted into a usable format. It also indicates the placement of our coverage tools as part of the \texttt{ChiselVerify} package.
+Figure~\ref{fig:chisel} shows an overview of the Chisel compilation pipeline and how our coverage methods incorporate into it. More specifically, it shows the different steps taken before the coverage FIRRTL pass can be run, and shows where the functional coverage tools fit in, from the Chisel's perspective. For the sake of clarity, the synthesis part of the pipeline has been omitted.
 
 \subsection{Test Coverage}
 In software development, test coverage is used as a metric to measure the completeness of a testing suite. 
@@ -255,7 +255,7 @@ In recent years, these techniques, originally used for software, have been broug
 In this paper, we will mostly focus on two key approaches to test coverage: statement coverage and functional coverage. 
 %Nonetheless, we briefly mention closely related and more thorough coverage metrics here.
 
-\paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific design, statement coverage is a common measurement for the testing progress. It measures which percentage of statements in our code have been executed during the test. This metric is widely used in the software world and may be ported directly to the hardware world. However, it should be taken with a grain of salt as the sole metric for how thorough one's testing was, since it only provides information about which code statements were tested and not how well they were tested~\cite{hdlverify}. %This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested. 
+\paragraph{Statement Coverage} When wanting to retrieve coverage information about a specific design, statement coverage is a common measurement for the testing progress. It measures which percentage of statements in our code have been executed during the test. This metric is widely used in the software world and may be ported directly to the hardware world. However, it should not necessarily be seen as the sole metric for how thorough one's testing was, since it only provides information about which code statements were tested and not how well they were tested~\cite{hdlverify}. %This metric can be very useful in the software world, however it is only a partial solution in the hardware world, since it only tells us which lines were tested and not how well they were tested. 
 
 %Related metrics are line and block coverage. Line coverage measures execution of specific code lines. For languages that are less expressive than Scala (such as C), line and statement coverage are equivalent. Block coverage simply reduces the granularity focusing on sections of code at once. Depending on the language, blocks may be explicit or implicit~\cite{hdlverify}. %For example, consider the code snippets below. The left Verilog snippet presents an explicit block surrounded by an \texttt{if}-statement whose check may never be true, while the right VHDL snippet presents an implicit block starting with the \texttt{wait}-statement which may never be passed~\cite{hdlverify}.
 
@@ -318,15 +318,15 @@ We will start with measuring coverage at a high level (i.e., coverage of the Sca
 
 %%\martin{This actually does coverage of the Chisel hardware generation, not the Chisel hardware itself. It tests the generator, which is important as well.} Fixed.
 
-To enable coverage, the Scoverage plugin must be added to the Scala project, including optional arguments.
-%'s \textit{plugins.sbt} file, and a number of optional arguments may be included in the project's \textit{build.sbt} file -- the arguments specify whether coverage is enabled, a targeted coverage percentage, etc.
-%An example configuration of the Scoverage plugin is provided below:
-%\begin{verbatim}
-%coverageEnabled := true
-%coverageMinimum := 70
-%coverageFailOnMinimum := false
-%coverageHighlighting := true
-%\end{verbatim}
+To enable coverage, the Scoverage plugin must be added to the Scala project, including optional arguments, defined in the \textit{plugins.sbt} file.
+%'s, and a number of optional arguments may be included in the project's \textit{build.sbt} file -- the arguments specify whether coverage is enabled, a targeted coverage percentage, etc.
+An example configuration of the Scoverage plugin is provided below:
+\begin{verbatim}
+coverageEnabled := true
+coverageMinimum := 70
+coverageFailOnMinimum := false
+coverageHighlighting := true
+\end{verbatim}
 % Running a test is still just a matter of running e.g. \texttt{sbt test}, while generating a coverage report requires running \texttt{sbt coverageReport} afterwards, as Scoverage otherwise simply generates coverage databases.
 Running the test and coverage reporter tool will create a graphical coverage report in a set of HTML files. The report may optionally include the original source files with statements that were executed during the test marked in green. The global coverage results are also printed to \texttt{stdout}.
 %in the terminal:
@@ -617,7 +617,7 @@ for Chisel designs and showed that existing Scala tools do not have acceptable c
 address this, we implemented extensions to the Treadle simulator and the \texttt{ChiselTest} framework 
 to enable statement and functional coverage measurements. Furthermore, we showed that the implemented 
 framework enables less verbose and more advanced verification suites than possible in existing tools. 
-These features include \texttt{Bin}s defined by an arbitrary predicate, and \texttt{cover} constructs that take timing delays into account. 
+These features include \texttt{Bin}s defined by an arbitrary predicate, and temporal logic enabled \texttt{cover} constructs. 
 
 
 \section*{Acknowledgements}

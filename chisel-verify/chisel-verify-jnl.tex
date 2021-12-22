@@ -174,6 +174,8 @@ We can also discuss on Slack.
 \section{Introduction}
 \label{sec:introduction}
 
+\martin{rewrite}
+
 Over the past several years, hardware design has grown to be ever more complex.
 The increased demand for high-performance computing systems has lead to a larger need for domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
 The design of these accelerators is often complex, and their development is time-consuming and error-prone.
@@ -212,6 +214,9 @@ Section VI concludes.
 
 \section{Related Work}
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
+
+\martin{rewrite}
+
 
 SystemVerilog is an extension of Verilog. Many non-synthesizable extensions are intended
 to write more advanced test-benches. SystemVerilog adds object-oriented programming
@@ -253,6 +258,9 @@ As far as we know, ChiselVerify is the only verification framework allowing for 
 \section{Background}
 \label{sec:background}
 
+\martin{rewrite}
+
+
 This section presents a brief overview of what hardware verification is. 
 We also briefly present Chisel and the current solutions that exist in it with regards to the verification of digital designs.
 
@@ -278,7 +286,7 @@ This is measured relative to a verification plan, which includes the following c
 \begin{figure*}
   \centering
     \includegraphics[width=0.8\linewidth]{Chisel_FIRRTL_VERILOG.pdf}
-    \caption{Overview of the Chisel compilation pipeline.}
+    \caption{Overview of the Chisel compilation pipeline. \martin{redraw}}
 \label{fig:chisel-pipe}
 \end{figure*}
 
@@ -331,6 +339,9 @@ It is currently not possible to do things such as constrained random testing or 
 Functionalities such as those are crucial when it comes to efficiently verify one's design.
 
 \section{Verification with Chisel}
+
+\martin{rewrite}
+
 
 We propose ChiselVerify, a verification library written in Scala. 
 ChiselVerify uses the device under test (DUT) interfacing features from ChiselTest in order to enable three main verification functionalities in Chisel: functional coverage, constrained random verification, and bus functional modelling. 
@@ -510,7 +521,34 @@ This section describes our approach to formal verification of digital designs.
 This work is complimentary to the testing oriented verification of digital designs,
 described in earlier sections.
 
+\section{Evaluation}
+
+We evaluate ChiselVerify with an arbiter circuit. The arbiter uses a ready/valid interface for the clients
+and the shared resource. The arbiter is build as a binary tree, where each node does a local arbitration
+and contains a register to store the data until it can be communicated further up towards the root of the
+tree. Each local 2 to 1 arbiter has turn flag to be fair between the two requests. The assumption is that
+this local fairness translates to a global fairness of the full arbitration tree.
+
+To test the arbiter, we specify properties that result in a verification plan:
+
+\begin{itemize}
+\item Each request shall eventually be seen at the output (the root node)
+\item Now requests shall be ``generated'' in the tree (out of thin air)
+\item The maximum latency for a request shall be $n$ cycles without any competing requests
+\item The maximum latency for a request shall be $m$ cycles under full load
+\item The arbitration shall be fair, which means the bandwidth difference between clients shall be bound by $x$ \%.
+\end{itemize}
+
+The values of $n$, $m$, and $x$, depend on the number of clients, i.e., the size of the arbitration
+circuit.
+
+
+
+
 \section{Use Case: Sorting in Hardware}
+
+\martin{rewrite, maybe drop as we now use the arbiter}
+
 
 In our research, we received a use case from Microchip~\cite{microchip} in the form of a specification.
 We implemented and used it to evaluate our verification library.
@@ -583,6 +621,9 @@ CRV can be done by defining just a random object.
 %UVM does not offer any predefined bus functional models.
 
 \section{Conclusion}
+
+\martin{rewrite}
+
 In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software-like ecosystem for hardware design. 
 When using it to test an industry-provided use case, we showed that it requires far less lines of code than UVM, all while obtaining similar results.
 ChiselVerify's lightweight syntax allows the user to access these helpful tools in a timely manner, thus making it a better fit for agile development than other solutions such as UVM.

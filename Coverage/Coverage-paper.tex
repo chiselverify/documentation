@@ -578,7 +578,7 @@ This requires a more complex description, for the same coverage metrics, then us
     \caption{A comparison between the lines of coverage-specific verification code needed to gather the same coverage data using ChiselVerify (CV) and SystemVerilog (SV) with UVM. This considered code is publicly available in the example tests in the chiselverify public repository. }
 \label{fig:cvsvcomp}
 \end{figure}
-Figure \ref{cvsvcomp} plots the results of our verifications using our solution and UVM. 
+Figure \ref{fig:cvsvcomp} plots the results of our verifications using our solution and UVM. 
 We only consider coverage-specific code, meaning that only the \texttt{uvm\_subscriber} class is taken into account in our UVM verification.
 These results clearly show that our solution requires, on average, 30\% of the amount of verification code required by UVM, in order to describe the same verification plan and obtain the same coverage results.
 This is largely due to our tool automating many of the structural code that must be handwritten in UVM.

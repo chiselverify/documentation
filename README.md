@@ -14,7 +14,7 @@ A conference paper for the [IEEE Nordic Circuits and Systems Conference](https:/
 ### Exploratory Functional Coverage driven fuzzing WOSET 2021 paper  
 A short conference paper for the [4th Workshop on Open-Source EDA Technology (WOSET)](https://woset-workshop.github.io/), which presents the begining of a project exploring the impact of using Functional Coverage as a fine-grained metric to drive fuzzing of Chisel designs on the fuzzing performance. Slides used in the workshop presentation, as well as a transcript of the talk, can be found [here](https://github.com/chiselverify/documentation/tree/master/presentations/WOSET2021_Fuzzing). A recording of the presentation is publicly available [on youtube](https://www.youtube.com/watch?v=RBfkjGMBfMo).
   
-### Coverage in Chisel Conference paper  
+### Enabling Coverage-Based Verification in Chisel ETS 2022 paper    
 A conference paper, which discusses the different possible approaches that can be used to gather coverage information on a Chisel design, can be found [here](https://github.com/chiselverify/documentation/blob/master/Coverage/Coverage-paper.tex).  
   
 

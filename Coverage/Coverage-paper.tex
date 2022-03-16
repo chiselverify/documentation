@@ -2,7 +2,7 @@
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.20 of 2017/10/04
 %
-\documentclass[conference]{IEEEtran}
+\documentclass[a4paper]{IEEEtran}
 %
 \usepackage{cite}
 \usepackage{pslatex} % -- times instead of computer modern, especially for the plain article class
@@ -92,7 +92,7 @@ Kasper Hesse, Tjark Petersen, Martin Schoeberl}
 \IEEEauthorblockA\textit{Department of Applied Mathematics and Computer Science} \\
 \textit{Technical University of Denmark}\\
 Lyngby, Denmark \\\\
-\href{mailto:adobis@ethz.ch}{adobis@ethz.ch}, \href{mailto:hans.damsgaard@tuni.fi}{hans.damsgaard@tuni.fi}, \{\href{mailto:s190057@student.dtu.dk}{s190057}, \href{mailto:s183735@student.dtu.dk}{s183735}, \href{mailto:s186083@student.dtu.dk}{s186083}\}@student.dtu.dk, \href{mailto:masca@dtu.dk}{masca@dtu.dk}
+\href{mailto:andrew.dobis@inf.ethz.ch}{andrew.dobis@inf.ethz.ch}, \href{mailto:hans.damsgaard@tuni.fi}{hans.damsgaard@tuni.fi}, \{\href{mailto:s190057@student.dtu.dk}{s190057}, \href{mailto:s183735@student.dtu.dk}{s183735}, \href{mailto:s186083@student.dtu.dk}{s186083}\}@student.dtu.dk, \href{mailto:masca@dtu.dk}{masca@dtu.dk}
 %adobis@ethz.ch, hans.damsgaard@tuni.fi, s190057@student.dtu.dk, \\
 %s183735@student.dtu.dk, s186083@student.dtu.dk, masca@dtu.dk
 }
@@ -232,7 +232,7 @@ Scala also allows for both functional and object-oriented programming constructs
 
 \begin{figure*}[t]
     \centering
-    \includegraphics[trim=0 0.3cm 0 0.3cm, width=0.7\textwidth]{Chisel_FIRRTL_VERILOG_Coverage.pdf}
+    \includegraphics[trim=0 0.3cm 0 0.3cm, width=1\textwidth]{Chisel_FIRRTL_VERILOG_Coverage.pdf}
     \caption{Overview of the Chisel pipeline. Chisel code is first given to the FIRRTL compiler, where it is transformed by a series of ``lowering passes''. It is then output by the compiler in a low-level form, where only hardware primitives are used without loops. Our Functional Coverage library works as an intermediate between the Chisel source and ChiselTest. The optional custom FIRRTL pass, modifies the loFIRRTL code being fed into Treadle.}
 \label{fig:chisel}
 \end{figure*}
@@ -420,7 +420,7 @@ The delay types are illustrated in Figure~\ref{fig:delay}. Green dots indicate w
 
 \begin{figure}
     \centering
-    \includegraphics[trim=0 0.4cm 0 0.4cm, width=.7\linewidth]{TimedCoverage.pdf}
+    \includegraphics[trim=0 0.4cm 0 0.4cm, width=1\linewidth]{TimedCoverage.pdf}
     \caption{Illustration of the four delay types supported by our coverage tools.}
     \label{fig:delay}
 \end{figure}
@@ -476,6 +476,7 @@ During the subsequent tests, we must call \texttt{cr.sample()} whenever we wish 
 Once our tests are done, we can ask for a coverage report by calling \texttt{cr.printReport()}, which results in the following: 
 \begin{verbatim}
 ============== COVERAGE REPORT ==============
+================ GROUP ID: 1 ================
 COVER_POINT PORT NAME: accu
 BIN lo10 COVERING 0 until 10 HAS 8 HIT(S) = 80%
 BIN First100odd COVERING 0 until 100 
@@ -493,6 +494,7 @@ CROSS_POINT timedAB WITH AN EXACT DELAY OF 3
 BIN ExactlyBoth3 COVERING 3 to 3 CROSS 3 to 3 
 HAS 1 HIT(S) = 100,00%
 ============================================
+============================================
 \end{verbatim}
 The above report shows each point with its user-defined name and the bins it contains. These are associated to a number of hits and, whenever possible (as described in section~\ref{sec:conditional_coverage}), a coverage percentage.
 Another option would be, for example if we want to do automated constraint modifications depending on coverage results, to generate the coverage report as a Scala \texttt{case class} and then to use its \texttt{binNcases} method to get numerical and reusable coverage results.  
@@ -500,7 +502,8 @@ Another option would be, for example if we want to do automated constraint modif
 \section{Evaluation}
 %\todo{Expand efficiency measure beyond LOC. Possibly in API complexity or similar.}
 %%\martin{Could be more} \hjd{Let's switch to the Leros AluAccu that Kasper has written a UVM test for.}
-To evaluate our new coverage tools, that we include in our \texttt{ChiselVerify} package, we will verify both an ALU accumulator from the Leros processor~\cite{leros:arcs2019} and an arbiter circuit, both implemented using Chisel. 
+To evaluate our new coverage tools, that we include in our \texttt{ChiselVerify} package, we will verify both an ALU accumulator from the Leros processor~\cite{leros:arcs2019} and an arbiter circuit, both implemented using Chisel.
+Note that we will only focus on the proposed functional coverage tools, since statement coverage  was added directly into Treadle and requires additional work from the verification engineer.
 This will be done by comparing the verbosity of our Scala-based coverage solutions to that of the same verification done with UVM. 
 The verbosity is measured in ``verification lines per source lines of code", a metric used in other works to partially evaluate verification languages~\cite{Nagini:2018, MuellerSchwerhoffSummers16}.
 We consider a verification line to be any explicit declaration of a cover or bin construct, as well as any function call or standard statement, and have formatted our listings accordingly. 
@@ -568,7 +571,7 @@ However, in SV, this is done by creating three generic \texttt{covergroup}s, eac
  
 \begin{figure}[h]
     \centering
-    \includegraphics[trim=1cm 0.5cm 1cm 1cm, clip, width=0.75\linewidth]{cvsvcomparison.pdf}
+    \includegraphics[trim=1cm 0.5cm 1cm 1cm, clip, width=1\linewidth]{cvsvcomparison.pdf}
     \caption{A comparison between the lines of coverage-specific verification code needed to gather the same coverage data using \texttt{ChiselVerify} and SV with UVM. This considered code is publicly available in the example tests in the chiselverify public repository. }
 \label{fig:cvsvcomp}
 \end{figure}

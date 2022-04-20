@@ -70,9 +70,7 @@
 
 \newcommand{\longlist}[3]{{\lstinputlisting[float, caption={#2}, label={#3}, frame=tb, captionpos=b]{#1}}}
 
-\title{ChiselVerify: An Open-Source Hardware Verification Library for
-Chisel and Scala\\
-This is the journal version, we need a new title}
+\title{Verification of Chisel Hardware Designs with ChiselVerify}
 
 %\author{
 %\IEEEauthorblockN{No Author Given}
@@ -525,6 +523,10 @@ described in earlier sections.
 
 \section{Evaluation}
 
+We evaluate our ChiselVerify with two application examples. \todo{continue to write}
+
+\subsection{An Arbitration Circuit}
+
 We evaluate ChiselVerify with an arbiter circuit. The arbiter uses a ready/valid interface for the clients
 and the shared resource. The arbiter is build as a binary tree, where each node does a local arbitration
 and contains a register to store the data until it can be communicated further up towards the root of the
@@ -549,15 +551,15 @@ over. And we provided as a solution a PR for Chisel \url{https://github.com/chip
 
 
 
-\section{Use Case: Sorting in Hardware}
+\subsection{Sorting in Hardware}
 
-\martin{rewrite, maybe drop as we now use the arbiter. No, just have both in under one Evaluation heading.}
+\martin{rewrite}
 
 
 In our research, we received a use case from Microchip~\cite{microchip} in the form of a specification.
 We implemented and used it to evaluate our verification library.
 
-\subsection{Specification}
+\subsubsection{Specification}
 
 The provided use case is a hardware implementation of a priority queue, which can be used in real-time systems requiring scheduling capabilities. 
 For instance, timestamps for deadlines can be inserted and sorted such that the host system has access to the closest deadline.
@@ -569,17 +571,18 @@ By increasing $k$, the depth of the tree, as well the run-times, can be reduced.
 In order to remove elements from the priority queue, a reference ID is needed. 
 Therefore, a reference ID must be added to each element by the priority queue's user.
 
-%\subsection{Implementation}
-%
-%The implemented priority queue is described in Chisel.
-%It is split into three modules: The \texttt{Heapifier}, responsible for the sorting, the \texttt{QueueControl}, taking care
-%of the general control flow in the queue, and the \texttt{Memory}, module which handles memory accesses and can search the memory for a specific reference ID.
-%
-%In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. 
-%Therefore a layout is proposed in the specification where all child elements of a certain node are stored together under one memory address. 
-%This allows that a single memory access fetches all children of a node. Furthermore, when writing to the memory, masking can be used to overwrite the data of only one specific child.
+\subsubsection{Implementation}
+\martin{this subsection is new and needs no rewrite}
 
-\subsection{Testing and Verification}
+The implemented priority queue is described in Chisel.
+It is split into three modules: The \texttt{Heapifier}, responsible for the sorting, the \texttt{QueueControl}, taking care
+of the general control flow in the queue, and the \texttt{Memory}, module which handles memory accesses and can search the memory for a specific reference ID.
+
+In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. 
+Therefore a layout is proposed in the specification where all child elements of a certain node are stored together under one memory address. 
+This allows that a single memory access fetches all children of a node. Furthermore, when writing to the memory, masking can be used to overwrite the data of only one specific child.
+
+\subsubsection{Testing and Verification}
 
 The presented CRV and functional coverage functionalities of the ChiselVerify framework were used to verify the modules and the fully assembled queue.
 Due to the simple interface of the priority queue, which only consists of two boolean flow-control inputs alongside the data fields, only distributional constraints were used to reduce the number of transactions marked as invalid. 

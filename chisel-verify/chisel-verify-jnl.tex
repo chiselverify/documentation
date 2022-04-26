@@ -746,6 +746,20 @@ We used the FIRRTL specification to accurately translate FIRRTL expressions to t
 Our backend supports memory and register initialization using the same user annotations as the Verilog backend.
 Multi-clock support through a clock stuttering pass is work in progress, for now only circuits with a single clock domain are officially supported.
 
+\begin{figure}[t]
+  \centering
+  \includegraphics{woset_safe_past.pdf}
+  \caption{The temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \scalainline{past} function:
+  One to delay the condition from the \scalainline{when} statement and the other to delay the input data before it is compared to the current output data.
+  By default an assertion is only enabled when reset is inactive and the surrounding \scalainline{when} condition is true.
+  Our compiler pass analyzes the connectivity graph with the result that both the enable condition as well as the predicate are delayed by a single past register.
+  Thus the assertion enable signal is automatically extended to include the condition that at least 1 cycle must have past since the last reset.
+  The new enable condition is derived from a synthesizable, saturating \scalainline{cycle} counter which is created by the compiler pass.
+  }
+  \label{fig:past}
+  \end{figure}
+  
+
 \subsection{Reset Assumptions}\label{sec:reset}
 
 In Chisel, users rarely need to worry about resets.
@@ -795,18 +809,6 @@ Since our \scalainline{past} function only relies on synthesizable hardware it c
 simulation testing~\cite{karandikar2018firesim}.
 
 
-\begin{figure}[b]
-\centering
-\includegraphics{woset_safe_past.pdf}
-\caption{The temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \scalainline{past} function:
-One to delay the condition from the \scalainline{when} statement and the other to delay the input data before it is compared to the current output data.
-By default an assertion is only enabled when reset is inactive and the surrounding \scalainline{when} condition is true.
-Our compiler pass analyzes the connectivity graph with the result that both the enable condition as well as the predicate are delayed by a single past register.
-Thus the assertion enable signal is automatically extended to include the condition that at least 1 cycle must have past since the last reset.
-The new enable condition is derived from a synthesizable, saturating \scalainline{cycle} counter which is created by the compiler pass.
-}
-\label{fig:past}
-\end{figure}
 
 
 

@@ -2,7 +2,7 @@ DOC=chisel-verify-paper
 
 .PHONY: all
 all:
-	pdflatex $(DOC)
+	pdflatex -shell-escape $(DOC)
 	bibtex $(DOC)
-	pdflatex $(DOC)
-	pdflatex $(DOC)
+	pdflatex -shell-escape $(DOC)
+	pdflatex -shell-escape $(DOC)

@@ -1,0 +1,582 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% early 2000s papers on Coverage-Directed Test Generation (or biasing)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% one of the most cited (213 citations) papers on automatic stimil generation
+% seems to be cited because of the term "Coverage-Directed Test Generation (CDG)", but the proposed solution isn't that great
+% also, there is an earlier paper (Cost Evaluation of Coverage Directed Test Generation) that uses
+% the CDG term in 2001
+@inproceedings{fine2003coverage,
+  title={Coverage directed test generation for functional verification using bayesian networks},
+  author={Fine, Shai and Ziv, Avi},
+  booktitle={Proceedings of the 40th annual Design Automation Conference},
+  pages={286--291},
+  year={2003},
+  organization={ACM}
+}
+
+% Kurt's paper on automated stimuli generation from observed coverage
+% this seems to be about biasing existing generators, thus it's different from what we are doing where we assume no generator exists
+% does not improve coverage for the DLX processor
+@inproceedings{tasiran2001functional,
+  title={A functional validation technique: biased-random simulation guided by observability-based coverage},
+  author={Tasiran, Serdar and Fallah, Farzan and Chinnery, David G and Weber, Scott J and Keutzer, Kurt},
+  booktitle={Computer Design, 2001. ICCD 2001. Proceedings. 2001 International Conference on},
+  pages={82--88},
+  year={2001},
+  organization={IEEE}
+}
+
+% paper on using a GA to generate biases
+@inproceedings{bose2001genetic,
+  title={A genetic approach to automatic bias generation for biased random instruction generation},
+  author={Bose, Mrinal and Shin, Jongshin and Rudnick, Elizabeth M and Dukes, Todd and Abadir, Magdy},
+  booktitle={Evolutionary Computation, 2001. Proceedings of the 2001 Congress on},
+  volume={1},
+  pages={442--448},
+  year={2001},
+  organization={IEEE}
+}
+
+% IBM paper on Coverage-Directed Test Generation
+% makes a (potentially) interesting distinction between CDG by Construction and by Feedback (however, only by Feedback makes real sense)
+% has DUT specific "direction rules" which makes this much more complicated to setup compared to our solution
+@inproceedings{nativ2001cost,
+  title={Cost evaluation of coverage directed test generation for the IBM mainframe},
+  author={Nativ, Gilly and Mittennaier, S and Ur, Shmuel and Ziv, Avi},
+  booktitle={Test Conference, 2001. Proceedings. International},
+  pages={793--802},
+  year={2001},
+  organization={IEEE}
+}
+
+
+% IBM paper on CDG for processor testing
+% requires manual state machine abstraction
+% Figure 7 shows a comparison against a random base line
+@inproceedings{ur1999microarch,
+ title = {Micro Architecture Coverage Directed Generation of Test Programs},
+ author = {Ur, Shmuel and Yadin, Yaov},
+ booktitle = {Proceedings of the 36th Annual ACM/IEEE Design Automation Conference},
+ series = {DAC '99},
+ year = {1999},
+ isbn = {1-58113-109-7},
+ location = {New Orleans, Louisiana, USA},
+ pages = {175--180},
+ numpages = {6},
+ publisher = {ACM},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% uGP papers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% evaluation on VLIW DSP processor at Broadcom
+@inproceedings{ioannides2010feedback,
+  title={Feedback-based coverage directed test generation: An industrial evaluation},
+  author={Ioannides, Charalambos and Barrett, Geoff and Eder, Kerstin},
+  booktitle={Haifa Verification Conference},
+  pages={112--128},
+  year={2010},
+  organization={Springer}
+}
+
+% journal paper on MicroGP
+@article{squillero2005microgp,
+  title={MicroGP - an evolutionary assembly program generator},
+  author={Squillero, Giovanni},
+  journal={Genetic Programming and Evolvable Machines},
+  volume={6},
+  number={3},
+  pages={247--263},
+  year={2005},
+  publisher={Springer}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% recent(2017) DAC paper on coverage analysis, contains interesting stats about functional verification at IBM
+% e.g. running 10k-100k tests a day
+@inproceedings{gal2017template,
+  title={Template Aware Coverage-taking coverage analysis to the next level},
+  author={Gal, Raviv and Kermany, Einat and Saleh, Bilal and Ziv, Avi and Behm, Mike and Hickerson, Bryan},
+  booktitle={Design Automation Conference (DAC), 2017 54th ACM/EDAC/IEEE},
+  pages={1--6},
+  year={2017},
+  organization={IEEE}
+}
+
+% Intel CAV paper on using formal verification, we cite this to show that formal has come a long way but is still somewhat hard to use
+@inproceedings{intel2009formal,
+  title={Replacing Testing with Formal Verification in Intel (c) Core (TM) i7 Processor Execution Engine Validation},
+  author={Kaivola, Roope and Ghughal, Rajnish and Narasimhan, Naren and Telfer, Amber and Whittemore, Jesse and Pandav, Sudhindra and Slobodov{\'a}, Anna and Taylor, Christopher and Frolov, Vladimir and Reeber, Erik and others},
+  booktitle={International Conference on Computer Aided Verification},
+  pages={414--429},
+  year={2009},
+  organization={Springer}
+}
+
+% ASP-DAC (2nd or 3rd tier) paper (but still from IBM with Avi Ziv on it
+% makes the claim that no GCD technique specifically for FPGA emulation has been created -> we are the first!
+@inproceedings{ibm2012execplatform,
+    author={A. Nahir and A. Ziv and S. Panda},
+    booktitle={17th Asia and South Pacific Design Automation Conference},
+    title={Optimizing test-generation to the execution platform},
+    year={2012},
+    month={Jan}
+}
+
+% FIRRTL paper for the implementation section
+@inproceedings{izraelevitz2017firrtl,
+ author = {Izraelevitz, Adam and Koenig, Jack and Li, Patrick and Lin, Richard and Wang, Angie and Magyar, Albert and Kim, Donggyu and Schmidt, Colin and Markley, Chick and Lawson, Jim and Bachrach, Jonathan},
+ title = {{Reusability is FIRRTL Ground: Hardware Construction Languages, Compiler Frameworks, and Transformations}},
+ booktitle = {International Conference on Computer-Aided Design},
+ year = {2017},
+}
+
+@inproceedings{kim2016midas,
+  title={Strober: fast and accurate sample-based energy simulation for arbitrary RTL},
+  author={Kim, Donggyu and Izraelevitz, Adam and Celio, Christopher and Kim, Hokeun and Zimmer, Brian and Lee, Yunsup and Bachrach, Jonathan and Asanovi{\'c}, Krste},
+  booktitle={2016 ACM/IEEE 43rd Annual International Symposium on Computer Architecture (ISCA)},
+  volume={44},
+  number={3},
+  pages={128--139},
+  year={2016},
+  organization={IEEE Press}
+}
+
+% Springer Book on Coverage Metrics, also cited by Avi Ziv in one of his recent DAC papers, so should be a good source
+@book{piziali2007functional,
+  title={Functional verification coverage measurement and analysis},
+  author={Piziali, Andrew},
+  year={2007},
+  publisher={Springer Science \& Business Media}
+}
+
+% article from Kurt that defines register-to-register path coverage
+@article{tasiran2001coverage,
+  title={Coverage metrics for functional validation of hardware designs},
+  author={Tasiran, Serdar and Keutzer, Kurt},
+  journal={IEEE Design \& Test of Computers},
+  volume={18},
+  number={4},
+  pages={36--45},
+  year={2001},
+  publisher={IEEE}
+}
+
+
+% a generator based approach to semi-automated FPGA testbenches
+% * one of the few testing thing designed around FPGA acceleration
+% * pretty tightly integrated into Blue Spec, potentially not very portable over different HDLs
+@inproceedings{naylor2015generic,
+  title={A generic synthesisable test bench},
+  author={Naylor, Matthew and Moore, Simon},
+  booktitle={Formal Methods and Models for Codesign (MEMOCODE), 2015 ACM/IEEE International Conference on},
+  pages={128--137},
+  year={2015},
+  organization={IEEE}
+}
+
+% AFL whitepaper
+@misc{afl-whitepaper,
+	author={Zalewski,Micha\l{}},
+	title={American Fuzzy Lop Technical Details},
+	howpublished={\url{http://lcamtuf.coredump.cx/afl/technical_details.txt}},
+	note={Accessed April, 2018},
+	year = {2014}
+}
+
+@techreport{rocketchip,
+author = {Asanovi{\'{c}}, Krste and Avi{\v{z}}ienis, Rimas and Bachrach, Jonathan and Beamer, Scott and Biancolin, David and Celio, Christopher and Cook, Henry and Dabbelt, Palmer and Hauser, John and Izraelevitz, Adam and Karandikar, Sagar and Keller, Benjamin and Kim, Donggyu and Koenig, John and Lee, Yunsup and Love, Eric and Maas, Martin and Magyar, Albert and Mao, Howard and Moreto, Miquel and Ou, Albert and Patterson, David and Richards, Brian and Schmidt, Colin and Twigg, Stephen and Vo, Huy and Waterman, Andrew},
+number = {UCB/EECS-2016-17},
+title = {{The Rocket Chip Generator}},
+year = {2016}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+% Unit Testing Frameworks
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+@inproceedings{truong2020fault,
+  title={fault: A Python Embedded Domain-Specific Language for Metaprogramming Portable Hardware Verification Components},
+  author={Truong, Lenny and Herbst, Steven and Setaluri, Rajsekhar and Mann, Makai and Daly, Ross and Zhang, Keyi and Donovick, Caleb and Stanley, Daniel and Horowitz, Mark and Barrett, Clark and others},
+  booktitle={International Conference on Computer Aided Verification},
+  pages={403--414},
+  year={2020},
+  organization={Springer}
+}
+
+@misc{chiseltest,
+  author = {Lin, Richard},
+  title = {{ChiselTest}},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/ucb-bar/chisel-testers2}}
+}
+@misc{cocotb,
+  author = {Higgs, Chris and Hodgson, Stuart and Wieser, Eric},
+  title = {{cocotb}},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/cocotb/cocotb}}
+}
+
+@article{naveh2007constraint,
+  title={{Constraint-based random stimuli generation for hardware verification}},
+  author={Naveh, Yehuda and Rimon, Michal and Jaeger, Itai and Katz, Yoav and Vinov, Michael and s Marcu, Eitan and Shurek, Gil},
+  journal={AI magazine},
+  volume={28},
+  number={3},
+  pages={13--13},
+  year={2007}
+}
+
+
+@misc{treadle,
+  author = {Markley, Chick},
+  title = {{treadle}},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/chipsalliance/treadle}}
+}
+
+
+@misc{nmigen,
+  author = {whitequark},
+  title = {{nmigen}},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/nmigen/nmigen}}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Firesim
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+@inproceedings{karandikar2018firesim,
+  title={{FireSim: FPGA-Accelerated Cycle-Exact Scale-Out System Simulation in the Public Cloud}},
+  author={Karandikar, Sagar and Mao, Howard and Kim, Donggyu and Biancolin, David and Amid, Alon and Lee, Dayeol and Pemberton, Nathan and Amaro, Emmanuel and Schmidt, Colin and Chopra, Aditya and others},
+  booktitle={ISCA},
+  year={2018},
+}
+
+@inproceedings{magyar2019golden,
+  title={Golden gate: Bridging the resource-efficiency gap between ASICs and FPGA prototypes},
+  author={Magyar, Albert and Biancolin, David and Koenig, John and Seshia, Sanjit and Bachrach, Jonathan and Asanovi{\'c}, Krste},
+  booktitle={2019 IEEE/ACM International Conference on Computer-Aided Design (ICCAD)},
+  pages={1--8},
+  year={2019},
+  organization={IEEE}
+}
+
+
+
+@inproceedings{beamer2020essent,
+  title={Efficiently exploiting low activity factors to accelerate RTL simulation},
+  author={Beamer, Scott and Donofrio, David},
+  booktitle={2020 57th ACM/IEEE Design Automation Conference (DAC)},
+  pages={1--6},
+  year={2020},
+  organization={IEEE}
+}
+
+
+@inproceedings{bachrach2012chisel,
+  title={{Chisel: Constructing Hardware in a Scala Embedded Language}},
+  author={Bachrach, Jonathan and Vo, Huy and Richards, Brian and Lee, Yunsup and Waterman, Andrew and Avi{\v{z}}ienis, Rimas and Wawrzynek, John and Asanovi{\'c}, Krste},
+  booktitle={Design Automation Conference},
+  year={2012},
+}
+
+@inproceedings{truong2019magma,
+  title={A golden age of hardware description languages: applying programming language techniques to improve design productivity},
+  author={Truong, Lenny and Hanrahan, Pat},
+  booktitle={3rd Summit on Advances in Programming Languages (SNAPL 2019)},
+  year={2019},
+  organization={Schloss Dagstuhl-Leibniz-Zentrum fuer Informatik}
+}
+
+
+
+@article{iverilog,
+  title={{Icarus Verilog}},
+  author={Williams, Stephen},
+  url={http://iverilog.icarus.com/}
+}
+
+
+@electronic{symbiyosys,
+  title={{SymbiYosys}},
+  author={Wolf, Claire},
+  url={https://github.com/YosysHQ/SymbiYosys}
+}
+
+
+% citation for HLS IRs
+@inproceedings{nigam2021calyx,
+  title={A compiler infrastructure for accelerator generators},
+  author={Nigam, Rachit and Thomas, Samuel and Li, Zhijing and Sampson, Adrian},
+  booktitle={Proceedings of the 26th ACM International Conference on Architectural Support for Programming Languages and Operating Systems},
+  pages={804--817},
+  year={2021}
+}
+
+% citation for HLS IRs
+@inproceedings{sahasrabuddhe2007ahir,
+  title={Ahir: A hardware intermediate representation for hardware generation from high-level programs},
+  author={Sahasrabuddhe, Sameer D and Raja, Hakim and Arya, Kavi and Desai, Madhav P},
+  booktitle={20th International Conference on VLSI Design held jointly with 6th International Conference on Embedded Systems (VLSID'07)},
+  pages={245--250},
+  year={2007},
+  organization={IEEE}
+}
+
+% citation for HLS IRs
+@inproceedings{schuiki2020llhd,
+  title={Llhd: A multi-level intermediate representation for hardware description languages},
+  author={Schuiki, Fabian and Kurth, Andreas and Grosser, Tobias and Benini, Luca},
+  booktitle={Proceedings of the 41st ACM SIGPLAN Conference on Programming Language Design and Implementation},
+  pages={258--271},
+  year={2020}
+}
+
+% citation for HLS IRs
+@inproceedings{sharifian2019muir,
+  title={$\mu$ir-an intermediate representation for transforming and optimizing the microarchitecture of application accelerators},
+  author={Sharifian, Amirali and Hojabr, Reza and Rahimi, Navid and Liu, Sihao and Guha, Apala and Nowatzki, Tony and Shriraman, Arrvindh},
+  booktitle={Proceedings of the 52nd Annual IEEE/ACM International Symposium on Microarchitecture},
+  pages={940--953},
+  year={2019}
+}
+
+
+
+% citation for Verilog to C compiler
+@inproceedings{greaves2000verilog,
+  title={A verilog to C compiler},
+  author={Greaves, David J},
+  booktitle={Proceedings 11th International Workshop on Rapid System Prototyping. RSP 2000. Shortening the Path from Specification to Prototype (Cat. No. PR00668)},
+  pages={122--127},
+  year={2000},
+  organization={IEEE}
+}
+
+% fast simulator for bluespec
+@inproceedings{pit2021effective,
+  title={Effective simulation and debugging for a high-level hardware language using software compilers},
+  author={Pit-Claudel, Cl{\'e}ment and Bourgeat, Thomas and Lau, Stella and Chlipala, Adam},
+  booktitle={Proceedings of the 26th ACM International Conference on Architectural Support for Programming Languages and Operating Systems},
+  pages={789--803},
+  year={2021}
+}
+
+
+
+
+@article{aiger,
+  title={AIGER 1.9 and beyond},
+  author={Biere, Armin and Heljanko, Keijo and Wieringa, Siert},
+  year={2011}
+}
+
+@inproceedings{btor2,
+  title={{Btor2, BtorMC and Boolector 3.0}},
+  author={Niemetz, Aina and Preiner, Mathias and Wolf, Claire and Biere, Armin},
+  booktitle={International Conference on Computer Aided Verification},
+  year={2018},
+}
+
+@article{zhaosonicboom,
+  title={SonicBOOM: The 3rd Generation Berkeley Out-of-Order Machine},
+  author={Zhao, Jerry and Korpan, Ben and Gonzalez, Abraham and Asanovic, Krste},
+  booktitle={Fourth Workshop on Computer Architecture Research with RISC-V},
+  year={2020},
+  month={May}
+}
+
+@article{chipyard,
+  author={Amid, Alon and Biancolin, David and Gonzalez, Abraham and Grubb, Daniel and Karandikar, Sagar and Liew, Harrison and Magyar,   Albert and Mao, Howard and Ou, Albert and Pemberton, Nathan and Rigge, Paul and Schmidt, Colin and Wright, John and Zhao, Jerry and Shao, Yakun Sophia and Asanovi\'{c}, Krste and Nikoli\'{c}, Borivoje},
+  journal={IEEE Micro},
+  title={Chipyard: Integrated Design, Simulation, and Implementation Framework for Custom SoCs},
+  year={2020},
+  volume={40},
+  number={4},
+  pages={10-21},
+  doi={10.1109/MM.2020.2996616},
+  ISSN={1937-4143},
+}
+
+@article{dobis2021open,
+  title={Open-Source Verification with Chisel and Scala},
+  author={Dobis, Andrew and Petersen, Tjark and Rasmussen, Kasper Juul Hesse and Tolotto, Enrico and Damsgaard, Hans Jakob and Andersen, Simon Thye and Lin, Richard and Schoeberl, Martin},
+  journal={arXiv preprint arXiv:2102.13460},
+  year={2021}
+}
+
+
+% neuromorphic processor citation
+@mastersthesis{neuromorphic,
+    author = {Riber, Anthon Vincent},
+    institution = {Department of Applied Mathematics and Computer Science, Technical University of Denmark},
+    school = {Department of Applied Mathematics and Computer Science, Technical University of Denmark},
+    title = {Power-efficient hardware platform for Spiking neural network},
+    year = 2020
+}
+
+
+@misc{riscvmini,
+  author = {Kim, Donggyu},
+  title = {{risc-v mini}},
+  year = {2019},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/ucb-bar/riscv-mini}}
+}
+
+
+@misc{circt,
+  author = {Lattner, Chris and Demme, John and Urbach, Mike and Lenharth, Andrew and Young, Andrew and Eldridge, Schuyler and Schuiki, Fabian and Ye, Hanchen },
+  title = {{risc-v mini}},
+  year = {2019},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/llvm/circt}}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Model Checking Techniques %%%%%%%%%%%%%%%%%%%%%%%%
+
+@article{bmc,
+  title={{Bounded model checking.}},
+  author={Biere, Armin and Cimatti, Alessandro and Clarke, Edmund M and Strichman, Ofer and Zhu, Yunshan and others},
+  journal={{Advances in Computers}},
+  volume={58},
+  year={2003}
+}
+
+@incollection{smt,
+  title={{Satisfiability Modulo Theories}},
+  author={Barrett, Clark and Sebastiani, Roberto and Seshia, Sanjit A and Tinelli, Cesare},
+  booktitle={{Handbook of Satisfiability}},
+  year={2008},
+}
+
+@incollection{sat,
+  title={{Conflict-Driven Clause Learning SAT Solvers}},
+  author={Marques-Silva, Joao and Lynce, In{\^e}s and Malik, Sharad},
+  booktitle={{Handbook of Satisfiability}},
+  year={2021},
+}
+
+
+@techreport{smtlib,
+  author =	 {Clark Barrett and Pascal Fontaine and Cesare Tinelli},
+  title =	 {{The SMT-LIB Standard: Version 2.6}},
+  year =	 2017,
+  note =	 {Available at {\tt www.SMT-LIB.org}}
+}
+
+@inproceedings{k-induction,
+  title={Checking safety properties using induction and a SAT-solver},
+  author={Sheeran, Mary and Singh, Satnam and St{\aa}lmarck, Gunnar},
+  booktitle={International conference on formal methods in computer-aided design},
+  pages={127--144},
+  year={2000},
+  organization={Springer}
+}
+
+@inproceedings{pdr,
+  title={QF BV model checking with property directed reachability},
+  author={Welp, Tobias and Kuehlmann, Andreas},
+  booktitle={2013 Design, Automation \& Test in Europe Conference \& Exhibition (DATE)},
+  pages={791--796},
+  year={2013},
+  organization={IEEE}
+}
+
+@inproceedings{mann2021pono,
+  title={Pono: a flexible and extensible SMT-based model checker},
+  author={Mann, Makai and Irfan, Ahmed and Lonsing, Florian and Yang, Yahan and Zhang, Hongce and Brown, Kristopher and Gupta, Aarti and Barrett, Clark},
+  booktitle={International Conference on Computer Aided Verification},
+  pages={461--474},
+  year={2021},
+  organization={Springer}
+}
+
+@incollection{mcmillan1993smv,
+  title={{The SMV System}},
+  author={McMillan, Kenneth L},
+  booktitle={{Symbolic Model Checking}},
+  year={1993},
+}
+
+@article{cimatti2000nusmv,
+  title={{NuSMV: a new symbolic model checker}},
+  author={Cimatti, Alessandro and Clarke, Edmund and Giunchiglia, Fausto and Roveri, Marco},
+  journal={International Journal on Software Tools for Technology Transfer},
+  year={2000},
+}
+
+@inproceedings{owre1996pvs,
+  title={PVS: Combining specification, proof checking, and model checking},
+  author={Owre, Sam and Rajan, Sreeranga and Rushby, John M and Shankar, Natarajan and Srivas, Mandayam},
+  booktitle={International Conference on Computer Aided Verification},
+  pages={411--414},
+  year={1996},
+  organization={Springer}
+}
+
+@article{goel2020avr,
+  title={Avr: Abstractly verifying reachability},
+  author={Goel, Aman and Sakallah, Karem},
+  journal={Tools and Algorithms for the Construction and Analysis of Systems},
+  volume={12078},
+  pages={413},
+  year={2020},
+  publisher={Nature Publishing Group}
+}
+
+@inproceedings{vizel2014interpolating,
+  title={Interpolating property directed reachability},
+  author={Vizel, Yakir and Gurfinkel, Arie},
+  booktitle={International Conference on Computer Aided Verification},
+  pages={260--276},
+  year={2014},
+  organization={Springer}
+}
+
+@article{mishchenko2007abc,
+  title={{ABC: A System for Sequential Synthesis and Verification}},
+  author={Mishchenko, Alan and others},
+  journal={URL http://www. eecs. berkeley. edu/alanmi/abc},
+  year={2007}
+}
+
+
+
+@article{bdd,
+  title={{Symbolic Boolean Manipulation with Ordered Binary-Decision Diagrams}},
+  author={Bryant, Randal E},
+  journal={ACM Computing Surveys (CSUR)},
+  volume={24},
+  year={1992},
+  publisher={ACM}
+}
+
+
+@inproceedings{de2008z3,
+  title={{Z3: An efficient SMT solver}},
+  author={De Moura, Leonardo and Bj{\o}rner, Nikolaj},
+  booktitle={International conference on Tools and Algorithms for the Construction and Analysis of Systems},
+  year={2008},
+}

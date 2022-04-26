@@ -19,6 +19,12 @@
 \newcommand{\SV}{SystemVerilog\xspace}
 
 
+% code highlighting
+\usepackage{minted}
+\usemintedstyle{friendly}
+\setminted{fontsize=\footnotesize, frame=lines, framesep=2mm }
+\newcommand\scalainline[1]{\mintinline{scala}{#1}}
+
 % fatter TT font
 \renewcommand*\ttdefault{txtt}
 % another TT, suggested by Alex
@@ -210,6 +216,25 @@ Section IV describes our solution for enabling verification in Chisel, namely Ch
 Section V explores ChiselVerify on an industry-provided use case.
 Section VI concludes.
 
+\section{The Chisel Hardware Construction Language}\label{sec:chisel}
+
+Chisel is a modern hardware construction language embedded in the general purpose programming language Scala~\cite{bachrach2012chisel}.
+It allows designers to effectively write Scala programs that generate hardware descriptions at the register transfer level (RTL).
+One popular open-source application is the powerful RocketChip system on chip generator~\cite{rocketchip}.
+
+The user-facing API of Chisel is a Scala library with some syntactic sugar that allows the user to generate RTL designs.
+These designs then have to be converted into a format that is understood by simulators as well as FPGA and ASIC synthesis tools.
+The lowering is done by the FIRRTL compiler which converts a high-level intermediate representation (IR) into a normalized structural representation~\cite{izraelevitz2017firrtl}.
+The low-level representation is then exported into a subset of Verilog that was chosen as a common subset supported by the majority of backend tools.
+
+Besides serving as a convenient way to lower Chisel circuits into Verilog, the FIRRTL IR and accompanying compiler infrastructure
+also makes it easy to add circuit analysis and instrumentation passes.
+The Chisel frontend makes it possible to attach annotations (i.e., meta-data) to arbitrary signals in the circuit and to schedule compiler passes
+to be executed that are free to consume the annotations and make changes to the circuit.
+We will make use of these facilities throughout the paper.
+
+
+
 \section{Related Work}
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
 
@@ -240,14 +265,6 @@ While we work mostly on verification functionalities inside a language, RFuzz de
 RFuzz uses functional coverage tools in order to guide its randomized testing. 
 Current work is also being done, in the scope of the ChiselVerify project, on coverage driven mutational fuzzing for digital circuits, however this is out of the scope of this paper.
 
-\texttt{Chisel3.formal}  is a formal verification package containing a set of tools and helpers for formally verifying Chisel modules~\cite{chisel:formal}. 
-In contrast to ChiselVerify, \texttt{chisel3.formal} proposes way of testing based around defining a set of formal checks that a design must pass in order to be considered as correct. 
-These checks can, for example, look like: \texttt{past(io.out, 1) (pastIoOut => \{ assert(io.out >= pastIoOut) \})} which guarantees that the current module will never decrease its output from one cycle to the next. 
-These formal checks can then be verified by calling the \texttt{verify(module)} function. 
-
-This approach is similar to software contracts in Scala, like the ones enabled by ScalaCheck~\cite{scalacheck}. 
-The main difference between our solution and this one is that here the rules are written on a per-module basis and are thus directly linked to the Chisel code, while our solution focuses on checking that a suite of test-benches is testing the right things. 
-The \texttt{chisel3.formal} package has also been extended in \texttt{kiwi-formal}~\cite{chisel:kiwi-formal} and \texttt{dank-formal}~\cite{chisel:dank-formal}, each adding their own additional formal rule templates. 
 
 As far as we know, ChiselVerify is the only verification framework allowing for the easy use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
 
@@ -511,15 +528,294 @@ class MemoryTester extends FlatSpec with ChiselScalatestTester {
 
 \section{Formal Verification}
 
-The term \emph{testing} is used in digital systems to describe the testing of physical chips
-after production.
-Therefore the term \emph{verification} of digital designs is used similar to \emph{testing} in
-software development. In the software world \emph{verification} is usually meant to test
-properties of a program by either program analysis of model checking.
+% introduce dynamic verification
+While working on the RTL level description of a new circuit, designers need to quickly test their design
+in order to iteratively improve it. Extensive testing is also a common requirement before sending a design to be
+fabricated as bugs discovered after ASIC fabrication can be costly or even impossible to fix.
+The most common approach to testing RTL is to write a test bench program that interacts with a simulation of the design.
+Errors are found through manual waveform inspection or assertions in the design or the test bench.
 
-This section describes our approach to formal verification of digital designs.
-This work is complimentary to the testing oriented verification of digital designs,
-described in earlier sections.
+% explain bounded model checking
+An alternative to exercising the circuit description with a set of concrete inputs is to symbolically explore the circuit execution
+for any inputs for a limited number of cycles.
+This technique is called bounded model checking~\cite{bmc} and works by unrolling the circuit for $k$ cycles and then asking a
+SAT~\cite{sat} or SMT~\cite{smt} solver whether there exists a set of inputs and starting states for the memories and registers in the
+design, for which an assertion is violated.
+If the solver returns a satisfying assignment to this query, we obtain a counter example that can be expressed as a test bench that
+initialized the state to concrete values from the solver and then drives the inputs for $k$ cycles with the inputs obtained from the solver.
+If the solver returns that there is no such assignment, we get a guarantee that our circuit will not hit any assertion violation for the first $k$
+cycles of its execution.
+
+\begin{figure}
+    \centering
+\begin{minted}[
+fontsize=\footnotesize,
+frame=lines,
+framesep=2mm,
+]{scala}
+class Quiz15 extends Module {
+  /* [...] I/O definitions */
+  val mem = SyncReadMem(256, UInt(32.W), WriteFirst)
+  when(iWrite) { mem.write(iWAddr, iData) }
+  oData := mem.read(iRAddr, iRead)
+
+  when(past(iWrite && iRead &&
+            iWAddr === iRAddr)) {
+    verification.assert(oData === past(iData))
+  }
+}
+
+class ZipCpuQuizzes extends AnyFlatSpec
+  with ChiselScalatestTester with Formal {
+  "Quiz15" should "pass with WriteFirst" in {
+    verify(new Quiz15, Seq(BoundedCheck(5)))
+  }
+}
+\end{minted}
+\includegraphics{woset_2021_quiz15.pdf}
+\caption[Chisel verification example.]{This example verifies that when a Chisel memory with synchronous read port and
+\scalainline{WriteFirst} behavior has a read and a write access to the same address,
+the new value will be returned.
+The check fails if \scalainline{WriteFirst} is substituted with \scalainline{ReadFirst} or \scalainline{Undefined} (Section~\ref{sec:undef}).
+It is based on \href{https://zipcpu.com/answer/2021/07/03/fv-answer15.html}{a Verilog example from a popular blog}.
+In the Chisel version, the assertion is automatically delayed until at least one cycle after reset, when there are valid \scalainline{past} values available
+(Section~\ref{sec:past}).
+A bounded model check is executed by the \scalainline{verify} command, which is called from a standard Scala unit test (Section~\ref{sec:flow}).
+When the check fails, the failing inputs and starting states are replayed on a simulator, resulting in a waveform file that is identical
+to the output we would get from a dynamic verification run.
+However, since we used bounded model checking to find the failing trace, it will be as short as possible.
+In our example, two cycles after reset are needed to fail the property.
+The first cycle contains the read and write requests and the second cycle observes the arbitrary result on the read port if
+we set the memory behavior to \scalainline{Undefined} for read/write conflicts.
+The included screenshot was obtained with the open-source GTKWave waveform viewer.
+}
+\label{fig:quiz15}
+\end{figure}
+
+% the current state of the open-source ecosystem for formal verification
+There has been a long tradition of open-source formal verification systems from the academic community~\cite{mcmillan1993smv, cimatti2000nusmv, mishchenko2007abc}.
+% only citing select solvers for space gains
+%~\cite{mann2021pono, mcmillan1993smv, cimatti2000nusmv, owre1996pvs, goel2020avr, vizel2014interpolating, mishchenko2007abc}.
+However, because of the traditional academic incentive structure, these research systems were hard to use or did not support
+enough features of the RTL design language to be widely used by a community of open source RTL designers.
+This changed with the introduction of the yosys~\cite{yosys} tool which has become the de facto standard for processing
+Verilog for synthesis or formal verification.
+Yosys allows academics to focus on developing model checkers for the simple btor2~\cite{btor2} or aiger~\cite{aiger} formats
+without having to worry about supporting the much more complicated Verilog standard.
+The open-source SymbiYosys~\cite{symbiyosys} tool wraps yosys as well as various formal verification engines in order to allow users to
+verify their designs. All a user has to provide are the Verilog sources of their design including assertions and assumptions
+as well as a small configuration script. SymbiYosys translates any failing traces it discovers into Verilog test benches and VCD waveform dumps
+for the user to inspect~\footnote{With the open-source GHDL plugin, yosys now also supports formally verifying VHDL circuits.}.
+
+
+% problems with the SymbiYosys approach
+In this paper we describe our approach to providing Chisel users with an easy way to formally verify their designs.
+We adapt many good ideas from yosys and build several new convenience features on top of them, taking advantage
+of the existing compiler infrastructure for Chisel.
+
+\subsection{Our Formal Verification Flow}\label{sec:flow}
+
+
+Before we dive into some of the details of our implementation we want to present
+the workflow that we imagine and illustrate how easy it can be to get started
+with formal verification of a Chisel circuit~\footnote{
+At the time of writing, some of the improvements discussed in this paper are pending pull requests.
+If you want to follow along with the examples in this paper, you can find them on our fork of chiseltest: \url{https://github.com/ekiwi/chisel-testers2/tree/woset-examples}.
+We are confident that by publication time all of them will be part of the upstream projects and we will be able to remove this footnote
+and point to a plain example repository using the published Scala libraries.}.
+The recommended way to start a Chisel project is to use the open-source Chisel template 
+repository~\footnote{\url{https://github.com/freechipsproject/chisel-template}}.
+The resulting Scala project automatically includes dependencies on the Chisel and the chiseltest
+libraries which will be downloaded by the Scala build tool.
+
+The template contains an example of using the chiseltest library to test a greatest common denominator (GCD) circuit in simulation.
+This test can be executed through a Scala IDE or from a shell with the \scalainline{sbt test} command.
+In order to turn this test into a formal check, we just need to substitute the \scalainline{test(new DecoupledGcd(16))}
+command with \scalainline{verify(new DecoupledGcd(16),} as well as provide the type of verification job as
+\scalainline{BoundedCheck(10)} and extend the testing class with the \scalainline{Formal} trait.
+If the user now clicks the test icon again or runs the \scalainline{sbt test} command, a formal bounded check will
+be executed for ten cycles after reset instead of a simulation test.
+The only additional program required is a copy of the open-source SMT solver Z3~\cite{de2008z3}.
+
+
+
+\begin{figure}
+\centering
+\includegraphics{woset_formal_ide_flow.pdf}
+\caption{When working in a standard Scala IDE like the open-source IntelliJ IDEA with the Scala plugin, the user can launch the formal check with the press of a button.
+The success or failure will be communicated the same way as any other unit test. A VCD waveform dump is automatically generated to help debug failing checks.}
+\label{fig:ide-flow}
+\end{figure}
+
+Initially the check will always pass, no matter which changes we make to our circuit.
+Since the GCD circuit contains no assertions, there is nothing to tell the solver if the circuits misbehaves.
+In order to actually verify something, we can add assertions directly to the circuit by using the
+Chisel \scalainline{assert} statement.
+The decoupled GCD circuit used as an example has an \scalainline{input} and an \scalainline{output} channel
+as well as a 1-bit \scalainline{busy} register.
+We expect that while the circuit is busy, no new input is accepted:
+\begin{minted}{scala}
+when(busy) {
+  verification.assert(!input.fire())
+}
+\end{minted}
+This assertion will pass because the circuit does indeed fulfil the property after reset.
+
+% Our system always implicitly adds the assumption that during the first cycle of the formal check,
+% the reset pin will be asserted. This is similar to how the dynamic testing interface will push the
+% circuit through a reset cycle before executing the user test.
+% By default assertions in Chisel are guarded by the reset signal.
+% The automatic reset behavior can be disabled for special cases, however, since Chisel normally
+% mandates reset conventions, the automatic assumptions will cover the majority of use-cases.
+
+We now introduce a small bug by connecting \scalainline{input.ready} to \scalainline{true.B} and rerun the test
+An assertion violation will be reported one cycle after reset.
+The user is also presented with an error message indicating the Scala line number of the failing assertion.
+To debug the problem, they can find a VCD waveform dump in the standard test directory created by our
+chiseltest library.
+Since we replay the test on a concrete simulator, the error message and VCD will be exactly the same
+as if the user was running a simulation test.
+% Any improvements to our simulation interface or error reporting will thus immediately benefit formal verification
+% users as well.
+
+A more advanced property we expect to hold is that if the input and output channels are idle, the busy
+signal will remain the same in the next cycle:
+\begin{minted}{scala}
+when(past(!input.fire() && !output.fire())) {
+  verification.assert(stable(busy))
+}
+\end{minted}
+Here we make use of our \scalainline{past} function for temporal properties which is described in detail in Section~\ref{sec:past}.
+
+
+
+\subsection{A Formal Backend for FIRRTL}\label{sec:undef}
+
+\begin{figure}
+\centering
+\includegraphics{woset_verify_flow.pdf}
+\caption{The \scalainline{verify} command is implemented as part of the chiseltest library and uses several compiler passes that make up the FIRRTL formal backend.
+We hook into the FIRRTL compiler to model undefined behavior with \scalainline{DefRandom} statements and to delay temporal assertions as part of our safe past construct.
+We then add reset assumptions, flatten the system, convert to a formal transition system and then serialize the system to SMTLib or btor2.
+We provide bindings to launch various formal engines from chiseltest.
+If a counter example is found, we convert the \scalainline{DefRandom} nodes in the circuit to registers before loading the circuit into the treadle simulator
+to replay the failure and obtain a simulation quality VCD and error message.}
+\label{fig:verify-flow}
+\end{figure}
+
+In order to implement the verify command introduced in the previous section, we need to convert the Chisel circuit into a format that is understood
+by open-source model checkers or SMT solvers.
+We can do this by using the FIRRTL compiler to convert the circuit to Verilog and then using yosys to convert to the
+model checking formats.
+While we initially used this approach, we eventually decided that it would be better to add a formal backend to the FIRRTL
+compiler directly.
+This way we can avoid the complicated Verilog semantics, model circuit behavior in greater detail and easily replay counter
+example traces on our FIRRTL simulator called treadle.
+
+Users want their Chisel designs to be implemented with as little hardware as possible.
+In order to allow for efficient implementations, the FIRRTL specification was crafted to allow
+some operations to result in arbitrary results.
+For example, a wire connected to \scalainline{DontCare} or to the result of a division by zero carries an arbitrary value.
+Reading from a memory while the read port is disabled, reading from the same address that another port is writing to or
+writing from two memory ports to the same address all generate an arbitrary value result.
+Not all of these behaviors are represented in the generated Verilog.
+The compiler is free to substitute arbitrary with (more) concrete values, like always returning a memory read result even
+when the read port is disabled or by assigning a priority to write operations so that at least one of them will complete.
+Thus if we first generate Verilog and then use yosys, we are only verifying one concrete translation of the design,
+but there may be other legal translations that would violate the property.
+This is relevant, e.g., in the context of memories when we use an external SRAM compiler that might try to
+rely on the fact that write-write collisions can have arbitrary results in order to generate better hardware.
+This is the reason why we decided to carefully model arbitrary values as part of the FIRRTL compiler's new formal backend.
+
+Once the formal engine finds starting states and inputs that lead to an assertion violation, we need to help the user debug their design.
+Since we do not have the large resources of a major EDA vendor, we would like to reuse as much of the existing simulator infrastructure as we can.
+If we can replay the failing trace on our existing simulator, the VCD waveform dump and the error reporting will be of the same quality as
+when writing a concrete test bench.
+In order to be able to replay failures caused by arbitrary values, we carefully engineered two FIRRTL passes that analyze the circuit and
+add wires to detect when a result is arbitrary as well as a mux to substitute the result with a connection to a \scalainline{DefRandom} node in that case.
+The new \scalainline{DefRandom} construct provides a named arbitrary value which can change every clock cycle,
+very much like a \scalainline{anyseq} annotated wire in Verilog.
+The formal backend implements \scalainline{DefRandom} nodes as inputs that can be freely chosen by the formal engine.
+To make \scalainline{DefRandom} work with our simulator we  replace the nodes with registers of the same type that are never updated by the hardware.
+Instead we use the software interface to our simulator to update these registers with the values chosen by the formal engine in each cycle.
+Figure~\ref{fig:verify-flow} shows our compilation flow in more detail.
+
+The btor2 format does not support hierarchical circuits and we thus always flatten the system by inlining everything into a single module.
+In order to ensure that we produce a good waveform dump, the counter example will be replayed on the non-inlined circuit.
+We make use of the built-in annotation support of the FIRRTL compiler to automatically track name changes of all registers and memories in
+the design as they are inlined. This way we can map initial states found by the formal engine back to their hierarchical names.
+
+Once the circuit has been flattened, the conversion to a transition system is fairly straight forward.
+We implemented a SMTLib and btor2 encoding that is very similar to the one pioneered by yosys.
+We used the FIRRTL specification to accurately translate FIRRTL expressions to the bit-vector expression language defined by the SMTLib format~\cite{smtlib}.
+Our backend supports memory and register initialization using the same user annotations as the Verilog backend.
+Multi-clock support through a clock stuttering pass is work in progress, for now only circuits with a single clock domain are officially supported.
+
+\subsection{Reset Assumptions}\label{sec:reset}
+
+In Chisel, users rarely need to worry about resets.
+Registers with reset values are automatically connected to the default reset % port of the module
+and module instances just inherit their reset domain from their parent.
+In Verilog, users have to manually ensure that assertions are only triggered after the circuit was properly reset.
+We decided to provide sensible defaults instead.
+Assertion statements are automatically disabled, just like it has been the case for print and stop statements
+since the early days of Chisel.
+As part of our formal verification support, we provide a FIRRTL pass
+that automatically adds a constraint for the reset of the top level module to be active during the first cycle of execution.
+Thus, by default, users do not have to worry about reset. Their assumptions will only fire
+after their circuit has been properly reset and hence we ensure that there are no false positives.
+We do provide options for power-users to write assertions that are active during reset and to
+disable reset assumptions or increase the number of reset cycles.
+
+
+\subsection{Simple Temporal Assertions}\label{sec:past}
+
+
+While a simple \scalainline{assert} statement allows us to specify a property over signals during a single
+cycle, it is not enough to express properties that require us to reason about multiple cycles.
+The traditional answer to this problem are temporal assertion languages like SystemVerilog Assertions~\cite{systemverilog}.
+However, these are complex to implement efficiently and as of now there has not been a successful open-source implementation.
+The community around SymbiYosys has instead advocated for the use of plain assertions with the Verilog \scalainline{past}
+function. This function returns the previous value of an expression and thus allows us to write properties that span multiple cycles.
+
+While conceptually simple, the \scalainline{past} construct as defined by the Verlog standard has one major problem:
+In the first cycle of the circuit execution, there is no past value and the \scalainline{past} function always returns X.
+Thus the user has to take care to keep track of how many cycles have past since the verification started and only enable assertions
+once all past values are valid.
+This particular pitfall is often the topic of a \href{http://zipcpu.com/quiz/2019/11/16/quiz07.html}{popular formal verification quiz}.
+%In addition to that, \scalainline{past} values can also be invalid because they happened while
+%the circuit was going through reset.
+
+We made use of some of the unique capabilities offered by Chisel in order to implement what we consider to be a safer version of the
+\scalainline{past} function.
+In the frontend, our \scalainline{past} is a Scala function which creates an appropriate amount of delay registers in the current
+clock and reset domain. That alone provides functionality similar to the Verilog version of \scalainline{past}.
+We go further by annotating the delay register and asking for a FIRRTL pass to be run when lowering the design.
+This pass looks at a graph of all \scalainline{past} delay registers and assertions in a module.
+An edge indicates that the input to the assertion or register is connected to the output if a delay register through combinatorial logic.
+We traverse the resulting tree (by design there can be no cycles) starting at each assertion
+to find the longest path of \scalainline{past} delay registers in order to determine the number of cycles the assertion needs to be delayed.
+Finally we generate a cycle counter register and use its value to guard the individual assertions.
+Since our \scalainline{past} function only relies on synthesizable hardware it can also be used in software and FPGA based
+simulation testing~\cite{karandikar2018firesim}.
+
+
+\begin{figure}[b]
+\centering
+\includegraphics{woset_safe_past.pdf}
+\caption{The temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \scalainline{past} function:
+One to delay the condition from the \scalainline{when} statement and the other to delay the input data before it is compared to the current output data.
+By default an assertion is only enabled when reset is inactive and the surrounding \scalainline{when} condition is true.
+Our compiler pass analyzes the connectivity graph with the result that both the enable condition as well as the predicate are delayed by a single past register.
+Thus the assertion enable signal is automatically extended to include the condition that at least 1 cycle must have past since the last reset.
+The new enable condition is derived from a synthesizable, saturating \scalainline{cycle} counter which is created by the compiler pass.
+}
+\label{fig:past}
+\end{figure}
+
+
+
+
 
 \section{Evaluation}
 
@@ -647,7 +943,7 @@ We plan also to regularly publish it on Maven.\footnote{https://mvnrepository.co
 %``High-Level Design and Verification of Digital Systems''.
 
 \bibliographystyle{IEEEtran}
-\bibliography{../msbib,../chisel-uvm}%,../funding/ftp-chisel/testing}
+\bibliography{../msbib,../chisel-uvm,kevin}%,../funding/ftp-chisel/testing}
 
 
 \end{document}

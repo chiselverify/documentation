@@ -529,11 +529,11 @@ class MemoryTester extends FlatSpec with ChiselScalatestTester {
 \section{Formal Verification}
 
 % introduce dynamic verification
-While working on the RTL level description of a new circuit, designers need to quickly test their design
-in order to iteratively improve it. Extensive testing is also a common requirement before sending a design to be
-fabricated as bugs discovered after ASIC fabrication can be costly or even impossible to fix.
-The most common approach to testing RTL is to write a test bench program that interacts with a simulation of the design.
-Errors are found through manual waveform inspection or assertions in the design or the test bench.
+% While working on the RTL level description of a new circuit, designers need to quickly test their design
+% in order to iteratively improve it. Extensive testing is also a common requirement before sending a design to be
+% fabricated as bugs discovered after ASIC fabrication can be costly or even impossible to fix.
+% The most common approach to testing RTL is to write a test bench program that interacts with a simulation of the design.
+% Errors are found through manual waveform inspection or assertions in the design or the test bench.
 
 % explain bounded model checking
 An alternative to exercising the circuit description with a set of concrete inputs is to symbolically explore the circuit execution
@@ -619,10 +619,11 @@ of the existing compiler infrastructure for Chisel.
 Before we dive into some of the details of our implementation we want to present
 the workflow that we imagine and illustrate how easy it can be to get started
 with formal verification of a Chisel circuit~\footnote{
-At the time of writing, some of the improvements discussed in this paper are pending pull requests.
-If you want to follow along with the examples in this paper, you can find them on our fork of chiseltest: \url{https://github.com/ekiwi/chisel-testers2/tree/woset-examples}.
-We are confident that by publication time all of them will be part of the upstream projects and we will be able to remove this footnote
-and point to a plain example repository using the published Scala libraries.}.
+A scala project with executable examples as well as a Jupyter notebook are included in the companion repository to this paper:
+\url{https://github.com/ekiwi/open-source-formal-verification-for-chisel}.
+The contributions described in this paper are all part of the upstream \href{https://github.com/chipsalliance/firrtl}{firrtl}
+and \href{https://github.com/ucb-bar/chisel-testers2}{chiseltest} libraries.
+}.
 The recommended way to start a Chisel project is to use the open-source Chisel template 
 repository~\footnote{\url{https://github.com/freechipsproject/chisel-template}}.
 The resulting Scala project automatically includes dependencies on the Chisel and the chiseltest
@@ -661,12 +662,6 @@ when(busy) {
 \end{minted}
 This assertion will pass because the circuit does indeed fulfil the property after reset.
 
-% Our system always implicitly adds the assumption that during the first cycle of the formal check,
-% the reset pin will be asserted. This is similar to how the dynamic testing interface will push the
-% circuit through a reset cycle before executing the user test.
-% By default assertions in Chisel are guarded by the reset signal.
-% The automatic reset behavior can be disabled for special cases, however, since Chisel normally
-% mandates reset conventions, the automatic assumptions will cover the majority of use-cases.
 
 We now introduce a small bug by connecting \scalainline{input.ready} to \scalainline{true.B} and rerun the test
 An assertion violation will be reported one cycle after reset.
@@ -773,7 +768,7 @@ disable reset assumptions or increase the number of reset cycles.
 
 While a simple \scalainline{assert} statement allows us to specify a property over signals during a single
 cycle, it is not enough to express properties that require us to reason about multiple cycles.
-The traditional answer to this problem are temporal assertion languages like SystemVerilog Assertions~\cite{systemverilog}.
+The traditional answer to this problem are temporal assertion languages like SystemVerilog Assertions~\cite{SystemVerilog}.
 However, these are complex to implement efficiently and as of now there has not been a successful open-source implementation.
 The community around SymbiYosys has instead advocated for the use of plain assertions with the Verilog \scalainline{past}
 function. This function returns the previous value of an expression and thus allows us to write properties that span multiple cycles.
@@ -812,7 +807,6 @@ The new enable condition is derived from a synthesizable, saturating \scalainlin
 }
 \label{fig:past}
 \end{figure}
-
 
 
 

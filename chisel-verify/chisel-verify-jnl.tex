@@ -92,7 +92,7 @@ Lyngby, Denmark \\\\
 \IEEEauthorrefmark{2}\textit{Department of Electrical Engineering and Computer Sciences} \\
 \textit{UC Berkeley}\\
 Berkeley, CA \\\\
-adobis@student.ethz.ch, s186083@student.dtu.dk, hans.damsgaard@tuni.fi, laeufer@berkeley.edu, s183735@student.dtu.dk, \\
+andrew.dobis@inf.ethz.ch, s186083@student.dtu.dk, hans.damsgaard@tuni.fi, laeufer@berkeley.edu, s183735@student.dtu.dk, \\
 s190057@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
 }
 
@@ -171,7 +171,7 @@ We will be invited to extend this paper for a journal submission. Here we start 
 
 Some ideas from Andrew:
 
-I think we could maybe add a part on the Queryable functional coverage and compare it to the pre-defined version. We should also completely rethink the evaluation by looking at actual performance of Chiselverify in comparison to UVM running on verilator. We could also potentially extend the constraint random stuff to add @Tjark Petersen's work but this might be a bit too much no?
+I think we could maybe add a part on the Queryable functional coverage and compare it to the pre-defined version. Have an in depth look at verification with PSL and SVA in the Related work section. We could also potentially extend the constraint random stuff to add @Tjark Petersen's work.
 
 We can also discuss on Slack.
 
@@ -270,7 +270,7 @@ As far as we know, ChiselVerify is the only verification framework allowing for 
 
 \martin{Maybe we should already reference our WOSET paper here as well: \cite{verify:fuzzing:2021}}
 
-\martin{And somewhere also our ETS paper.}
+%\martin{And somewhere also our ETS paper.} Andrew: Did it in the functional coverage section.
 
 \section{Background}
 \label{sec:background}
@@ -359,27 +359,49 @@ Functionalities such as those are crucial when it comes to efficiently verify on
 
 \martin{rewrite}
 
+% Potential rewrite: 
+As an extension of ChiselTest, we propose ChiselVerify, which introduces important Verification functionalities to the Chisel ecosystem.
+ChiselVerify bases itself on ChiselTest by using its design interfacing features in order to enable various verification functionalities directly in Chisel, such as functional coverage, constrained random verification, and bus functional modelling. 
+In the following subsections, we present how we achieved our solution.
+We start by presenting its functional coverage capabilities,  using both implicit and explicit specifications.
+We then propose constrained random verification tools for automating testing of general design, as well as a constrained program generation tool for verifying processors designed in Chisel.
+Finally, we look at how bus functional models can increase testing ease, and demonstrate our method by creating a model of the standardized AXI4 interface. 
 
-We propose ChiselVerify, a verification library written in Scala. 
-ChiselVerify uses the device under test (DUT) interfacing features from ChiselTest in order to enable three main verification functionalities in Chisel: functional coverage, constrained random verification, and bus functional modelling. 
-We also show how our framework can be used to create a bus functional model by creating one for the standardized AXI4 interface. 
-The following subsections explain each functionality and present how to use it.
+% Original
+%We propose ChiselVerify, a verification library written in Scala. 
+%ChiselVerify uses the device under test (DUT) interfacing features from ChiselTest in order to enable three main verification functionalities in Chisel: functional coverage, constrained random verification, and bus functional modelling. 
+%We also show how our framework can be used to create a bus functional model by creating one for the standardized AXI4 interface. 
+%The following subsections explain each functionality and present how to use it.
 
 \subsection{Coverage in Chisel}
-Our solution enables one to define functional coverage constructs for Chisel designs in Scala.
-In order to implement the different components needed for functional coverage in Scala, we needed to be able to do the following:
+% Proposed rewrite
+ChiselVerify allows for functional coverage constructs to be defined over a Chisel design directly in Scala. 
+This is possible directly inside of a ChiselTest test-bench, and enables the gathering of information about completeness of a test with relation to a given specification defined using a Verification Plan (VP).
+In order to enable functional coverage in Chisel, we explored and defined two methods for describing a specification, using an \emph{implicit} or an \emph{explicit} verification plan.
+These two methods are defined as follows:
 
 \begin{itemize}
-  \item Define a verification plan, using \texttt{cover} constructs.
-  \item Sample DUT ports, using the ChiselTest framework.
-  \item Keep track of bins to sampled value matches, using a coverage database.
-  \item Compile all of the results into a comprehensible coverage report.
+	\item \textbf{Implicit VP:} Omit the VP, and obtain coverage data through queries on the ports we want to check \emph{after} the test-bench.
+	\item \textbf{Explicit VP:} Declare the ports that will be sampled \emph{before} the test-bench.
 \end{itemize}
 
-Implementing these elements was done using a structure based around a top-level element known as the \texttt{CoverageReporter}, enabling one to define a verification plan using a \texttt{register} method. 
-This method stores \texttt{cover} construct to \texttt{bin} mappings inside a \texttt{CoverageDB} (DB being short for a database) object. 
-Once the verification plan is defined, ports are sampled using the \texttt{sample} method, which is implemented using ChiselTest's peeking capabilities. 
-Finally, at the end of a test suite, a functional coverage report is generated using the \texttt{report} method, which compiles the results stored in the database into a Scala \texttt{case class} which can be used to obtain coverage percentages and bin hit counts.
+Both methods work have their own advantages and disadvantages, which we will discuss in detail in a later section.
+In both cases, in order to define our methods, we needed to be able to do the following:
+
+\begin{itemize}
+  \item Create a VP, either implicitly using a \texttt{Queryable} reporter, or explicitly using \texttt{cover} constructs.
+  \item Sample our tested device's ports, using ChiselTest's interfacing capabilities.
+  \item Keep track of the different sampled values that hit for each bin, using a coverage database.
+  \item Compile all of the results into a comprehensible and programmatically useful coverage report.
+\end{itemize}
+
+
+\paragraph{Explicit Verification Plans} As detailed in our previous work on the topic~\cite{dobisCoverage:ETS22}, our solution allows for the definition of a target specification using a set of \texttt{cover} constructs defined inside of a \texttt{CoverageReporter}.
+This reporter functions as a front-end element that allows for the definition of complex specifications using only high-level constructs.
+The main interface is the \texttt{register} method, which stores \texttt{cover} construct to \texttt{bin} mappings inside of a \texttt{CoverageDB} database object.
+After the definition of the VP, the registered elements of the specification must be sampled explicitly by the user using the \texttt{sample} method, which checks the value of the associated port at that current simulation cycle against the bins in order to determine if the specification is met for that value or not.
+Once the sampling has been done, at the end of a test suite, a functional coverage report is generated by the reporter using the \texttt{report} method, which interprets the results stored in the database and compiles them to into a Scala \texttt{case class}. 
+This report object can then be used to check for coverage thresholds, i.e.\ whether or not the coverage has surpassed a specific amount, or to guide the mutation of inputs in a mutation-based fuzzer, as was explored in previous work~\cite{dobisFCFuzzing:WOSET2021}.
 
 \begin{lstlisting}[captionpos=b,caption={Small Verification Plan defined using 3 \texttt{cover} constructs, including one cross coverage construct},label={lst:basicfuncov},language=scala]
 val cr = new CoverageReporter
@@ -393,11 +415,32 @@ cr.register(
     cross("both1", 1 to 1, 1 to 1))
 \end{lstlisting}
 
-Listing~\ref{lst:basicfuncov} is an example of how to define a verification plan using our functional coverage tool. 
-One concept used here is \textit{cross coverage} defined using a \texttt{cover} construct on multiple ports. 
-Cross coverage allows one to specify coverage relations between different ports. 
-This means that a cross defined between, e.g., \texttt{dut.io.a} and \texttt{dut.io.b} will be used to gather information about when \texttt{a} and \texttt{b} cover specific values simultaneously~\cite{spear2008systemverilog}.
-In listing~\ref{lst:basicfuncov}, we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.
+Listing~\ref{lst:basicfuncov} shows a basic verification plan defined using our functional coverage tool. 
+This example shows the use of \texttt{cover} constructs with both a single and multiple ports. 
+The use of multiple ports defines a \textit{cross coverage} relation between the two ports, meaning that sampled values are consider to be a \emph{hit} if they meet each specification simultaneously~\cite{spear2008systemverilog}.
+Concretely, in our example, a hit would be considered if, within the same cycle, both \texttt{dut.io.accu} and \texttt{dut.io.test} are sampled with the value \texttt{1}. 
+
+%Original
+%Our solution enables one to define functional coverage constructs for Chisel designs in Scala.
+%In order to implement the different components needed for functional coverage in Scala, we needed to be able to do the following:
+
+%\begin{itemize}
+  %\item Define a verification plan, using \texttt{cover} constructs.
+  %\item Sample DUT ports, using the ChiselTest framework.
+  %\item Keep track of bins to sampled value matches, using a coverage database.
+  %\item Compile all of the results into a comprehensible coverage report.
+%\end{itemize}
+
+%Implementing these elements was done using a structure based around a top-level element known as the \texttt{CoverageReporter}, enabling one to define a verification plan using a \texttt{register} method. 
+%This method stores \texttt{cover} construct to \texttt{bin} mappings inside a \texttt{CoverageDB} (DB being short for a database) object. 
+%Once the verification plan is defined, ports are sampled using the \texttt{sample} method, which is implemented using ChiselTest's peeking capabilities. 
+%Finally, at the end of a test suite, a functional coverage report is generated using the \texttt{report} method, which compiles the results stored in the database into a Scala \texttt{case class} which can be used to obtain coverage percentages and bin hit counts.
+
+%Listing~\ref{lst:basicfuncov} is an example of how to define a verification plan using our functional coverage tool. 
+%One concept used here is \textit{cross coverage} defined using a \texttt{cover} construct on multiple ports. 
+%Cross coverage allows one to specify coverage relations between different ports. 
+%This means that a cross defined between, e.g., \texttt{dut.io.a} and \texttt{dut.io.b} will be used to gather information about when \texttt{a} and \texttt{b} cover specific values simultaneously~\cite{spear2008systemverilog}.
+%In listing~\ref{lst:basicfuncov}, we are checking that \texttt{accu} and \texttt{test} take the value 1 at the same time.
 
 Once our verification plan is defined, we need to decide when we want to sample our cover points using our coverage reporter.
 This can be done, in our example, simply by calling \texttt{cr.sample()} when we are ready to sample our points. 

@@ -83,7 +83,7 @@
 %\IEEEauthorblockA{No Institute Given}
 %}
 
-\author{\IEEEauthorblockN{Order TBD before submission, Andrew Dobis\IEEEauthorrefmark{1}, Tjark Petersen\IEEEauthorrefmark{1}, Hans Jakob Damsgaard\IEEEauthorrefmark{1},\\
+\author{\IEEEauthorblockN{Order TBD before submission \hjd{(Kevin should be ahead of me here...)}, Andrew Dobis\IEEEauthorrefmark{1}, Tjark Petersen\IEEEauthorrefmark{1}, Hans Jakob Damsgaard\IEEEauthorrefmark{1},\\
 Kevin Laeufer\IEEEauthorrefmark{2}, Kasper Juul Hesse Rasmussen\IEEEauthorrefmark{1}, \\
 Enrico Tolotto\IEEEauthorrefmark{1}, Simon Thye Andersen\IEEEauthorrefmark{1}, Richard Lin\IEEEauthorrefmark{2}, Martin Schoeberl\IEEEauthorrefmark{1}}\\
 \IEEEauthorblockA{\IEEEauthorrefmark{1}\textit{Department of Applied Mathematics and Computer Science} \\
@@ -238,66 +238,117 @@ We will make use of these facilities throughout the paper.
 \section{Related Work}
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
 
-\martin{rewrite}
+\martin{rewrite} \hjd{Attempted.}
 
 
-SystemVerilog is an extension of Verilog. Many non-synthesizable extensions are intended
-to write more advanced test-benches. SystemVerilog adds object-oriented programming
-for those test-benches. However, in contrast to Chisel, the object-oriented addition cannot be
-used for hardware description.
-SystemVerilog offers certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage. 
-When it comes to functional coverage, our solution differs in several ways from SystemVerilog. 
-On top of range-based bins, ChiselVerify's \texttt{cover} constructs can take temporal relations into account, as well as generalized conditional bins that work using purely user-defined hit predicates.
-This differs from SystemVerilog, which mainly focuses on bins that cover value ranges or transitions. 
+%SystemVerilog is an extension of Verilog. Many non-synthesizable extensions are intended
+%to write more advanced test-benches. SystemVerilog adds object-oriented programming
+%for those test-benches. However, in contrast to Chisel, the object-oriented addition cannot be
+%used for hardware description.
+%SystemVerilog offers certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage. 
+%When it comes to functional coverage, our solution differs in several ways from SystemVerilog. 
+%On top of range-based bins, ChiselVerify's \texttt{cover} constructs can take temporal relations into account, as well as generalized conditional bins that work using purely user-defined hit predicates.
+%This differs from SystemVerilog, which mainly focuses on bins that cover value ranges or transitions. 
 
-The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test-benches on top of SystemVerilog. 
-It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. 
-However, it is inherently verbose, since even a simple test requires around 800 lines of SystemVerilog code. 
-UVM thus requires a significant initial time-investment, but is reusable once it gets up and running. 
-UVM's structure differs from most traditional test-benches, making it less accessible for newcomers than the simpler approach done by ChiselTest.
+Most new designs are being described in SystemVerilog; an extension of traditional Verilog 
+which introduces many non-synthesizable extensions. These extensions include object-oriented 
+programming and are intended to allow for writing more advanced test-benches. However, 
+contrary to Chisel, the object-oriented design approach cannot be used for hardware 
+description. SystemVerilog also offers constructs for gathering statement and functional 
+coverage information~\cite{spear2008systemverilog}, but our solution differs from these in 
+several ways. In addition to SystemVerilog's range- or transition-based bins, 
+ChiselVerify's \texttt{cover} constructs support temporal relations as well as generalized 
+conditional bins based on user-defined predicates. 
 
-Other projects have also focused on applying software testing techniques to hardware verification. 
-RFuzz~\cite{rfuzz2018} focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. 
-This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e., randomized testing, where the random seeds are mutated depending on certain coverage results) on digital circuits. 
-The coverage metrics used in this solution are automated and based on branch coverage. 
-This work offers a different type of solution. 
-While we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. 
-RFuzz uses functional coverage tools in order to guide its randomized testing. 
-Current work is also being done, in the scope of the ChiselVerify project, on coverage driven mutational fuzzing for digital circuits, however this is out of the scope of this paper.
+%The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test-benches on top of SystemVerilog. 
+%It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. 
+%However, it is inherently verbose, since even a simple test requires around 800 lines of SystemVerilog code. 
+%UVM thus requires a significant initial time-investment, but is reusable once it gets up and running. 
+%UVM's structure differs from most traditional test-benches, making it less accessible for newcomers than the simpler approach done by ChiselTest.
 
+Adding to the verification features introduced in SystemVerilog, designers also have 
+access to the \textit{Universal Verification Methodology} (UVM). UVM was designed to be a 
+standardized way of writing SystemVerilog test-benches by focusing on both horizontal and 
+vertical re-use~\cite{uvm2015}. Unfortunately, its generality leads to an inherent 
+verbosity, i.e., even simple tests require at least around 800 lines of code. As a result, 
+UVM imposes significant initial time-investment demands but is re-usable once it gets up and 
+running. Moreover, newcomers may experience that UVM is less accessible than simpler approaches 
+such as ChiselVerify as its structure differs from most traditional test-benches.
 
-As far as we know, ChiselVerify is the only verification framework allowing for the easy use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
+%Other projects have also focused on applying software testing techniques to hardware verification. 
+%RFuzz~\cite{rfuzz2018} focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. 
+%This method relies on FPGA-accelerated simulation and new solutions allowing for quick and deterministic memory resetting, to efficiently use fuzzing (i.e., randomized testing, where the random seeds are mutated depending on certain coverage results) on digital circuits. 
+%The coverage metrics used in this solution are automated and based on branch coverage. 
+%This work offers a different type of solution. 
+%While we work mostly on verification functionalities inside a language, RFuzz delivers an efficient way to use said functionalities in order to ameliorate testing. 
+%RFuzz uses functional coverage tools in order to guide its randomized testing. 
+%Current work is also being done, in the scope of the ChiselVerify project, on coverage driven mutational fuzzing for digital circuits, however this is out of the scope of this paper.
 
-\martin{Maybe we should already reference our WOSET paper here as well: \cite{verify:fuzzing:2021}}
+Beyond the general frameworks available in SystemVerilog and UVM, other projects have proposed 
+using software testing techniques to hardware verification. For example, RFuzz~\cite{rfuzz2018} 
+is a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. 
+It relies on FPGA-accelerated simulation and novel techniques for deterministic memory 
+resetting to use fuzzing (i.e., randomized testing with dynamic seeding based on achieved 
+coverage results) on digital circuits. Specifically, RFuzz automates collection of and adjustments 
+based on branch coverage. In comparison to RFuzz, ChiselVerify offers a different type 
+of solution focusing on implementing verification functionalities in a language while 
+RFuzz offers an efficient way of using these to ameliorate testing; particularly by using coverage 
+tools to guide its randomized verification. For the sake of completeness, we also mention another 
+work of ours presenting the use of ChiselVerify's coverage tools for mutational 
+fuzzing~\cite{verify:fuzzing:2021}.
+
+%As far as we know, ChiselVerify is the only verification framework allowing for the easy use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
+
+To the best of our knowledge, ChiselVerify is the only framework that provides easy-to-use verification functionalities well-integrated into the Chisel and ChiselTest ecosystem.
+
+\martin{Maybe we should already reference our WOSET paper here as well: \cite{verify:fuzzing:2021}} \hjd{Added a reference. Maybe the sentence should be re-phrased?}
 
 %\martin{And somewhere also our ETS paper.} Andrew: Did it in the functional coverage section.
 
 \section{Background}
 \label{sec:background}
 
-\martin{rewrite}
+\martin{rewrite} \hjd{Attempted.}
 
 
-This section presents a brief overview of what hardware verification is. 
-We also briefly present Chisel and the current solutions that exist in it with regards to the verification of digital designs.
+%This section presents a brief overview of what hardware verification is. 
+%We also briefly present Chisel and the current solutions that exist in it with regards to the verification of digital designs.
+
+Before going into details of ChiselVerify, we provide a brief overview of hardware verification, 
+and Chisel and its related existing verification techniques.
 
 \subsection{Verification of Digital Designs}
-Verification of digital designs refers to the testing of a design before it has been taped-out~\cite{spear2008systemverilog}. 
-SystemVerilog~\cite{SystemVerilog} is one of the main languages used for verification.
-The language enables verification engineers to define constraint-driven randomized test-benches and define metrics to gather functional coverage data related to a test suite. 
-However, being embedded in a low-level language makes writing tests quite complex. 
-The three main verification features that we are interested in are: functional coverage, constrained random verification, and bus functional modeling.
+%Verification of digital designs refers to the testing of a design before it has been taped-out~\cite{spear2008systemverilog}. 
+%SystemVerilog~\cite{SystemVerilog} is one of the main languages used for verification.
+%The language enables verification engineers to define constraint-driven randomized test-benches and define metrics to gather functional coverage data related to a test suite. 
+%However, being embedded in a low-level language makes writing tests quite complex. 
+%The three main verification features that we are interested in are: functional coverage, constrained random verification, and bus functional modeling.
+
+Verification of digital designs refers to testing done before tape-out through simulation 
+or (FPGA-based) emulation~\cite{spear2008systemverilog}. As described before, SystemVerilog is one 
+of the main languages used for verification. It allows for engineers to define constraint-driven 
+randomized test-benches and metrics to gather functional coverage resulting for a suite of 
+tests. We are most interested in three verification features: functional converage, 
+constrained random verification, and bus functional modeling - all three of which are available in 
+SystemVerilog, but rather complex to use as they are embedded in a low-level language.
 
 \subsubsection{Functional Coverage}
-One of the main tools used in verification is test coverage. 
-This allows verification engineers to measure their progress throughout the testing process and understand how effective their tests are. 
-In contrast to the more common statement coverage, which defines a quantitative measure of the testing progress \textit{``How many lines of code have been tested?''}, functional coverage gives a qualitative measure, \textit{``Which functionalities have we tested?''}~\cite{spear2008systemverilog}.
-Functional coverage enables the measurement of how correctly the specification has been implemented. 
-This is measured relative to a verification plan, which includes the following components:
+%One of the main tools used in verification is test coverage. 
+%This allows verification engineers to measure their progress throughout the testing process and understand how effective their tests are. 
+%In contrast to the more common statement coverage, which defines a quantitative measure of the testing progress \textit{``How many lines of code have been tested?''}, functional coverage gives a qualitative measure, \textit{``Which functionalities have we tested?''}~\cite{spear2008systemverilog}.
+%Functional coverage enables the measurement of how correctly the specification has been implemented. 
+%This is measured relative to a verification plan, which includes the following components:
+
+One of the most frequently used verification tools is test coverage which enables measuring 
+progress and effectiveness of testing processes. In contrast to the common, quantitative statement 
+coverage metric, which measures how many lines of code have been tested, functional coverage is 
+qualitative and aims at answering which functionalities have been 
+tested~\cite{spear2008systemverilog}. This enables measuring how correctly a design implements its 
+specification, and it is measured relative to a verification plan which includes the following:
 
 \begin{itemize}
-  \item \texttt{Bin}s: Ranges of values that should be tested for (i.e., expected values of a given port).
-  \item \texttt{Cover} constructs: Ports that need to be sampled in the coverage report, defined using a set of \texttt{bin}s.
+  \item \texttt{Bin}s that declare ranges of values that should be tested for (i.e., expected values of a given port), and 
+  \item \texttt{cover} constructs specifying ports that need to be sampled in the coverage report, defined using a set of \texttt{bin}s.
 \end{itemize}
 
 \begin{figure*}
@@ -308,52 +359,106 @@ This is measured relative to a verification plan, which includes the following c
 \end{figure*}
 
 \subsubsection{Constrained Random Verification}
-CRV allows the verification engineer to create random variables which generate values that satisfy a set of associated constraints.
-With constrained random inputs, a relatively small test suite can, statistically, cover many of a component's functionalities. 
-In addition, the constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied~\cite{MehtaCRV2018}.
+%CRV allows the verification engineer to create random variables which generate values that satisfy a set of associated constraints.
+%With constrained random inputs, a relatively small test suite can, statistically, cover many of a component's functionalities. 
+%In addition, the constraints help to ensure that no invalid input combinations that would not appear during regular operation are applied~\cite{MehtaCRV2018}.
 
-These constraints define a constraint satisfaction problem (CSP).
-CSP represents the entities of a problem as a finite homogeneous collection of constraints. 
-CSP solvers thus serve as the basis for generating sets of constrained random signal values for verification.
+Using CRV features, a verification engineer can create random variables constrained to 
+specified sets of values. In doing so, even a relatively small test suite can, statistically, 
+cover many functionalities of a design. Moreover, constraining inputs ensures that no 
+unnecessary tests are run for input combinations that would not appear during regular 
+operation~\cite{MehtaCRV2018}.
 
-SystemVerilog has native support for constrained random data types and a built-in CSP solver. 
-Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method.
+%These constraints define a constraint satisfaction problem (CSP).
+%CSP represents the entities of a problem as a finite homogeneous collection of constraints. 
+%CSP solvers thus serve as the basis for generating sets of constrained random signal values for verification.
+
+A set of constrained random variables define a constraint satisfaction problem (CSP). In CSPs, 
+problem entities are represented as a finite, homogeneous collection of constraints. CSP solvers 
+seek solutions to such problems and, thus, serve as the basis for constrained random verification.
+
+%SystemVerilog has native support for constrained random data types and a built-in CSP solver. 
+%Variables declared with the \texttt{rand} keyword are randomizable upon calling a \texttt{randomize} method.
+
+Constrained random data types are native and declared with the \texttt{rand} keyword in SystemVerilog. 
+The language has a built-in CSP solver allowing for randomization through its \texttt{randomize} method.
 
 \subsubsection{Bus Functional Models}
-A bus functional model (BFM) is an abstract model of a (standardized) interface that enables interacting with manager or subordinate components at a transaction level rather than at the level of individual wires.
-Many synthesis tools, including Xilinx's Vivado, provide IP generators whose output IP blocks are equipped with such interfaces. 
+%A bus functional model (BFM) is an abstract model of a (standardized) interface that enables interacting with manager or subordinate components at a transaction level rather than at the level of individual wires.
+%Many synthesis tools, including Xilinx's Vivado, provide IP generators whose output IP blocks are equipped with such interfaces. 
 %Verification of components with such interfaces is most easily handled with these bus functional models (BFMs), which abstract reading and writing of signals to a transaction level. 
-BFMs thus enable simpler, safer, and less verbose interactions with interfaces like, e.g., AXI.
+%BFMs thus enable simpler, safer, and less verbose interactions with interfaces like, e.g., AXI.
+
+Abstraction is often the key to solve complex problems. Bus functional models (BFMs) represent such 
+a technique. They implement models of (standardized) interfaces, like AXI, that enable 
+interacting with either manager or subordinate components at a transaction level that abstracts away 
+bit-fiddling of individual wires. Digital hardware vendors often provide IP generators whose output 
+blocks are equipped with such interfaces. Well-developed BFMs enable simpler, safer, and less 
+verbose interactions with such components.
 
 \subsection{Digital Design with Chisel}
-Our verification library is used for designs described in Chisel.
-Chisel is a ``hardware construction language'' embedded in Scala, used to describe digital circuits~\cite{chisel:dac2012}.
-This language is more high-level than the traditional hardware description languages, such as VHDL or Verilog, and enables object-oriented and functional programming in the context of digital design.
+%Our verification library is used for designs described in Chisel.
+%Chisel is a ``hardware construction language'' embedded in Scala, used to describe digital circuits~\cite{chisel:dac2012}.
+%This language is more high-level than the traditional hardware description languages, such as VHDL or Verilog, and enables object-oriented and functional programming in the context of digital design.
 
-Since Chisel and Scala are executing on the Java virtual machine (JVM), they have an excellent interoperability with Java. 
-We can therefore leverage a large pool of both Java and Scala libraries for hardware design and verification. 
-Furthermore, the packaging system in Scala/Java simplifies the integration of external components.
+With ChiselVerify, we target verification of designs described in Chisel. According to its 
+specification, Chisel is a ``hardware construction language'' embedded in 
+Scala~\cite{chisel:dac2012}. Compared to traditional hardware description languages, like 
+VHDL and Verilog, Chisel is much more high-level and allows for object-oriented and functional 
+programming in the context of digital design.
 
-Working in the JVM also allows for the use of the Java native interface, which enables JVM based languages to call C functions.
-This enables co-simulations between Scala testers, Chisel designs, and a C-based golden model. 
-This should allow companies to keep their existing C models, but move their simulation workflow into Scala/Chisel testers.
+%Since Chisel and Scala are executing on the Java virtual machine (JVM), they have an excellent interoperability with Java. 
+%We can therefore leverage a large pool of both Java and Scala libraries for hardware design and verification. 
+%Furthermore, the packaging system in Scala/Java simplifies the integration of external components.
 
-Chisel translates the hardware description into an intermediate representation called FIRRTL~\cite{firrtl}. 
-It then performs multiple optimization stages, called transforms, during which high-level concepts, such as a functional map or vectors, are compiled into lower-level concepts that map onto what we usually see in a Verilog or VHDL description. 
-Once that is done, the newly transformed FIRRTL, called Low FIRRTL, can be used either for simulation, using an execution engine such as Treadle, or for synthesis by translating it into Verilog, which is then used to generate the synthesized circuit. 
-Note that the final Verilog description may also be used for simulation purposes using engines such as Verilator~\cite{verilator}. 
-Figure~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
+Being embedded in Scala, Chisel is executed on the Java virtual machine (JVM) and has excellent 
+interoperability with the large pool of existing Scala and Java libraries for design and verification. 
+Integrating external components is further simplified by Scala/Java's packaging system.
+
+%Working in the JVM also allows for the use of the Java native interface, which enables JVM based languages to call C functions.
+%This enables co-simulations between Scala testers, Chisel designs, and a C-based golden model. 
+%This should allow companies to keep their existing C models, but move their simulation workflow into Scala/Chisel testers.
+
+Moreover, the JVM also allows for the use of the Java native interface for calling C functions, 
+thus enabling co-simulation of Scala testers, Chisel designs and a C-based golden model. This is 
+valuable for companies wishing to keep their existing C models while using Scala/Chisel for simulation.
+
+%Chisel translates the hardware description into an intermediate representation called FIRRTL~\cite{firrtl}. 
+%It then performs multiple optimization stages, called transforms, during which high-level concepts, such as a functional map or vectors, are compiled into lower-level concepts that map onto what we usually see in a Verilog or VHDL description. 
+%Once that is done, the newly transformed FIRRTL, called Low FIRRTL, can be used either for simulation, using an execution engine such as Treadle, or for synthesis by translating it into Verilog, which is then used to generate the synthesized circuit. 
+%Note that the final Verilog description may also be used for simulation purposes using engines such as Verilator~\cite{verilator}. 
+%Figure~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
+
+Internally, Chisel designs are translated into an intermediate representation called 
+FIRRTL~\cite{firrtl}. Subsequent \textit{transforms} aid in compiling high-level programming 
+constructs into lower-level constructs known from VHDL or Verilog descriptions. The resulting 
+representation, called low FIRRTL, can be used for simulation in the Treadle execution 
+engine, or for synthesis through translation into synthesizable (System)Verilog. The 
+Verilog description can, of course, also be simulated using, e.g., Verilator~\cite{verilator}. 
+Fig.~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
 
 \subsection{Testing Chisel Designs}
-A digital design described in Chisel can be tested with ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel.
-ChiselTest emphasizes on usability and simplicity while providing ways to scale up in complexity.
-Fundamentally, ChiselTest is a Scala library that provides access into the simulator through
-operations like \texttt{poke} (write value into circuit), \texttt{peek} (read value from circuit), and \texttt{step} (advance time).
-As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
+%A digital design described in Chisel can be tested with ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel.
+%ChiselTest emphasizes on usability and simplicity while providing ways to scale up in complexity.
+%Fundamentally, ChiselTest is a Scala library that provides access into the simulator through
+%operations like \texttt{poke} (write value into circuit), \texttt{peek} (read value from circuit), and \texttt{step} (advance time).
+%As such, tests written in ChiselTest are just Scala programs, imperative code that runs one line after the next.
 
-ChiselTest is missing fundamental verification functionalities that can improve the verification efficiency of Chisel designs. 
-It is currently not possible to do things such as constrained random testing or obtaining functional coverage results while solely relying on the ChiselTest framework. 
-Functionalities such as those are crucial when it comes to efficiently verify one's design.
+A Chisel design can be tested with ChiselTest~\cite{chisel:tester2}, a non-synthesizable 
+testing framework for Chisel that emphasizes simplicity while providing ways to scale up 
+complexity. Like Chisel, ChiselTest is a Scala library that provides an interface into several 
+simulators through \texttt{peek} (read value from circuit), \texttt{poke} (write value to 
+circuit), and \texttt{step} (advance time) operations. Tests written with ChiselTest are just 
+imperative Scala programs that run one line after another.
+
+%ChiselTest is missing fundamental verification functionalities that can improve the verification efficiency of Chisel designs. 
+%It is currently not possible to do things such as constrained random testing or obtaining functional coverage results while solely relying on the ChiselTest framework. 
+%Functionalities such as those are crucial when it comes to efficiently verify one's design.
+
+However, ChiselTest is missing fundamental functionalities that improve verification efficiency. 
+For example, it does not provide either of the three aforementioned features: functional 
+coverage, constrained random variables, or bus functional models, despite these features being 
+crucial for efficient verification.
 
 \section{Verification with Chisel}
 

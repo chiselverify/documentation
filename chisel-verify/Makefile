@@ -1,4 +1,4 @@
-DOC=chisel-verify-paper
+DOC=chisel-verify-jnl
 
 .PHONY: all
 all:

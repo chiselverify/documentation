@@ -573,31 +573,37 @@ Another tool our solution brings to Chisel, and enables one of the uses of funct
 %In addition, supporting a coverage measure directly in the testing tool also enables modern verification strategies such as constrained random verification.
 
 \subsection{Constrained Random Verification}
+%Proposed rewrite:
+A coverage-driven verification suite isn't complete without access to CRV tools.
+ChiselVerify thus provides a set of tools, inspired by those available in SystemVerilog, which allow for the declaration and randomization of random objects.
+This is done by providing a ``constraint programming" domain-specific language that runs on an existing CSP solver named JaCoP~\cite{jacop2013}.
 
-To make best use of a coverage-driven verification flow, one needs access to CRV tools. 
-Such tools are, as explained before, included in SystemVerilog, and we provide another implementation in ChiselVerify. 
-ChiselVerify provides a wrapper to an existing CSP solver, named JaCoP~\cite{jacop2013}, and a domain-specific language, which allows users to declare and randomize objects.
+\subsubsection{ChiselVerify's Constraint Programming DSL}
+Our solution allows for the declaration of constrained random object by defining a \texttt{class} that extends the \texttt{RandObj} trait.
+The newly defined \texttt{RandObj} class contains all of the constraints and random variables that will later be used in our constrained random tests. 
+This information will be stored inside of a \texttt{Model}, that is given to the \texttt{RandObj} on initialization.
+In total, there are two main elements that are used inside of the object to drive the randomization process: random variables and constraints.
 
-\subsubsection{Constraint Programming with ChiselVerify}
-To begin writing constrained random objects using our library, one must define a \texttt{class} that extends the \texttt{RandObj} trait while initializing it with a \texttt{Model}. 
-A \texttt{Model} represents a database in which all of the \texttt{RandObj}'s random variables and constraints are stored. 
-This \texttt{RandObj} will then contain all of the constraints and random variables we will use in our constrained random tests. 
-There are two main constructs that can be defined inside of a \texttt{RandObj}: random variables and constraints.
+\paragraph{Random Variables} The first element represents a random value generator and is associated to constraints that will determine the set of values that the random variable can take.
+Our DSL allows for the declaration of two different types of random variables: 
+\begin{itemize}
+	\item \emph{Regular:} Can take any value that satisfies the associated constraints.
+	\item \emph{Cyclic:} Can not take the same values twice until the entire set of valid values has been explored.
+\end{itemize}
+Similar to the interface designed for the Functional Coverage tools, both types are declared using a single unified function call \texttt{rand} to which we give a lower and an upper bound on the values the variable can take.
+As an example, \texttt{rand(0, 5, Cyclic)} will declare a random variable that will yield six distinct values in a row before starting to repeat itself.
 
-\paragraph{Random variables} These represent random value generators and are associated to constraints. 
-Random variables can either be \textit{regular}, meaning that they can take any value satisfying the constraints, or \textit{cyclic}, meaning that they can not take the same values twice until all values have been covered.
-Both types are declared using a lower and an upper bound. 
-For example, if we create a \texttt{rand(0, 5, Cyclic)}, we will never get the same value twice if we sample it six times, however, on the 7th sampling, the cycle will be reset, and we will start to re-obtain old values.
+\paragraph{Constraints} Our solution allow for the definition of both single constraints and \texttt{ConstraintGroup}s. 
+Constraints are defined by applying constraint operators on random variables.
+Additionally, the \texttt{IfCond} and \texttt{ElseC} constructs allow for the definition of conditional constraints.
+Every defined constraint may be enabled or disabled at any point in the test suite. 
+This can also be done to multiple constraints simultaneously by enabling or disabling a  \texttt{ConstraintGroup}.
 
-\paragraph{Constraints} Constraints can either be defined alone or in \texttt{ConstraintGroup}s. 
-Constraint operators are applied on random variables to create constraints.
-Conditional constraints may also be defined using the \texttt{IfCond} and \texttt{ElseC} constructs. 
-All of these constraints can then be enabled and disabled when needed throughout the test suite.
+\paragraph{Using a RandObj} After declaring and filling random objects with random variables and constraints, a \texttt{RandObj} must be instantiated and then randomized using the \texttt{randomize} method within a test-bench.
+The \texttt{randomize} method's return value is predicated on the solvability of the constraints by the CSP solver. 
+Once randomized the random variables within a \texttt{RandObj} yield a valid random value when prompted with their respective \texttt{value()} methods.
 
-\paragraph{Using a RandObj} Once defined, random objects are instantiated and then randomized using the \texttt{randomize} method which returns wether or not the constraints were solvable by the CSP solver. 
-The random variables can then be accessed using their respective \texttt{value()} methods.
-
-\begin{lstlisting}[language=scala, caption={Usage of a random object. \texttt{rand(min, max, type=Normal)} is used to declare a random variable. Any operation on a random variable generates a constraint.}, label={lst:randobjscala}]    
+\begin{lstlisting}[language=scala, caption={Example usage of a random object. \texttt{rand(min, max, type=Normal)} declares a random variable. Any operation on a random variable generates a constraint.}, label={lst:randobjscala}]    
 class Packet extends RandObj(new Model(3)) {
     val idx = rand(0, 10)
     val size = rand(1, 100)
@@ -619,12 +625,68 @@ class Packet extends RandObj(new Model(3)) {
 }
 \end{lstlisting}
 
-Listing~\ref{lst:randobjscala} presents the different ways to define a random variable with constraints.
-One can define collections of random variables and create constraints on those collections, as was done, for example, in the \texttt{payload} random variable. 
-Conditional constraints are shown in the \texttt{conditional} random variable, where the constraint depends on the value of the \texttt{len} random variable. 
+Listing~\ref{lst:randobjscala} shows an example use of the different ways one can define a random variable with constraints.
+As seen in the example, collections of random variables, such as arrays, can be defined and constraints can be placed on the collections themselves.
+This approach is seen in the \texttt{payload} random variable, where a constraint is placed on the size of an array of random variables.
+The \texttt{conditional} random variable shows how condition constraints can be declared.
+In our example, the constraint placed on \texttt{payload} depends on the value of the \texttt{len} random variable. 
 
-Combining constraint-random objects with the provided coverage features enables writing simple coverage-driven randomized tests. 
-However, this may be further optimized by abstracting away groups of wires and operating on an operation or transaction level instead.
+These constrained random objects are a powerful tool that can be combined with the aforementioned coverage functionalities to create coverage-driven randomized tests.
+With the use of our solutions, such a setup greatly improves the automation capabilities of Chisel test-benches.
+However, these capabilities may be further improved by abstracting away groups of wires and operating on an operation or transaction level instead.
+
+%Original:
+%To make best use of a coverage-driven verification flow, one needs access to CRV tools. 
+%Such tools are, as explained before, included in SystemVerilog, and we provide another implementation in ChiselVerify. 
+%ChiselVerify provides a wrapper to an existing CSP solver, named JaCoP~\cite{jacop2013}, and a domain-specific language, which allows users to declare and randomize objects.
+
+%\subsubsection{Constraint Programming with ChiselVerify}
+%To begin writing constrained random objects using our library, one must define a \texttt{class} that extends the \texttt{RandObj} trait while initializing it with a \texttt{Model}. 
+%A \texttt{Model} represents a database in which all of the \texttt{RandObj}'s random variables and constraints are stored. 
+%This \texttt{RandObj} will then contain all of the constraints and random variables we will use in our constrained random tests. 
+%There are two main constructs that can be defined inside of a \texttt{RandObj}: random variables and constraints.
+
+%\paragraph{Random variables} These represent random value generators and are associated to constraints. 
+%Random variables can either be \textit{regular}, meaning that they can take any value satisfying the constraints, or \textit{cyclic}, meaning that they can not take the same values twice until all values have been covered.
+%Both types are declared using a lower and an upper bound. 
+%For example, if we create a \texttt{rand(0, 5, Cyclic)}, we will never get the same value twice if we sample it six times, however, on the 7th sampling, the cycle will be reset, and we will start to re-obtain old values.
+
+%\paragraph{Constraints} Constraints can either be defined alone or in \texttt{ConstraintGroup}s. 
+%Constraint operators are applied on random variables to create constraints.
+%Conditional constraints may also be defined using the \texttt{IfCond} and \texttt{ElseC} constructs. 
+%All of these constraints can then be enabled and disabled when needed throughout the test suite.
+
+%\paragraph{Using a RandObj} Once defined, random objects are instantiated and then randomized using the \texttt{randomize} method which returns wether or not the constraints were solvable by the CSP solver. 
+%The random variables can then be accessed using their respective \texttt{value()} methods.
+
+%\begin{lstlisting}[language=scala, caption={Usage of a random object. \texttt{rand(min, max, type=Normal)} is used to declare a random variable. Any operation on a random variable generates a constraint.}, label={lst:randobjscala}]    
+%class Packet extends RandObj(new Model(3)) {
+%    val idx = rand(0, 10)
+%    val size = rand(1, 100)
+%    val len = rand(1, 100)
+%    val payload: Array[Rand] = Array.tabulate(11)(
+% 	rand(1, 100)
+%    )
+%
+%    //Example Constraint with operations
+%    val single: Constraint = (payload(0) == (len - size))
+%	
+%    //Example conditional constraint
+%    val conditional = IfCon(len == 1) {
+%        payload.size == 3
+%    } ElseC {
+%        payload.size == 10
+%    }
+%    val idxConst = idx < payload.size
+%}
+%\end{lstlisting}
+
+%Listing~\ref{lst:randobjscala} presents the different ways to define a random variable with constraints.
+%One can define collections of random variables and create constraints on those collections, as was done, for example, in the \texttt{payload} random variable. 
+%Conditional constraints are shown in the \texttt{conditional} random variable, where the constraint depends on the value of the \texttt{len} random variable. 
+%
+%Combining constraint-random objects with the provided coverage features enables writing simple coverage-driven randomized tests. 
+%However, this may be further optimized by abstracting away groups of wires and operating on an operation or transaction level instead.
 
 \subsection{Verification with Bus Functional Models}
 Finally, many designers ensure portability and flexibility by equipping their designs with standardized interfaces. 

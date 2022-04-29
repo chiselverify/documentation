@@ -197,17 +197,17 @@ verification code as possible.
 
 The contributions of this paper are:
 
-\begin{enumerate}
+\begin{itemize}
 \item ChiselVerify,\footnote{https://github.com/chiselverify/chiselverify} an open-source verification library for hardware designs
 \item \todo{more}
-\end{enumerate}
+\end{itemize}
 
-This paper is an extension of \cite{ChiselVerify:2021}.
+
+This paper is an extension of \cite{ChiselVerify:2021}. \todo{Add what is the new stuff.}
 
 \todo{fix it}
 The paper is organized into 6 sections.
 Section~\ref{sec:related} describes related work.
-Section~\ref{sec:chisel} gives a brief overview of Chisel.
 Section~\ref{sec:background} describes background on hardware verification.
 Section IV describes our solution for enabling verification in Chisel, namely ChiselVerify.
 Section V explores ChiselVerify on an industry-provided use case.
@@ -285,24 +285,7 @@ To the best of our knowledge, ChiselVerify is the only framework that provides e
 
 %\martin{And somewhere also our ETS paper.} Andrew: Did it in the functional coverage section.
 
-\section{The Chisel Hardware Construction Language}\label{sec:chisel}
 
-\martin{This should probably be merged with the section in background.}
-
-Chisel is a modern hardware construction language embedded in the general purpose programming language Scala~\cite{bachrach2012chisel, chisel:book}.
-It allows designers to effectively write Scala programs that generate hardware descriptions at the register transfer level (RTL).
-One popular open-source application is the powerful RocketChip system on chip generator~\cite{rocketchip}.
-
-The user-facing API of Chisel is a Scala library with some syntactic sugar that allows the user to generate RTL designs.
-These designs then have to be converted into a format that is understood by simulators as well as FPGA and ASIC synthesis tools.
-The lowering is done by the FIRRTL compiler which converts a high-level intermediate representation (IR) into a normalized structural representation~\cite{izraelevitz2017firrtl}.
-The low-level representation is then exported into a subset of Verilog that was chosen as a common subset supported by the majority of backend tools.
-
-Besides serving as a convenient way to lower Chisel circuits into Verilog, the FIRRTL IR and accompanying compiler infrastructure
-also makes it easy to add circuit analysis and instrumentation passes.
-The Chisel frontend makes it possible to attach annotations (i.e., meta-data) to arbitrary signals in the circuit and to schedule compiler passes
-to be executed that are free to consume the annotations and make changes to the circuit.
-We will make use of these facilities throughout the paper.
 
 
 \section{Background}
@@ -396,38 +379,31 @@ bit-fiddling of individual wires. Digital hardware vendors often provide IP gene
 blocks are equipped with such interfaces. Well-developed BFMs enable simpler, safer, and less 
 verbose interactions with such components.
 
-\subsection{Digital Design with Chisel}
-%Our verification library is used for designs described in Chisel.
-%Chisel is a ``hardware construction language'' embedded in Scala, used to describe digital circuits~\cite{chisel:dac2012}.
-%This language is more high-level than the traditional hardware description languages, such as VHDL or Verilog, and enables object-oriented and functional programming in the context of digital design.
+\subsection{The Chisel Hardware Construction Language}\label{subsec:chisel}
 
-With ChiselVerify, we target verification of designs described in Chisel. According to its 
-specification, Chisel is a ``hardware construction language'' embedded in 
-Scala~\cite{chisel:dac2012}. Compared to traditional hardware description languages, like 
+
+Chisel is a ``hardware construction language'' embedded in the general purpose programming language Scala~\cite{bachrach2012chisel, chisel:book}.
+It allows designers to effectively write Scala programs that generate hardware descriptions at the register transfer level (RTL).
+Compared to traditional hardware description languages, like 
 VHDL and Verilog, Chisel is much more high-level and allows for object-oriented and functional 
 programming in the context of digital design.
+One popular open-source application is the powerful RocketChip system on chip generator~\cite{rocketchip}.
 
-%Since Chisel and Scala are executing on the Java virtual machine (JVM), they have an excellent interoperability with Java. 
-%We can therefore leverage a large pool of both Java and Scala libraries for hardware design and verification. 
-%Furthermore, the packaging system in Scala/Java simplifies the integration of external components.
+The user-facing API of Chisel is a Scala library with some syntactic sugar that allows the user to generate RTL designs.
+These designs then have to be converted into a format that is understood by simulators as well as FPGA and ASIC synthesis tools.
+The lowering is done by the FIRRTL compiler which converts a high-level intermediate representation (IR) into a normalized structural representation~\cite{firrtl}.
+The low-level representation is then exported into a subset of Verilog that was chosen as a common subset supported by the majority of backend tools.
+
+Besides serving as a convenient way to lower Chisel circuits into Verilog, the FIRRTL IR and accompanying compiler infrastructure
+also makes it easy to add circuit analysis and instrumentation passes.
 
 Being embedded in Scala, Chisel is executed on the Java virtual machine (JVM) and has excellent 
 interoperability with the large pool of existing Scala and Java libraries for design and verification. 
 Integrating external components is further simplified by Scala/Java's packaging system.
 
-%Working in the JVM also allows for the use of the Java native interface, which enables JVM based languages to call C functions.
-%This enables co-simulations between Scala testers, Chisel designs, and a C-based golden model. 
-%This should allow companies to keep their existing C models, but move their simulation workflow into Scala/Chisel testers.
-
 Moreover, the JVM also allows for the use of the Java native interface for calling C functions, 
 thus enabling co-simulation of Scala testers, Chisel designs and a C-based golden model. This is 
 valuable for companies wishing to keep their existing C models while using Scala/Chisel for simulation.
-
-%Chisel translates the hardware description into an intermediate representation called FIRRTL~\cite{firrtl}. 
-%It then performs multiple optimization stages, called transforms, during which high-level concepts, such as a functional map or vectors, are compiled into lower-level concepts that map onto what we usually see in a Verilog or VHDL description. 
-%Once that is done, the newly transformed FIRRTL, called Low FIRRTL, can be used either for simulation, using an execution engine such as Treadle, or for synthesis by translating it into Verilog, which is then used to generate the synthesized circuit. 
-%Note that the final Verilog description may also be used for simulation purposes using engines such as Verilator~\cite{verilator}. 
-%Figure~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
 
 Internally, Chisel designs are translated into an intermediate representation called 
 FIRRTL~\cite{firrtl}. Subsequent \textit{transforms} aid in compiling high-level programming 

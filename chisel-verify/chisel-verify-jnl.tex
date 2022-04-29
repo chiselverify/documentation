@@ -820,7 +820,7 @@ We evaluate our ChiselVerify with two application examples. \todo{continue to wr
 \subsection{An Arbitration Circuit}
 
 We evaluate ChiselVerify with an arbiter circuit. The arbiter uses a ready/valid interface for the clients
-and the shared resource. The arbiter is build as a binary tree, where each node does a local arbitration
+and the shared resource. The arbiter is built as a binary tree, where each node does a local arbitration
 and contains a register to store the data until it can be communicated further up towards the root of the
 tree. Each local 2 to 1 arbiter has turn flag to be fair between the two requests. The assumption is that
 this local fairness translates to a global fairness of the full arbitration tree.
@@ -829,7 +829,7 @@ To test the arbiter, we specify properties that result in a verification plan:
 
 \begin{itemize}
 \item Each request shall eventually be seen at the output (the root node)
-\item Now requests shall be ``generated'' in the tree (out of thin air)
+\item No requests shall be ``generated'' in the tree (out of thin air)
 \item The maximum latency for a request shall be $n$ cycles without any competing requests
 \item The maximum latency for a request shall be $m$ cycles under full load
 \item The arbitration shall be fair, which means the bandwidth difference between clients shall be bound by $x$ \%.
@@ -845,41 +845,52 @@ over. And we provided as a solution a PR for Chisel \url{https://github.com/chip
 
 \subsection{Sorting in Hardware}
 
-\martin{rewrite}
+%\martin{rewrite}
+
+The other application example builds on a use-case provided
+by Microchip~\cite{microchip}. The use-case, which we implemented and verified, is a scheduling module for real-time systems built around a hardware priority queue.
+A host system can insert deadlines in the form of timestamps into the scheduling module which in turn presents the next upcoming deadline.
+
+The scheduling module is implemented as a state machine 
+operating on a set of memory banks. The memory contains a $k$-min-heap which is used by the internal priority queue to efficiently determine the next upcoming deadline. The implementation exploits parallelism to improve performance when fetching nodes from the heap memory by splitting siblings over separate memory banks. Furthermore, the search for the minimum key between a parent node and its children, a key operation when balancing the heap, can be parallelized by employing a redcution tree.
+
+%In our research, we received a use case from Microchip~\cite{microchip} in the form of a specification.
+%We implemented and used it to evaluate our verification library.
+
+%\subsubsection{Specification}
 
 
-In our research, we received a use case from Microchip~\cite{microchip} in the form of a specification.
-We implemented and used it to evaluate our verification library.
 
-\subsubsection{Specification}
+%The provided use case is a hardware implementation of a priority queue, which can be used in real-time systems requiring scheduling capabilities. 
+%For instance, timestamps for deadlines can be inserted and sorted such that the host system has access to the closest deadline.
 
-The provided use case is a hardware implementation of a priority queue, which can be used in real-time systems requiring scheduling capabilities. 
-For instance, timestamps for deadlines can be inserted and sorted such that the host system has access to the closest deadline.
+%Internally, the hardware priority queue relies on a min-heap tree data structure. 
+%The run-times of insertion and removal operations, both having a complexity of $O(\log_k N)$ where $N$ is the number of elements and $k$ the number children per node, are bound by the depth of the tree. 
+%By increasing $k$, the depth of the tree, as well the run-times, can be reduced.
 
-Internally, the hardware priority queue relies on a min-heap tree data structure. 
-The run-times of insertion and removal operations, both having a complexity of $O(\log_k N)$ where $N$ is the number of elements and $k$ the number children per node, are bound by the depth of the tree. 
-By increasing $k$, the depth of the tree, as well the run-times, can be reduced.
+%In order to remove elements from the priority queue, a reference ID is needed. 
+%Therefore, a reference ID must be added to each element by the priority queue's user.
 
-In order to remove elements from the priority queue, a reference ID is needed. 
-Therefore, a reference ID must be added to each element by the priority queue's user.
+%\subsubsection{Implementation}
+%\martin{this subsection is new and needs no rewrite}
 
-\subsubsection{Implementation}
-\martin{this subsection is new and needs no rewrite}
+%The implemented priority queue is described in Chisel.
+%It is split into three modules: The \texttt{Heapifier}, responsible for the sorting, the \texttt{QueueControl}, taking care
+%of the general control flow in the queue, and the \texttt{Memory}, module which handles memory accesses and can search the memory for a specific reference ID.
 
-The implemented priority queue is described in Chisel.
-It is split into three modules: The \texttt{Heapifier}, responsible for the sorting, the \texttt{QueueControl}, taking care
-of the general control flow in the queue, and the \texttt{Memory}, module which handles memory accesses and can search the memory for a specific reference ID.
+%In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. 
+%Therefore a layout is proposed in the specification where all child elements of a certain node are stored together under one memory address. 
+%This allows that a single memory access fetches all children of a node. Furthermore, when writing to the memory, masking can be used to overwrite the data of only one specific child.
 
-In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. 
-Therefore a layout is proposed in the specification where all child elements of a certain node are stored together under one memory address. 
-This allows that a single memory access fetches all children of a node. Furthermore, when writing to the memory, masking can be used to overwrite the data of only one specific child.
+%\subsubsection{Testing and Verification}
 
-\subsubsection{Testing and Verification}
+The presented CRV and functional coverage functionalities of the ChiselVerify framework were used to verify the scheduling system and its submodules. 
+The circuit at a top level allows for the insertion of deadlines into the scheduling system and the removal of them. As such the interface is not very complex and only consists of three flow-control pins as well as data pins used to provide a new deadline and to refer to a deadline which should be removed. 
 
-The presented CRV and functional coverage functionalities of the ChiselVerify framework were used to verify the modules and the fully assembled queue.
-Due to the simple interface of the priority queue, which only consists of two boolean flow-control inputs alongside the data fields, only distributional constraints were used to reduce the number of transactions marked as invalid. 
 
-The functional coverage report was then used to check how well the inputs were spread over the spectrum of possibilities and to check whether certain input combinations were applied to the DUT at some point throughout the test. 
+%Due to the simple interface, which only consists of two flow-control inputs alongside the data fields, only distributional constraints were used to reduce the number of transactions marked as invalid. 
+The test-benches we built to verify the scheduling system made use of random stimuli for the data pins and directed stimuli for the flow-control.
+The functional coverage report was then used to check how well the stimuli driven on the DUT's data pins were spread over the spectrum of possible values and to check whether certain input combinations were applied to the DUT at some point throughout the test. 
 As an example, the timed coverage feature made it easy to check whether the \texttt{valid} input of the DUT was revoked at some point within 10 clock cycles after issuing an operation by adding the following cross-coverage group:
 
 \begin{lstlisting}[language=scala, caption={A timed cover construct.}, label={lst:timedcover}]
@@ -889,8 +900,10 @@ cover("timed_valid", dut.io.valid, dut.io.valid)(
 \end{lstlisting}
 
 In order to check whether the DUT matched the specification, a reference model was written for each module. 
-As a reference model for the whole priority queue, a class was written which simulates state and interaction on a transaction/query level. In order to abstract interaction with the DUT, wrapper classes (i.e., classes similar to BFMs) were employed. 
-These make it easy to think on a transaction or operation level when writing tests.
+At the top level this model was written at a transactional level while some submodules were tested against cycle accurate reference models.
+%As a reference model for the whole priority queue, a class was written which simulates state and interaction on a transaction/query level. 
+In order to abstract interaction with the DUT and provide an interface at the same abstraction level as the reference model, wrappers similar to BFMs were employed. 
+%These make it easy to think on a transaction or operation level when writing tests.
 
 To evaluate the efficiency of ChiselVerify, in terms of lines of code needed, we also verified our sorting hardware with UVM.
 The main difference, we found, between the two methods was UVM's necessity for boiler-plate classes in order to maintain its reusability.

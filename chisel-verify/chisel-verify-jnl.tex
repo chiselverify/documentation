@@ -129,71 +129,68 @@ and transaction-level modeling.
 digital design, verification, Chisel, Scala
 \end{IEEEkeywords}
 
-\section{Notes}
-
-We will be invited to extend this paper for a journal submission. Here we start to collect ideas:
-
-\begin{itemize}
-\item Rewrite most of the text to avoid copyright issues
-\item As usual, more related work \url{https://link.springer.com/chapter/10.1007/978-3-030-53288-8_19} \url{https://people.eecs.berkeley.edu/~ksen/papers/smtsampler.pdf} see also \url{https://github.com/TsaiAnson/verif/blob/master/core/src/SMTSampler.scala}
-\item Comparison with UVM (performance and complexity)
-\item More evaluation, e.g., use S4NOC as a non-trivial DUT
-\item Use a different CSP solver
-\item Kevin's formal verification work (Install Z3)
-\item see also notes.tex
-\item functional fuzzer
-\item Use ChiselVerify/ChiselTest to test VHDL/Verilog designs
-\item \url{https://docs.cocotb.org/en/stable/quickstart.html}
-\item Fast test writing by using Chisel/Scala to test VHDL tests (Simon would like it)
-\item Transpiling VHDL to Verilog
-\item Tiling tests \url{https://github.com/TsaiAnson/verif} L2 cache \url{https://github.com/TsaiAnson/verif/blob/master/tilelink/test/TLL2CacheTest.scala}
-\item \url{https://github.com/ucb-bar/riscv-mini} has bug in unaligned ld/st
-\item Fuzzing paper: \url{https://compsec.snu.ac.kr/papers/hur-difuzzrtl.pdf}
-\item \martin{shall bring in an arbitration circuit as a test case.} (Verification plan: a packet comes through eventually (nothing lost), no packet is ``created'' out of the air, tests under light and heavy load, measure latency and bandwidth, should be in general fair arbitration)
-\end{itemize}
-
-Some ideas from Andrew:
-
-I think we could maybe add a part on the Queryable functional coverage and compare it to the pre-defined version. Have an in depth look at verification with PSL and SVA in the Related work section. We could also potentially extend the constraint random stuff to add @Tjark Petersen's work.
-
-We can also discuss on Slack.
+%\section*{Notes}
+%
+%We will be invited to extend this paper for a journal submission. Here we start to collect ideas:
+%
+%\begin{itemize}
+%\item Rewrite most of the text to avoid copyright issues
+%\item As usual, more related work \url{https://link.springer.com/chapter/10.1007/978-3-030-53288-8_19} \url{https://people.eecs.berkeley.edu/~ksen/papers/smtsampler.pdf} see also \url{https://github.com/TsaiAnson/verif/blob/master/core/src/SMTSampler.scala}
+%\item Comparison with UVM (performance and complexity)
+%\item More evaluation, e.g., use S4NOC as a non-trivial DUT
+%\item Use a different CSP solver
+%\item Kevin's formal verification work (Install Z3)
+%\item see also notes.tex
+%\item functional fuzzer
+%\item Use ChiselVerify/ChiselTest to test VHDL/Verilog designs
+%\item \url{https://docs.cocotb.org/en/stable/quickstart.html}
+%\item Fast test writing by using Chisel/Scala to test VHDL tests (Simon would like it)
+%\item Transpiling VHDL to Verilog
+%\item Tiling tests \url{https://github.com/TsaiAnson/verif} L2 cache \url{https://github.com/TsaiAnson/verif/blob/master/tilelink/test/TLL2CacheTest.scala}
+%\item \url{https://github.com/ucb-bar/riscv-mini} has bug in unaligned ld/st
+%\item Fuzzing paper: \url{https://compsec.snu.ac.kr/papers/hur-difuzzrtl.pdf}
+%\item \martin{shall bring in an arbitration circuit as a test case.} (Verification plan: a packet comes through eventually (nothing lost), no packet is ``created'' out of the air, tests under light and heavy load, measure latency and bandwidth, should be in general fair arbitration)
+%\end{itemize}
+%
+%Some ideas from Andrew:
+%
+%I think we could maybe add a part on the Queryable functional coverage and compare it to the pre-defined version. Have an in depth look at verification with PSL and SVA in the Related work section. We could also potentially extend the constraint random stuff to add @Tjark Petersen's work.
+%
+%We can also discuss on Slack.
 
 \section{Introduction}
 \label{sec:introduction}
 
-We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
-Performance increase with general-purpose processors has come to a halt.
-The only way to achieve higher performance or lower energy consumption
-is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
-
-\martin{rewrite}
-
-Over the past several years, hardware design has grown to be ever more complex.
-The increased demand for high-performance computing systems has lead to a larger need for domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
+Moore's Law is running out of steam~\cite{dark-silicon:2011}.
+General-purpose processors performance increase is down to single digit percentage per year.
+This leads to a new golden age for computer architects designing domain-specific hardware accelerators
+for future performance improvements~\cite{domain-hw-acc:2020}.
 The design of these accelerators is often complex, and their development is time-consuming and error-prone.
-In order to combat this added time-constraint, we can learn from software development trends such as agile software development~\cite{agile:manifesto}, and adapt to agile hardware development~\cite{henn-patt:turing:2019}.
-Chisel~\cite{chisel:dac2012}, a Scala-embedded hardware construction language, was introduced in order to move digital circuit description to a more software-like high-level language. 
+To mitigate this issue, we shall learn from software development trends such as agile software
+development~\cite{agile:manifesto}, and adapt to agile hardware development~\cite{henn-patt:turing:2019}.
+One move in this direction is Chisel~\cite{chisel:dac2012}, a Scala-embedded hardware construction language,
+that was introduced in order to move digital circuit description to a more software-like high-level language. 
 
-Hardware design is dominated by the traditional hardware description languages (HDLs), Verilog and VHDL, and %Many hardware engineers are switching away from the traditional hardware description %A few years ago, the two main design languages, Verilog and VHDL, dominated the
-the more recent SystemVerilog. But while SystemVerilog  %languages (HDLs), i.e., VHDL and Verilog, to SystemVerilog. And while SystemVerilog %design and testing of digital circuits.
-does extend Verilog with object-oriented features for verification, its hardware %%However, both languages are decades behind
-description flow remains the same as with Verilog. Thus, it does not fit an agile %%modern languages for software development.
-development flow. %However, compared to software development and testing, digital design and testing methods/tools 
-Chisel attempts to solve these issues by providing full support for %We thus developed a method and concrete tools for agile hardware development.
-functional and object-oriented programming. However, Chisel is missing efficient verification tools %ChiselVerify combines tools, languages, development, and testing methods from the last decades in
-with limited functionality available in the corresponding ChiselTest package~\cite{chisel:tester2}. %software development and applies them to hardware design.
+Hardware design is still dominated by the traditional hardware description languages (HDLs), such as VHDL and SystemVerilog.
+SystemVerilog adds object oriented features to the language. However, those features are only available for test benches,
+not for describing hardware.
+Chisel goes one (or several) steps forward in hardware description, as it enables object-oriented and functional programming
+to describe hardware. This enable to not only describe concisely hardware descriptions, but also to describe hardware generators.
+This elevates current practice of Pert, TCL, or Python generating VHDL of SystemVerilog code to use the powerful programming
+language Scala.
 
-As such, we choose to base our work on Chisel and ChiselTest, and aim to raise %We developed a verification framework in Scala.
-the tooling level for a digital design. We have developed a verification framework %This framework is inspired by the Universal Verification Method (UVM) but leverages Scala's conciseness with the
-inspired by the Universal Verification Method (UVM), but implemented by leveraging %combination of object-oriented and functional programming.
-Scala's conciseness and support for both object-oriented and functional programming. %An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
-Our framework, ChiselVerify, supports both coverage-oriented and constrained %showed that a test written with UVM was about 800 lines of code, where a Scala-based
-random verification (CRV) flows with more features than those available in UVM. %test was around 80 lines of code~\cite{verify:chisel:2020}.
-%However, UVM supports more functionalities than a plain ChiselTest~\cite{chisel:tester2} in Scala.
+However, Chisel does not yet provide efficient verification tools or libraries. The ChiselTest package~\cite{chisel:tester2}
+only provides primitives to write classical test benches.
+Therefore, we build upon ChiselTest and add verification features. Those features are inspired by the
+Universal Verification Method (UVM), but implemented by leveraging
+Scala's conciseness and support for both object-oriented and functional programming.
+ChiselVerify, supports both coverage-oriented and constrained
+random verification (CRV) flows with more features than those available in UVM.
 
-As a showcase, we have verified an industrial use case, a min-heap, utilizing 
-ChiselVerify to check as many features of the min-heap with as few lines of 
-verification code as possible.
+For the evaluation, we use to designs: (1) industrial use case, a min-heap
+and (2) an arbitration circuit.
+We show that ChiselVerify can check many features of the min-heap with few lines of 
+verification code.
 
 The contributions of this paper are:
 
@@ -203,15 +200,16 @@ The contributions of this paper are:
 \end{itemize}
 
 
-This paper is an extension of \cite{ChiselVerify:2021}. \todo{Add what is the new stuff.}
+This paper is an extension of \cite{ChiselVerify:2021}. \todo{Add what is the new stuff. Formal, more eval, more on ETS paper}
 
-\todo{fix it}
-The paper is organized into 6 sections.
+The paper is organized into 7 sections.
 Section~\ref{sec:related} describes related work.
 Section~\ref{sec:background} describes background on hardware verification.
-Section IV describes our solution for enabling verification in Chisel, namely ChiselVerify.
-Section V explores ChiselVerify on an industry-provided use case.
-Section VI concludes.
+Section~\ref{sec:verify} describes our solution for enabling verification in Chisel, namely ChiselVerify.
+Section~\ref{sec:formal} presents an orthogonal approach to classic test driven verification by using formal
+method for verification. 
+Section~\ref{sec:eval} evaluates ChiselVerify with two use cases.
+Section~\ref{sec:conclude} concludes.
 
 
 \section{Related Work}
@@ -437,6 +435,7 @@ coverage, constrained random variables, or bus functional models, despite these 
 crucial for efficient verification.
 
 \section{Verification with Chisel}
+\label{sec:verify}
 
 \martin{rewrite}
 
@@ -818,7 +817,7 @@ class MemorySpec extends AnyFlatSpec with ChiselScalatestTester {
 \end{lstlisting}
 
 \section{Formal Verification}
-
+\label{sec:formal}
 % introduce dynamic verification
 % While working on the RTL level description of a new circuit, designers need to quickly test their design
 % in order to iteratively improve it. Extensive testing is also a common requirement before sending a design to be
@@ -1102,13 +1101,14 @@ simulation testing~\cite{karandikar2018firesim}.
 
 
 \section{Evaluation}
+\label{sec:eval}
 
 We evaluate our ChiselVerify with two application examples. \todo{continue to write}
 
 \subsection{An Arbitration Circuit}
 
 We evaluate ChiselVerify with an arbiter circuit. The arbiter uses a ready/valid interface for the clients
-and the shared resource. The arbiter is build as a binary tree, where each node does a local arbitration
+and the shared resource. The arbiter is built as a binary tree, where each node does a local arbitration
 and contains a register to store the data until it can be communicated further up towards the root of the
 tree. Each local 2 to 1 arbiter has turn flag to be fair between the two requests. The assumption is that
 this local fairness translates to a global fairness of the full arbitration tree.
@@ -1117,7 +1117,7 @@ To test the arbiter, we specify properties that result in a verification plan:
 
 \begin{itemize}
 \item Each request shall eventually be seen at the output (the root node)
-\item Now requests shall be ``generated'' in the tree (out of thin air)
+\item No requests shall be ``generated'' in the tree (out of thin air)
 \item The maximum latency for a request shall be $n$ cycles without any competing requests
 \item The maximum latency for a request shall be $m$ cycles under full load
 \item The arbitration shall be fair, which means the bandwidth difference between clients shall be bound by $x$ \%.
@@ -1133,41 +1133,52 @@ over. And we provided as a solution a PR for Chisel \url{https://github.com/chip
 
 \subsection{Sorting in Hardware}
 
-\martin{rewrite}
+%\martin{rewrite}
+
+The other application example builds on a use-case provided
+by Microchip~\cite{microchip}. The use-case, which we implemented and verified, is a scheduling module for real-time systems built around a hardware priority queue.
+A host system can insert deadlines in the form of timestamps into the scheduling module which in turn presents the next upcoming deadline.
+
+The scheduling module is implemented as a state machine 
+operating on a set of memory banks. The memory contains a $k$-min-heap which is used by the internal priority queue to efficiently determine the next upcoming deadline. The implementation exploits parallelism to improve performance when fetching nodes from the heap memory by splitting siblings over separate memory banks. Furthermore, the search for the minimum key between a parent node and its children, a key operation when balancing the heap, can be parallelized by employing a redcution tree.
+
+%In our research, we received a use case from Microchip~\cite{microchip} in the form of a specification.
+%We implemented and used it to evaluate our verification library.
+
+%\subsubsection{Specification}
 
 
-In our research, we received a use case from Microchip~\cite{microchip} in the form of a specification.
-We implemented and used it to evaluate our verification library.
 
-\subsubsection{Specification}
+%The provided use case is a hardware implementation of a priority queue, which can be used in real-time systems requiring scheduling capabilities. 
+%For instance, timestamps for deadlines can be inserted and sorted such that the host system has access to the closest deadline.
 
-The provided use case is a hardware implementation of a priority queue, which can be used in real-time systems requiring scheduling capabilities. 
-For instance, timestamps for deadlines can be inserted and sorted such that the host system has access to the closest deadline.
+%Internally, the hardware priority queue relies on a min-heap tree data structure. 
+%The run-times of insertion and removal operations, both having a complexity of $O(\log_k N)$ where $N$ is the number of elements and $k$ the number children per node, are bound by the depth of the tree. 
+%By increasing $k$, the depth of the tree, as well the run-times, can be reduced.
 
-Internally, the hardware priority queue relies on a min-heap tree data structure. 
-The run-times of insertion and removal operations, both having a complexity of $O(\log_k N)$ where $N$ is the number of elements and $k$ the number children per node, are bound by the depth of the tree. 
-By increasing $k$, the depth of the tree, as well the run-times, can be reduced.
+%In order to remove elements from the priority queue, a reference ID is needed. 
+%Therefore, a reference ID must be added to each element by the priority queue's user.
 
-In order to remove elements from the priority queue, a reference ID is needed. 
-Therefore, a reference ID must be added to each element by the priority queue's user.
+%\subsubsection{Implementation}
+%\martin{this subsection is new and needs no rewrite}
 
-\subsubsection{Implementation}
-\martin{this subsection is new and needs no rewrite}
+%The implemented priority queue is described in Chisel.
+%It is split into three modules: The \texttt{Heapifier}, responsible for the sorting, the \texttt{QueueControl}, taking care
+%of the general control flow in the queue, and the \texttt{Memory}, module which handles memory accesses and can search the memory for a specific reference ID.
 
-The implemented priority queue is described in Chisel.
-It is split into three modules: The \texttt{Heapifier}, responsible for the sorting, the \texttt{QueueControl}, taking care
-of the general control flow in the queue, and the \texttt{Memory}, module which handles memory accesses and can search the memory for a specific reference ID.
+%In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. 
+%Therefore a layout is proposed in the specification where all child elements of a certain node are stored together under one memory address. 
+%This allows that a single memory access fetches all children of a node. Furthermore, when writing to the memory, masking can be used to overwrite the data of only one specific child.
 
-In order for the priority queue to work efficiently, it is crucial to optimize memory accesses. 
-Therefore a layout is proposed in the specification where all child elements of a certain node are stored together under one memory address. 
-This allows that a single memory access fetches all children of a node. Furthermore, when writing to the memory, masking can be used to overwrite the data of only one specific child.
+%\subsubsection{Testing and Verification}
 
-\subsubsection{Testing and Verification}
+The presented CRV and functional coverage functionalities of the ChiselVerify framework were used to verify the scheduling system and its submodules. 
+The circuit at a top level allows for the insertion of deadlines into the scheduling system and the removal of them. As such the interface is not very complex and only consists of three flow-control pins as well as data pins used to provide a new deadline and to refer to a deadline which should be removed. 
 
-The presented CRV and functional coverage functionalities of the ChiselVerify framework were used to verify the modules and the fully assembled queue.
-Due to the simple interface of the priority queue, which only consists of two boolean flow-control inputs alongside the data fields, only distributional constraints were used to reduce the number of transactions marked as invalid. 
 
-The functional coverage report was then used to check how well the inputs were spread over the spectrum of possibilities and to check whether certain input combinations were applied to the DUT at some point throughout the test. 
+%Due to the simple interface, which only consists of two flow-control inputs alongside the data fields, only distributional constraints were used to reduce the number of transactions marked as invalid. 
+The test-benches we built to verify the scheduling system made use of random stimuli for the data pins and directed stimuli for the flow-control.
+The functional coverage report was then used to check how well the stimuli driven on the DUT's data pins were spread over the spectrum of possible values and to check whether certain input combinations were applied to the DUT at some point throughout the test. 
 As an example, the timed coverage feature made it easy to check whether the \texttt{valid} input of the DUT was revoked at some point within 10 clock cycles after issuing an operation by adding the following cross-coverage group:
 
 \begin{lstlisting}[language=scala, caption={A timed cover construct.}, label={lst:timedcover}]
@@ -1177,8 +1188,10 @@ cover("timed_valid", dut.io.valid, dut.io.valid)(
 \end{lstlisting}
 
 In order to check whether the DUT matched the specification, a reference model was written for each module. 
-As a reference model for the whole priority queue, a class was written which simulates state and interaction on a transaction/query level. In order to abstract interaction with the DUT, wrapper classes (i.e., classes similar to BFMs) were employed. 
-These make it easy to think on a transaction or operation level when writing tests.
+At the top level this model was written at a transactional level while some submodules were tested against cycle accurate reference models.
+%As a reference model for the whole priority queue, a class was written which simulates state and interaction on a transaction/query level. 
+In order to abstract interaction with the DUT and provide an interface at the same abstraction level as the reference model, wrappers similar to BFMs were employed. 
+%These make it easy to think on a transaction or operation level when writing tests.
 
 To evaluate the efficiency of ChiselVerify, in terms of lines of code needed, we also verified our sorting hardware with UVM.
 The main difference, we found, between the two methods was UVM's necessity for boiler-plate classes in order to maintain its reusability.
@@ -1208,6 +1221,7 @@ CRV can be done by defining just a random object.
 %UVM does not offer any predefined bus functional models.
 
 \section{Conclusion}
+\label{sec:conclude}
 
 \martin{rewrite}
 

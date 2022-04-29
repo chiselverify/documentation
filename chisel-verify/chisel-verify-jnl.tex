@@ -203,35 +203,27 @@ As a showcase, we have verified an industrial use case, a min-heap, utilizing
 ChiselVerify to check as many features of the min-heap with as few lines of 
 verification code as possible.
 
-The main contribution of this paper is ChiselVerify~\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for hardware designs.
+The contributions of this paper are:
 
+\begin{enumerate}
+\item ChiselVerify,\footnote{https://github.com/chiselverify/chiselverify} an open-source verification library for hardware designs
+\item \todo{more}
+\end{enumerate}
+
+This paper is an extension of \cite{ChiselVerify:2021}.
+
+\todo{fix it}
 The paper is organized into 6 sections.
-Section II describes related work.
-Section III describes background on hardware verification.
+Section~\ref{sec:related} describes related work.
+Section~\ref{sec:chisel} gives a brief overview of Chisel.
+Section~\ref{sec:background} describes background on hardware verification.
 Section IV describes our solution for enabling verification in Chisel, namely ChiselVerify.
 Section V explores ChiselVerify on an industry-provided use case.
 Section VI concludes.
 
-\section{The Chisel Hardware Construction Language}\label{sec:chisel}
-
-Chisel is a modern hardware construction language embedded in the general purpose programming language Scala~\cite{bachrach2012chisel}.
-It allows designers to effectively write Scala programs that generate hardware descriptions at the register transfer level (RTL).
-One popular open-source application is the powerful RocketChip system on chip generator~\cite{rocketchip}.
-
-The user-facing API of Chisel is a Scala library with some syntactic sugar that allows the user to generate RTL designs.
-These designs then have to be converted into a format that is understood by simulators as well as FPGA and ASIC synthesis tools.
-The lowering is done by the FIRRTL compiler which converts a high-level intermediate representation (IR) into a normalized structural representation~\cite{izraelevitz2017firrtl}.
-The low-level representation is then exported into a subset of Verilog that was chosen as a common subset supported by the majority of backend tools.
-
-Besides serving as a convenient way to lower Chisel circuits into Verilog, the FIRRTL IR and accompanying compiler infrastructure
-also makes it easy to add circuit analysis and instrumentation passes.
-The Chisel frontend makes it possible to attach annotations (i.e., meta-data) to arbitrary signals in the circuit and to schedule compiler passes
-to be executed that are free to consume the annotations and make changes to the circuit.
-We will make use of these facilities throughout the paper.
-
-
 
 \section{Related Work}
+\label{sec:related}
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
 
 \martin{rewrite} \hjd{Attempted.}
@@ -300,6 +292,26 @@ To the best of our knowledge, ChiselVerify is the only framework that provides e
 \martin{Maybe we should already reference our WOSET paper here as well: \cite{verify:fuzzing:2021}} \hjd{Added a reference. Maybe the sentence should be re-phrased?}
 
 %\martin{And somewhere also our ETS paper.} Andrew: Did it in the functional coverage section.
+
+\section{The Chisel Hardware Construction Language}\label{sec:chisel}
+
+\martin{This should probably be merged with the section in background.}
+
+Chisel is a modern hardware construction language embedded in the general purpose programming language Scala~\cite{bachrach2012chisel, chisel:book}.
+It allows designers to effectively write Scala programs that generate hardware descriptions at the register transfer level (RTL).
+One popular open-source application is the powerful RocketChip system on chip generator~\cite{rocketchip}.
+
+The user-facing API of Chisel is a Scala library with some syntactic sugar that allows the user to generate RTL designs.
+These designs then have to be converted into a format that is understood by simulators as well as FPGA and ASIC synthesis tools.
+The lowering is done by the FIRRTL compiler which converts a high-level intermediate representation (IR) into a normalized structural representation~\cite{izraelevitz2017firrtl}.
+The low-level representation is then exported into a subset of Verilog that was chosen as a common subset supported by the majority of backend tools.
+
+Besides serving as a convenient way to lower Chisel circuits into Verilog, the FIRRTL IR and accompanying compiler infrastructure
+also makes it easy to add circuit analysis and instrumentation passes.
+The Chisel frontend makes it possible to attach annotations (i.e., meta-data) to arbitrary signals in the circuit and to schedule compiler passes
+to be executed that are free to consume the annotations and make changes to the circuit.
+We will make use of these facilities throughout the paper.
+
 
 \section{Background}
 \label{sec:background}

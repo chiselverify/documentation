@@ -19,7 +19,6 @@
 \newcommand{\SV}{SystemVerilog\xspace}
 
 
-
 % fatter TT font
 \renewcommand*\ttdefault{txtt}
 % another TT, suggested by Alex
@@ -1103,9 +1102,17 @@ simulation testing~\cite{karandikar2018firesim}.
 \section{Evaluation}
 \label{sec:eval}
 
-We evaluate our ChiselVerify with two application examples. \todo{continue to write}
+In order to evaluate the different verification tools provided by ChiselVerify, we will be using two different example circuits, namely an arbiter circuit and a priority queue provided by Microchip~\cite{microchip}.
+These are tested using ChiselTest test-benches augmented with our verification tools.
+The test-benches are then compared to similar tests writing using UVM and \texttt{cocotb}, using the generated Verilog description as a DUT.
+We have selected UVM since it is an industry standard that can be used to verify Verilog designs, an \texttt{cocotb} since it enables similar verification functionalities in a high-level environment like what we propose with ChiselVerify.
+The results are then compared in terms of the verbosity of the verification code, and runtime on similar tests.
+As a final evaluation, we look at the overhead caused by the use of ChiselVerify specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest testbench, to the same one enhanced with our verification tools.
 
-\subsection{An Arbitration Circuit}
+\subsection{Evaluation Circuits}
+We evaluate ChiselVerify on two circuits, which we describe in the following paragraphs.
+
+\subsubsection{An Arbitration Circuit}
 
 We evaluate ChiselVerify with an arbiter circuit. The arbiter uses a ready/valid interface for the clients
 and the shared resource. The arbiter is built as a binary tree, where each node does a local arbitration
@@ -1129,9 +1136,7 @@ circuit.
 \martin{Show that the Chisel treeReduce is broken and show our solution. Need to copy that test
 over. And we provided as a solution a PR for Chisel \url{https://github.com/chipsalliance/chisel3/pull/2318}}
 
-
-
-\subsection{Sorting in Hardware}
+\subsubsection{Sorting in Hardware}
 
 %\martin{rewrite}
 
@@ -1196,29 +1201,67 @@ In order to abstract interaction with the DUT and provide an interface at the sa
 To evaluate the efficiency of ChiselVerify, in terms of lines of code needed, we also verified our sorting hardware with UVM.
 The main difference, we found, between the two methods was UVM's necessity for boiler-plate classes in order to maintain its reusability.
 For example, gathering the same functional coverage data using UVM required the following: 
+%\begin{itemize}
+%    \item Create a UVM-subscriber based coverage class.
+%    \item Instantiate the current DUT (\texttt{Heapifier dut = new;})
+%    \item Declare the verification plan: 
+%    \begin{lstlisting}[language=verilog]
+%	covergroup cg_all_zeros_ones;
+%	OPS: coverpoint dut.cmd.op {
+%		bin insertion = {0};
+%		bin removal = {1};
+%	}
+%	//...
+%    \end{lstlisting}
+%    \item Define \texttt{build\_phase} and \texttt{write} functions.
+%    \item Define the coverage class constructor.
+%\end{itemize}  
+The UVM subscriber must then be used inside of a whole UVM test-bench, which itself contains many other classes and constructs.
+This also holds for UVM's random objects.
+%For comparison, our ChiselVerify test-bench is defined with just 24 lines of code,
+%while its UVM counterpart takes up 96 lines, including only the \texttt{uvm\_subscriber} class.
+%This is a significant reduction and provides a good indication of how our Scala-based solution minimizes the amount of code needed to utilize advanced verification features. \\
+%In summary, for functional coverage, all that needs to be done is to define a verification plan and sample it during a test, and
+%CRV can be done by defining just a random object. 
+%UVM does not offer any predefined bus functional models.
+
+\subsection{Evaluation Results}
+We can now take a look at the different results obtained during our evaluation.
+\subsubsection{Verification verbosity}
+We start by comparing the three verification languages in terms the verbosity, which is measured in ``verification lines per source lines of code", a metric used in other works to partially evaluate verification languages~\cite{Nagini:2018, MuellerSchwerhoffSummers16, dobisCoverage:ETS22}.
+For this, we measure the overhead of the functional coverage and CRV tools provided in ChiselVerify against those provided in UVM and \texttt{cocotb}.
+We start by adding functional coverage to the simple testbench presented for the arbiter circuit. 
+In order to do so, we need to define a verification plan that correctly captures information about the expected behavior of our DUT.
+The arbiter circuit takes as input a Vector of $n$ \texttt{DecoupledIO} elements, which expands to $3n$ ports in the generated verilog.
+In order to conduct a coherent experiment, we set $n = 7$, and will define our specification accordingly.
+Our verification plan will thus cover the inputs and output \texttt{ready}, \texttt{valid}, and \texttt{bits} ports.
+ 
+\paragraph{Functional Coverage in UVM} In order to gather functional coverage information about our design using UVM, we have to work with the generated Verilog description.
+This is done using the following structure:
 \begin{itemize}
     \item Create a UVM-subscriber based coverage class.
-    \item Instantiate the current DUT (\texttt{Heapifier dut = new;})
-    \item Declare the verification plan: 
+    \item Instantiate the current DUT (\texttt{Arbiter dut = new;})
+    \item Declare the verification plan, where a single port is covered with: 
     \begin{lstlisting}[language=verilog]
-	covergroup cg_all_zeros_ones;
-	OPS: coverpoint dut.cmd.op {
-		bin insertion = {0};
-		bin removal = {1};
+	covergroup cg_input0;
+	IN0_READY: coverpoint dut.io_in_0_ready {
+		bins zero = {0};
+		bins one = {1};
+		bins transitionzto 0 => 1;
+		bins transitionotz 1 => 0;
 	}
-	//...
+	IN0_VALID: coverpoint dut.io_in_0_valid {
+		//Same bins as in IN0_READY
+	}
+	IN0_BITS: coverpoint dut.io_in_0_bits;
+	endgroup cg_input0
+	// [...] Repeat for each port
     \end{lstlisting}
     \item Define \texttt{build\_phase} and \texttt{write} functions.
     \item Define the coverage class constructor.
 \end{itemize}  
-The UVM subscriber must then be used inside of a whole UVM test-bench, which itself contains many other classes and constructs.
-This also holds for UVM's random objects.
-For comparison, our ChiselVerify test-bench is defined with just 24 lines of code,
-while its UVM counterpart takes up 96 lines, including only the \texttt{uvm\_subscriber} class.
-This is a significant reduction and provides a good indication of how our Scala-based solution minimizes the amount of code needed to utilize advanced verification features. \\
-In summary, for functional coverage, all that needs to be done is to define a verification plan and sample it during a test, and
-CRV can be done by defining just a random object. 
-%UVM does not offer any predefined bus functional models.
+Only considering coverage-related code, this requires 158 lines of SystemVerilog code. 
+
 
 \section{Conclusion}
 \label{sec:conclude}

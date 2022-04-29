@@ -770,31 +770,47 @@ However, these capabilities may be further improved by abstracting away groups o
 %However, this may be further optimized by abstracting away groups of wires and operating on an operation or transaction level instead.
 
 \subsection{Verification with Bus Functional Models}
-Finally, many designers ensure portability and flexibility by equipping their designs with standardized interfaces. 
-The verification engineers can test such components by combining CRV and coverage measures with BFMs to abstract their 
-operation to a transaction level. In this work, we provide an example BFM for AXI4, an open standard by ARM~
-\cite{axi4standard}.
+%Finally, many designers ensure portability and flexibility by equipping their designs with standardized interfaces. 
+%The verification engineers can test such components by combining CRV and coverage measures with BFMs to abstract their 
+%operation to a transaction level. In this work, we provide an example BFM for AXI4, an open standard by ARM~
+%\cite{axi4standard}.
+
+Component re-use, portability and flexibility are also interesting in the context of digital 
+designs. A good way to achieve these characteristics is by equipping one's designs with standardized 
+interfaces. Verification engineers can test such components at a transaction level by combining CRV 
+and coverage measures with BFMs. As an example, we provide a BFM for AXI4, an open standard by 
+ARM~\cite{axi4standard}.
 
 \subsubsection{Introduction to AXI4}
-The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on ready-valid handshaking. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}. The read channels are \textit{Read Address} and \textit{Read Data}.
+%The Advanced eXtensible Interface (AXI) protocol by ARM is a highly flexible interconnect standard based around five independent channels; three for write operations and two for read operations. Operations, known as transactions, consist of transfers across either set of channels. All channels share a common clock and active-low reset and base their transfers on ready-valid handshaking. The write channels are \textit{Write Address}, \textit{Write Data}, and \textit{Write Response}. The read channels are \textit{Read Address} and \textit{Read Data}.
 
-Consider, for example, a write transaction of 16 data elements in which the manager first provides the transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel followed by the 16 data elements one at a time over the \textit{Write Data} channel. Finally, the subordinate indicates the status of the transaction over the \textit{Write Response} channel. Beware that the write data may be transferred prior to the transaction attributes due to channel independence, and similarly, the \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time~\cite{axi4standard}.
+The Advanced eXtensible Interface (AXI) protocol by ARM is a generic, flexible interconnect standard. It comprises five independent handshake-based channels; three for write operations (\textit{Write Address}, \textit{Write Data}, and \textit{Write Response}) and two for read operations (\textit{Read Address} and \textit{Read Data}). Interconnect operations, known as transactions, consist of sequences of transfers across either set of channels. All channels share a common clock and reset.
+
+%Consider, for example, a write transaction of 16 data elements in which the manager first provides the transaction attributes (e.g., target address and data size) as a single transfer over the \textit{Write Address} channel followed by the 16 data elements one at a time over the \textit{Write Data} channel. Finally, the subordinate indicates the status of the transaction over the \textit{Write Response} channel. Beware that the write data may be transferred prior to the transaction attributes due to channel independence, and similarly, the \textit{Read Address} and \textit{Read Data} channels may operate independently at the same time~\cite{axi4standard}.
+
+As an example, consider a write transaction of 16 data elements. First, the manager provides the transaction attributes (e.g., target address and data size) as a transfer on the \textit{Write Address} channel. Next, it transfers the data elements one at a time over the \textit{Write Response} channel. Finally, the subordinate indicates transaction status on the \textit{Write Response} channel. Note that channel independence means that data may be transferred before the transaction attributes and that the read channels may operate at the same time~\cite{axi4standard}.
 
 \subsubsection{Implementation}
-Our implementation of an AXI4 BFM includes bundles defining the five different channels, abstract classes representing both manager and subordinate entities, transaction-related classes, and the BFM itself, the \texttt{FunctionalManager} class. The BFM is parameterized with a DUT that extends a \texttt{Subordinate} class and provides a simple, transaction-level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx}, which do precisely as their names indicate; create and enqueue write and read transactions.
+%Our implementation of an AXI4 BFM includes bundles defining the five different channels, abstract classes representing both manager and subordinate entities, transaction-related classes, and the BFM itself, the \texttt{FunctionalManager} class. The BFM is parameterized with a DUT that extends a \texttt{Subordinate} class and provides a simple, transaction-level interface to control the DUT. As such, its two most important public methods are \texttt{createWriteTrx} and \texttt{createReadTrx}, which do precisely as their names indicate; create and enqueue write and read transactions.
 
-Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the methods mentioned above (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. When, for example, a write transaction is enqueued, and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
+To enable easy verification of AXI4-interfaced components using ChiselVerify, we provide definitions of channel wire bundles, abstract manager and subordinate classes, and a transaction-based BFM: the \texttt{FunctionalManager} class. Through parameterizing the manager with a \texttt{Subordinate} DUT provides a simple interface to control the DUT. Its two most important methods are \texttt{createWriteTrx} and \texttt{createReadTrx} to create and enqueue write and read transactions, respectively.
+
+%Internally, the BFM makes use of ChiselTest's multithreading features to allow for (a) non-blocking calls to the methods mentioned above (i.e., one can enqueue multiple transactions without waiting for their completion) and (b) emulating the channel independence more closely. When, for example, a write transaction is enqueued, and no other write transactions are in-flight, the BFM spawns three new threads, one for each required channel. The threads each handle the handshaking necessary to operate the channels.
+
+Our BFM implementation utilizes ChiselTest's multithreading features to allow for non-blocking calls to the aforementioned methods and for emulating the channel independence more closely. When a write transaction is enqueued and no other write transactions are in flight, the BFM spawns three new threads, one for each channel. The threads handle the bit-fiddling required to operate the channels.
 
 \subsubsection{A Test Example}
-Consider as an example using the BFM to test a module called \texttt{Memory}, as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction. Beware that due to channel independence, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+%Consider as an example using the BFM to test a module called \texttt{Memory}, as shown below. Creating a write transaction with 16 data elements (minimum burst length is 1, hence \texttt{len = 15} means a burst of 16 items) takes just one call to a method the majority of whose arguments have default values. It is equally simple to create a subsequent read transaction. Beware that due to channel independence, not waiting for a write to complete before starting to read from the same address may return incorrect results depending on the implementation of the DUT.
+
+Returning to the example of transferring 16 data elements, consider the test for a module called \texttt{Memory} listed below. First, a write transaction with 16 data elements takes just one call to \texttt{createWriteTrx} most of whose arguments have default values. It is equally simple to create a subsequent read transaction. Depending on the DUT implementation and due to channel independence, not waiting for a write to complete before initiating a read may return incorrect results.
 \begin{lstlisting}[language=scala, caption={Using the AXI4 BFM with ChiselTest}, label={lst:axitest}]
-class MemoryTester extends FlatSpec with ChiselScalatestTester {
-  behavior of "My Memory module"
+class MemorySpec extends AnyFlatSpec with ChiselScalatestTester {
+  behavior of "My memory module"
   it should "write and read" in {
     test(new Memory()) { dut =>
       val bfm = new FunctionalManager(dut)
-      bfm.createWriteTrx(0, Seq.fill(16)
-      	(0x7FFFFFFF), len = 15, size = 2)
+      bfm.createWriteTrx(0, Seq.fill(16){0x7FFFFFFF}, 
+        len = 15, size = 2)
       bfm.createReadTrx(0, len = 15, size = 2)
     }
   }

@@ -105,42 +105,29 @@ s183735@student.dtu.dk, s190057@student.dtu.dk, simon.thye@gmail.com, richard.li
 \thispagestyle{empty}
 \pagestyle{empty}
 
+
 \begin{abstract}
-Modern digital hardware is becoming ever more complex. The development of %Performance increase with general-purpose processors has come to a halt.
-different application-specific accelerators rather than traditional %We can no longer depend on Moore's Law to increase computing performance.
-general purpose processors calls for advanced development methods %The only way to achieve higher performance or lower energy consumption
-not only for design, but equally so for subsequent verification. %is by building domain-specific hardware accelerators.
-Recently, this has made engineers propose an agile hardware development flow. %To efficiently design and verify those domain-specific accelerators, we need
-However, one of the main obstacles when proposing such a method is the lack of %agile hardware development. One of the main obstacles when proposing such a modern method
-efficient tools. %is the lack of modern tools to attack it. To verify a design in such a time-constrained development
-%method, one needs to have efficient tools both for design and verification.
 
-Chisel, a high-level hardware construction language, was introduced in order to combat this lack.
-Since this already enables agile hardware design, we instead focus our attention on the verification flow. %circuits described in Chisel. It builds on top of the Chisel
-Thus, this paper proposes ChiselVerify, an open-source library for verifying %hardware construction language and uses Scala to drive the verification process.
-circuits described in Chisel. It builds on top of Chisel and uses Scala to drive %ChiselVerify increases the productivity of the verification engineer by allowing hardware testing to be done in a modern high-level programming environment.
-the verification process. The solution is well integrated into the existing Chisel 
-universe, making it an extension of currently existing testing libraries.
+We can no longer depend on Moore's Law to increase computing performance.
+Performance increase with general-purpose processors has come to a halt.
+The only way to achieve higher performance or lower energy consumption
+is by building application-specific accelerators.
+To support the development of such accelerators we need better development
+tools and also verification tools.
 
-
-%We implement ChiselVerify in a way inspired by the functionalities found in SystemVerilog. This allows one to use
-%functional coverage, constrained-random verification, bus functional models, transaction-level modelling and much more
-%during the verification process of a design in a contemporary high-level programming ecosystem.
+Chisel, as a hardware construction language, speeds up the development
+of digital designs. However, the Chisel infrastructure lacks tools for
+verification. This paper introduces ChiselVerify, as open-source library
+to support the verification of digital designs in Scala.
+It  uses ChiselTest, the current testing tool for Chisel.
+ChiselVerify supports
+functional coverage, constrained-random verification, bus functional models,
+and transaction-level modeling.
 \end{abstract}
 
 \begin{IEEEkeywords}
 digital design, verification, Chisel, Scala
 \end{IEEEkeywords}
-
-%\section{TODO}
-%
-%\begin{itemize}
-%\item REVIEW 1: Re-write abstract and introduction - remove anything not related to verification. Remove negative wording on Verilog and VHDL. Re-consider necessity of section III.A and Fig. 2. Need for a more advanced use case.
-%\item REVIEW 2: Include ChiselTest and ChiselVerify in Fig. 1. Re-write sections 4, 5 and 6, and ensure close connection to introduction. Add a few words on ChiselVerify as an agile development tool. Need for a more advanced use case (with comparison to UVM). Remove filler sentences.
-%\item REVIEW 3: Prove claimed productivity increase.
-%\item REVIEW 4: Need for a more advanced use case.
-%\item REVIEW 5: Prove claimed productivity increase. Add table of available methods (section III).
-%\end{itemize}
 
 \section{Notes}
 
@@ -173,6 +160,11 @@ We can also discuss on Slack.
 
 \section{Introduction}
 \label{sec:introduction}
+
+We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
+Performance increase with general-purpose processors has come to a halt.
+The only way to achieve higher performance or lower energy consumption
+is by building domain-specific hardware accelerators~\cite{domain-hw-acc:2020}.
 
 \martin{rewrite}
 

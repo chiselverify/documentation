@@ -19,11 +19,6 @@
 \newcommand{\SV}{SystemVerilog\xspace}
 
 
-% code highlighting
-\usepackage{minted}
-\usemintedstyle{friendly}
-\setminted{fontsize=\footnotesize, frame=lines, framesep=2mm }
-\newcommand\scalainline[1]{\mintinline{scala}{#1}}
 
 % fatter TT font
 \renewcommand*\ttdefault{txtt}
@@ -83,16 +78,17 @@
 %\IEEEauthorblockA{No Institute Given}
 %}
 
-\author{\IEEEauthorblockN{Order TBD before submission \hjd{(Kevin should be ahead of me here...)}, Andrew Dobis\IEEEauthorrefmark{1}, Tjark Petersen\IEEEauthorrefmark{1}, Hans Jakob Damsgaard\IEEEauthorrefmark{1},\\
-Kevin Laeufer\IEEEauthorrefmark{2}, Kasper Juul Hesse Rasmussen\IEEEauthorrefmark{1}, \\
-Enrico Tolotto\IEEEauthorrefmark{1}, Simon Thye Andersen\IEEEauthorrefmark{1}, Richard Lin\IEEEauthorrefmark{2}, Martin Schoeberl\IEEEauthorrefmark{1}}\\
+\author{\IEEEauthorblockN{Andrew Dobis\IEEEauthorrefmark{1}, Kevin Laeufer\IEEEauthorrefmark{2}, Hans Jakob Damsgaard\IEEEauthorrefmark{1}, Tjark Petersen\IEEEauthorrefmark{1},\\
+Kasper Juul Hesse Rasmussen\IEEEauthorrefmark{1},
+Enrico Tolotto\IEEEauthorrefmark{1}, Simon Thye Andersen\IEEEauthorrefmark{1},\\
+Richard Lin\IEEEauthorrefmark{2}, Martin Schoeberl\IEEEauthorrefmark{1}}\\
 \IEEEauthorblockA{\IEEEauthorrefmark{1}\textit{Department of Applied Mathematics and Computer Science} \\
 \textit{Technical University of Denmark}\\
 Lyngby, Denmark \\\\
 \IEEEauthorrefmark{2}\textit{Department of Electrical Engineering and Computer Sciences} \\
 \textit{UC Berkeley}\\
 Berkeley, CA \\\\
-andrew.dobis@inf.ethz.ch, hans.damsgaard@tuni.fi, laeufer@berkeley.edu, s186083@student.dtu.dk, \\
+andrew.dobis@inf.ethz.ch,  laeufer@berkeley.edu, hans.damsgaard@tuni.fi, s186083@student.dtu.dk, \\
 s183735@student.dtu.dk, s190057@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
 }
 
@@ -847,11 +843,7 @@ cycles of its execution.
 
 \begin{figure}
     \centering
-\begin{minted}[
-fontsize=\footnotesize,
-frame=lines,
-framesep=2mm,
-]{scala}
+\begin{lstlisting}[language=scala]
 class Quiz15 extends Module {
   /* [...] I/O definitions */
   val mem = SyncReadMem(256, UInt(32.W), WriteFirst)
@@ -870,22 +862,23 @@ class ZipCpuQuizzes extends AnyFlatSpec
     verify(new Quiz15, Seq(BoundedCheck(5)))
   }
 }
-\end{minted}
+\end{lstlisting}
+
 \includegraphics{woset_2021_quiz15.pdf}
 \caption[Chisel verification example.]{This example verifies that when a Chisel memory with synchronous read port and
-\scalainline{WriteFirst} behavior has a read and a write access to the same address,
+\code{WriteFirst} behavior has a read and a write access to the same address,
 the new value will be returned.
-The check fails if \scalainline{WriteFirst} is substituted with \scalainline{ReadFirst} or \scalainline{Undefined} (Section~\ref{sec:undef}).
+The check fails if \code{WriteFirst} is substituted with \code{ReadFirst} or \code{Undefined} (Section~\ref{sec:undef}).
 It is based on \href{https://zipcpu.com/answer/2021/07/03/fv-answer15.html}{a Verilog example from a popular blog}.
-In the Chisel version, the assertion is automatically delayed until at least one cycle after reset, when there are valid \scalainline{past} values available
+In the Chisel version, the assertion is automatically delayed until at least one cycle after reset, when there are valid \code{past} values available
 (Section~\ref{sec:past}).
-A bounded model check is executed by the \scalainline{verify} command, which is called from a standard Scala unit test (Section~\ref{sec:flow}).
+A bounded model check is executed by the \code{verify} command, which is called from a standard Scala unit test (Section~\ref{sec:flow}).
 When the check fails, the failing inputs and starting states are replayed on a simulator, resulting in a waveform file that is identical
 to the output we would get from a dynamic verification run.
 However, since we used bounded model checking to find the failing trace, it will be as short as possible.
 In our example, two cycles after reset are needed to fail the property.
 The first cycle contains the read and write requests and the second cycle observes the arbitrary result on the read port if
-we set the memory behavior to \scalainline{Undefined} for read/write conflicts.
+we set the memory behavior to \code{Undefined} for read/write conflicts.
 The included screenshot was obtained with the open-source GTKWave waveform viewer.
 }
 \label{fig:quiz15}
@@ -929,11 +922,11 @@ The resulting Scala project automatically includes dependencies on the Chisel an
 libraries which will be downloaded by the Scala build tool.
 
 The template contains an example of using the chiseltest library to test a greatest common denominator (GCD) circuit in simulation.
-This test can be executed through a Scala IDE or from a shell with the \scalainline{sbt test} command.
-In order to turn this test into a formal check, we just need to substitute the \scalainline{test(new DecoupledGcd(16))}
-command with \scalainline{verify(new DecoupledGcd(16),} as well as provide the type of verification job as
-\scalainline{BoundedCheck(10)} and extend the testing class with the \scalainline{Formal} trait.
-If the user now clicks the test icon again or runs the \scalainline{sbt test} command, a formal bounded check will
+This test can be executed through a Scala IDE or from a shell with the \code{sbt test} command.
+In order to turn this test into a formal check, we just need to substitute the \code{test(new DecoupledGcd(16))}
+command with \code{verify(new DecoupledGcd(16),} as well as provide the type of verification job as
+\code{BoundedCheck(10)} and extend the testing class with the \code{Formal} trait.
+If the user now clicks the test icon again or runs the \code{sbt test} command, a formal bounded check will
 be executed for ten cycles after reset instead of a simulation test.
 The only additional program required is a copy of the open-source SMT solver Z3~\cite{de2008z3}.
 
@@ -950,19 +943,19 @@ The success or failure will be communicated the same way as any other unit test.
 Initially the check will always pass, no matter which changes we make to our circuit.
 Since the GCD circuit contains no assertions, there is nothing to tell the solver if the circuits misbehaves.
 In order to actually verify something, we can add assertions directly to the circuit by using the
-Chisel \scalainline{assert} statement.
-The decoupled GCD circuit used as an example has an \scalainline{input} and an \scalainline{output} channel
-as well as a 1-bit \scalainline{busy} register.
+Chisel \code{assert} statement.
+The decoupled GCD circuit used as an example has an \code{input} and an \code{output} channel
+as well as a 1-bit \code{busy} register.
 We expect that while the circuit is busy, no new input is accepted:
-\begin{minted}{scala}
+\begin{verbatim}
 when(busy) {
   verification.assert(!input.fire())
 }
-\end{minted}
+\end{verbatim}
 This assertion will pass because the circuit does indeed fulfil the property after reset.
 
 
-We now introduce a small bug by connecting \scalainline{input.ready} to \scalainline{true.B} and rerun the test
+We now introduce a small bug by connecting \code{input.ready} to \code{true.B} and rerun the test
 An assertion violation will be reported one cycle after reset.
 The user is also presented with an error message indicating the Scala line number of the failing assertion.
 To debug the problem, they can find a VCD waveform dump in the standard test directory created by our
@@ -974,12 +967,12 @@ as if the user was running a simulation test.
 
 A more advanced property we expect to hold is that if the input and output channels are idle, the busy
 signal will remain the same in the next cycle:
-\begin{minted}{scala}
+\begin{verbatim}
 when(past(!input.fire() && !output.fire())) {
   verification.assert(stable(busy))
 }
-\end{minted}
-Here we make use of our \scalainline{past} function for temporal properties which is described in detail in Section~\ref{sec:past}.
+\end{verbatim}
+Here we make use of our \code{past} function for temporal properties which is described in detail in Section~\ref{sec:past}.
 
 
 
@@ -988,11 +981,11 @@ Here we make use of our \scalainline{past} function for temporal properties whic
 \begin{figure}
 \centering
 \includegraphics{woset_verify_flow.pdf}
-\caption{The \scalainline{verify} command is implemented as part of the chiseltest library and uses several compiler passes that make up the FIRRTL formal backend.
-We hook into the FIRRTL compiler to model undefined behavior with \scalainline{DefRandom} statements and to delay temporal assertions as part of our safe past construct.
+\caption{The \code{verify} command is implemented as part of the chiseltest library and uses several compiler passes that make up the FIRRTL formal backend.
+We hook into the FIRRTL compiler to model undefined behavior with \code{DefRandom} statements and to delay temporal assertions as part of our safe past construct.
 We then add reset assumptions, flatten the system, convert to a formal transition system and then serialize the system to SMTLib or btor2.
 We provide bindings to launch various formal engines from chiseltest.
-If a counter example is found, we convert the \scalainline{DefRandom} nodes in the circuit to registers before loading the circuit into the treadle simulator
+If a counter example is found, we convert the \code{DefRandom} nodes in the circuit to registers before loading the circuit into the treadle simulator
 to replay the failure and obtain a simulation quality VCD and error message.}
 \label{fig:verify-flow}
 \end{figure}
@@ -1009,7 +1002,7 @@ example traces on our FIRRTL simulator called treadle.
 Users want their Chisel designs to be implemented with as little hardware as possible.
 In order to allow for efficient implementations, the FIRRTL specification was crafted to allow
 some operations to result in arbitrary results.
-For example, a wire connected to \scalainline{DontCare} or to the result of a division by zero carries an arbitrary value.
+For example, a wire connected to \code{DontCare} or to the result of a division by zero carries an arbitrary value.
 Reading from a memory while the read port is disabled, reading from the same address that another port is writing to or
 writing from two memory ports to the same address all generate an arbitrary value result.
 Not all of these behaviors are represented in the generated Verilog.
@@ -1026,11 +1019,11 @@ Since we do not have the large resources of a major EDA vendor, we would like to
 If we can replay the failing trace on our existing simulator, the VCD waveform dump and the error reporting will be of the same quality as
 when writing a concrete test bench.
 In order to be able to replay failures caused by arbitrary values, we carefully engineered two FIRRTL passes that analyze the circuit and
-add wires to detect when a result is arbitrary as well as a mux to substitute the result with a connection to a \scalainline{DefRandom} node in that case.
-The new \scalainline{DefRandom} construct provides a named arbitrary value which can change every clock cycle,
-very much like a \scalainline{anyseq} annotated wire in Verilog.
-The formal backend implements \scalainline{DefRandom} nodes as inputs that can be freely chosen by the formal engine.
-To make \scalainline{DefRandom} work with our simulator we  replace the nodes with registers of the same type that are never updated by the hardware.
+add wires to detect when a result is arbitrary as well as a mux to substitute the result with a connection to a \code{DefRandom} node in that case.
+The new \code{DefRandom} construct provides a named arbitrary value which can change every clock cycle,
+very much like a \code{anyseq} annotated wire in Verilog.
+The formal backend implements \code{DefRandom} nodes as inputs that can be freely chosen by the formal engine.
+To make \code{DefRandom} work with our simulator we  replace the nodes with registers of the same type that are never updated by the hardware.
 Instead we use the software interface to our simulator to update these registers with the values chosen by the formal engine in each cycle.
 Figure~\ref{fig:verify-flow} shows our compilation flow in more detail.
 
@@ -1048,12 +1041,12 @@ Multi-clock support through a clock stuttering pass is work in progress, for now
 \begin{figure}[t]
   \centering
   \includegraphics{woset_safe_past.pdf}
-  \caption{The temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \scalainline{past} function:
-  One to delay the condition from the \scalainline{when} statement and the other to delay the input data before it is compared to the current output data.
-  By default an assertion is only enabled when reset is inactive and the surrounding \scalainline{when} condition is true.
+  \caption{The temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \code{past} function:
+  One to delay the condition from the \code{when} statement and the other to delay the input data before it is compared to the current output data.
+  By default an assertion is only enabled when reset is inactive and the surrounding \code{when} condition is true.
   Our compiler pass analyzes the connectivity graph with the result that both the enable condition as well as the predicate are delayed by a single past register.
   Thus the assertion enable signal is automatically extended to include the condition that at least 1 cycle must have past since the last reset.
-  The new enable condition is derived from a synthesizable, saturating \scalainline{cycle} counter which is created by the compiler pass.
+  The new enable condition is derived from a synthesizable, saturating \code{cycle} counter which is created by the compiler pass.
   }
   \label{fig:past}
   \end{figure}
@@ -1079,15 +1072,15 @@ disable reset assumptions or increase the number of reset cycles.
 \subsection{Simple Temporal Assertions}\label{sec:past}
 
 
-While a simple \scalainline{assert} statement allows us to specify a property over signals during a single
+While a simple \code{assert} statement allows us to specify a property over signals during a single
 cycle, it is not enough to express properties that require us to reason about multiple cycles.
 The traditional answer to this problem are temporal assertion languages like SystemVerilog Assertions~\cite{SystemVerilog}.
 However, these are complex to implement efficiently and as of now there has not been a successful open-source implementation.
-The community around SymbiYosys has instead advocated for the use of plain assertions with the Verilog \scalainline{past}
+The community around SymbiYosys has instead advocated for the use of plain assertions with the Verilog \code{past}
 function. This function returns the previous value of an expression and thus allows us to write properties that span multiple cycles.
 
-While conceptually simple, the \scalainline{past} construct as defined by the Verlog standard has one major problem:
-In the first cycle of the circuit execution, there is no past value and the \scalainline{past} function always returns X.
+While conceptually simple, the \code{past} construct as defined by the Verlog standard has one major problem:
+In the first cycle of the circuit execution, there is no past value and the \code{past} function always returns X.
 Thus the user has to take care to keep track of how many cycles have past since the verification started and only enable assertions
 once all past values are valid.
 This particular pitfall is often the topic of a \href{http://zipcpu.com/quiz/2019/11/16/quiz07.html}{popular formal verification quiz}.
@@ -1095,16 +1088,16 @@ This particular pitfall is often the topic of a \href{http://zipcpu.com/quiz/201
 %the circuit was going through reset.
 
 We made use of some of the unique capabilities offered by Chisel in order to implement what we consider to be a safer version of the
-\scalainline{past} function.
-In the frontend, our \scalainline{past} is a Scala function which creates an appropriate amount of delay registers in the current
-clock and reset domain. That alone provides functionality similar to the Verilog version of \scalainline{past}.
+\code{past} function.
+In the frontend, our \code{past} is a Scala function which creates an appropriate amount of delay registers in the current
+clock and reset domain. That alone provides functionality similar to the Verilog version of \code{past}.
 We go further by annotating the delay register and asking for a FIRRTL pass to be run when lowering the design.
-This pass looks at a graph of all \scalainline{past} delay registers and assertions in a module.
+This pass looks at a graph of all \code{past} delay registers and assertions in a module.
 An edge indicates that the input to the assertion or register is connected to the output if a delay register through combinatorial logic.
 We traverse the resulting tree (by design there can be no cycles) starting at each assertion
-to find the longest path of \scalainline{past} delay registers in order to determine the number of cycles the assertion needs to be delayed.
+to find the longest path of \code{past} delay registers in order to determine the number of cycles the assertion needs to be delayed.
 Finally we generate a cycle counter register and use its value to guard the individual assertions.
-Since our \scalainline{past} function only relies on synthesizable hardware it can also be used in software and FPGA based
+Since our \code{past} function only relies on synthesizable hardware it can also be used in software and FPGA based
 simulation testing~\cite{karandikar2018firesim}.
 
 

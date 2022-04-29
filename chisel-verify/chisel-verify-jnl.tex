@@ -1105,9 +1105,9 @@ simulation testing~\cite{karandikar2018firesim}.
 In order to evaluate the different verification tools provided by ChiselVerify, we will be using two different example circuits, namely an arbiter circuit and a priority queue provided by Microchip~\cite{microchip}.
 These are tested using ChiselTest test-benches augmented with our verification tools.
 The test-benches are then compared to similar tests writing using UVM and \texttt{cocotb}, using the generated Verilog description as a DUT.
-We have selected UVM since it is an industry standard that can be used to verify Verilog designs, an \texttt{cocotb} since it enables similar verification functionalities in a high-level environment like what we propose with ChiselVerify.
-The results are then compared in terms of the verbosity of the verification code, and runtime on similar tests.
-As a final evaluation, we look at the overhead caused by the use of ChiselVerify specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest testbench, to the same one enhanced with our verification tools.
+We have selected UVM since it is an industry standard that can be used to verify Verilog designs, and \texttt{cocotb} since it enables similar verification functionalities in a high-level environment like what we propose with ChiselVerify.
+The results are then compared in terms of the verbosity of the verification code.
+As a final evaluation, we look at the overhead induced by the use of ChiselVerify specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest testbench, to the same one enhanced with our verification tools.
 
 \subsection{Evaluation Circuits}
 We evaluate ChiselVerify on two circuits, which we describe in the following paragraphs.
@@ -1145,7 +1145,7 @@ by Microchip~\cite{microchip}. The use-case, which we implemented and verified, 
 A host system can insert deadlines in the form of timestamps into the scheduling module which in turn presents the next upcoming deadline.
 
 The scheduling module is implemented as a state machine 
-operating on a set of memory banks. The memory contains a $k$-min-heap which is used by the internal priority queue to efficiently determine the next upcoming deadline. The implementation exploits parallelism to improve performance when fetching nodes from the heap memory by splitting siblings over separate memory banks. Furthermore, the search for the minimum key between a parent node and its children, a key operation when balancing the heap, can be parallelized by employing a redcution tree.
+operating on a set of memory banks. The memory contains a $k$-min-heap which is used by the internal priority queue to efficiently determine the next upcoming deadline. The implementation exploits parallelism to improve performance when fetching nodes from the heap memory by splitting siblings over separate memory banks. Furthermore, the search for the minimum key between a parent node and its children, a key operation when balancing the heap, can be parallelized by employing a reduction tree.
 
 %In our research, we received a use case from Microchip~\cite{microchip} in the form of a specification.
 %We implemented and used it to evaluate our verification library.
@@ -1230,11 +1230,14 @@ We can now take a look at the different results obtained during our evaluation.
 \subsubsection{Verification verbosity}
 We start by comparing the three verification languages in terms the verbosity, which is measured in ``verification lines per source lines of code", a metric used in other works to partially evaluate verification languages~\cite{Nagini:2018, MuellerSchwerhoffSummers16, dobisCoverage:ETS22}.
 For this, we measure the overhead of the functional coverage and CRV tools provided in ChiselVerify against those provided in UVM and \texttt{cocotb}.
+
 We start by adding functional coverage to the simple testbench presented for the arbiter circuit. 
 In order to do so, we need to define a verification plan that correctly captures information about the expected behavior of our DUT.
 The arbiter circuit takes as input a Vector of $n$ \texttt{DecoupledIO} elements, which expands to $3n$ ports in the generated verilog.
 In order to conduct a coherent experiment, we set $n = 7$, and will define our specification accordingly.
 Our verification plan will thus cover the inputs and output \texttt{ready}, \texttt{valid}, and \texttt{bits} ports.
+
+We now do the same for the priority queue
  
 \paragraph{Functional Coverage in UVM} In order to gather functional coverage information about our design using UVM, we have to work with the generated Verilog description.
 This is done using the following structure:
@@ -1261,6 +1264,22 @@ This is done using the following structure:
     \item Define the coverage class constructor.
 \end{itemize}  
 Only considering coverage-related code, this requires 158 lines of SystemVerilog code. 
+
+\paragraph{Functional Coverage in cocotb} %TODO
+\paragraph{Functional Coverage with ChiselVerify} %TODO
+
+The results from our comparison are sumarized in Figure~\ref{fig:cvsvpycomp}.
+\begin{figure}[h]
+  \centering
+  \includegraphics[trim=0.7cm 0.5cm 1cm 1cm, clip, width=.9\linewidth]{svcvpycomp.pdf}
+  \caption{Verbosity overhead comparison between verification plans written for two designs with ChiselVerify (CV), SystemVerilog (SV), and cocotb (PY).}
+  \label{fig:cvsvpycomp}
+  \end{figure}
+  This shows that, with ChiselVerify, we obtain a 83\% reduction in LOC on the Arbiter circuit over UVM and a 70\% reduction over cocotb. 
+  This is due, in this case, to ChiselVerify's capability of exploiting the high-level design constructs, such as Vectors, directly in the Verification Plan, while the other solutions need to rely on the unfolded generated Verilog.
+  For the Priority Queue, we obtain a 60\% reduction over UVM, and an increase of 30\% over cocotb. 
+  This increase comes from cocotb's more concise way of declaring bins in a coverpoint.
+  However, this is a somewhat incomplete comparison, since cocotb does not provide the tools to express value transitions or temporal relations inside of a cover point, making its VP a less accurate model of our specification.
 
 
 \section{Conclusion}

@@ -249,6 +249,14 @@ SEREs, however, are quite complex and require the use of many operators to descr
 In contrast, our solution aims to provide a simplified set of temporal constructs to express LTL.
 These encompass a similar range of relations when used in conjunction with different types of bins in our coverage tools.
 
+Cocotb~\cite{cocotb:2018} is a python based verification framework for VHDL and Verilog designs.
+This is enables by extension to the python, that allow for coroutine support and DUT interfacing using a very simple \texttt{dut.port.value} interface.
+Cocotb was also extended with a library called cocotb-coverage, which allows for functional coverage and constrained random verification to be added to the python-based testbenches.
+This solution follows the same goals as ours, since it aims to improve verification efficiency by allows for verification to take place in a high-level environment.
+However, our solution aims to do so in a way that is well integrate with the design flow, by allow for a high-level design to be verified in an equally high-level environment.
+Cocotb in contrast makes verification happen in a completely separate environment as the design process. 
+In a later section, we will compare ChiselVerify's functionalities to those available in cocotb.
+
 %The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test-benches on top of SystemVerilog. 
 %It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. 
 %However, it is inherently verbose, since even a simple test requires around 800 lines of SystemVerilog code. 

@@ -1296,7 +1296,7 @@ The results from these measurements are summarized in Figure~\ref{fig:cvoverhead
 \begin{figure}[h]
   \centering
   \includegraphics[trim=0.7cm 0.5cm 1cm 1cm, clip, width=.9\linewidth]{cvoverhead.pdf}
-  \caption{Performance overhead of the different tools provided by ChiselVerify. FC stands for Functional Coverage, and CRV is Constrained Random Verification. N represents the number of arbiter ports which also means the number of covergroups or random variables.}
+  \caption{Performance overhead of the different tools provided by ChiselVerify. FC stands for Functional Coverage, and CRV is Constrained Random Verification. N represents the number of arbiter ports which also means the number of covergroups or random variables. The overhead is computed as the ratio between the average runtimes, over many runs, of the bare ChiselTest testbench and the same testbench augmented with either Functional Coverage (FC) or Constrained Random Verification (CRV) for a given $n$.}
   \label{fig:cvoverhead}
 \end{figure}
 These results show that the both the functional coverage and constrained random verification tools scale quite well, since their overhead seems the be almost independent of the size of the verification plan or the number of random variables used.

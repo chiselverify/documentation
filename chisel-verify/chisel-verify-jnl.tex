@@ -192,32 +192,33 @@ We show that ChiselVerify can check many features of the min-heap with few lines
 verification code.
 
 The contributions of this paper are:
-
 \begin{itemize}
-\item ChiselVerify,\footnote{https://github.com/chiselverify/chiselverify} an open-source verification library for hardware designs
-\item \todo{more}
+\item ChiselVerify~\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for Chisel designs.
+\item Formal methods~\footnote{Available as part of Chisel3 https://github.com/chipsalliance/chisel3} for verifying Chisel designs.
 \end{itemize}
 
-
-This paper is an extension of \cite{ChiselVerify:2021}. \todo{Add what is the new stuff. Formal, more eval, more on ETS paper}
+This paper is an extension of \cite{ChiselVerify:2021}. 
+These extensions include the following:
+\being{itemize}
+	\item A proposal of formal verification methods for verifying Chisel designs.
+	\item An additional functional coverage approach through implicit verification plans.
+	\item An in-depth evaluation and comparison between our methods and those available in UVM and cocotb.
+\end{itemize}
 
 The paper is organized into 7 sections.
 Section~\ref{sec:related} describes related work.
 Section~\ref{sec:background} covers background on hardware verification.
 Section~\ref{sec:verify} describes our solution for enabling verification in Chisel, namely ChiselVerify.
 Section~\ref{sec:formal} presents an orthogonal approach to classic test driven verification by using formal
-method for verification. 
-Section~\ref{sec:eval} evaluates ChiselVerify with two use cases.
+methods for verification. 
+Section~\ref{sec:eval} evaluates ChiselVerify with three use cases.
 Section~\ref{sec:conclude} concludes.
 
 
 \section{Related Work}
 \label{sec:related}
 %\todo{\url{https://capra.cs.cornell.edu/latte21/}}
-
-\martin{rewrite} \hjd{Attempted.}
-
-
+%\martin{rewrite} \hjd{Attempted.}
 %SystemVerilog is an extension of Verilog. Many non-synthesizable extensions are intended
 %to write more advanced test benches. SystemVerilog adds object-oriented programming
 %for those test benches. However, in contrast to Chisel, the object-oriented addition cannot be
@@ -228,8 +229,8 @@ Section~\ref{sec:conclude} concludes.
 %This differs from SystemVerilog, which mainly focuses on bins that cover value ranges or transitions. 
 
 Most new designs are being described in SystemVerilog; an extension of traditional Verilog 
-which introduces many non-synthesizable extensions. These extensions include object-oriented 
-programming and are intended to allow for writing more advanced test benches. However, 
+which introduces many non-synthesizable elements. These extensions include various object-oriented 
+programming constructs and are intended to allow for writing more advanced test-benches. However, 
 contrary to Chisel, the object-oriented design approach cannot be used for hardware 
 description. SystemVerilog also offers constructs for gathering statement and functional 
 coverage information~\cite{spear2008systemverilog}, but our solution differs from these in 
@@ -237,8 +238,15 @@ several ways. In addition to SystemVerilog's range- or transition-based bins,
 ChiselVerify's \texttt{cover} constructs support temporal relations as well as generalized 
 conditional bins based on user-defined predicates. 
 
-%The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test benches on top of SystemVerilog. 
-%It allows for the creation of reusable test benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. 
+The temporal relation definition capabilities found in both ChiselVerify and its formal counterpart, can also be seen in the Property Specification Language (PSL) and the similar SystemVerilog Assertions (SVA)~\cite{Boule2008}, which are two current solutions allowing for the use of temporal logic in relation to both coverage and assertions. 
+Our approaches, however, differ in many ways, but are still all based around concepts taken from Linear-Temporal Logic (LTL) such as the \texttt{past} operator~\cite{Dax2010:temporal-logics}.
+For example, PSL bases itself on a wide variety of Sequential-Extended Regular Expressions (SEREs), which define temporal relations between different boolean expressions.
+SEREs, however, are quite complex and require the use of many operators to describe potentially simple temporal relations. 
+In contrast, our solution aims to provide a simplified set of temporal constructs to express LTL.
+These encompass a similar range of relations when used in conjunction with different types of bins in our coverage tools.
+
+%The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test-benches on top of SystemVerilog. 
+%It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. 
 %However, it is inherently verbose, since even a simple test requires around 800 lines of SystemVerilog code. 
 %UVM thus requires a significant initial time-investment, but is reusable once it gets up and running. 
 %UVM's structure differs from most traditional test benches, making it less accessible for newcomers than the simpler approach done by ChiselTest.
@@ -247,7 +255,7 @@ Adding to the verification features introduced in SystemVerilog, designers also 
 access to the \textit{Universal Verification Methodology} (UVM). UVM was designed to be a 
 standardized way of writing SystemVerilog test benches by focusing on both horizontal and 
 vertical re-use~\cite{uvm2015}. Unfortunately, its generality leads to an inherent 
-verbosity, i.e., even simple tests require at least around 800 lines of code. As a result, 
+verbosity, i.e.\ even simple tests require at least around 800 lines of code. As a result, 
 UVM imposes significant initial time-investment demands but is re-usable once it gets up and 
 running. Moreover, newcomers may experience that UVM is less accessible than simpler approaches 
 such as ChiselVerify as its structure differs from most traditional test benches.
@@ -265,20 +273,27 @@ Beyond the general frameworks available in SystemVerilog and UVM, other projects
 using software testing techniques to hardware verification. For example, RFuzz~\cite{rfuzz2018} 
 is a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. 
 It relies on FPGA-accelerated simulation and novel techniques for deterministic memory 
-resetting to use fuzzing (i.e., randomized testing with dynamic seeding based on achieved 
+resetting to use fuzzing (i.e.\ randomized testing with dynamic seeding based on achieved 
 coverage results) on digital circuits. Specifically, RFuzz automates collection of and adjustments 
 based on branch coverage. In comparison to RFuzz, ChiselVerify offers a different type 
 of solution focusing on implementing verification functionalities in a language while 
 RFuzz offers an efficient way of using these to ameliorate testing; particularly by using coverage 
 tools to guide its randomized verification. For the sake of completeness, we also mention another 
-work of ours presenting the use of ChiselVerify's coverage tools for mutational 
+work of ours presenting the use of ChiselVerify's coverage tools for functional-coverage driven mutation-based
 fuzzing~\cite{verify:fuzzing:2021}.
+
+A different approach, also inspired by software verification, is to model the expected behavior of a design in an abstract manner using SMT logic~\cite{smt}.
+This model can be seen as a series of constraints which can then be given to an SMT solver, such as Z3~\cite{de2008z3}, which returns whether or not a set of inputs exists that meets the given constraints.
+This approach is often used in software verification, but can be quite cumbersome to write, since we have to hand-write a model of our program by expressing constraints between its different variables.
+The formal methods proposed in this paper differ from that however, since they create an abstraction above bare SMT logic to make it easier to define formal specifications for a design.
+Additionally, modelling hardware with SMT logic requires the use of Bit-Vector theories in order to correctly represent the design, which are much more computationally complex to reason about than more mathematical theories~\cite{DecisionBitVector:1998}.
+Thus, a main difference between the proposed formal methods and traditional software verification is that our solution requires the use of bounded model checking in order to combat the complexity of bit vector theories.
 
 %As far as we know, ChiselVerify is the only verification framework allowing for the easy use of verification functionalities, well integrated into the ChiselTest-Chisel ecosystem.
 
-To the best of our knowledge, ChiselVerify is the only framework that provides easy-to-use verification functionalities well-integrated into the Chisel and ChiselTest ecosystem.
+To the best of our knowledge, ChiselVerify, along with the formal methods proposed in this work, forms the only framework that provides easy-to-use formal and dynamic verification functionalities which are well-integrated into the Chisel and ChiselTest ecosystem.
 
-\martin{Maybe we should already reference our WOSET paper here as well: \cite{verify:fuzzing:2021}} \hjd{Added a reference. Maybe the sentence should be re-phrased?}
+%\martin{Maybe we should already reference our WOSET paper here as well: \cite{verify:fuzzing:2021}} \hjd{Added a reference. Maybe the sentence should be re-phrased?}
 
 %\martin{And somewhere also our ETS paper.} Andrew: Did it in the functional coverage section.
 

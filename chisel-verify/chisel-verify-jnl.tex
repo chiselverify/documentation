@@ -391,7 +391,6 @@ blocks are equipped with such interfaces. Well-developed BFMs enable simpler, sa
 verbose interactions with such components.
 
 \subsection{The Chisel Hardware Construction Language}\label{subsec:chisel}
-\hjd{This section seems a bit repetitive...}
 
 Chisel is a ``hardware construction language'' embedded in the general purpose programming language Scala~\cite{bachrach2012chisel, chisel:book}.
 It allows designers to effectively write Scala programs that generate hardware descriptions at the register transfer level (RTL).
@@ -406,7 +405,7 @@ The lowering is done by the FIRRTL compiler which converts a high-level intermed
 The low-level representation is then exported into a subset of Verilog that was chosen as a common subset supported by the majority of backend tools.
 
 Besides serving as a convenient way to lower Chisel circuits into Verilog, the FIRRTL IR and accompanying compiler infrastructure
-also makes it easy to add circuit analysis and instrumentation passes.
+also makes it easy to add circuit analysis and instrumentation passes, known as \textit{transforms}. Moreover, it is possible to simulate circuits described in FIRRTL using the Treadle execution engine, before converting them into (System)Verilog which can, of course, be simulated using commercial or open-source tools like Verilator~\cite{verilator}. Fig.~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
 
 Being embedded in Scala, Chisel is executed on the Java virtual machine (JVM) and has excellent 
 interoperability with the large pool of existing Scala and Java libraries for design and verification. 
@@ -416,13 +415,13 @@ Moreover, the JVM also allows for the use of the Java native interface for calli
 thus enabling co-simulation of Scala testers, Chisel designs and a C-based golden model. This is 
 valuable for companies wishing to keep their existing C models while using Scala/Chisel for simulation.
 
-\hjd{Maybe we can just remove parts of this paragraph?} Internally, Chisel designs are translated into an intermediate representation called 
-FIRRTL~\cite{firrtl}. Subsequent \textit{transforms} aid in compiling high-level programming 
-constructs into lower-level constructs known from VHDL or Verilog descriptions. The resulting 
-representation, called low FIRRTL, can be used for simulation in the Treadle execution 
-engine, or for synthesis through translation into synthesizable (System)Verilog. The 
-Verilog description can, of course, also be simulated using, e.g., Verilator~\cite{verilator}. 
-Fig.~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
+%Internally, Chisel designs are translated into an intermediate representation called 
+%FIRRTL~\cite{firrtl}. Subsequent \textit{transforms} aid in compiling high-level programming 
+%constructs into lower-level constructs known from VHDL or Verilog descriptions. The resulting 
+%representation, called low FIRRTL, can be used for simulation in the Treadle execution 
+%engine, or for synthesis through translation into synthesizable (System)Verilog. The 
+%Verilog description can, of course, also be simulated using, e.g., Verilator~\cite{verilator}. 
+%Fig.~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
 
 \subsection{Testing Chisel Designs}
 %A digital design described in Chisel can be tested with ChiselTest~\cite{chisel:tester2}, a non-synthesizable testing framework for Chisel.

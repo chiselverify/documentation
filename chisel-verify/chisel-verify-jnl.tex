@@ -111,12 +111,12 @@ We can no longer depend on Moore's Law to increase computing performance.
 Performance increase with general-purpose processors has come to a halt.
 The only way to achieve higher performance or lower energy consumption
 is by building application-specific accelerators.
-To support the development of such accelerators we need better development
+To support the development of such accelerators, we need better development
 tools and also verification tools.
 
 Chisel, as a hardware construction language, speeds up the development
 of digital designs. However, the Chisel infrastructure lacks tools for
-verification. This paper introduces ChiselVerify, as open-source library
+verification. This paper introduces ChiselVerify, an open-source library
 to support the verification of digital designs in Scala.
 It  uses ChiselTest, the current testing tool for Chisel.
 ChiselVerify supports
@@ -175,7 +175,7 @@ SystemVerilog adds object oriented features to the language. However, those feat
 not for describing hardware.
 Chisel goes one (or several) steps forward in hardware description, as it enables object-oriented and functional programming
 to describe hardware. This enable to not only describe concisely hardware descriptions, but also to describe hardware generators.
-This elevates current practice of Pert, TCL, or Python generating VHDL of SystemVerilog code to use the powerful programming
+This elevates current practice of Perl, TCL, or Python generating VHDL of SystemVerilog code to use the powerful programming
 language Scala.
 
 However, Chisel does not yet provide efficient verification tools or libraries. The ChiselTest package~\cite{chisel:tester2}
@@ -186,7 +186,7 @@ Scala's conciseness and support for both object-oriented and functional programm
 ChiselVerify, supports both coverage-oriented and constrained
 random verification (CRV) flows with more features than those available in UVM.
 
-For the evaluation, we use to designs: (1) industrial use case, a min-heap
+For the evaluation, we use two designs: (1) an industrial use case, a min-heap
 and (2) an arbitration circuit.
 We show that ChiselVerify can check many features of the min-heap with few lines of 
 verification code.
@@ -203,7 +203,7 @@ This paper is an extension of \cite{ChiselVerify:2021}. \todo{Add what is the ne
 
 The paper is organized into 7 sections.
 Section~\ref{sec:related} describes related work.
-Section~\ref{sec:background} describes background on hardware verification.
+Section~\ref{sec:background} covers background on hardware verification.
 Section~\ref{sec:verify} describes our solution for enabling verification in Chisel, namely ChiselVerify.
 Section~\ref{sec:formal} presents an orthogonal approach to classic test driven verification by using formal
 method for verification. 
@@ -219,8 +219,8 @@ Section~\ref{sec:conclude} concludes.
 
 
 %SystemVerilog is an extension of Verilog. Many non-synthesizable extensions are intended
-%to write more advanced test-benches. SystemVerilog adds object-oriented programming
-%for those test-benches. However, in contrast to Chisel, the object-oriented addition cannot be
+%to write more advanced test benches. SystemVerilog adds object-oriented programming
+%for those test benches. However, in contrast to Chisel, the object-oriented addition cannot be
 %used for hardware description.
 %SystemVerilog offers certain constructs capable of gathering coverage information~\cite{spear2008systemverilog}, such as statement and functional coverage. 
 %When it comes to functional coverage, our solution differs in several ways from SystemVerilog. 
@@ -229,7 +229,7 @@ Section~\ref{sec:conclude} concludes.
 
 Most new designs are being described in SystemVerilog; an extension of traditional Verilog 
 which introduces many non-synthesizable extensions. These extensions include object-oriented 
-programming and are intended to allow for writing more advanced test-benches. However, 
+programming and are intended to allow for writing more advanced test benches. However, 
 contrary to Chisel, the object-oriented design approach cannot be used for hardware 
 description. SystemVerilog also offers constructs for gathering statement and functional 
 coverage information~\cite{spear2008systemverilog}, but our solution differs from these in 
@@ -237,20 +237,20 @@ several ways. In addition to SystemVerilog's range- or transition-based bins,
 ChiselVerify's \texttt{cover} constructs support temporal relations as well as generalized 
 conditional bins based on user-defined predicates. 
 
-%The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test-benches on top of SystemVerilog. 
-%It allows for the creation of reusable test-benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. 
+%The \textit{Universal Verification Methodology} (UVM) was created as a standardized way of writing test benches on top of SystemVerilog. 
+%It allows for the creation of reusable test benches (i.e., using the same test for multiple designs)~\cite{uvm2015}. 
 %However, it is inherently verbose, since even a simple test requires around 800 lines of SystemVerilog code. 
 %UVM thus requires a significant initial time-investment, but is reusable once it gets up and running. 
-%UVM's structure differs from most traditional test-benches, making it less accessible for newcomers than the simpler approach done by ChiselTest.
+%UVM's structure differs from most traditional test benches, making it less accessible for newcomers than the simpler approach done by ChiselTest.
 
 Adding to the verification features introduced in SystemVerilog, designers also have 
 access to the \textit{Universal Verification Methodology} (UVM). UVM was designed to be a 
-standardized way of writing SystemVerilog test-benches by focusing on both horizontal and 
+standardized way of writing SystemVerilog test benches by focusing on both horizontal and 
 vertical re-use~\cite{uvm2015}. Unfortunately, its generality leads to an inherent 
 verbosity, i.e., even simple tests require at least around 800 lines of code. As a result, 
 UVM imposes significant initial time-investment demands but is re-usable once it gets up and 
 running. Moreover, newcomers may experience that UVM is less accessible than simpler approaches 
-such as ChiselVerify as its structure differs from most traditional test-benches.
+such as ChiselVerify as its structure differs from most traditional test benches.
 
 %Other projects have also focused on applying software testing techniques to hardware verification. 
 %RFuzz~\cite{rfuzz2018} focuses on creating a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. 
@@ -300,14 +300,14 @@ and Chisel and its related existing verification techniques.
 \subsection{Verification of Digital Designs}
 %Verification of digital designs refers to the testing of a design before it has been taped-out~\cite{spear2008systemverilog}. 
 %SystemVerilog~\cite{SystemVerilog} is one of the main languages used for verification.
-%The language enables verification engineers to define constraint-driven randomized test-benches and define metrics to gather functional coverage data related to a test suite. 
+%The language enables verification engineers to define constraint-driven randomized test benches and define metrics to gather functional coverage data related to a test suite. 
 %However, being embedded in a low-level language makes writing tests quite complex. 
 %The three main verification features that we are interested in are: functional coverage, constrained random verification, and bus functional modeling.
 
 Verification of digital designs refers to testing done before tape-out through simulation 
 or (FPGA-based) emulation~\cite{spear2008systemverilog}. As described before, SystemVerilog is one 
 of the main languages used for verification. It allows for engineers to define constraint-driven 
-randomized test-benches and metrics to gather functional coverage resulting for a suite of 
+randomized test benches and metrics to gather functional coverage resulting for a suite of 
 tests. We are most interested in three verification features: functional converage, 
 constrained random verification, and bus functional modeling - all three of which are available in 
 SystemVerilog, but rather complex to use as they are embedded in a low-level language.
@@ -377,7 +377,7 @@ blocks are equipped with such interfaces. Well-developed BFMs enable simpler, sa
 verbose interactions with such components.
 
 \subsection{The Chisel Hardware Construction Language}\label{subsec:chisel}
-
+\hjd{This section seems a bit repetitive...}
 
 Chisel is a ``hardware construction language'' embedded in the general purpose programming language Scala~\cite{bachrach2012chisel, chisel:book}.
 It allows designers to effectively write Scala programs that generate hardware descriptions at the register transfer level (RTL).
@@ -402,7 +402,7 @@ Moreover, the JVM also allows for the use of the Java native interface for calli
 thus enabling co-simulation of Scala testers, Chisel designs and a C-based golden model. This is 
 valuable for companies wishing to keep their existing C models while using Scala/Chisel for simulation.
 
-Internally, Chisel designs are translated into an intermediate representation called 
+\hjd{Maybe we can just remove parts of this paragraph?} Internally, Chisel designs are translated into an intermediate representation called 
 FIRRTL~\cite{firrtl}. Subsequent \textit{transforms} aid in compiling high-level programming 
 constructs into lower-level constructs known from VHDL or Verilog descriptions. The resulting 
 representation, called low FIRRTL, can be used for simulation in the Treadle execution 
@@ -439,11 +439,11 @@ crucial for efficient verification.
 \martin{rewrite}
 
 % Potential rewrite: 
-As an extension of ChiselTest, we propose ChiselVerify, which introduces important Verification functionalities to the Chisel ecosystem.
-ChiselVerify bases itself on ChiselTest by using its design interfacing features in order to enable various verification functionalities directly in Chisel, such as functional coverage, constrained random verification, and bus functional modelling. 
+As an extension of ChiselTest, we propose ChiselVerify, which introduces important verification functionalities to the Chisel ecosystem.
+ChiselVerify bases itself on ChiselTest by using its design interfacing features in order to enable various verification functionalities directly in Chisel, such as functional coverage, constrained random verification, and bus functional modeling. 
 In the following subsections, we present how we achieved our solution.
 We start by presenting its functional coverage capabilities,  using both implicit and explicit specifications.
-We then propose constrained random verification tools for automating testing of general design, as well as a constrained program generation tool for verifying processors designed in Chisel.
+We then propose constrained random verification tools for automating testing of general designs, as well as a constrained program generation tool for verifying processors designed in Chisel.
 Finally, we look at how bus functional models can increase testing ease, and demonstrate our method by creating a model of the standardized AXI4 interface. 
 
 % Original
@@ -455,23 +455,23 @@ Finally, we look at how bus functional models can increase testing ease, and dem
 \subsection{Coverage in Chisel}
 % Proposed rewrite
 ChiselVerify allows for functional coverage constructs to be defined over a Chisel design directly in Scala. 
-This is possible directly inside of a ChiselTest test-bench, and enables the gathering of information about completeness of a test with relation to a given specification defined using a Verification Plan (VP).
+This is possible directly inside of a ChiselTest test bench, and enables the gathering of information about completeness of a test with relation to a given specification defined using a Verification Plan (VP).
 In order to enable functional coverage in Chisel, we explored and defined two methods for describing a specification, using an \emph{implicit} or an \emph{explicit} verification plan.
 These two methods are defined as follows:
 
 \begin{itemize}
-	\item \textbf{Implicit VP:} Omit the VP, and obtain coverage data through queries on the ports we want to check \emph{after} the test-bench.
-	\item \textbf{Explicit VP:} Declare the ports that will be sampled \emph{before} the test-bench.
+	\item \textbf{Implicit VP:} Omit the VP, and obtain coverage data through queries on the ports we want to check \emph{after} the test bench.
+	\item \textbf{Explicit VP:} Declare the ports that will be sampled \emph{before} the test bench.
 \end{itemize}
 
-Both methods work have their own advantages and disadvantages, which we will discuss in detail in a later section.
+Both methods have their own advantages and disadvantages, which we will discuss in detail in a later section.
 In both cases, in order to define our methods, we needed to be able to do the following:
 
 \begin{itemize}
-  \item Create a VP, either implicitly using a \texttt{Queryable} reporter, or explicitly using \texttt{cover} constructs.
-  \item Sample our tested device's ports, using ChiselTest's interfacing capabilities.
-  \item Keep track of the different sampled values that hit for each bin, using a coverage database.
-  \item Compile all of the results into a comprehensible and programmatically useful coverage report.
+  \item Create a VP, either implicitly using a \texttt{Queryable} reporter, or explicitly using \texttt{cover} constructs, 
+  \item sample our tested device's ports, using ChiselTest's interfacing capabilities, 
+  \item keep track of the different sampled values that hit for each bin, using a coverage database, and 
+  \item compile all of the results into a comprehensible and programmatically useful coverage report.
 \end{itemize}
 
 Let us now detail how the two different solutions are used to gather functional coverage information.
@@ -493,9 +493,9 @@ One can also simply print out a full report of all ports in the DUT using the \t
 \begin{lstlisting}[captionpos=b,caption={Example use of Queryable coverage in order to gain information about the DUT's testing process. Note that \texttt{outA} and \texttt{outB} simply output the values of \texttt{a} and \texttt{b}.},label={lst:implcov},language=scala]
 val coverage = new QueryableCoverage(dut)
 for (fun <- 0 until 50) {
-    dut.io.a.poke(toUInt(fun))
-    dut.io.b.poke(toUInt(fun % 4))
-    coverage.sample()
+  dut.io.a.poke(toUInt(fun))
+  dut.io.b.poke(toUInt(fun % 4))
+  coverage.sample()
 }
 coverage.get(dut.io.outA, 50).print()
 coverage.get(dut.io.outB).print()
@@ -528,9 +528,9 @@ However, in order to define complex specifications for our functional coverage, 
 \paragraph{Explicit Verification Plans} As detailed in our previous work on the topic~\cite{dobisCoverage:ETS22}, our solution allows for the definition of a target specification using a set of \texttt{cover} constructs defined inside of a \texttt{CoverageReporter}.
 This reporter functions as a front-end element that allows for the definition of complex specifications using only high-level constructs.
 The main interface is the \texttt{register} method, which stores \texttt{cover} construct to \texttt{bin} mappings inside of a \texttt{CoverageDB} database object, and groups them as a single \texttt{covergroup}.
-After the definition of the VP, the registered elements of the specification must be sampled explicitly by the user using the \texttt{sample} method, which checks the value of the associated port at that current simulation cycle against the bins in order to determine if the specification is met for that value or not.
+After the definition of the VP, the registered elements of the specification must be sampled explicitly by the user using the \texttt{sample} method, which checks the value of the associated port at that simulation cycle against the bins in order to determine if the specification is met for that value or not.
 Once the sampling has been done, at the end of a test suite, a functional coverage report is generated by the reporter using the \texttt{report} method, which interprets the results stored in the database and compiles them to into a Scala \texttt{case class}. 
-This report object can then be used to check for coverage thresholds, i.e.\ whether or not the coverage has surpassed a specific amount, or to guide the mutation of inputs in a mutation-based fuzzer, as was explored in previous work~\cite{dobisFCFuzzing:WOSET2021}.
+This report object can then be used to check for coverage thresholds, i.e., whether or not the coverage has surpassed a specific amount, or to guide the mutation of inputs in a mutation-based fuzzer, as was explored in previous work~\cite{dobisFCFuzzing:WOSET2021}.
 
 \begin{lstlisting}[captionpos=b,caption={Small Verification Plan defined using 3 \texttt{cover} constructs, including one cross coverage construct},label={lst:basicfuncov},language=scala]
 val cr = new CoverageReporter
@@ -544,16 +544,16 @@ cr.register(
     cross("both1", 1 to 1, 1 to 1))
 \end{lstlisting}
 
-Listing~\ref{lst:basicfuncov} shows a basic verification plan defined using our functional coverage tool. 
+Listing~\ref{lst:basicfuncov} shows a basic VP defined using our functional coverage tool. 
 This example shows the use of \texttt{cover} constructs with both a single and multiple ports. 
-The use of multiple ports defines a \textit{cross coverage} relation between the two ports, meaning that sampled values are consider to be a \emph{hit} if they meet each specification simultaneously~\cite{spear2008systemverilog}.
+The use of multiple ports defines a \textit{cross coverage} relation between the two ports, meaning that sampled values are considered a \emph{hit} if they meet all specifications simultaneously~\cite{spear2008systemverilog}.
 Concretely, in our example, a hit would be considered if, within the same cycle, both \texttt{dut.io.accu} and \texttt{dut.io.test} are sampled with the value \texttt{1}. 
 
-After defining our specification in the form of a Verification Plan, we need to define the ideal location, within our testbench, to sample the registered \texttt{cover} constructs using the reporter.
-The reporter's \texttt{sample} method can be used to sample either all groups simultaneously or simply one group at a time, by specified the \texttt{id} of the group we want to sample in the method call.
-All \texttt{cover} constructs within a same group will always be sampled together.
+After defining our specification in the form of a VP, we need to define the ideal location, within our test bench, to sample the registered \texttt{cover} constructs using the reporter.
+The reporter's \texttt{sample} method can be used to sample either all groups simultaneously or simply one group at a time, by specifying the \texttt{id} of the group we want to sample in the method call.
+All \texttt{cover} constructs within a group will always be sampled together.
 Sampling different groups at different locations throughout the test suite can allow for more targeted coverage information to be gathered.
-Finally, once we are done sampling throughout the test suite, we can print out a readable coverage report by calling \texttt{cr.printReport()} which results in the following: 
+Finally, once we are done sampling throughout the test suite, we can print out a readable coverage report by calling \texttt{cr.printReport()} which, for our example, results in the following: 
 
 \begin{verbatim}
 =============== COVERAGE REPORT ===============
@@ -572,10 +572,10 @@ BIN both1 COVERING 1 to 1 CROSS 1 to 1 HAS
 \end{verbatim}
 
 This report shows the three \texttt{cover} constructs that we registered and the associated hits that each of their \texttt{bins} has obtained.
-These hits represent the amount of times that registered port was sampled with a unique value found within the given range.
+These hits represent the number of times that registered port was sampled with a unique value found within the given range.
 Each \texttt{bin} is then given a coverage percentage, based on the ratio between the number of hits obtained and the total number of possible values in the range.
 
-Additionally to the basic \texttt{cover} constructs presented until now, our tool allows for the definition of more complex relations, including delayed cross coverage, and purely conditional coverage.
+In addition to the basic \texttt{cover} constructs presented until now, our tool allows for the definition of more complex relations, including delayed cross coverage, and purely conditional coverage.
 Inspired by concepts from Linear Temporal Logic~\cite{Dax2010:temporal-logics}, delayed cross coverage allows the user to define a relation between two ports sampled at different cycles.
 The idea is similar to how a \texttt{cross} works, but this time rather than sampling both points in the same cycle, we compare one port, at the starting cycle, to another port sampled a given number of cycles later. 
 The temporal separation between the two ports is defined using a \texttt{delay}, for which we have defined four different types:
@@ -590,7 +590,7 @@ The use of timing-related bins is only possible if the coverage reporter is used
 Conditional coverage enables the definition of bins containing fully custom hit-consideration rules using a user-defined predicate.
 Using this type of construct, one can check for arbitrary relations between an arbitrary number of ports.
 For example, it is possible to create a bin that checks for every cycle where all fields in a vector are equal.
-This is done by using a function of type \texttt{Seq[BigInt] => Boolean} to in the \texttt{bin} declaration.
+This is done by using a function of type \texttt{Seq[BigInt] => Boolean} in the \texttt{bin} declaration.
 The report then shows the number of distinct sampled values for which the predicate held throughout the testing process.
 Given the unbounded nature of these bins, an ``expected number of hits'' argument is required for each condition in order to yield a final percentage alongside the number of hits.
 Using these different types of \texttt{cover} constructs, one can express the specification of virtually any design.
@@ -601,7 +601,7 @@ This is due to the computational load inherently present in Implicit VPs.
 Since Implicit VPs require sampling over the entire range defined by the bit-width of every port, it is limited to use with simpler designs.
 However, Implicit VPs do not require the re-simulation of a design in order to obtain different coverage information, while Explicit VPs do.
 All in all, these coverage tools allow for the gathering of functional coverage directly in Chisel, thus filling in one of the holes inside of Chisel's ecosystem.
-Another tool our solution brings to Chisel, and enables one of the uses of functional coverage presented earlier in this section~\cite{dobisFCFuzzing:WOSET2021}, is Constrained Random Verification (CRV) which we is detailed in the following paragraph.
+Another tool our solution brings to Chisel, and enables one of the uses of functional coverage presented earlier in this section~\cite{dobisFCFuzzing:WOSET2021}, is Constrained Random Verification (CRV) which is detailed in the following paragraph.
 %Original
 %Our solution enables one to define functional coverage constructs for Chisel designs in Scala.
 %In order to implement the different components needed for functional coverage in Scala, we needed to be able to do the following:
@@ -658,7 +658,7 @@ ChiselVerify thus provides a set of tools, inspired by those available in System
 This is done by providing a ``constraint programming" domain-specific language that runs on an existing CSP solver named JaCoP~\cite{jacop2013}.
 
 \subsubsection{ChiselVerify's Constraint Programming DSL}
-Our solution allows for the declaration of constrained random object by defining a \texttt{class} that extends the \texttt{RandObj} trait.
+Our solution allows for the declaration of a constrained random object by defining a \texttt{class} that extends the \texttt{RandObj} trait.
 The newly defined \texttt{RandObj} class contains all of the constraints and random variables that will later be used in our constrained random tests. 
 This information will be stored inside of a \texttt{Model}, that is given to the \texttt{RandObj} on initialization.
 In total, there are two main elements that are used inside of the object to drive the randomization process: random variables and constraints.
@@ -666,52 +666,52 @@ In total, there are two main elements that are used inside of the object to driv
 \paragraph{Random Variables} The first element represents a random value generator and is associated to constraints that will determine the set of values that the random variable can take.
 Our DSL allows for the declaration of two different types of random variables: 
 \begin{itemize}
-	\item \emph{Regular:} Can take any value that satisfies the associated constraints.
-	\item \emph{Cyclic:} Can not take the same values twice until the entire set of valid values has been explored.
+	\item \emph{Regular}, can take any value that satisfies the associated constraints.
+	\item \emph{Cyclic}, can not take the same values twice until the entire set of valid values has been explored.
 \end{itemize}
 Similar to the interface designed for the Functional Coverage tools, both types are declared using a single unified function call \texttt{rand} to which we give a lower and an upper bound on the values the variable can take.
 As an example, \texttt{rand(0, 5, Cyclic)} will declare a random variable that will yield six distinct values in a row before starting to repeat itself.
 
-\paragraph{Constraints} Our solution allow for the definition of both single constraints and \texttt{ConstraintGroup}s. 
+\paragraph{Constraints} Our solution allows for the definition of both single constraints and \texttt{ConstraintGroup}s. 
 Constraints are defined by applying constraint operators on random variables.
 Additionally, the \texttt{IfCond} and \texttt{ElseC} constructs allow for the definition of conditional constraints.
 Every defined constraint may be enabled or disabled at any point in the test suite. 
 This can also be done to multiple constraints simultaneously by enabling or disabling a  \texttt{ConstraintGroup}.
 
-\paragraph{Using a RandObj} After declaring and filling random objects with random variables and constraints, a \texttt{RandObj} must be instantiated and then randomized using the \texttt{randomize} method within a test-bench.
+\paragraph{Using a RandObj} After declaring and filling random objects with random variables and constraints, a \texttt{RandObj} must be instantiated and then randomized using the \texttt{randomize} method within a test bench.
 The \texttt{randomize} method's return value is predicated on the solvability of the constraints by the CSP solver. 
 Once randomized the random variables within a \texttt{RandObj} yield a valid random value when prompted with their respective \texttt{value()} methods.
 
 \begin{lstlisting}[language=scala, caption={Example usage of a random object. \texttt{rand(min, max, type=Normal)} declares a random variable. Any operation on a random variable generates a constraint.}, label={lst:randobjscala}]    
 class Packet extends RandObj(new Model(3)) {
-    val idx = rand(0, 10)
-    val size = rand(1, 100)
-    val len = rand(1, 100)
-    val payload: Array[Rand] = Array.tabulate(11)(
- 	rand(1, 100)
-    )
+  val idx = rand(0, 10)
+  val size = rand(1, 100)
+  val len = rand(1, 100)
+  val payload: Array[Rand] = Array.tabulate(11)(
+ 	  rand(1, 100)
+  )
 
-    //Example Constraint with operations
-    val single: Constraint = (payload(0) == (len - size))
-	
-    //Example conditional constraint
-    val conditional = IfCon(len == 1) {
-        payload.size == 3
-    } ElseC {
-        payload.size == 10
-    }
-    val idxConst = idx < payload.size
+  // Example Constraint with operations
+  val single: Constraint = (payload(0) == (len - size))
+
+  // Example conditional constraint
+  val conditional = IfCon(len == 1) {
+      payload.size == 3
+  } ElseC {
+      payload.size == 10
+  }
+  val idxConst = idx < payload.size
 }
 \end{lstlisting}
 
 Listing~\ref{lst:randobjscala} shows an example use of the different ways one can define a random variable with constraints.
 As seen in the example, collections of random variables, such as arrays, can be defined and constraints can be placed on the collections themselves.
 This approach is seen in the \texttt{payload} random variable, where a constraint is placed on the size of an array of random variables.
-The \texttt{conditional} random variable shows how condition constraints can be declared.
+The \texttt{conditional} random variable shows how conditional constraints can be declared.
 In our example, the constraint placed on \texttt{payload} depends on the value of the \texttt{len} random variable. 
 
 These constrained random objects are a powerful tool that can be combined with the aforementioned coverage functionalities to create coverage-driven randomized tests.
-With the use of our solutions, such a setup greatly improves the automation capabilities of Chisel test-benches.
+With the use of our solutions, such a setup greatly improves the automation capabilities of Chisel test benches.
 However, these capabilities may be further improved by abstracting away groups of wires and operating on an operation or transaction level instead.
 
 %Original:
@@ -918,7 +918,7 @@ libraries which will be downloaded by the Scala build tool.
 The template contains an example of using the chiseltest library to test a greatest common denominator (GCD) circuit in simulation.
 This test can be executed through a Scala IDE or from a shell with the \code{sbt test} command.
 In order to turn this test into a formal check, we just need to substitute the \code{test(new DecoupledGcd(16))}
-command with \code{verify(new DecoupledGcd(16),} as well as provide the type of verification job as
+command with \code{verify(new DecoupledGcd(16)}, as well as provide the type of verification job as
 \code{BoundedCheck(10)} and extend the testing class with the \code{Formal} trait.
 If the user now clicks the test icon again or runs the \code{sbt test} command, a formal bounded check will
 be executed for ten cycles after reset instead of a simulation test.
@@ -946,7 +946,7 @@ when(busy) {
   verification.assert(!input.fire())
 }
 \end{verbatim}
-This assertion will pass because the circuit does indeed fulfil the property after reset.
+This assertion will pass because the circuit does indeed fulfill the property after reset.
 
 
 We now introduce a small bug by connecting \code{input.ready} to \code{true.B} and rerun the test
@@ -1017,7 +1017,7 @@ add wires to detect when a result is arbitrary as well as a mux to substitute th
 The new \code{DefRandom} construct provides a named arbitrary value which can change every clock cycle,
 very much like a \code{anyseq} annotated wire in Verilog.
 The formal backend implements \code{DefRandom} nodes as inputs that can be freely chosen by the formal engine.
-To make \code{DefRandom} work with our simulator we  replace the nodes with registers of the same type that are never updated by the hardware.
+To make \code{DefRandom} work with our simulator, we  replace the nodes with registers of the same type that are never updated by the hardware.
 Instead we use the software interface to our simulator to update these registers with the values chosen by the formal engine in each cycle.
 Figure~\ref{fig:verify-flow} shows our compilation flow in more detail.
 
@@ -1075,7 +1075,7 @@ function. This function returns the previous value of an expression and thus all
 
 While conceptually simple, the \code{past} construct as defined by the Verlog standard has one major problem:
 In the first cycle of the circuit execution, there is no past value and the \code{past} function always returns X.
-Thus the user has to take care to keep track of how many cycles have past since the verification started and only enable assertions
+Thus the user has to take care to keep track of how many cycles have passed since the verification started and only enable assertions
 once all past values are valid.
 This particular pitfall is often the topic of a \href{http://zipcpu.com/quiz/2019/11/16/quiz07.html}{popular formal verification quiz}.
 %In addition to that, \scalainline{past} values can also be invalid because they happened while
@@ -1087,7 +1087,7 @@ In the frontend, our \code{past} is a Scala function which creates an appropriat
 clock and reset domain. That alone provides functionality similar to the Verilog version of \code{past}.
 We go further by annotating the delay register and asking for a FIRRTL pass to be run when lowering the design.
 This pass looks at a graph of all \code{past} delay registers and assertions in a module.
-An edge indicates that the input to the assertion or register is connected to the output if a delay register through combinatorial logic.
+An edge indicates that the input to the assertion or register is connected to the output of a delay register through combinatorial logic.
 We traverse the resulting tree (by design there can be no cycles) starting at each assertion
 to find the longest path of \code{past} delay registers in order to determine the number of cycles the assertion needs to be delayed.
 Finally we generate a cycle counter register and use its value to guard the individual assertions.
@@ -1103,11 +1103,11 @@ simulation testing~\cite{karandikar2018firesim}.
 \label{sec:eval}
 
 In order to evaluate the different verification tools provided by ChiselVerify, we will be using two different example circuits, namely an arbiter circuit and a priority queue provided by Microchip~\cite{microchip}.
-These are tested using ChiselTest test-benches augmented with our verification tools.
-The test-benches are then compared to similar tests writing using UVM and \texttt{cocotb}, using the generated Verilog description as a DUT.
+These are tested using ChiselTest test benches augmented with our verification tools.
+The test benches are then compared to similar tests writing using UVM and \texttt{cocotb}, using the generated Verilog description as a DUT.
 We have selected UVM since it is an industry standard that can be used to verify Verilog designs, and \texttt{cocotb} since it enables similar verification functionalities in a high-level environment like what we propose with ChiselVerify.
 The results are then compared in terms of the verbosity of the verification code.
-As a final evaluation, we look at the overhead induced by the use of ChiselVerify specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest testbench, to the same one enhanced with our verification tools.
+As a final evaluation, we look at the overhead induced by the use of ChiselVerify specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest test bench, to the same one enhanced with our verification tools.
 
 \subsection{Evaluation Circuits}
 We evaluate ChiselVerify on two circuits, which we describe in the following paragraphs.
@@ -1182,7 +1182,7 @@ The circuit at a top level allows for the insertion of deadlines into the schedu
 
 
 %Due to the simple interface, which only consists of two flow-control inputs alongside the data fields, only distributional constraints were used to reduce the number of transactions marked as invalid. 
-The test-benches we built to verify the scheduling system made use of random stimuli for the data pins and directed stimuli for the flow-control.
+The test benches we built to verify the scheduling system made use of random stimuli for the data pins and directed stimuli for the flow-control.
 The functional coverage report was then used to check how well the stimuli driven on the DUT's data pins were spread over the spectrum of possible values and to check whether certain input combinations were applied to the DUT at some point throughout the test. 
 As an example, the timed coverage feature made it easy to check whether the \texttt{valid} input of the DUT was revoked at some point within 10 clock cycles after issuing an operation by adding the following cross-coverage group:
 
@@ -1216,9 +1216,9 @@ For example, gathering the same functional coverage data using UVM required the 
 %    \item Define \texttt{build\_phase} and \texttt{write} functions.
 %    \item Define the coverage class constructor.
 %\end{itemize}  
-The UVM subscriber must then be used inside of a whole UVM test-bench, which itself contains many other classes and constructs.
+The UVM subscriber must then be used inside of a whole UVM test bench, which itself contains many other classes and constructs.
 This also holds for UVM's random objects.
-%For comparison, our ChiselVerify test-bench is defined with just 24 lines of code,
+%For comparison, our ChiselVerify test bench is defined with just 24 lines of code,
 %while its UVM counterpart takes up 96 lines, including only the \texttt{uvm\_subscriber} class.
 %This is a significant reduction and provides a good indication of how our Scala-based solution minimizes the amount of code needed to utilize advanced verification features. \\
 %In summary, for functional coverage, all that needs to be done is to define a verification plan and sample it during a test, and
@@ -1231,7 +1231,7 @@ We can now take a look at the different results obtained during our evaluation.
 We start by comparing the three verification languages in terms the verbosity, which is measured in ``verification lines per source lines of code", a metric used in other works to partially evaluate verification languages~\cite{Nagini:2018, MuellerSchwerhoffSummers16, dobisCoverage:ETS22}.
 For this, we measure the overhead of the functional coverage and CRV tools provided in ChiselVerify against those provided in UVM and \texttt{cocotb}.
 
-We start by adding functional coverage to the simple testbench presented for the arbiter circuit. 
+We start by adding functional coverage to the simple test bench presented for the arbiter circuit. 
 In order to do so, we need to define a verification plan that correctly captures information about the expected behavior of our DUT.
 The arbiter circuit takes as input a Vector of $n$ \texttt{DecoupledIO} elements, which expands to $3n$ ports in the generated verilog.
 In order to conduct a coherent experiment, we set $n = 7$, and will define our specification accordingly.

@@ -1305,17 +1305,19 @@ All of this is done with a low performance overhead, averaging at 3.5\% across t
 \section{Conclusion}
 \label{sec:conclude}
 
-\martin{rewrite}
-
-In this paper, we introduced ChiselVerify, an open-source solution that should increase a verification engineer's productivity by following the trend of moving towards a more high-level and software-like ecosystem for hardware design. 
-When using it to test an industry-provided use case, we showed that it requires far less lines of code than UVM, all while obtaining similar results.
-ChiselVerify's lightweight syntax allows the user to access these helpful tools in a timely manner, thus making it a better fit for agile development than other solutions such as UVM.
-With this, we brought functional coverage, constrained random verification, and bus functional models to the Chisel/Scala ecosystem, thus improving the current engineer's efficiency and easing the way for software engineers to join the hardware verification world.
+In this paper, we proposed well-integrated tools for verifying Chisel designs directly inside of a ChiselTest testbench. 
+These include functional coverage and constrained random verification tools, as well as bus functional models all under a single library named ChiselVerify.
+We also proposed formal verification methods, which are directly integrated into Chisel3, allowing for bounded model checking to be done in Chisel.
+Using these tools on three different designs of varying complexity, we obtained similar results than using UVM or cocotb, all while requiring less verification code.
+We also showed that the additional use of our tools within a ChiselTest testbench induces very little performance overhead.
+With this, we enabled functional coverage, constrained random verification, bus functional models and formal verification techniques to be used in the Chisel/Scala ecosystem.
+This will hopefully improve current verification engineering efficiency all while easing the way for software engineers to join the hardware verification world.
 
 \subsection*{Source Access}
 
 This work is in open source and hosted at GitHub:\\ \url{https://github.com/chiselverify/chiselverify}.
 We plan also to regularly publish it on Maven.\footnote{https://mvnrepository.com/artifact/io.github.chiselverify/chiselverify}
+The formal verification methods proposed in this work are integrated into Chisel3: \url{https://github.com/chipsalliance/chisel3}
 
 %\subsection*{Acknowledgment}
 %This work has been performed as part of the

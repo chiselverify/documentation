@@ -192,10 +192,12 @@ For the evaluation, we use three designs: (1) the execution stage of the Leros p
 We show that ChiselVerify can check many features of the min-heap with few lines of 
 verification code.
 
-The contributions of this paper are: \martin{Maybe a bit longer list.}
+The contributions of this paper are:
 \begin{itemize}
-	\item ChiselVerify\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for Chisel designs.
-	\item Formal methods\footnote{Available as part of Chisel3 https://github.com/chipsalliance/chisel3} for verifying Chisel designs.
+	\item Tools for defining and gathering Functional Coverage information about a Chisel design.
+	\item A Domain Specific Language for constraint programming inside a ChiselTest testbench.
+	\item A Bus Functional Model for the AXI4 standardized interface\footnote{All three available as part of ChiselVerify \url{https://github.com/chiselverify/chiselverify}}.
+	\item Formal methods\footnote{Available as part of Chisel3 \url{https://github.com/chipsalliance/chisel3}} for verifying Chisel designs.
 \end{itemize}
 
 This paper is an extension of~\cite{ChiselVerify:2021}.
@@ -920,9 +922,7 @@ If the user now clicks the test icon again or runs the \code{sbt test} command, 
 be executed for ten cycles after reset instead of a simulation test.
 The only additional program required is a copy of the open-source SMT solver Z3~\cite{de2008z3}.
 
-
-
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics{woset_formal_ide_flow.pdf}
 \caption{When working in a standard Scala IDE like the open-source IntelliJ IDEA with the Scala plugin, the user can launch the formal check with the press of a button.
@@ -968,7 +968,7 @@ Here we make use of our \code{past} function for temporal properties which is de
 
 \subsection{A Formal Backend for FIRRTL}\label{sec:undef}
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics{woset_verify_flow.pdf}
 \caption{The \code{verify} command is implemented as part of the chiseltest library and uses several compiler passes that make up the FIRRTL formal backend.
@@ -1028,7 +1028,7 @@ We used the FIRRTL specification to accurately translate FIRRTL expressions to t
 Our backend supports memory and register initialization using the same user annotations as the Verilog backend.
 Multi-clock support through a clock stuttering pass is work in progress, for now only circuits with a single clock domain are officially supported.
 
-\begin{figure}[t]
+\begin{figure}[h]
   \centering
   \includegraphics{woset_safe_past.pdf}
   \caption{The temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \code{past} function:
@@ -1089,7 +1089,6 @@ to find the longest path of \code{past} delay registers in order to determine th
 Finally we generate a cycle counter register and use its value to guard the individual assertions.
 Since our \code{past} function only relies on synthesizable hardware it can also be used in software and FPGA based
 simulation testing~\cite{karandikar2018firesim}.
-
 
 
 \section{Evaluation}

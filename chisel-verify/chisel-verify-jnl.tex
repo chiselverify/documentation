@@ -186,23 +186,22 @@ Scala's conciseness and support for both object-oriented and functional programm
 ChiselVerify, supports both coverage-oriented and constrained
 random verification (CRV) flows with more features than those available in UVM.
 
-For the evaluation, we use two designs: (1) an industrial use case, a min-heap
-and (2) an arbitration circuit.
+For the evaluation, we use three designs: (1) the execution stage of the Leros processor, (2) an arbitration circuit, and (3) an industrial use case, a min-heap sorting circuit.
 We show that ChiselVerify can check many features of the min-heap with few lines of 
 verification code.
 
 The contributions of this paper are: \martin{Maybe a bit longer list.}
 \begin{itemize}
-\item ChiselVerify,~\footnote{https://github.com/chiselverify/chiselverify} an open-source verification library for Chisel designs.
-\item Formal methods~\footnote{Available as part of Chisel3 https://github.com/chipsalliance/chisel3} for verifying Chisel designs.
+\item ChiselVerify,~\footnote{https://github.com/chiselverify/chiselverify} an open-source verification library for Chisel designs
+\item Formal methods~\footnote{Available as part of Chisel3 https://github.com/chipsalliance/chisel3} for verifying Chisel designs
 \end{itemize}
 
-This paper is an extension of.~\cite{ChiselVerify:2021}.
+This paper is an extension of~\cite{ChiselVerify:2021}.
 These extensions include the following:
 \begin{itemize}
-	\item A proposal of formal verification methods for verifying Chisel designs.
-	\item An additional functional coverage approach through implicit verification plans.
-	\item An in-depth evaluation and comparison between our methods and those available in UVM and cocotb.
+	\item A proposal of formal verification methods for verifying Chisel designs
+	\item An additional functional coverage approach through implicit verification plans
+	\item An in-depth evaluation and comparison between our methods and those available in UVM and cocotb
 \end{itemize}
 
 The paper is organized into 7 sections.
@@ -1156,8 +1155,10 @@ To test the arbiter, we specify properties that result in a verification plan:
 The values of $n$, $m$, and $x$, depend on the number of clients, i.e., the size of the arbitration
 circuit.
 
-\martin{Show that the Chisel treeReduce is broken and show our solution. Need to copy that test
-over. And we provided as a solution a PR for Chisel \url{https://github.com/chipsalliance/chisel3/pull/2318}}
+We have shown that the original implementation of \code{reduceTree} on the Chisel \code{Vec}
+produces an unfair circuit. Therefore, we have improved that implementation in Chisel.
+The pull request~\footnote{\url{https://github.com/chipsalliance/chisel3/pull/2318}} is now available
+with Chisel Version 3.5.3.
 
 \subsubsection{Sorting in Hardware}
 

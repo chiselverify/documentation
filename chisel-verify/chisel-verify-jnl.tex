@@ -1103,11 +1103,11 @@ simulation testing~\cite{karandikar2018firesim}.
 \label{sec:eval}
 
 In order to evaluate the different verification tools provided by ChiselVerify, we will be using three different example circuits, namely an accumulator ALU from the Leros processor~\cite{leros:arcs2019}, an arbiter circuit, and a priority queue provided by Microchip~\cite{microchip}.
-These are tested using ChiselTest test-benches augmented with our verification tools.
-The test-benches are then compared to similar tests written using SystemVerilog with UVM, and \texttt{cocotb}, using the generated Verilog descriptions as a DUT.
+These are tested using ChiselTest test benches augmented with our verification tools.
+The test benches are then compared to similar tests written using SystemVerilog with UVM, and \texttt{cocotb}, using the generated Verilog descriptions as a DUT.
 We have selected UVM since it is an industry standard that can be used to verify Verilog designs, and \texttt{cocotb} since it enables similar verification functionalities in a high-level environment like what we propose with ChiselVerify.
 The results are then compared in terms of the verbosity of the verification code.
-As a final evaluation, we look at the overhead induced by the use of ChiselVerify-specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest testbench, to the same one enhanced with our verification tools.
+As a final evaluation, we look at the overhead induced by the use of ChiselVerify-specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest test bench, to the same one enhanced with our verification tools.
 
 \subsection{Evaluation Circuits}
 We evaluate ChiselVerify on three distinct circuits, which we describe in the following paragraphs.
@@ -1117,7 +1117,7 @@ We evaluate ChiselVerify on three distinct circuits, which we describe in the fo
 The first circuit we will verify with our solution is an accumulator ALU from the Leros processor.
 This supports operations such as \texttt{add}, \texttt{load}, \texttt{shiftRight} and logic operations. 
 In order to have a complete test suite, we need to try all available operations, and using all potential input value corner cases.
-We will thus model our test-bench to do so.
+We will thus model our test bench to do so.
 
 \subsubsection{An Arbitration Circuit}
 
@@ -1252,7 +1252,7 @@ Unlike the arbiter, these interfaces are of fixed size and thus the chisel desig
 Our verification plan will thus cover all elements of both the \texttt{cmd} and \texttt{head} interfaces.
  
 \paragraph{Functional Coverage in UVM} In order to gather functional coverage information about our design using UVM, we have to work with the generated Verilog description.
-Additionally, UVM requires a very specific test-bench structure than spans multiple files and hundreds of LOC.
+Additionally, UVM requires a very specific test bench structure than spans multiple files and hundreds of LOC.
 Our focus is on the \texttt{uvm\_subscriber} subclass, which is where our verification plan will be defined.
 For example, this is done for the arbiter circuit using the following structure:
 \begin{itemize}
@@ -1280,7 +1280,7 @@ For example, this is done for the arbiter circuit using the following structure:
 Only considering coverage-related code, this requires 158 lines of SystemVerilog code. 
 
 \paragraph{Functional Coverage in cocotb} Gathering functional coverage using cocotb is also done using the generated Verilog description.
-This is done by creating a \texttt{python} based testbench, which is linked to our design via a custom \texttt{Makefile}.
+This is done by creating a \texttt{python} based test bench, which is linked to our design via a custom \texttt{Makefile}.
 We then define our verification plan by creating a \texttt{coverage\_section} inside of our test bench.
 Finally we link said verification plan to a \texttt{cocotb.coroutine} function to mark it as our sampler.
 For example, the arbiter circuit's verification plan has the following structure:

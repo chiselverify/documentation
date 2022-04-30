@@ -1252,6 +1252,8 @@ Unlike the arbiter, these interfaces are of fixed size and thus the chisel desig
 Our verification plan will thus cover all elements of both the \texttt{cmd} and \texttt{head} interfaces.
  
 \paragraph{Functional Coverage in UVM} In order to gather functional coverage information about our design using UVM, we have to work with the generated Verilog description.
+Additionally, UVM requires a very specific test-bench structure than spans multiple files and hundreds of LOC.
+Our focus is on the \texttt{uvm\_subscriber} subclass, which is where our verification plan will be defined.
 For example, this is done for the arbiter circuit using the following structure:
 \begin{itemize}
     \item Create a UVM-subscriber based coverage class.
@@ -1277,14 +1279,42 @@ For example, this is done for the arbiter circuit using the following structure:
 \end{itemize}  
 Only considering coverage-related code, this requires 158 lines of SystemVerilog code. 
 
-\paragraph{Functional Coverage in cocotb} %TODO
-\paragraph{Functional Coverage with ChiselVerify} %TODO
+\paragraph{Functional Coverage in cocotb} Gathering functional coverage using cocotb is also done using the generated Verilog description.
+This is done by creating a \texttt{python} based testbench, which is linked to our design via a custom \texttt{Makefile}.
+We then define our verification plan by creating a \texttt{coverage\_section} inside of our test bench.
+Finally we link said verification plan to a \texttt{cocotb.coroutine} function to mark it as our sampler.
+For example, the arbiter circuit's verification plan has the following structure:
+ \begin{lstlisting}[language=python]
+ range_relation = lambda val_, bin_ : bin_[0] <= val_ <= bin_[1]
+Arbiter_Coverage = coverage_section(
+    CoverPoint("top.io_out_ready", vname="io_out_ready", rel = range_relation, 
+        bins = [(0,1), 0, 1], bins_labels = ["ReadyStates", "ready0", "ready1"]),
+    CoverPoint("top.io_out_valid", vname="top.io_out_valid", rel = range_relation, 
+        bins = [(0,1), 0, 1], bins_labels = ["ValidStates", "valid0", "valid1"]),
+    # [...] Repeat for each port
+)
+ \end{lstlisting}
+ Only considering coverage-related code, this requires 82 lines of cocotb-coverage code.
+ 
+\paragraph{Functional Coverage with ChiselVerify} Finally, using ChiselVerify to gather functional coverage information about a design allows for direct interaction with the Chisel design.
+In the case of designs with complex interfaces, such as the arbiter, this allows us to create generic verification plans that function with any parametrization of the design.
+For example, in the case of the arbiter, which has a variable number of inputs, we can simply define our verification plan using a generic loop over all inputs in the design as follows:
+ \begin{lstlisting}[language=scala]
+dut.io.in.foreach((input: DecoupledIO[UInt]) => {
+    cr.register(
+        cover(s"in${input.hashCode()}.ready", input.ready)(
+            bin("ReadyStates", 0 to 1)),
+        // [...] Continue the VP of a single input
+    )
+})
+ \end{lstlisting}
+Only considering coverage-related code, this definition requires 26 lines of code for the arbiter's complete verification plan.
 
-The results from our comparison are sumarized in Figure~\ref{fig:cvsvpycomp}.
+\paragraph{Summary} The results from our comparison are summarized in Figure~\ref{fig:cvsvpycomp}.
 \begin{figure}[h]
   \centering
   \includegraphics[trim=0.7cm 0.5cm 1cm 1cm, clip, width=.9\linewidth]{svcvpycomp.pdf}
-  \caption{Verbosity overhead comparison between verification plans written for two designs with ChiselVerify (CV), SystemVerilog (SV), and cocotb (PY). For SV, only the \texttt{uvm\_subscriber} code is taken into account. }
+  \caption{Verbosity overhead comparison between verification plans written for three designs with ChiselVerify (CV), SystemVerilog (SV), and cocotb (PY). For SV, only the \texttt{uvm\_subscriber} code is taken into account. }
   \label{fig:cvsvpycomp}
   \end{figure}
   This shows that, with ChiselVerify, we obtain on average a 70\% reduction in LOC over UVM and a 38\% reduction over cocotb. 

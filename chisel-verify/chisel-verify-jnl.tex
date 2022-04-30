@@ -77,16 +77,19 @@
 %\IEEEauthorblockA{No Institute Given}
 %}
 
-\author{\IEEEauthorblockN{Andrew Dobis\IEEEauthorrefmark{1}, Kevin Laeufer\IEEEauthorrefmark{2}, Hans Jakob Damsgaard\IEEEauthorrefmark{1}, Tjark Petersen\IEEEauthorrefmark{1},\\
+\author{\IEEEauthorblockN{Andrew Dobis\IEEEauthorrefmark{3}, Kevin Laeufer\IEEEauthorrefmark{2}, Hans Jakob Damsgaard\IEEEauthorrefmark{1}, Tjark Petersen\IEEEauthorrefmark{1},\\
 Kasper Juul Hesse Rasmussen\IEEEauthorrefmark{1},
 Enrico Tolotto\IEEEauthorrefmark{1}, Simon Thye Andersen\IEEEauthorrefmark{1},\\
 Richard Lin\IEEEauthorrefmark{2}, Martin Schoeberl\IEEEauthorrefmark{1}}\\
-\IEEEauthorblockA{\IEEEauthorrefmark{1}\textit{Department of Applied Mathematics and Computer Science} \\
-\textit{Technical University of Denmark}\\
-Lyngby, Denmark \\\\
-\IEEEauthorrefmark{2}\textit{Department of Electrical Engineering and Computer Sciences} \\
-\textit{UC Berkeley}\\
-Berkeley, CA \\\\
+\IEEEauthorblockA{\IEEEauthorrefmark{1}\textit{Department of Applied Mathematics and Computer Science},
+\textit{Technical University of Denmark},
+Lyngby, Denmark \\
+\IEEEauthorrefmark{2}\textit{Department of Electrical Engineering and Computer Sciences},
+\textit{UC Berkeley},
+Berkeley, CA \\
+\IEEEauthorrefmark{3}\textit{Department of Computer Science},
+\textit{ETH Zürich},
+Zürich, Switzerland \\\\
 andrew.dobis@inf.ethz.ch,  laeufer@berkeley.edu, hans.damsgaard@tuni.fi, s186083@student.dtu.dk, \\
 s183735@student.dtu.dk, s190057@student.dtu.dk, simon.thye@gmail.com, richard.lin@berkeley.edu, masca@dtu.dk}
 }
@@ -160,7 +163,6 @@ digital design, verification, Chisel, Scala
 \section{Introduction}
 \label{sec:introduction}
 
-Moore's Law is running out of steam~\cite{dark-silicon:2011}.
 General-purpose processors performance increase is down to single digit percentage per year.
 This leads to a new golden age for computer architects designing domain-specific hardware accelerators
 for future performance improvements~\cite{domain-hw-acc:2020}.
@@ -192,16 +194,17 @@ verification code.
 
 The contributions of this paper are: \martin{Maybe a bit longer list.}
 \begin{itemize}
-\item ChiselVerify,~\footnote{https://github.com/chiselverify/chiselverify} an open-source verification library for Chisel designs
-\item Formal methods~\footnote{Available as part of Chisel3 https://github.com/chipsalliance/chisel3} for verifying Chisel designs
+	\item ChiselVerify\footnote{https://github.com/chiselverify/chiselverify}, an open-source verification library for Chisel designs.
+	\item Formal methods\footnote{Available as part of Chisel3 https://github.com/chipsalliance/chisel3} for verifying Chisel designs.
 \end{itemize}
 
 This paper is an extension of~\cite{ChiselVerify:2021}.
 These extensions include the following:
+
 \begin{itemize}
-	\item A proposal of formal verification methods for verifying Chisel designs
-	\item An additional functional coverage approach through implicit verification plans
-	\item An in-depth evaluation and comparison between our methods and those available in UVM and cocotb
+	\item A proposal of formal verification methods for verifying Chisel designs.
+	\item An additional functional coverage approach through implicit verification plans.
+	\item An in-depth evaluation and comparison between our methods and those available in UVM and cocotb.
 \end{itemize}
 
 The paper is organized into 7 sections.
@@ -295,9 +298,6 @@ To the best of our knowledge, ChiselVerify, along with the formal methods propos
 %\martin{Maybe we should already reference our WOSET paper here as well: \cite{verify:fuzzing:2021}} \hjd{Added a reference. Maybe the sentence should be re-phrased?}
 
 %\martin{And somewhere also our ETS paper.} Andrew: Did it in the functional coverage section.
-
-
-
 
 \section{Background}
 \label{sec:background}
@@ -1092,9 +1092,6 @@ simulation testing~\cite{karandikar2018firesim}.
 
 
 
-
-
-
 \section{Evaluation}
 \label{sec:eval}
 
@@ -1322,6 +1319,45 @@ Only considering coverage-related code, this definition requires 26 lines of cod
   However, this is an incomplete comparison, since cocotb does not provide the tools to express value transitions or temporal relations inside of a cover point, making its VP a less accurate model of our specification.
   Thus, while in can be more concise to declare coverpoints in cocotb with simple designs, complex relations, often found in realistic designs, are far more difficult to model.
   Additionally, cocotb does not have direct interfacing capabilities with the Chisel design itself, forcing the user to have to rely on generating and testing a Verilog description rather than the original Chisel one.
+
+\subsubsection{ChiselVerify Performance Overhead}
+In order to evaluate our proposed solutions more thoroughly, we will look at the performance overhead that comes with using our verification tools to augment a ChiselTest testbench.
+To do so, we use our baseline a bare ChiselTest testbench without any functional coverage or CRV.
+
+\paragraph{Functional Coverage Performance Overhead} In order to analyse the performance overhead over varying verification plan sizes, we will be using our previously mentioned arbiter circuit, which has a variable amount of input ports.
+We start by measuring the performance of our arbiter testbench with $n$ ranging from 2 to 256.
+We then measure the performance of the same testbench, but this time augmented with the verification plan presented earlier.
+Finally we measure the performance of our initial testbench, but where the inputs of the arbiter are set using random variables from the following random object:
+\begin{lstlisting}[language=scala]
+class ArbiterIn(n: Int) extends RandObj {
+    currentModel = new Model(seed)
+    val dins = for(_ <- 0 until n) yield(rand(0, n))
+    val consts = for(din <- dins) yield {
+        din dist (
+            0 to 0xF := 1,
+            0xF to 0xFF := 1,
+        )
+    }
+    //Enable all constraints
+    consts.foreach(_.enable())
+}
+\end{lstlisting}
+The results from these measurements are summarized in Figure~\ref{fig:cvoverhead}.
+\begin{figure}[h]
+  \centering
+  \includegraphics[trim=0.7cm 0.5cm 1cm 1cm, clip, width=.9\linewidth]{cvoverhead.pdf}
+  \caption{Performance overhead of the different tools provided by ChiselVerify. FC stands for Functional Coverage, and CRV is Constrained Random Verification. N represents the number of arbiter ports which also means the number of covergroups or random variables.}
+  \label{fig:cvoverhead}
+\end{figure}
+These results show that the both the functional coverage and constrained random verification tools scale quite well, since their overhead seems the be almost independent of the size of the verification plan or the number of random variables used.
+These both show to have an average overhead of 3.5\% on top of ChiselTest independent of the scale at which they are used.
+Such a low and scalable overhead shows that ChiselVerify are an efficient addition to the Chisel verification ecosystem.
+
+\subsubsection{Evaluation Summary}
+As demonstrated above, ChiselVerify allows for the use of Functional Coverage constructs, as well Constrained Random Verification directly inside of a ChiselTest testbench. 
+Complex constructs can be defined following the low verbosity of Chisel and ChiselTest, requiring on average a 70\% less LOC than the industry standard UVM and a 38\% less than cocotb.
+ChiselVerify improves upon these existing solutions by enabling direct use of high-level aspects of a Chisel design.
+All of this is done with a low performance overhead, averaging at 3.5\% across the different functionalities.
 
 \section{Conclusion}
 \label{sec:conclude}

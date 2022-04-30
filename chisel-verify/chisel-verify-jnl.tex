@@ -109,23 +109,26 @@ s183735@student.dtu.dk, s190057@student.dtu.dk, simon.thye@gmail.com, richard.li
 
 
 \begin{abstract}
+With the current ever-increasing demand for performance, hardware developers 
+find themselves turning ever-more towards the construction of application-specific accelerators
+to achieve higher performance and lower energy consumption.
+In order to meet the ever-shortening time constraints, both hardware development and
+verification tools need to be improved.
+%We can no longer depend on Moore's Law to increase computing performance.
+%Performance increase with general-purpose processors has come to a halt.
+%The only way to achieve higher performance or lower energy consumption
+%is by building application-specific accelerators.
+%To support the development of such accelerators, we need better development
+%and verification tools.
 
-We can no longer depend on Moore's Law to increase computing performance.
-Performance increase with general-purpose processors has come to a halt.
-The only way to achieve higher performance or lower energy consumption
-is by building application-specific accelerators.
-To support the development of such accelerators, we need better development
-and verification tools.
-
-Chisel, as a hardware construction language, speeds up the development
+Chisel, as a hardware construction language, tackles this problem by speeding up the development
 of digital designs. However, the Chisel infrastructure lacks tools for
-verification. This paper introduces ChiselVerify, an open-source library
-to support the verification of digital designs in Scala.
-It  uses ChiselTest, the current testing tool for Chisel.
-ChiselVerify supports
-functional coverage, constrained-random verification, bus functional models,
-and transaction-level modeling. We also describe and compare ChiselVerify to an orthogonal tool 
-for formal verification of Chisel designs.
+verification. This paper improves the efficiency of verification in Chisel by proposing
+methods to support the both formal and dynamic verification of digital designs in Scala.
+It builds on top of ChiselTest, the current testing tool for Chisel.
+Our work supports functional coverage, constrained-random verification, bus functional models,
+and transaction-level modelling in a verification library named ChiselVerify, while the formal
+methods are directly integrated into Chisel3.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -177,8 +180,8 @@ Hardware design is still dominated by the traditional hardware description langu
 SystemVerilog adds object oriented features to the language. However, those features are only available for test benches,
 not for describing hardware.
 Chisel goes one (or several) steps forward in hardware description, as it enables object-oriented and functional programming
-to describe hardware. This enable to not only describe concisely hardware descriptions, but also to describe hardware generators.
-This elevates current practice of Perl, TCL, or Python generating VHDL of SystemVerilog code to use the powerful programming
+to describe hardware. This allows one to not only concisely describe hardware, but also to describe hardware generators.
+This elevates current practice of Perl, TCL, or Python generating VHDL or SystemVerilog code to use the powerful programming
 language Scala.
 
 However, Chisel does not yet provide efficient verification tools or libraries. The ChiselTest package~\cite{chisel:tester2}
@@ -188,6 +191,9 @@ Universal Verification Method (UVM), but implemented by leveraging
 Scala's conciseness and support for both object-oriented and functional programming.
 ChiselVerify, supports both coverage-oriented and constrained
 random verification (CRV) flows with more features than those available in UVM.
+Additionally, formal methods for verifying chisel designs using bounded model checking are proposed 
+enabling the formal verification of Chisel designs based solely on a specification.
+These two proposals combined make Chisel's verification capabilities on par with industry standards such as UVM.
 
 For the evaluation, we use three designs: (1) the execution stage of the Leros processor, (2) an arbitration circuit, and (3) an industrial use case, a min-heap sorting circuit.
 We show that ChiselVerify can check many features of the min-heap with few lines of 
@@ -1163,7 +1169,13 @@ reflect the position or the policy of the sponsors.
 \bibliographystyle{IEEEtran}
 \bibliography{../msbib,../chisel-uvm,kevin}%,../funding/ftp-chisel/testing}
 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{dobis.jpeg}}]{Andrew Dobis}
+is a Masters student in Computer Science at ETH Zurich. 
+After obtaining his Bachelors degree in the same field from EPFL, he worked at the Technical University of Denmark's Embedded systems group as a Research Assistant.
+His research focused on developing improving the verification capabilities of the Chisel Hardware Construction language, which led to work on the ChiselVerify verification library.
+His current research interests are more geared towards formal verification.
 
+\end{IEEEbiography}
 \end{document}
 
 %----------------------- REVIEW 1 ---------------------

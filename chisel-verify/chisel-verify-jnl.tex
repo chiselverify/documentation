@@ -1102,20 +1102,28 @@ simulation testing~\cite{karandikar2018firesim}.
 \section{Evaluation}
 \label{sec:eval}
 
-In order to evaluate the different verification tools provided by ChiselVerify, we will be using two different example circuits, namely an arbiter circuit and a priority queue provided by Microchip~\cite{microchip}.
+In order to evaluate the different verification tools provided by ChiselVerify, we will be using three different example circuits, namely an accumulator ALU from the Leros processor~\cite{leros:arcs2019}, an arbiter circuit, and a priority queue provided by Microchip~\cite{microchip}.
 These are tested using ChiselTest test-benches augmented with our verification tools.
-The test-benches are then compared to similar tests writing using UVM and \texttt{cocotb}, using the generated Verilog description as a DUT.
+The test-benches are then compared to similar tests written using SystemVerilog with UVM, and \texttt{cocotb}, using the generated Verilog descriptions as a DUT.
 We have selected UVM since it is an industry standard that can be used to verify Verilog designs, and \texttt{cocotb} since it enables similar verification functionalities in a high-level environment like what we propose with ChiselVerify.
 The results are then compared in terms of the verbosity of the verification code.
-As a final evaluation, we look at the overhead induced by the use of ChiselVerify specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest testbench, to the same one enhanced with our verification tools.
+As a final evaluation, we look at the overhead induced by the use of ChiselVerify-specific functionalities, such as functional coverage and CRV, by comparing the runtime of a bare ChiselTest testbench, to the same one enhanced with our verification tools.
 
 \subsection{Evaluation Circuits}
-We evaluate ChiselVerify on two circuits, which we describe in the following paragraphs.
+We evaluate ChiselVerify on three distinct circuits, which we describe in the following paragraphs.
+
+\subsubsection{Leros accumulator ALU}
+
+The first circuit we will verify with our solution is an accumulator ALU from the Leros processor.
+This supports operations such as \texttt{add}, \texttt{load}, \texttt{shiftRight} and logic operations. 
+In order to have a complete test suite, we need to try all available operations, and using all potential input value corner cases.
+We will thus model our test-bench to do so.
 
 \subsubsection{An Arbitration Circuit}
 
-We evaluate ChiselVerify with an arbiter circuit. The arbiter uses a ready/valid interface for the clients
-and the shared resource. The arbiter is built as a binary tree, where each node does a local arbitration
+Another one of the circuits we evaluate ChiselVerify on is an arbiter circuit.
+The arbiter uses a ready/valid interface for the clients and the shared resource. 
+The arbiter is built as a binary tree, where each node does a local arbitration
 and contains a register to store the data until it can be communicated further up towards the root of the
 tree. Each local 2 to 1 arbiter has turn flag to be fair between the two requests. The assumption is that
 this local fairness translates to a global fairness of the full arbitration tree.
@@ -1140,7 +1148,7 @@ over. And we provided as a solution a PR for Chisel \url{https://github.com/chip
 
 %\martin{rewrite}
 
-The other application example builds on a use-case provided
+The final application example builds on a use-case provided
 by Microchip~\cite{microchip}. The use-case, which we implemented and verified, is a scheduling module for real-time systems built around a hardware priority queue.
 A host system can insert deadlines in the form of timestamps into the scheduling module which in turn presents the next upcoming deadline.
 
@@ -1229,6 +1237,7 @@ This also holds for UVM's random objects.
 We can now take a look at the different results obtained during our evaluation.
 \subsubsection{Verification verbosity}
 We start by comparing the three verification languages in terms the verbosity, which is measured in ``verification lines per source lines of code", a metric used in other works to partially evaluate verification languages~\cite{Nagini:2018, MuellerSchwerhoffSummers16, dobisCoverage:ETS22}.
+We consider a verification line to be any explicit declaration of a cover or bin construct, as well as any function call or standard statement, and have formatted our listings accordingly
 For this, we measure the overhead of the functional coverage and CRV tools provided in ChiselVerify against those provided in UVM and \texttt{cocotb}.
 
 We start by adding functional coverage to the simple testbench presented for the arbiter circuit. 
@@ -1237,10 +1246,13 @@ The arbiter circuit takes as input a Vector of $n$ \texttt{DecoupledIO} elements
 In order to conduct a coherent experiment, we set $n = 7$, and will define our specification accordingly.
 Our verification plan will thus cover the inputs and output \texttt{ready}, \texttt{valid}, and \texttt{bits} ports.
 
-We now do the same for the priority queue
+We now do the same for the priority queue. 
+As described above, this design has two interfaces we will want to monitor during our testing, i.e.\ the \texttt{cmd} and \texttt{head} interfaces.
+Unlike the arbiter, these interfaces are of fixed size and thus the chisel design and the generated Verilog will have similarly abstracted ports.
+Our verification plan will thus cover all elements of both the \texttt{cmd} and \texttt{head} interfaces.
  
 \paragraph{Functional Coverage in UVM} In order to gather functional coverage information about our design using UVM, we have to work with the generated Verilog description.
-This is done using the following structure:
+For example, this is done for the arbiter circuit using the following structure:
 \begin{itemize}
     \item Create a UVM-subscriber based coverage class.
     \item Instantiate the current DUT (\texttt{Arbiter dut = new;})
@@ -1272,15 +1284,16 @@ The results from our comparison are sumarized in Figure~\ref{fig:cvsvpycomp}.
 \begin{figure}[h]
   \centering
   \includegraphics[trim=0.7cm 0.5cm 1cm 1cm, clip, width=.9\linewidth]{svcvpycomp.pdf}
-  \caption{Verbosity overhead comparison between verification plans written for two designs with ChiselVerify (CV), SystemVerilog (SV), and cocotb (PY).}
+  \caption{Verbosity overhead comparison between verification plans written for two designs with ChiselVerify (CV), SystemVerilog (SV), and cocotb (PY). For SV, only the \texttt{uvm\_subscriber} code is taken into account. }
   \label{fig:cvsvpycomp}
   \end{figure}
-  This shows that, with ChiselVerify, we obtain a 83\% reduction in LOC on the Arbiter circuit over UVM and a 70\% reduction over cocotb. 
-  This is due, in this case, to ChiselVerify's capability of exploiting the high-level design constructs, such as Vectors, directly in the Verification Plan, while the other solutions need to rely on the unfolded generated Verilog.
-  For the Priority Queue, we obtain a 60\% reduction over UVM, and an increase of 30\% over cocotb. 
-  This increase comes from cocotb's more concise way of declaring bins in a coverpoint.
-  However, this is a somewhat incomplete comparison, since cocotb does not provide the tools to express value transitions or temporal relations inside of a cover point, making its VP a less accurate model of our specification.
-
+  This shows that, with ChiselVerify, we obtain on average a 70\% reduction in LOC over UVM and a 38\% reduction over cocotb. 
+  This is due to ChiselVerify's capability of exploiting the high-level design constructs, such as Vectors, directly in the Verification Plan, while the other solutions need to rely on the unfolded generated Verilog.
+  An observation can be made that, for designs with simple interfaces such as the Priority Queue or the Leros ALU, we obtain an increase of 30\% over cocotb. 
+  This comes from cocotb's grouped bin decalrations in a coverpoint.
+  However, this is an incomplete comparison, since cocotb does not provide the tools to express value transitions or temporal relations inside of a cover point, making its VP a less accurate model of our specification.
+  Thus, while in can be more concise to declare coverpoints in cocotb with simple designs, complex relations, often found in realistic designs, are far more difficult to model.
+  Additionally, cocotb does not have direct interfacing capabilities with the Chisel design itself, forcing the user to have to rely on generating and testing a Verilog description rather than the original Chisel one.
 
 \section{Conclusion}
 \label{sec:conclude}

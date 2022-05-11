@@ -113,6 +113,23 @@
 %
 %Digital systems are a central part of our current and future digital enhanced live. Denmark has a considerable industry in the design and development of digital systems. However, designing and verifying such digital systems becomes an ever-growing challenge. The main issue is the usage of old tools compared to tools for programming those devices. This project aims to apply tools and methods from software development to hardware development to increase productivity. Danish firms will benefit from the results of this project.
 
+\section{Meeting Notes}
+
+\subsection{May 11 2022}
+
+\begin{itemize}
+\item Eun-Young presented verification of mux/add/sub and basic gates in UUPAAL
+\item Some problems do not scale well, e.g., the add property works only for small numbers as UUPAAL explores all combinations
+\item The challenge is to get the right properties to verify
+\end{itemize}
+
+\subsection{June 1 2022}
+
+To discuss:
+
+\begin{itemize}
+\item Martin: maybe we should use a more interesting example, e.g., an arbiter with a verification plan (see bolw)
+\end{itemize}
 
 
 \section{Introduction and Objectives}
@@ -364,6 +381,34 @@ class AluAccu(size: Int) extends Module {
 }
 
 \end{verbatim}
+
+\subsection{Arbitration Example}
+
+Another circuits we would like to formally verify is an arbiter circuit.
+(\url{https://github.com/chiselverify/chiselverify/blob/master/src/main/scala/examples/Arbiter.scala})
+The arbiter uses a ready/valid interface for the clients and the shared resource. 
+The arbiter is built as a binary tree, where each node does a local arbitration
+and contains a register to store the data until it can be communicated further up towards the root of the
+tree. Each local 2 to 1 arbiter has a turn flag to be fair between the two requests. The assumption is that
+this local fairness translates to a global fairness of the full arbitration tree.
+
+To verify the arbiter, we specify properties that result in a verification plan:
+
+\begin{itemize}
+\item Each request shall eventually be seen at the output (the root node).
+\item No requests shall be ``generated'' in the tree (out of thin air).
+\item The maximum latency for a request shall be $n$ cycles without any competing requests.
+\item The maximum latency for a request shall be $m$ cycles under full load.
+\item The arbitration shall be fair, which means the bandwidth difference between clients shall be bound by $x$ \%.
+\end{itemize}
+
+The values of $n$, $m$, and $x$, depend on the number of clients, i.e., the size of the arbitration
+circuit.
+
+We should be able to shown that the original implementation of \code{reduceTree} on the Chisel \code{Vec}
+produces an unfair circuit. Therefore, we have improved that implementation in Chisel.
+The pull request~\footnote{\url{https://github.com/chipsalliance/chisel3/pull/2318}} is now available
+with Chisel Version 3.5.3.
 
 
 \section{Practical Feasibility}

@@ -704,6 +704,8 @@ The included screenshot was obtained with the open-source GTKWave waveform viewe
 \label{fig:quiz15}
 \end{figure}
 
+\martin{The captions are too long. They should go into the main text.}
+
 % the current state of the open-source ecosystem for formal verification
 There has been a long tradition of open-source formal verification systems from the academic community~\cite{mcmillan1993smv, cimatti2000nusmv, mishchenko2007abc}.
 % only citing select solvers for space gains
@@ -773,7 +775,7 @@ when(busy) {
 This assertion will pass because the circuit does indeed fulfill the property after reset.
 
 
-We now introduce a small bug by connecting \code{input.ready} to \code{true.B} and rerun the test
+We now introduce a small bug by connecting \code{input.ready} to \code{true.B} and rerun the test.
 An assertion violation will be reported one cycle after reset.
 The user is also presented with an error message indicating the Scala line number of the failing assertion.
 To debug the problem, they can find a VCD waveform dump in the standard test directory created by our
@@ -808,7 +810,7 @@ to replay the failure and obtain a simulation quality VCD and error message.}
 \label{fig:verify-flow}
 \end{figure}
 
-In order to implement the verify command introduced in the previous section, we need to convert the Chisel circuit into a format that is understood
+In order to implement the verify command, introduced in the previous section, we need to convert the Chisel circuit into a format that is understood
 by open-source model checkers or SMT solvers.
 We can do this by using the FIRRTL compiler to convert the circuit to Verilog and then using yosys to convert to the
 model checking formats.
@@ -824,7 +826,7 @@ For example, a wire connected to \code{DontCare} or to the result of a division 
 Reading from a memory while the read port is disabled, reading from the same address that another port is writing to or
 writing from two memory ports to the same address all generate an arbitrary value result.
 Not all of these behaviors are represented in the generated Verilog.
-The compiler is free to substitute arbitrary with (more) concrete values, like always returning a memory read result even
+The compiler is free to substitute arbitrary values with (more) concrete values, like always returning a memory read result even
 when the read port is disabled or by assigning a priority to write operations so that at least one of them will complete.
 Thus if we first generate Verilog and then use yosys, we are only verifying one concrete translation of the design,
 but there may be other legal translations that would violate the property.
@@ -838,7 +840,7 @@ If we can replay the failing trace on our existing simulator, the VCD waveform d
 when writing a concrete test bench.
 In order to be able to replay failures caused by arbitrary values, we carefully engineered two FIRRTL passes that analyze the circuit and
 add wires to detect when a result is arbitrary as well as a mux to substitute the result with a connection to a \code{DefRandom} node in that case.
-The new \code{DefRandom} construct provides a named arbitrary value which can change every clock cycle,
+The new \code{DefRandom} construct provides a named arbitrary value that can change every clock cycle,
 very much like a \code{anyseq} annotated wire in Verilog.
 The formal backend implements \code{DefRandom} nodes as inputs that can be freely chosen by the formal engine.
 To make \code{DefRandom} work with our simulator, we  replace the nodes with registers of the same type that are never updated by the hardware.

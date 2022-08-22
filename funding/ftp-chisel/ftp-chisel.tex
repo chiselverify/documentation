@@ -287,7 +287,7 @@ UVM.
 
 
 \paragraph{Advanced Digital Design.}
-
+\alceste{This paragraph sounds like background, maybe it can be merged with ``Digital Design'' above?}
 Scala with functional programming is an excellent basis for developing a methodology for
 advanced digital design.
 So-called hardware generators can significantly increase the productivity of hardware designers.
@@ -335,16 +335,25 @@ hardware description.
 
 \paragraph{Hardware Fuzzing Techniques.}
 
-Fuzzing and property-based testing techniques will inspire new, more efficient methods for validating hardware designs.
-We will add support for hardware fuzzing-based testing to ChiselTest~\cite{chisel:tester2}.
-We will develop property-based testing by {\bf adopting ScalaCheck as a starting point for test generation}, and adding
-temporal assertions to the {device under testing}.
-We will express the properties of interest for a hardware design using temporal logic \cite{Baier2008} (e.g., Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) or similar formalisms. A tool will translate such properties into
-temporal assertions for the testing.
-Properties of interest can guide random test generation {toward producing a reduced number of randomized tests, while still covering a hardware design adequately.}
-We will take inspiration from Google's
-ClusterFuzz~\cite{web:clusterfuzz}
-to explore the distribution of hardware design fuzzing over multiple of testing nodes on a cloud.
+\alceste{I have revised this paragraph below to clarify the challenges, and frame what we plan to do as an answer to such challenges}
+%
+We will develop novel methods for validating Chisel hardware designs via fuzzing
+and property-based testing. The \textbf{key scientific challenges} will be
+\emph{(1)} the formalisation of a suitable logic for expressing properties of
+interest for the hardware design under test, and \emph{(2)} limiting the number
+of random tests needed to trigger the properties of interest, while achieving
+adequate design coverage. We will develop a variant of temporal logic
+\cite{Baier2008} (e.g., based on Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) to
+express the properties of interest, and implement a tool to translate such
+properties into assertions to be checked against the hardware design under test.
+We will then use such properties to drive the generation of focused randomised
+tests that trigger the properties, in combination with fuzzing to increase the
+overall testing coverage. To this end, we plan to extend ScalaCheck to generate
+tests based on our temporal properties, and add support for hardware
+fuzzing-based testing to ChiselTest~\cite{chisel:tester2}. We will also take
+inspiration from Google's ClusterFuzz~\cite{web:clusterfuzz} to explore the
+distribution of hardware design fuzzing over multiple of testing nodes on a
+cloud.
 
 %Unfortunately, their adaptation from the software realm to the hardware realm is far from trivial. 
 %  Instead, hardware designs would be tested while running on a simulator, with decreased performance; moreover, the state space of the design can be extremely large (beyond the reach of any cloud-based systems), and naive random test may not achieve adequate coverage. Property-based testing can (in principle) mitigate the issue: the properties of interest could be used to restrict the testing space; however, there are two open problems: how to express the properties of interest for hardware designs, and how to generate test sets with adequate coverage.
@@ -380,6 +389,8 @@ We will also use coverage metrics for the feedback loop of the fuzzing technique
 
 \paragraph{Verification Framework.}
 
+\alceste{How does this framework relate to the ``hardware fuzzing techniques'' above? Does it encompass the techniques (e.g. by providing an easier-to-use interface)? Or does it complement the techniques?}
+%
 We will develop an object-oriented and functional framework for verification in Scala.
 This framework is inspired by UVM, but will leverage Scala's conciseness with the
 combination of object-oriented programming with functional programming.

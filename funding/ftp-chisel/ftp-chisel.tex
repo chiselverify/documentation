@@ -35,8 +35,8 @@
 \newcommand{\code}[1]{{\textsf{#1}}}
 
 % Adding comments in the text during writing process
-\newcommand{\todo}[1]{{\it TODO: #1}}
 \newcommand{\note}[1]{{\it Note: #1}}
+\newcommand{\todo}[1]{{\color{red} TODO: #1}}
 \newcommand{\martin}[1]{{\color{blue} Martin: #1}}
 \newcommand{\alceste}[1]{{\color{green} Alceste: #1}}
 
@@ -144,8 +144,9 @@ compared to software development and testing.\footnote{Chris Lattner, The Golden
 With this project, we plan to
 {\bf introduce methods inspired by software development and testing into the realm of digital design.}
 This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
-and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
-the design and test of digital systems.
+\todo{Add stuff e.g., chiselverify}
+%and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
+%the design and test of digital systems.
 
 This project aims to develop a method and concrete tools for agile hardware development.
 {We will take inspiration from software development tools, languages, and testing methods
@@ -288,6 +289,7 @@ UVM.
 
 \paragraph{Advanced Digital Design.}
 \alceste{This paragraph sounds like background, maybe it can be merged with ``Digital Design'' above?}
+\martin{You are right. I shall rewrite it, as this shall be part of the project.}
 Scala with functional programming is an excellent basis for developing a methodology for
 advanced digital design.
 So-called hardware generators can significantly increase the productivity of hardware designers.
@@ -390,6 +392,7 @@ We will also use coverage metrics for the feedback loop of the fuzzing technique
 \paragraph{Verification Framework.}
 
 \alceste{How does this framework relate to the ``hardware fuzzing techniques'' above? Does it encompass the techniques (e.g. by providing an easier-to-use interface)? Or does it complement the techniques?}
+\martin{Good point. Should be better integrated with the fuzzing above.}
 %
 We will develop an object-oriented and functional framework for verification in Scala.
 This framework is inspired by UVM, but will leverage Scala's conciseness with the

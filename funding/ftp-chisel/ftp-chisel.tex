@@ -144,9 +144,7 @@ compared to software development and testing.\footnote{Chris Lattner, The Golden
 With this project, we plan to
 {\bf introduce methods inspired by software development and testing into the realm of digital design.}
 This project explores the hardware construction language Chisel~\cite{chisel:dac2012} with Scala
-\todo{Add stuff e.g., chiselverify}
-%and the Universal Verification Method (UVM) with SystemVerilog~\cite{SystemVerilog} for
-%the design and test of digital systems.
+for the design and test of digital systems.
 
 This project aims to develop a method and concrete tools for agile hardware development.
 {We will take inspiration from software development tools, languages, and testing methods
@@ -283,16 +281,16 @@ the researchers need to get familiar with Chisel, SystemVerilog, and
 UVM.
 
 \paragraph{Scientific Challenges}
-
-\martin{TODO, write}
+The main scientific challenge is to bring software based design and testing methods into
+the hardware engineering field. The challenge is twofold: (1) we need to get classic
+hardware engineers to learn modern software concepts like object-oriented and functional
+programming; and (2) to teach software developers how to move an algorithm into hardware.
 
 
 \paragraph{Advanced Digital Design.}
-\alceste{This paragraph sounds like background, maybe it can be merged with ``Digital Design'' above?}
-\martin{You are right. I shall rewrite it, as this shall be part of the project.}
 Scala with functional programming is an excellent basis for developing a methodology for
 advanced digital design.
-So-called hardware generators can significantly increase the productivity of hardware designers.
+We will explore so-called hardware generators that can significantly increase the productivity of hardware designers.
 A hardware generator is a program that can generate a configurable
 hardware description.
 
@@ -337,20 +335,19 @@ hardware description.
 
 \paragraph{Hardware Fuzzing Techniques.}
 
-\alceste{I have revised this paragraph below to clarify the challenges, and frame what we plan to do as an answer to such challenges}
 %
 We will develop novel methods for validating Chisel hardware designs via fuzzing
 and property-based testing. The \textbf{key scientific challenges} will be
-\emph{(1)} the formalisation of a suitable logic for expressing properties of
-interest for the hardware design under test, and \emph{(2)} limiting the number
+(1) the formalization of a suitable logic for expressing properties of
+interest for the hardware design under test, and (2) limiting the number
 of random tests needed to trigger the properties of interest, while achieving
 adequate design coverage. We will develop a variant of temporal logic
 \cite{Baier2008} (e.g., based on Linear Temporal Logic, LTL \cite{Pnueli1977LTL}) to
 express the properties of interest, and implement a tool to translate such
 properties into assertions to be checked against the hardware design under test.
-We will then use such properties to drive the generation of focused randomised
+We will then use such properties to drive the generation of focused randomized
 tests that trigger the properties, in combination with fuzzing to increase the
-overall testing coverage. To this end, we plan to extend ScalaCheck to generate
+overall testing coverage. We plan to extend ScalaCheck to generate
 tests based on our temporal properties, and add support for hardware
 fuzzing-based testing to ChiselTest~\cite{chisel:tester2}. We will also take
 inspiration from Google's ClusterFuzz~\cite{web:clusterfuzz} to explore the
@@ -391,10 +388,7 @@ We will also use coverage metrics for the feedback loop of the fuzzing technique
 
 \paragraph{Verification Framework.}
 
-\alceste{How does this framework relate to the ``hardware fuzzing techniques'' above? Does it encompass the techniques (e.g. by providing an easier-to-use interface)? Or does it complement the techniques?}
-\martin{Good point. Should be better integrated with the fuzzing above.}
-%
-We will develop an object-oriented and functional framework for verification in Scala.
+We will develop an object-oriented and functional framework for verification based on hardware fuzzing in Scala.
 This framework is inspired by UVM, but will leverage Scala's conciseness with the
 combination of object-oriented programming with functional programming.
 An initial experiment of testing the accumulator circuit of the Leros processor~\cite{leros:arcs2019}
@@ -404,40 +398,16 @@ We describe the first steps towards the verification framework \emph{ChiselVerif
 %However, UVM supports more functionality that a plain ChiselTest in Scala.
 
 
-
-
-
-%\begin{itemize}
-%\item Bus functional models
-%\item Multiple languages
-%\item Still talk about a small example taking it through all variations
-%\item WP on VHDL generation from Chisel for better verification
-%\item p69: HDL models are SW projects
-%\end{itemize}
-
-
 \paragraph*{Dissemination and Publication}
 
 Scientific results will be published and presented at international
 conferences (e.g., DATE, DAC, CAV, FPL, ISCAS, FPGA) and in relevant scientific journals
-and two PhD theses.
-%We expect that most tasks will result in at least one publication.
-%One PhD theses will publish the results from the project.
-We aim to publish in open access, to a large extent, in the gold open access model.
-%However, publishers such as ACM also allow publishing in green open access
-%at no additional cost, where a pre-print version of a paper can be uploaded,
-%for example, to ArXiv.
-
+and a PhD theses.
+%We aim to publish in open access, to a large extent, in the gold open access model.
 The results from the project will be available as open-source under the
 industry-friendly BSD license.
-%Open-source research projects attract
-%other researchers, developers, and industrial partners
-%to use and build on the results of the project.
 A project web site will host the project documentation, the published papers, and the design's source code.
-We will provide unrestricted and cost-free digital access to all research and development results.
-%
-We will use the developed method and tools to train a new generation of HW/SW engineers
-at DTU.
+%We will provide unrestricted and cost-free digital access to all research and development results.
 In the middle of the project, we will have a coordination workshop with the project partners.
 In the end, we will organize a design and verification workshop, including a hands-on tutorial,
 open to all interested companies and students from DTU and other universities.
@@ -485,6 +455,9 @@ Huawei will follow the project within informal discussions.
 
 \paragraph{International Mobility}
 
+We agreed with Martin Berger, senior lecturer at the University of Sussex, to host the PhD
+student for 6 month at the University of Sussex.
+
 \paragraph*{Human Resources}
 
 For the SDH project, we request funding for one PhD student.
@@ -503,26 +476,30 @@ for a female researcher for the PhD positions.
 %will have equal opportunities for applying.
 
 
-{\bf Martin Schoeberl (MS)} is associate professor at DTU Compute and is the PI.
+{\bf Martin Schoeberl (MS)} is professor at DTU Compute and is the PI.
 %His research interest is in computer architecture for real-time systems.
 During his stay
 at UCB in 2012 he picked up Chisel and brought it to DTU in research and teaching.
 Martin has {\bf written the Chisel textbook}~\cite{chisel:book}\footnote{\url{http://www.imm.dtu.dk/~masca/chisel-book.html}}, which has been translated
-into Chinese, Japanese, and Vietnamese. Martin is a {\bf member of the Technical Advisory Committee for
-Chisel} and therefore keeps the work of SDH in sync with the development of Chisel.
+into Chinese, Japanese, and Vietnamese.
+%Martin is a {\bf member of the Technical Advisory Committee for
+%Chisel} and therefore keeps the work of SDH in sync with the development of Chisel.
 Martin is part of the regular Chisel developer meeting with
 UC Berkeley researchers and developers from SiFive, a silicon valley startup.
 
 
 {\bf Alceste Scalas (AS)} is associate professor at DTU Compute. His research interest is in formal methods and programming languages to aid design, development, and verification. He has relevant experience with the Scala programming language and has been invited to present his research at the Scala World 2019 developers' conference.
 %; most of his top-level scientific publications have companion peer-reviewed software artifacts implemented in Scala.
+
 {\bf Jan Madsen (JM)} is a professor and deputy director of DTU Compute.
 His research spans methods
 and tools for systems engineering of computing systems, embedded systems-on-a-chip,
 Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
-synthetic biology (molecular computing). 
-{\bf Martin Berger (MB)} works on processor verification at Huawei's Cambridge Research Center.
+synthetic biology (molecular computing).
+
+{\bf Martin Berger (MB)} is senior lecturer at the University of Sussex.
 He is interested in applying the results of this project to processor verification.
+
 {\bf NN PhD}: we are looking for one PhD candidate with a background in computer engineering
 with an interest in digital design and programming languages.
 

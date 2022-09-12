@@ -118,13 +118,22 @@
 \section{Introduction and Objectives}
 \label{sec:objectives}
 
-We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
-Performance increase with general-purpose processors has come to a halt.
-Building domain-specific hardware accelerators are the only way to achieve
-higher performance or lower energy consumption~\cite{domain-hw-acc:2020}.
-These accelerators can be built as chips or in field-programmable gate arrays (FPGAs).
-We cannot update or patch chips. Therefore, thorough testing and verification of the design are mandatory.
+Most of us experienced the chip shortage crisis. 
+The shortage has revealed the strong dependency of many industries on semiconductor chips.
+In response to the shortage, the European Chip Act aims to strengthen
+Europe's resilience and competitiveness in semiconductor technologies and applications.
+Furthermore, the greater Copenhagen area has many innovative chip design companies.
+The companies expect a need of about 20 chip design engineers per year.
 
+%We can no longer depend on Moore's Law to increase computing performance~\cite{dark-silicon:2011}.
+%Performance increase with general-purpose processors has come to a halt.
+%Building domain-specific hardware accelerators are the only way to achieve
+%higher performance or lower energy consumption~\cite{domain-hw-acc:2020}.
+%These accelerators can be built as chips or in field-programmable gate arrays (FPGAs).
+%We cannot update or patch chips. Therefore, thorough testing and verification of the design are mandatory.
+
+The aim of this project is to support the Danish chip design industry by {\bf increasing
+the productivity of chip design} and testing engineers.
 We can learn from software development trends such as agile software development
 to efficiently develop and verify those accelerators~\cite{agile:manifesto}.
 We believe that {\bf we need to adapt to agile hardware development}~\cite{henn-patt:turing:2019}.
@@ -161,7 +170,7 @@ testing methods for hardware testing}.
 
 \paragraph{Hypothesis:} using tools, methods, and languages from the
 software domain to describe and verify digital circuits will {\bf considerably increase the productivity}
-of digital design and verification engineers.
+of digital design and verification.
 
 
 %We will explore the testing strategy used in UVM in the context of verifying hardware described in Chisel.
@@ -432,19 +441,19 @@ test benches written in VHDL and Verilog to a verification method based on const
 test generation with tools such as UVM. Therefore, the SDH project is just-in-time to support this
 transition.
 %
-Following {\bf eight companies are interested in the SDH project} and support it with use cases.
+Following {\bf companies are interested in the SDH project} and support it with use cases.
 WSAudiology will support in terms of providing relevant use-cases and review/consultancy support.
+Comcores is interested in improving the throughput with SDH.
 
 
 
 % Old:
-Microchip is interested in using Chisel to improve the design throughput and
-provides a hardware use case to sort Ethernet packets according to their deadlines.
-Teledyne is interested in exploring Chisel for development and testing with the compatibility of VHDL and Verilog.
-Synopsys provides tool support for the project.
-Napatech will follow the project and offer challenges to the project.
-Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
-Comcores is interested in improving the throughput with SDH.
+%Microchip is interested in using Chisel to improve the design throughput and
+%provides a hardware use case to sort Ethernet packets according to their deadlines.
+%Teledyne is interested in exploring Chisel for development and testing with the compatibility of VHDL and Verilog.
+%Synopsys provides tool support for the project.
+%Napatech will follow the project and offer challenges to the project.
+%Syosil will provide consulting and training in connection with any questions related to functional verification and UVM.
 
 
 %\paragraph*{Use Cases}
@@ -456,11 +465,15 @@ Comcores is interested in improving the throughput with SDH.
 %From our research we will use a multicore device, a network-on-chip~\cite{s4noc:nocarc2019},
 %to explore concurrent, transaction based verification.
 
+\vspace{-5mm}
 \paragraph{International Mobility}
 
 We agreed with Martin Berger, senior lecturer at the University of Sussex, that he will host the PhD
-student for 6 months at the University of Sussex.
-\todo{more content on what is happening}
+student for 6 months at the University of Sussex. During this time they will explore the design and
+implementation of a specification language for property tests using temporal logic within the
+testing framework.
+
+\vspace{-5mm}
 
 \paragraph*{Human Resources}
 
@@ -489,21 +502,19 @@ into Chinese, Japanese, and Vietnamese.
 %Martin is a {\bf member of the Technical Advisory Committee for
 %Chisel} and therefore keeps the work of SDH in sync with the development of Chisel.
 Martin is part of the regular Chisel developer meeting with
-UC Berkeley researchers and developers from SiFive, a silicon valley startup.
+%UC Berkeley researchers and developers from SiFive, a silicon valley startup.
+UC Berkeley and SiFive, a silicon valley startup.
 
 
 {\bf Alceste Scalas (AS)} is associate professor at DTU Compute. His research interest is in formal methods and programming languages to aid design, development, and verification. He has relevant experience with the Scala programming language and has been invited to present his research at the Scala World 2019 developers' conference.
 %; most of his top-level scientific publications have companion peer-reviewed software artifacts implemented in Scala.
-
 {\bf Jan Madsen (JM)} is a professor and deputy director of DTU Compute.
 His research spans methods
 and tools for systems engineering of computing systems, embedded systems-on-a-chip,
 Cyber-Physical Systems (Internet-of-Things), microfluidic biochips (Lab-on-Chip), and
 synthetic biology (molecular computing).
-
 {\bf Martin Berger (MB)} is senior lecturer at the University of Sussex.
 He is interested in applying the results of this project to processor verification.
-
 {\bf NN PhD}: we are looking for one PhD candidate with a background in computer engineering
 with an interest in digital design and programming languages.
 
@@ -550,7 +561,7 @@ with an interest in digital design and programming languages.
 
 
 
-%\vspace{-5mm}
+\vspace{-5mm}
 \paragraph*{Tasks, Milestones, and Timetable}
 
 
@@ -581,6 +592,7 @@ can be used for exploration and evaluation of the results with the industrial us
 
 \textbf{M4} (Month 48): The project has finished, and one PhD theses has been handed in.
 
+\vspace{-5mm}
 \paragraph*{Success Criteria:}
 We aim to increase productivity by a factor of two. Measuring productivity
 is not trivial, as it varies between developers. Therefore, we will approximate it by comparing the

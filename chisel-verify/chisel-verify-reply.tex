@@ -1,0 +1,246 @@
+\documentclass{article}
+
+
+\usepackage{pslatex} % -- times instead of computer modern, especially for the plain article class
+\usepackage[colorlinks=false,bookmarks=false]{hyperref}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{cite}
+%\usepackage{flushend} % even out the last page, but use only at the end when there is a bibliography
+\usepackage{tikz}				
+\usetikzlibrary{arrows,automata,positioning}
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+\newcommand{\code}[1]{{\small{\texttt{#1}}}}
+\setlength{\parindent}{0pt} % Removes paragraph indentation
+
+% fatter TT font
+\renewcommand*\ttdefault{txtt}
+% another TT, suggested by Alex
+% \usepackage{inconsolata}
+% \usepackage[T1]{fontenc} % needed as well?
+
+\usepackage{listings}
+
+\newcommand{\todo}[1]{{\emph{TODO: #1}}}
+\newcommand{\martin}[1]{{\color{blue} Martin: #1\\}}
+\newcommand{\hjd}[1]{{\color{green} Hans Jakob: #1\\}}
+\newcommand{\reply}[1]{{\color{blue} #1}}
+
+% uncomment following for final submission
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\martin}[1]{}
+%\renewcommand{\hjd}[1]{}
+
+
+%%Uncomment the following when you want to add copyright notice and not use any space	 (IEEE only)
+%\usepackage[absolute]{textpos}
+%% Set unit to be pagewidth and height, and increase inner margin of box
+%\setlength{\TPHorizModule}{\paperwidth}\setlength{\TPVertModule}{\paperheight}
+%\TPMargin{5pt}
+%% Define \copyrightstatement command for easier use
+%\newcommand{\copyrightstatement}{
+%	\begin{textblock}{0.85}(0.072,0.93)    % Tweak here: {box width}(leftposition, rightposition)
+%		\noindent
+%		\normalsize
+%		???-?-?-???-?/??/\$31.00~\copyright20?? IEEE % Put here your copyright
+%	\end{textblock}
+%}
+
+\begin{document}
+
+%%Uncomment the following when you want to add copyright notice and not use any space	 (IEEE only)
+%\copyrightstatement
+
+\title{Reply Letter for the Revision of:\\[2ex]Verification of Chisel Hardware Designs with ChiselVerify}
+
+
+\maketitle \thispagestyle{empty}
+
+
+We want to thank the reviewers for their detailed feedback.
+This reply letter describes the changes we have made to the paper.
+First, we repeat all review comments and provide explanations on how we addressed the comments like this:
+
+\begin{quote}
+\reply{How we addressed the comments.}
+\end{quote}
+
+%Then, we describe other changes that are not tied to a specific reviewer comment.
+
+
+
+\section*{Reviewer 1}
+
+
+
+\subsection*{Summary}
+The authors present ChiselVerify, a verification framework for Chisel Hardware Construction Language (HCL).
+This article extends their initial conference paper, which introduces the framework, with clearly defined additions, most notably including formal verification support and a comparison with industry-grade equivalent solutions.
+The contributions are interesting, especially in the current context of increased adoption of HCLs.
+The time and amount of effort required to achieve a satisfying verification of hardware circuits has always been a major concern in hardware development flows.
+With enhanced design flexibility and reusability brought by HCLs --enabling fast developments of ever more complex circuits-- this problematic is now more relevant than ever, although it has remained relatively neglected until now.
+However, I think the authors could do better at motivating, describing and positioning their contributions to help the reader understand the benefits of their approach.
+
+
+\subsection*{Major concerns}
+\#\# Style
+The paper is presented as a technical report, especially sections V and VI, which contain the additional content to the conference paper.
+Many sentences sound like attempts to justify that the authors have actually done the work by themselves. 
+More importantly, a scientific paper is neither a tool documentation nor a github readme.
+Here are some self-explanatory excerpts that should simply never appear in a journal paper.
+
+> The recommended way to
+> start a Chisel project is to use the open-source Chisel template
+> repository 5. The resulting Scala project automatically includes
+> dependencies on the Chisel and the chiseltest libraries which
+> will be downloaded by the Scala build tool.
+
+> If the user now clicks the test icon again
+> or runs the sbt test command, (...)
+
+There are many more examples. 
+I strongly encourage the authors to step back and make the effort to extract the actual scientific contribution (which I believe does exist in this work) from their software-development work.
+
+\#\# Assumptions \& External dependencies
+
+The first introduction of several framework keywords such as `Queryable` are quite unclear for the reader.
+For example `Queryable` is introduced in an enumeration of requirements of an implementation... in which `Queryable` is part of the proposed solution.
+Then `Queryable` is never used again... or is it to be assumed by the reader the same object as `QueryableCoverage`?
+The same comment applies to `RandObj` and its `Model` whose respective roles remain unclear.
+More generally, custom terms should be introduced with parsimony by the authors and always thoroughly explained in order not to impair the reading fluidity and obscur the underlying contribution.
+
+Some comments are based on the content of the chisel-template, making the article not self-sufficient despite numerous code listings.
+> we just need to substitute the test(new DecoupledGcd(16)) command with verify(new DecoupledGcd(16),
+
+
+\#\# Fair comparison with UVM and cocotb
+Comparison with equivalent industry grade solutions is more than welcome to prove the relevance of the Chisel stack outside of playgrounds, however it should be further detailed.
+
+First, a performance comparison with UVM and cocotb must be presented.
+Absolute key figures are missing here: total time spent, number of runs, average time per run, standard deviation and the most relevant simulation performance figure: number of cycles per second.
+These figures are critical for the reader to figure out how it compares to its own use-cases and if such testing framework are worth of interest in practice.
+A common underlying commercial simulation tools would be required here for UVM support, which does not exclude an additional discussion on the ability to use very performant open-source tools such as verilator thanks to framework such as yours or cocotb.
+
+Second, comparisons of user-experience in terms of Lines of Codes are always slippery, and must hence be extremely accurate when defended as a key improvement over existing solutions.
+The three comparative listings presented raise three major issues.
+
+1. The listings do not provide equivalent descriptions of coverpoints and bins
+- UVM example covers `dut.io\_in\_0\_ready`, `dut.io\_in\_0\_valid` and `dut.io\_in\_0\_bits` with 4 bins each
+- Cocotb example covers `top.io\_out\_ready` and `top.io\_out\_valid` with 3 bins each
+- ChiselVerify covers generically `in\${input.hashCode()}.ready` with only one bin (note that the use of `hashCode` here is both cumbersome and baffling for non scala-expert readers)
+
+2. The ability to enumerate port on the python seems neglected
+Code listings suggest that only ChiselVerify is able to enumerate ports to create cover points while any python user would retort that a dictionary of ports (even manually written) could also do the job. 
+
+3. The feature-to-feature comparison is not intelligible 
+> However, this is
+> an incomplete comparison, since cocotb does not provide the
+> tools to express value transitions or temporal relations inside
+> of a cover point, making its verification plan a less accurate
+> model of our specification. 
+
+This argument cannot be understood by the reader with the given code listing.
+Without further explanation, the python `range\_relation` lambda function might be understood as this value transition while nothing is specified on ChiselVerify listing.
+If this ability to model value transition is a real advantage over cocotb, it should be further detailed.
+Such functional discrepancies then call for a comparison of the 3 solutions from a functional point of view, maybe with a small summarizing table of common and distinct features.
+
+
+
+\# Minor concerns
+
+\#\# Related work
+- no mention/comparison of testing framework associated to other HCLs, this requires further investigations
+- SecChisel[1] is worth mentioning, not due to an equivalent purpose but because it internally leverages a similar flow based on FIRRTL transforms, SMT code generator and Z3 SMT solver.
+
+[1] Deng, Shuwen, et al. "SecChisel framework for security verification of secure processor architectures." Proceedings of the 8th International Workshop on Hardware and Architectural Support for Security and Privacy. 2019.
+
+\#\# Uneven evaluating use-cases
+The three use-cases used for evaluation are very unevenly detailed, in particular the framework features in-use for each use-case is not clearly stated.
+The first use-case does not illustrate any framework feature while its usage remains very vaguely described:
+> In order to have a complete test suite,
+> we need to try all available operations and use all potential
+> input value corner cases. We will thus model our test bench
+> to do so.  
+
+
+\#\# Chisel stack presentation
+Figure 1 must be drawn in a single direction (left to right arrows only), with appropriate color schemes and legend. It is currently quite confusing even for an advanced chisel-user.
+In particular, a same color/shape combinaison should not be used for tools (treadle, verilator, synthesizer) and products (chisel code, verilog, bitstream).
+
+In addition, for fair comparison with UVM \& cocotb, the entire stack shall be properly described:
+
+> Additionally, cocotb does not have direct interfacing
+> capabilities with the Chisel design itself, forcing the user to
+> have to rely on generating and testing a Verilog description
+> rather than the original Chisel one.
+This statement is very misleading, Figure 1 illustrates that the design has to be generated (Chisel elaboration + FIRRTL compilation) before testing in any case, even with treadle.
+Meaning that the framework always tests a generated Verilog description (with all simulation backends but treadle which relies on the generated High-FIRRTL), and never tests the actual chisel/scala code.
+What can be highlighted here is only a much easier access to the ports with ChiselTest, in their original Scala/Chisel object form rather than by name, but that's it.
+
+
+\#\# Java as a selling point
+> Java virtual machine (JVM) and has excellent interoperability with
+> the large pool of existing Scala and Java libraries for design
+> and verification. Integrating external components is further
+> simplified by Scala/Java's packaging system.
+
+Java is definitely not a selling point of the Chisel Stack.
+Java has a considerable memory overhead and sometimes lead to dependency nightmare on comparison to traditional HDLs.
+Few java/scala libraries actually reveal useful to hardware engineers, on the contrary to Python which provides maintained libraries well known to hardware engineers from signal processing (numpy, matplotlib) to network (scapy).
+
+\#\# Volume of captions
+Captions below figures 2,3,4 \& 5 are very verbose and exceed the simple description the figure by introducing additional explanations.
+It is not exactly clear for the reader when to read those explanations, which impairs the reading experience.  
+
+\#\# Miscellaneous
+- Non explained results to detail or remove: `Port io\_outAB has 26 hits`
+- Swapped word *Response/Data*: `Next, it transfers the data elements one at a time over the Write Response channel`
+- Usage of color highlighting on code listings would be a plus  
+
+\# Conclusion
+I believe this paper could be a very good one if the above is addressed, and I strongly encourage the authors to invest on the topic. 
+I think it is timely, needed and very helpful to the community.
+
+
+\section*{Reviewer 2}
+
+Summary:
+The paper presents ChiselVerify, an extension for Chisel aiming at verification of digital circuits designed in Chisel. ChiselVerify supports functional coverage, constrained random verification, bus functional models, and transaction-level modelling. Apart from presenting the architecture, implementation and usage of ChiselVerify itself, three evaluation circuits are analyzed using the tool. In addition, a comparison with UVM/SystemVerilog and cocoty is provided. The paper is well written and addresses the highly relevant topic of reducing not only design time but also verification time. The paper is an extension of a NORCAS conference paper.
+
+General comments:
+The paper does not have any major weak points and is of high quality. Consider the following remarks for further improvements
+- yosys (and related tools) are mentioned in the formal verification chapter. Maybe it might be a good idea to also include an intro to it in the related work or background section.
+- Is there any way to benefit from existing UVM test benches? I understand that it might be tricky because the underlying language and structure (chisel vs. system verilog) is different, however, as usual with mixed language simulations, the ports/interfaces are similar, which might be a possible connection point. Converting existing UVM testbenches to ChiselVerify or using UVM with Chisel or ChiselVerify with SystemVerilog designs would enable wider/faster adoption of the technology in general. If this makes any these, consider adding a few lines regarding this topic.
+- Random variables for constrained random verification: It was not clear to me whether, apart from regular or cyclic, the sequence of random values is pseudorandom or not, or whether this can be specified. For most applications, repeatability (i.e. pseudorandom sequences) is desirable. Consider adding clarification regarding this.
+- In the evaluation section, the performance overhead of ChiselVerify for functional coverage and constrained random verification is analyzed. Is it also possible to include UVM and cocotb in this analysis without major effort? If so, consider adding this.
+
+Details:
+- Output for Listing 1: Is there any way to comprehend the 26 hits for io\_outAB. As io\_outAB is only listed in the report, not in the listing, maybe it should be removed or explained further.
+- Bounded model checking from checkpoints: Is is written that: "If the solver returns that there is no such assignment, we get a guarantee that our circuit will not hit any assertion violation for the first k cycles of its execution." which sounds like that's just possible at the beginning (i.e. after reset). Is it also possible to do this from any known state of the circuit (i.e. a checkpoint)?
+- In the introduction, cocotb and Leros are introduced without citation, while there are cited later on. Consider adding citations in the intro.
+- In the Abstract: "support the both formal and dynamic" remove "the"
+- "Fig." vs. "Figure": In the text, all figures except Fig. 1 are referred to as "Figure", not "Fig.". Check consistency.
+- Figure 2, Figure 3 and Figure 5 are not referenced in the text. Consider referring to them in the text. The captions of Figures 2-5 are really long, which is ok, however, one might just move some of the captions to the text when referring to the figures. In addition, the position of Figure 4 in the text can be improved. 
+- The references to the zipcpu blog are great. Consider adding the URL as footnotes, not just as hyperlinks
+- In Figure 1, consider adding GDSII to bitstream in the box, to include both FPGA and ASIC targets
+- Homogenize between American and British English, e.g.: standardized vs. standardized, modeling vs. modeling, behavior vs. behaviour, etc.
+- Homogenize hyphenation: evermore vs. ever-more, object-oriented, open-source, etc.
+- cototb is written using a different font in the evaluation chapter compared to the previous chapters
+- Bibliography: Consistent upper/lower case usage for, e.g. chisel or scala.
+
+
+
+
+\section*{Other Changes}
+
+Here we list a few changes not based on review comments.
+
+\begin{itemize}
+	\item xxx
+\end{itemize}
+
+\end{document}

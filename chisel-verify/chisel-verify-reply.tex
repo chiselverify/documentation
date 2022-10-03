@@ -25,7 +25,7 @@
 
 \usepackage{listings}
 
-\newcommand{\todo}[1]{{\emph{TODO: #1}}}
+\newcommand{\todo}[1]{{\color{olive} TODO: #1}}
 \newcommand{\martin}[1]{{\color{blue} Martin: #1\\}}
 \newcommand{\hjd}[1]{{\color{green} Hans Jakob: #1\\}}
 \newcommand{\reply}[1]{{\color{blue} #1}}
@@ -72,6 +72,8 @@ First, we repeat all review comments and provide explanations on how we addresse
 %Then, we describe other changes that are not tied to a specific reviewer comment.
 
 
+\martin{These are quite detailed reviews! This is a lot of work done by the reviewers. We shall honer them.}
+
 
 \section*{Reviewer 1}
 
@@ -93,6 +95,8 @@ Many sentences sound like attempts to justify that the authors have actually don
 More importantly, a scientific paper is neither a tool documentation nor a github readme.
 Here are some self-explanatory excerpts that should simply never appear in a journal paper.
 
+\martin{this needs just a bit of rewriting.}
+
 > The recommended way to
 > start a Chisel project is to use the open-source Chisel template
 > repository 5. The resulting Scala project automatically includes
@@ -105,6 +109,8 @@ Here are some self-explanatory excerpts that should simply never appear in a jou
 There are many more examples. 
 I strongly encourage the authors to step back and make the effort to extract the actual scientific contribution (which I believe does exist in this work) from their software-development work.
 
+\todo{Martin will give it a shot.}
+
 \#\# Assumptions \& External dependencies
 
 The first introduction of several framework keywords such as `Queryable` are quite unclear for the reader.
@@ -113,8 +119,12 @@ Then `Queryable` is never used again... or is it to be assumed by the reader the
 The same comment applies to `RandObj` and its `Model` whose respective roles remain unclear.
 More generally, custom terms should be introduced with parsimony by the authors and always thoroughly explained in order not to impair the reading fluidity and obscur the underlying contribution.
 
+\martin{Agreed, we will rewrite}
+
 Some comments are based on the content of the chisel-template, making the article not self-sufficient despite numerous code listings.
 > we just need to substitute the test(new DecoupledGcd(16)) command with verify(new DecoupledGcd(16),
+
+\martin{Will rewrite}
 
 
 \#\# Fair comparison with UVM and cocotb
@@ -125,6 +135,9 @@ Absolute key figures are missing here: total time spent, number of runs, average
 These figures are critical for the reader to figure out how it compares to its own use-cases and if such testing framework are worth of interest in practice.
 A common underlying commercial simulation tools would be required here for UVM support, which does not exclude an additional discussion on the ability to use very performant open-source tools such as verilator thanks to framework such as yours or cocotb.
 
+\martin{This is the toughest one. Even when we run those tests on our EDA servers, can we run
+Chisel and Verilator there as well? Or can we run the UVM stuff in Vivado?}
+
 Second, comparisons of user-experience in terms of Lines of Codes are always slippery, and must hence be extremely accurate when defended as a key improvement over existing solutions.
 The three comparative listings presented raise three major issues.
 
@@ -133,8 +146,12 @@ The three comparative listings presented raise three major issues.
 - Cocotb example covers `top.io\_out\_ready` and `top.io\_out\_valid` with 3 bins each
 - ChiselVerify covers generically `in\${input.hashCode()}.ready` with only one bin (note that the use of `hashCode` here is both cumbersome and baffling for non scala-expert readers)
 
+\martin{Do we still have the UVM and cocotb code somewhere?}
+
 2. The ability to enumerate port on the python seems neglected
-Code listings suggest that only ChiselVerify is able to enumerate ports to create cover points while any python user would retort that a dictionary of ports (even manually written) could also do the job. 
+Code listings suggest that only ChiselVerify is able to enumerate ports to create cover points while any python user would retort that a dictionary of ports (even manually written) could also do the job.
+
+\martin{Good point. We need to fix this.}
 
 3. The feature-to-feature comparison is not intelligible 
 > However, this is
@@ -171,6 +188,8 @@ The first use-case does not illustrate any framework feature while its usage rem
 Figure 1 must be drawn in a single direction (left to right arrows only), with appropriate color schemes and legend. It is currently quite confusing even for an advanced chisel-user.
 In particular, a same color/shape combinaison should not be used for tools (treadle, verilator, synthesizer) and products (chisel code, verilog, bitstream).
 
+\martin{We should use the ``list'' symbol for files.}
+
 In addition, for fair comparison with UVM \& cocotb, the entire stack shall be properly described:
 
 > Additionally, cocotb does not have direct interfacing
@@ -191,6 +210,8 @@ What can be highlighted here is only a much easier access to the ports with Chis
 Java is definitely not a selling point of the Chisel Stack.
 Java has a considerable memory overhead and sometimes lead to dependency nightmare on comparison to traditional HDLs.
 Few java/scala libraries actually reveal useful to hardware engineers, on the contrary to Python which provides maintained libraries well known to hardware engineers from signal processing (numpy, matplotlib) to network (scapy).
+
+\martin{Mmh, maybe downplay it a bit? Looks like HW people don't like Java.}
 
 \#\# Volume of captions
 Captions below figures 2,3,4 \& 5 are very verbose and exceed the simple description the figure by introducing additional explanations.
@@ -215,8 +236,14 @@ General comments:
 The paper does not have any major weak points and is of high quality. Consider the following remarks for further improvements
 - yosys (and related tools) are mentioned in the formal verification chapter. Maybe it might be a good idea to also include an intro to it in the related work or background section.
 - Is there any way to benefit from existing UVM test benches? I understand that it might be tricky because the underlying language and structure (chisel vs. system verilog) is different, however, as usual with mixed language simulations, the ports/interfaces are similar, which might be a possible connection point. Converting existing UVM testbenches to ChiselVerify or using UVM with Chisel or ChiselVerify with SystemVerilog designs would enable wider/faster adoption of the technology in general. If this makes any these, consider adding a few lines regarding this topic.
+
+\martin{Good point for future work ;-) But we should describe it a bit. Maybe combining Chisel and UVM could
+be a selling point for users.}
+
 - Random variables for constrained random verification: It was not clear to me whether, apart from regular or cyclic, the sequence of random values is pseudorandom or not, or whether this can be specified. For most applications, repeatability (i.e. pseudorandom sequences) is desirable. Consider adding clarification regarding this.
 - In the evaluation section, the performance overhead of ChiselVerify for functional coverage and constrained random verification is analyzed. Is it also possible to include UVM and cocotb in this analysis without major effort? If so, consider adding this.
+
+\martin{Same request as Reviewer 1}
 
 Details:
 - Output for Listing 1: Is there any way to comprehend the 26 hits for io\_outAB. As io\_outAB is only listed in the report, not in the listing, maybe it should be removed or explained further.

@@ -934,7 +934,7 @@ As a final evaluation, we look at the overhead induced by the use of ChiselVerif
 \subsection{Evaluation Circuits}
 We evaluate ChiselVerify on three distinct circuits, which we describe in the following paragraphs.
 
-\subsubsection{Leros accumulator ALU}
+\subsubsection{Leros Accumulator ALU}
 
 The first circuit we will verify with our solution is an accumulator ALU from the Leros processor.
 It supports operations such as \texttt{add}, \texttt{load}, \texttt{shiftRight} and logic operations. 
@@ -1002,7 +1002,7 @@ In order to abstract interaction with the DUT and provide an interface at the sa
 
 \subsection{Evaluation Results}
 We can now take a look at the different results obtained during our evaluation.
-\subsubsection{Verification verbosity}
+\subsubsection{Verification Verbosity}
 We start by comparing the three verification languages in terms verbosity, which is measured in ``verification lines per source lines of code'', a metric used in other works to partially evaluate verification languages~\cite{Nagini:2018, MuellerSchwerhoffSummers16, dobisCoverage:ETS22}.
 We consider a verification line to be any explicit declaration of a cover or bin construct, as well as any function call or standard statement, and have formatted our listings accordingly.
 For this, we measure the overhead of the functional coverage and constrained random verification tools provided in ChiselVerify against those provided in UVM and \texttt{cocotb}.
@@ -1018,7 +1018,7 @@ As described above, this design has two interfaces we will want to monitor durin
 Unlike the arbiter, these interfaces are of fixed size and thus the chisel design and the generated Verilog will have similarly abstracted ports.
 Our verification plan will thus cover all elements of both the \texttt{cmd} and \texttt{head} interfaces.
  
-\paragraph{functional coverage in UVM} In order to gather functional coverage information about our design using UVM, we have to work with the generated Verilog description.
+\paragraph{Functional Coverage in UVM} In order to gather functional coverage information about our design using UVM, we have to work with the generated Verilog description.
 Additionally, UVM requires a very specific test bench structure than spans multiple files and hundreds of LOC.
 Our focus is on the \texttt{uvm\_subscriber} subclass, which is where our verification plan will be defined.
 For example, this is done for the arbiter circuit using the following structure:
@@ -1046,7 +1046,7 @@ For example, this is done for the arbiter circuit using the following structure:
 \end{itemize}  
 Only considering coverage-related code, this requires 158 lines of SystemVerilog code. 
 
-\paragraph{functional coverage in cocotb} Gathering functional coverage using cocotb is also done using the generated Verilog description.
+\paragraph{Functional Coverage in cocotb} Gathering functional coverage using cocotb is also done using the generated Verilog description.
 This is done by creating a \texttt{Python}-based test bench, which is linked to our design via a custom \texttt{Makefile}.
 We then define our verification plan by creating a \texttt{coverage\_section} inside of our test bench.
 Finally, we link said verification plan to a \texttt{cocotb.coroutine} function to mark it as our sampler.
@@ -1063,7 +1063,7 @@ Arbiter_Coverage = coverage_section(
  \end{lstlisting}
  Only considering coverage-related code, this requires 82 lines of cocotb-coverage code.
  
-\paragraph{functional coverage with ChiselVerify} Finally, using ChiselVerify to gather functional coverage information about a design allows for direct interaction with the Chisel design.
+\paragraph{Functional Coverage with ChiselVerify} Finally, using ChiselVerify to gather functional coverage information about a design allows for direct interaction with the Chisel design.
 In the case of designs with complex interfaces, such as the arbiter, this allows us to create generic verification plans that function with any parametrization of the design.
 For example, in the case of the arbiter, which has a variable number of inputs, we can simply define our verification plan using a generic loop over all inputs in the design as follows:
  \begin{lstlisting}[language=scala]
@@ -1086,7 +1086,7 @@ Only considering coverage-related code, this definition requires 26 lines of cod
   \end{figure}
   This shows that, with ChiselVerify, we obtain on average a 70\% reduction in LOC over UVM and a 38\% reduction over cocotb. 
   This is due to ChiselVerify's capability of exploiting the high-level design constructs, such as Vectors, directly in the Verification Plan, while the other solutions need to rely on the unfolded generated Verilog.
-  An observation can be made that, for designs with simple interfaces such as the Priority Queue or the Leros ALU, we obtain an increase of 30\% over cocotb. 
+  An observation can be made that, for designs with simple interfaces such as the priority queue or the Leros ALU, we obtain an increase of 30\% over cocotb. 
   This comes from cocotb's grouped bin declarations in a coverpoint.
   However, this is an incomplete comparison, since cocotb does not provide the tools to express value transitions or temporal relations inside of a cover point, making its verification plan a less accurate model of our specification.
   Thus, while it can be more concise to declare coverpoints in cocotb with simple designs, complex relations, often found in realistic designs, are far more difficult to model.

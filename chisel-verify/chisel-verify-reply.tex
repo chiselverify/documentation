@@ -109,7 +109,8 @@ Here are some self-explanatory excerpts that should simply never appear in a jou
 There are many more examples. 
 I strongly encourage the authors to step back and make the effort to extract the actual scientific contribution (which I believe does exist in this work) from their software-development work.
 
-\todo{Martin will give it a shot.}
+\todo{Kevin will remove a paragraph and work on the captions. Martin will rewrite}
+
 
 \#\# Assumptions \& External dependencies
 
@@ -119,12 +120,14 @@ Then `Queryable` is never used again... or is it to be assumed by the reader the
 The same comment applies to `RandObj` and its `Model` whose respective roles remain unclear.
 More generally, custom terms should be introduced with parsimony by the authors and always thoroughly explained in order not to impair the reading fluidity and obscur the underlying contribution.
 
+\todo{Andrew}
+
 \martin{Agreed, we will rewrite}
 
 Some comments are based on the content of the chisel-template, making the article not self-sufficient despite numerous code listings.
 > we just need to substitute the test(new DecoupledGcd(16)) command with verify(new DecoupledGcd(16),
 
-\martin{Will rewrite}
+\todo{Martin}
 
 
 \#\# Fair comparison with UVM and cocotb
@@ -148,10 +151,15 @@ The three comparative listings presented raise three major issues.
 
 \martin{Do we still have the UVM and cocotb code somewhere?}
 
+\todo{Martin will create a new repo.}
+\todo{Kasper and Hans should help out with the UVM examples.}
+\todo{Andrew commits coctb to a repo.}
+
 2. The ability to enumerate port on the python seems neglected
 Code listings suggest that only ChiselVerify is able to enumerate ports to create cover points while any python user would retort that a dictionary of ports (even manually written) could also do the job.
 
 \martin{Good point. We need to fix this.}
+\todo{Andrew looks into this.}
 
 3. The feature-to-feature comparison is not intelligible 
 > However, this is
@@ -160,20 +168,30 @@ Code listings suggest that only ChiselVerify is able to enumerate ports to creat
 > of a cover point, making its verification plan a less accurate
 > model of our specification. 
 
+\todo{probably solving with removing.}
+
 This argument cannot be understood by the reader with the given code listing.
 Without further explanation, the python `range\_relation` lambda function might be understood as this value transition while nothing is specified on ChiselVerify listing.
 If this ability to model value transition is a real advantage over cocotb, it should be further detailed.
 Such functional discrepancies then call for a comparison of the 3 solutions from a functional point of view, maybe with a small summarizing table of common and distinct features.
 
-
+\todo{Martin will look this up.}
 
 \# Minor concerns
 
 \#\# Related work
 - no mention/comparison of testing framework associated to other HCLs, this requires further investigations
-- SecChisel[1] is worth mentioning, not due to an equivalent purpose but because it internally leverages a similar flow based on FIRRTL transforms, SMT code generator and Z3 SMT solver.
 
+\todo{cite fault: A Python Embedded Domain-Specific Language for Metaprogramming Portable Hardware Verification Components, CAV'20}
+
+\todo{cite BlueCheck: BlueCheck: Naylor, Matthew, and Simon Moore. "A generic synthesisable test bench." In 2015 ACM/IEEE International Conference on Formal Methods and Models for Codesign (MEMOCODE), pp. 128-137. IEEE, 2015.}
+
+\todo{cite SpinalHDL}
+
+- SecChisel[1] is worth mentioning, not due to an equivalent purpose but because it internally leverages a similar flow based on FIRRTL transforms, SMT code generator and Z3 SMT solver.
 [1] Deng, Shuwen, et al. "SecChisel framework for security verification of secure processor architectures." Proceedings of the 8th International Workshop on Hardware and Architectural Support for Security and Privacy. 2019.
+
+\todo{Kevin will ad it.}
 
 \#\# Uneven evaluating use-cases
 The three use-cases used for evaluation are very unevenly detailed, in particular the framework features in-use for each use-case is not clearly stated.
@@ -183,12 +201,15 @@ The first use-case does not illustrate any framework feature while its usage rem
 > input value corner cases. We will thus model our test bench
 > to do so.  
 
+\todo{Martin will look into this.}
 
 \#\# Chisel stack presentation
 Figure 1 must be drawn in a single direction (left to right arrows only), with appropriate color schemes and legend. It is currently quite confusing even for an advanced chisel-user.
 In particular, a same color/shape combinaison should not be used for tools (treadle, verilator, synthesizer) and products (chisel code, verilog, bitstream).
 
 \martin{We should use the ``list'' symbol for files.}
+\todo{Hans will redraw it and use file symbols, something like https://icones.pro/en/file-and-document-icon-png-symbol-black/}
+
 
 In addition, for fair comparison with UVM \& cocotb, the entire stack shall be properly described:
 
@@ -199,6 +220,8 @@ In addition, for fair comparison with UVM \& cocotb, the entire stack shall be p
 This statement is very misleading, Figure 1 illustrates that the design has to be generated (Chisel elaboration + FIRRTL compilation) before testing in any case, even with treadle.
 Meaning that the framework always tests a generated Verilog description (with all simulation backends but treadle which relies on the generated High-FIRRTL), and never tests the actual chisel/scala code.
 What can be highlighted here is only a much easier access to the ports with ChiselTest, in their original Scala/Chisel object form rather than by name, but that's it.
+
+\todo{Martin will look into this}
 
 
 \#\# Java as a selling point
@@ -213,18 +236,29 @@ Few java/scala libraries actually reveal useful to hardware engineers, on the co
 
 \martin{Mmh, maybe downplay it a bit? Looks like HW people don't like Java.}
 
+\todo{Martin will rephrase.}
+
+\todo{Maybe mention https://github.com/scalanlp/breeze like numpy.}
+
 \#\# Volume of captions
 Captions below figures 2,3,4 \& 5 are very verbose and exceed the simple description the figure by introducing additional explanations.
 It is not exactly clear for the reader when to read those explanations, which impairs the reading experience.  
 
+\todo{Kevin will do it.}
+
 \#\# Miscellaneous
 - Non explained results to detail or remove: `Port io\_outAB has 26 hits`
 - Swapped word *Response/Data*: `Next, it transfers the data elements one at a time over the Write Response channel`
-- Usage of color highlighting on code listings would be a plus  
+- Usage of color highlighting on code listings would be a plus
+
+\todo{Andrew wil fix it.}
+\todo{Color highlighting no, as too may different languages.}
 
 \# Conclusion
 I believe this paper could be a very good one if the above is addressed, and I strongly encourage the authors to invest on the topic. 
 I think it is timely, needed and very helpful to the community.
+
+\todo{say thank you}
 
 
 \section*{Reviewer 2}
@@ -235,29 +269,59 @@ The paper presents ChiselVerify, an extension for Chisel aiming at verification 
 General comments:
 The paper does not have any major weak points and is of high quality. Consider the following remarks for further improvements
 - yosys (and related tools) are mentioned in the formal verification chapter. Maybe it might be a good idea to also include an intro to it in the related work or background section.
+
+\todo{Martin will do}
+
 - Is there any way to benefit from existing UVM test benches? I understand that it might be tricky because the underlying language and structure (chisel vs. system verilog) is different, however, as usual with mixed language simulations, the ports/interfaces are similar, which might be a possible connection point. Converting existing UVM testbenches to ChiselVerify or using UVM with Chisel or ChiselVerify with SystemVerilog designs would enable wider/faster adoption of the technology in general. If this makes any these, consider adding a few lines regarding this topic.
 
 \martin{Good point for future work ;-) But we should describe it a bit. Maybe combining Chisel and UVM could
 be a selling point for users.}
 
+\todo{Martin will write a few words.}
+
 - Random variables for constrained random verification: It was not clear to me whether, apart from regular or cyclic, the sequence of random values is pseudorandom or not, or whether this can be specified. For most applications, repeatability (i.e. pseudorandom sequences) is desirable. Consider adding clarification regarding this.
+
+\todo{Andrew makes it clear.}
+
 - In the evaluation section, the performance overhead of ChiselVerify for functional coverage and constrained random verification is analyzed. Is it also possible to include UVM and cocotb in this analysis without major effort? If so, consider adding this.
 
 \martin{Same request as Reviewer 1}
 
 Details:
 - Output for Listing 1: Is there any way to comprehend the 26 hits for io\_outAB. As io\_outAB is only listed in the report, not in the listing, maybe it should be removed or explained further.
+
+\todo{Andrew will fix.}
+
 - Bounded model checking from checkpoints: Is is written that: "If the solver returns that there is no such assignment, we get a guarantee that our circuit will not hit any assertion violation for the first k cycles of its execution." which sounds like that's just possible at the beginning (i.e. after reset). Is it also possible to do this from any known state of the circuit (i.e. a checkpoint)?
+
+\todo{Kevin writes a response.}
+
 - In the introduction, cocotb and Leros are introduced without citation, while there are cited later on. Consider adding citations in the intro.
 - In the Abstract: "support the both formal and dynamic" remove "the"
 - "Fig." vs. "Figure": In the text, all figures except Fig. 1 are referred to as "Figure", not "Fig.". Check consistency.
+
+\todo{Martin will fix.}
+
 - Figure 2, Figure 3 and Figure 5 are not referenced in the text. Consider referring to them in the text. The captions of Figures 2-5 are really long, which is ok, however, one might just move some of the captions to the text when referring to the figures. In addition, the position of Figure 4 in the text can be improved. 
+
+\todo{Kevin will fix.}
+
 - The references to the zipcpu blog are great. Consider adding the URL as footnotes, not just as hyperlinks
+
+\todo{Kevin}
+
 - In Figure 1, consider adding GDSII to bitstream in the box, to include both FPGA and ASIC targets
+
+\todo{Hans}
+
 - Homogenize between American and British English, e.g.: standardized vs. standardized, modeling vs. modeling, behavior vs. behaviour, etc.
 - Homogenize hyphenation: evermore vs. ever-more, object-oriented, open-source, etc.
 - cototb is written using a different font in the evaluation chapter compared to the previous chapters
+\todo{Martin will fix and run Grammarly}
+
 - Bibliography: Consistent upper/lower case usage for, e.g. chisel or scala.
+
+\todo{Andrew will fix the .bib file.}
 
 
 

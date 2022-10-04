@@ -124,10 +124,10 @@ verification tools need to be improved.
 Chisel, as a hardware construction language, tackles this problem by speeding up the development
 of digital designs. However, the Chisel infrastructure lacks tools for
 verification. This paper improves the efficiency of verification in Chisel by proposing
-methods to support the both formal and dynamic verification of digital designs in Scala.
+methods to support both formal and dynamic verification of digital designs in Scala.
 It builds on top of ChiselTest, the current testing tool for Chisel.
 Our work supports functional coverage, constrained random verification, bus functional models,
-and transaction-level modelling in a verification library named ChiselVerify, while the formal
+and transaction-level modeling in a verification library named ChiselVerify, while the formal
 methods are directly integrated into Chisel3.
 \end{abstract}
 
@@ -195,7 +195,7 @@ Additionally, formal methods for verifying chisel designs using bounded model ch
 enabling the formal verification of Chisel designs based solely on a specification.
 These two proposals combined make Chisel's verification capabilities on par with industry standards such as UVM.
 
-For the evaluation, we use three designs: (1) the execution stage of the Leros processor, (2) an arbitration circuit, and (3) an industrial use case, a min-heap sorting circuit.
+For the evaluation, we use three designs: (1) the execution stage of the Leros processor~\cite{leros:arcs2019}, (2) an arbitration circuit, and (3) an industrial use case, a min-heap sorting circuit.
 We show that ChiselVerify can check many features of the min-heap with few lines of 
 verification code.
 
@@ -213,16 +213,16 @@ These extensions include the following:
 \begin{itemize}
 	\item A proposal of formal verification methods for verifying Chisel designs.
 	\item An additional functional coverage approach through implicit verification plans.
-	\item An in-depth evaluation and comparison between our methods and those available in UVM and cocotb.
+	\item An in-depth evaluation and comparison between our methods and those available in UVM and cocotb~\cite{cocotb:2018}.
 \end{itemize}
 
 The paper is organized into 7 sections.
 First, Section~\ref{sec:related} describes related work, and section~\ref{sec:background} covers 
 background on hardware verification. 
-Next, we describe our solution for enabling verification in Chisel, called ChiselVerify, in section~\ref{sec:verify}.
+Section~\ref{sec:verify} describes our solution for enabling verification in Chisel, called ChiselVerify.
 Section~\ref{sec:formal} presents an orthogonal approach to classic test driven verification by using formal
 methods for verification. 
-Finally, Section~\ref{sec:eval} evaluates ChiselVerify with three use cases, and section~\ref{sec:conclude} concludes the paper.
+Section~\ref{sec:eval} evaluates ChiselVerify with three use cases, and Section~\ref{sec:conclude} concludes the paper.
 
 
 \section{Related Work}
@@ -262,6 +262,14 @@ verbosity, i.e., even simple tests require at least around 800 lines of code. As
 UVM imposes significant initial time-investment demands but is re-usable once it gets up and 
 running. Moreover, newcomers may experience that UVM is less accessible than simpler approaches 
 such as ChiselVerify as its structure differs from most traditional test benches.
+
+Yosys~\cite{Yosys} is an open-source tool for circuit synthesis.
+Clifford Wolf developed the Yosys Open SYnthesis Suite (Yosys) as part of his
+Bachelor thesis at the Vienna University of Technology~\cite{yosys:bachelor}.
+The focus of Yosys is on high-level digital synthesis.
+Yosys uses the open-source logic synthesis tool ABC~\cite{abc:cav:2010} for gate-level optimizations.
+Yosys is a framework that can be extended.
+We can use Yosys for interactive design investigation, circuit analysis, or symbolic model checking.
 
 Beyond the general frameworks available in SystemVerilog and UVM, other projects have proposed 
 using software testing techniques to do hardware verification. For example, RFuzz~\cite{rfuzz2018} 
@@ -359,7 +367,7 @@ The lowering is done by the FIRRTL compiler which converts a high-level Intermed
 The low-level representation is then exported into a subset of Verilog that was chosen as a common subset supported by the majority of backend tools.
 
 Besides serving as a convenient way to lower Chisel circuits into Verilog, the FIRRTL IR and accompanying compiler infrastructure
-also makes it easy to add circuit analysis and instrumentation passes, known as \textit{transforms}. Moreover, it is possible to simulate circuits described in FIRRTL using the Treadle execution engine, before converting them into (System)Verilog which can, of course, be simulated using commercial or open-source tools like Verilator~\cite{verilator}. Fig.~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
+also makes it easy to add circuit analysis and instrumentation passes, known as \textit{transforms}. Moreover, it is possible to simulate circuits described in FIRRTL using the Treadle execution engine, before converting them into (System)Verilog which can, of course, be simulated using commercial or open-source tools like Verilator~\cite{verilator}. Figure~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
 
 Being embedded in Scala, Chisel is executed on the Java virtual machine (JVM) and has excellent 
 interoperability with the large pool of existing Scala and Java libraries for design and verification. 
@@ -640,6 +648,21 @@ class MemorySpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 }
 \end{lstlisting}
+
+\subsection{Future Work}
+
+In this paper our development stays mainly in the Chisel world and comparing it against UVM.
+However, an interesting approach would be to mix and mach different approaches and tools.
+The easiest combination is to use Chisel for the circuit description and UVM for verifiaction.
+Chisel generates standard Verilog code that can be integrated with an UVM testing flow.
+SystemVerilog components can also be integrated in Chisel as black boxes and we can
+verify them with ChiselVerify on Verilator. However, the SystemVerilog code shall only
+include Verilog code constructs that Verilator supports.
+
+The most challenging approach would be to combine UVM and ChiselVerify. For example,
+having an UVM test driver for the DTU, but using ChiselVerify with a golden reference
+model written in Scala. We consider this interesting development question as future work.
+
 
 \section{Formal Verification}
 \label{sec:formal}

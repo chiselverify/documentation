@@ -268,16 +268,24 @@ The paper presents ChiselVerify, an extension for Chisel aiming at verification 
 
 General comments:
 The paper does not have any major weak points and is of high quality. Consider the following remarks for further improvements
+
+\begin{quote}
+\reply{Thank you for this assesment.}
+\end{quote}
+
 - yosys (and related tools) are mentioned in the formal verification chapter. Maybe it might be a good idea to also include an intro to it in the related work or background section.
 
-\todo{Martin will do}
+\begin{quote}
+\reply{We have added a paragraph on Yosys in Related Work after the UVM paragraph.}
+\end{quote}
 
 - Is there any way to benefit from existing UVM test benches? I understand that it might be tricky because the underlying language and structure (chisel vs. system verilog) is different, however, as usual with mixed language simulations, the ports/interfaces are similar, which might be a possible connection point. Converting existing UVM testbenches to ChiselVerify or using UVM with Chisel or ChiselVerify with SystemVerilog designs would enable wider/faster adoption of the technology in general. If this makes any these, consider adding a few lines regarding this topic.
 
-\martin{Good point for future work ;-) But we should describe it a bit. Maybe combining Chisel and UVM could
-be a selling point for users.}
+\begin{quote}
+\reply{This is a very interesting proposal and could help adaption of ChiselVerify. We added a subsection about future work
+discussing this mix and match. Could be the next paper...}
+\end{quote}
 
-\todo{Martin will write a few words.}
 
 - Random variables for constrained random verification: It was not clear to me whether, apart from regular or cyclic, the sequence of random values is pseudorandom or not, or whether this can be specified. For most applications, repeatability (i.e. pseudorandom sequences) is desirable. Consider adding clarification regarding this.
 
@@ -300,7 +308,9 @@ Details:
 - In the Abstract: "support the both formal and dynamic" remove "the"
 - "Fig." vs. "Figure": In the text, all figures except Fig. 1 are referred to as "Figure", not "Fig.". Check consistency.
 
-\todo{Martin will fix.}
+\begin{quote}
+\reply{Thank you for pointing this out. We fixed it.}
+\end{quote}
 
 - Figure 2, Figure 3 and Figure 5 are not referenced in the text. Consider referring to them in the text. The captions of Figures 2-5 are really long, which is ok, however, one might just move some of the captions to the text when referring to the figures. In addition, the position of Figure 4 in the text can be improved. 
 

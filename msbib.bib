@@ -1,6 +1,27 @@
 % This file was created with JabRef 2.7.2.
 % Encoding: Cp1252
 
+@INPROCEEDINGS{OpenROAD,
+  author = {Tutu Ajayi and Vidya A. Chhabria and Mateus Foga{\c c}a and Soheil
+	Hashemi and Abdelrahman Hosny and Andrew B. Kahng and Minsoo Kim
+	and Jeongsup Lee and Uday Mallappa and Marina Neseem and Geraldo
+	Pradipta and Sherief Reda and Mehdi Saligane and Sachin S. Sapatnekar
+	and Carl Sechen and Mohamed Shalan and William Swartz and Lutong
+	Wang and Zhehong Wang and Mingyu Woo and Bangqi Xu},
+  title = {Toward an Open-Source Digital Flow: First Learnings from the OpenROAD
+	Project},
+  booktitle = {DAC},
+  year = {2019},
+  pages = {76},
+  publisher = {ACM},
+  bibdate = {2021-08-08},
+  bibsource = {DBLP, http://dblp.uni-trier.de/https://doi.org/10.1145/3316781.3326334;
+	DBLP, http://dblp.uni-trier.de/https://ieeexplore.ieee.org/document/8806957;
+	DBLP, http://dblp.uni-trier.de/db/conf/dac/dac2019.html#AjayiCFHHKKLMNP19},
+  crossref = {conf/dac/2019},
+  isbn = {978-1-4503-6725-7}
+}
+
 @ELECTRONIC{chisel:tester2,
   author = {Richard Lin},
   title = {{ChiselTest}},
@@ -14,6 +35,46 @@
   owner = {martin},
   timestamp = {2020.09.29},
   no-urldate = {2020-09-25}
+}
+
+@MISC{ghdl,
+  author = {Tristan Gingold},
+  title = {GHDL},
+  howpublished = {\url{https://github.com/ghdl/ghdl}}
+}
+
+@MISC{ghdl-yosys-plugin,
+  author = {Tristan Gingold},
+  title = {ghdl-yosys-plugin},
+  howpublished = {\url{https://github.com/ghdl/ghdl-yosys-plugin}}
+}
+
+@MISC{iverilog,
+  author = {Williams, Stephen},
+  title = {{Icarus Verilog}},
+  howpublished = {\url{http://iverilog.icarus.com/}}
+}
+
+@MISC{verilator,
+  author = {Veripool},
+  title = {Verilator},
+  howpublished = {\url{https://www.veripool.org/wiki/verilator}}
+}
+
+@MISC{Yosys,
+  author = {Claire Wolf},
+  title = {Yosys Open SYnthesis Suite},
+  howpublished = {\url{https://github.com/YosysHQ/yosys}}
+}
+
+@INPROCEEDINGS{kevin:formal:woset2021,
+  author = {Kevin Laeufer and Jonathan Bachrach and Koushik Sen},
+  title = {Open-Source Formal Verification for Chisel},
+  booktitle = {Proceedings of the Fourth Workshop on Open-Source EDA Technology
+	(WOSET)},
+  year = {2021},
+  owner = {martin},
+  timestamp = {2022.06.15}
 }
 
 @INPROCEEDINGS{ripes,
@@ -44,6 +105,13 @@
   no-url = {https://doi.org/10.1145/3361682}
 }
 
+@MISC{verilatormanual,
+  author = {Veripool},
+  title = {Verilator Manual},
+  howpublished = {\url{https://www.veripool.org/wiki/verilator/Manual-verilator}},
+  year = {2020}
+}
+
 @ARTICLE{henn-patt:turing:2019,
   author = {Hennessy, John L. and Patterson, David A.},
   title = {A New Golden Age for Computer Architecture},
@@ -62,6 +130,19 @@
   numpages = {13},
   publisher = {Association for Computing Machinery},
   no-url = {https://doi.org/10.1145/3282307}
+}
+
+@ARTICLE{PULP:2019,
+  author = {Pullini, Antonio and Rossi, Davide and Loi, Igor and Tagliavini,
+	Giuseppe and Benini, Luca},
+  title = {Mr.Wolf: An Energy-Precision Scalable Parallel Ultra Low Power SoC
+	for IoT Edge Processing},
+  journal = {IEEE Journal of Solid-State Circuits},
+  year = {2019},
+  volume = {54},
+  pages = {1970-1981},
+  number = {7},
+  doi = {10.1109/JSSC.2019.2912307}
 }
 
 @TECHREPORT{esperanto:2018,
@@ -101,6 +182,35 @@
 	(ULP) embedded multicores}
 }
 
+@TECHREPORT{rocket:techrep,
+  author = {Asanovic, Krste and Avizienis, Rimas and Bachrach, Jonathan and Beamer,
+	Scott and Biancolin, David and Celio, Christopher and Cook, Henry
+	and Dabbelt, Daniel and Hauser, John and Izraelevitz, Adam and Karandikar,
+	Sagar and Keller, Ben and Kim, Donggyu and Koenig, John and Lee,
+	Yunsup and Love, Eric and Maas, Martin and Magyar, Albert and Mao,
+	Howard and Moreto, Miquel and Ou, Albert and Patterson, David A.
+	and Richards, Brian and Schmidt, Colin and Twigg, Stephen and Vo,
+	Huy and Waterman, Andrew},
+  title = {The Rocket Chip Generator},
+  institution = {EECS Department, University of California, Berkeley},
+  year = {2016},
+  number = {UCB/EECS-2016-17},
+  month = {Apr},
+  abstract = {Rocket Chip is an open-source Sysem-on-Chip design generator that
+	emits synthesizable RTL. It leverages the Chisel hardware construction
+	language to compose a library of sophisticated generators for cores,
+	caches, and interconnects into an integrated SoC. Rocket Chip generates
+	general-purpose processor cores that use the open RISC-V ISA, and
+	provides both an in-order core generator (Rocket) and an out-of-order
+	core generator (BOOM). For SoC designers interested in utilizing
+	heterogeneous specialization for added efficiency gains, Rocket Chip
+	supports the integration of custom accelerators in the form of instruction
+	set extensions, coprocessors, or fully independent novel cores. Rocket
+	Chip has been taped out (manufactured) eleven times, and yielded
+	functional silicon prototypes capable of booting Linux.},
+  no-url = {http://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-17.html}
+}
+
 @PHDTHESIS{Waterman:EECS-2016-1,
   author = {Waterman, Andrew},
   title = {Design of the RISC-V Instruction Set Architecture},
@@ -109,6 +219,41 @@
   month = {Jan},
   number = {UCB/EECS-2016-1},
   no-url = {http://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-1.html}
+}
+
+@INPROCEEDINGS{eldridge2015,
+  author = {Schuyler Eldridge and Amos Waterland and Margo Seltzer and Jonathan
+	Appavoo and Ajay Joshi},
+  title = {Towards General-Purpose Neural Network Computing},
+  booktitle = {2015 International Conference on Parallel Architecture and Compilation,
+	{PACT} 2015, San Francisco, CA, USA, October 18-21, 2015},
+  year = {2015},
+  pages = {99--112},
+  bibsource = {dblp computer science bibliography, http://dblp.org},
+  biburl = {http://dblp.uni-trier.de/rec/bib/conf/IEEEpact/EldridgeWSAJ15},
+  doi = {10.1109/PACT.2015.21},
+  timestamp = {Wed, 04 May 2016 14:25:23 +0200},
+  no-url = {http://dx.doi.org/10.1109/PACT.2015.21}
+}
+
+@INPROCEEDINGS{RoCC:2015,
+  author = {Schuyler Eldridge and Amos Waterland and Margo Seltzer and Jonathan
+	Appavooand Ajay Joshi},
+  title = {Towards General-Purpose Neural Network Computing},
+  booktitle = {2015 International Conference on Parallel Architecture and Compilation
+	(PACT)},
+  year = {2015},
+  pages = {99--112},
+  month = {Oct},
+  doi = {10.1109/PACT.2015.21},
+  issn = {1089-795X},
+  keywords = {feedforward neural nets;learning (artificial intelligence);neural
+	net architecture;recurrent neural nets;general-purpose neural network
+	computing;machine learning;hardware accelerator;software-hardware
+	extension;power consumption;X-FILES;feedforward neural network;feedback
+	neural network;neural network accelerator architecture;DANA;Artificial
+	neural networks;Hardware;Software;Registers;Standards;Accelerator
+	architectures}
 }
 
 @INPROCEEDINGS{ultrasmall:fpl2014,
@@ -128,6 +273,16 @@
 	FPGA;arithmetic and logic unit;field programmable gate array;microcontrollers;serial
 	ALU architecture;system-on-chip;Field programmable gate arrays;Hardware;Multiplexing;Optimization;Shift
 	registers;Table lookup}
+}
+
+@TECHREPORT{yosys:bachelor,
+  author = {Wolf, Clifford},
+  title = {Design and Implementation of the Yosys Open SYnthesis Suite},
+  institution = {Vienna University of Technology},
+  year = {2013},
+  type = {Bachelor Thesis},
+  owner = {martin},
+  timestamp = {2022.08.22}
 }
 
 @INPROCEEDINGS{chisel:dac2012,
@@ -175,6 +330,34 @@
   number = {UCB/EECS-2011-62},
   month = {May},
   no-url = {http://www.eecs.berkeley.edu/Pubs/TechRpts/2011/EECS-2011-62.html}
+}
+
+@INPROCEEDINGS{abc:cav:2010,
+  author = {Brayton, Robert and Mishchenko, Alan},
+  title = {ABC: An Academic Industrial-Strength Verification Tool},
+  booktitle = {Computer Aided Verification},
+  year = {2010},
+  editor = {Touili, Tayssir and Cook, Byron and Jackson, Paul},
+  pages = {24--40},
+  address = {Berlin, Heidelberg},
+  publisher = {Springer Berlin Heidelberg},
+  abstract = {ABC is a public-domain system for logic synthesis and formal verification
+	of binary logic circuits appearing in synchronous hardware designs.
+	ABC combines scalable logic transformations based on And-Inverter
+	Graphs (AIGs), with a variety of innovative algorithms. A focus on
+	the synergy of sequential synthesis and sequential verification leads
+	to improvements in both domains. This paper introduces ABC, motivates
+	its development, and illustrates its use in formal verification.},
+  isbn = {978-3-642-14295-6}
+}
+
+@INPROCEEDINGS{magic:2010,
+  author = {Alan Mishchenko and Niklas Een and Robert Brayton and Stephen Jang
+	and Maciej Ciesielski and Thomas Daniel},
+  title = {Magic: An industrial-strength logic optimization, technology mapping,
+	and formal verification tool},
+  booktitle = {Proc. IWLS'10},
+  year = {2010}
 }
 
 @MISC{myhdl:2010,
@@ -949,6 +1132,15 @@
   year = {2025},
   owner = {martin},
   timestamp = {2019.05.29}
+}
+
+@INPROCEEDINGS{openlane:woset:2020,
+  author = {Ahmed Ghazy and Mohamed Shalan},
+  title = {OpenLANE: The Open-Source Digital ASIC Implementation Flow},
+  booktitle = {Workshop on Open-Source EDA Technology (WOSET)},
+  year = {2020},
+  owner = {martin},
+  timestamp = {2022.08.16}
 }
 
 @TECHREPORT{leros:comp:2019,
@@ -3183,6 +3375,14 @@
 % This file was created with JabRef 2.7.2.
 % Encoding: Cp1252
 
+@INPROCEEDINGS{hwsw:raw:2022,
+  author = {Kirkeby, Maja H. and Schoeberl, Martin},
+  title = {Towards Comparing Performance of Algorithms in Hardware and Software},
+  booktitle = {Workshop on Resource AWareness of Systems and Society},
+  year = {2022},
+  doi = {10.48550/ARXIV.2204.03394}
+}
+
 @INPROCEEDINGS{ChiselVerify:2021,
   author = {Andrew Dobis and Tjark Petersen and Hans Jakob Damsgaard and Kasper
 	Juul Hesse Rasmussen and Enrico Tolotto and Simon Thye Andersen and
@@ -3292,7 +3492,7 @@
 
 @INPROCEEDINGS{verify:fuzzing:2021,
   author = {Andrew Dobis and Tjark Petersen and Martin Schoeberl},
-  title = {Towards Functional Coverage-Driven Fuzzing for Chisel Designs},
+  title = {Functional Coverage-Driven Fuzzing for Chisel Designs},
   booktitle = {Proceedings of the Fourth Workshop on Open-Source EDA Technology
 	(WOSET)},
   year = {2021},
@@ -10560,6 +10760,15 @@
   no-url = {http://csdl.computer.org/comp/proceedings/isorc/2000/0607/00/06070016abs.htm}
 }
 
+@MASTERSTHESIS{bosse:master:2022,
+  author = {Bosse Bandowski},
+  title = {A Practical Hardware Accelerator for Deep Neural Networks},
+  school = {Technical University of Denmark},
+  year = {2022},
+  owner = {martin},
+  timestamp = {2022.04.30}
+}
+
 @INPROCEEDINGS{hoplitebuf:2019,
   author = {Garg, Tushar and Wasly, Saud and Pellizzoni, Rodolfo and Kapre, Nachiket},
   title = {HopliteBuf: FPGA NoCs with Provably Stall-Free FIFOs},
@@ -10862,6 +11071,14 @@
   location = {Vancouver, British Columbia, Canada},
   numpages = {6},
   no-url = {http://doi.acm.org/10.1145/2401716.2401730}
+}
+
+@MISC{axi4standard,
+  author = {ARM},
+  title = {AMBA AXI and ACE Protocol Specification AXI3, AXI4, and AXI4-Lite
+	ACE and ACE-Lite},
+  howpublished = {\url{https://developer.arm.com/documentation/ihi0022/e/}},
+  year = {2011}
 }
 
 @INPROCEEDINGS{heracles:fpl2011,

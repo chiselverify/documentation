@@ -369,11 +369,9 @@ The low-level representation is then exported into a subset of Verilog that was 
 Besides serving as a convenient way to lower Chisel circuits into Verilog, the FIRRTL IR and accompanying compiler infrastructure
 also makes it easy to add circuit analysis and instrumentation passes, known as \textit{transforms}. Moreover, it is possible to simulate circuits described in FIRRTL using the Treadle execution engine, before converting them into (System)Verilog which can, of course, be simulated using commercial or open-source tools like Verilator~\cite{verilator}. Figure~\ref{fig:chisel-pipe} shows an overview of the Chisel compilation pipeline.
 
-Being embedded in Scala, Chisel is executed on the Java virtual machine (JVM) and has excellent 
-interoperability with the large pool of existing Scala and Java libraries for design and verification. 
-Integrating external components is further simplified by Scala/Java's packaging system.
-
-Moreover, the JVM also allows for the use of the Java native interface for calling C functions, 
+Being embedded in Scala, Chisel is executed on the Java virtual machine (JVM) and can
+use existing Scala and Java libraries for design and verification. 
+The JVM also allows for the use of the Java native interface for calling C functions, 
 thus enabling co-simulation of Scala testers, Chisel designs, and a C-based golden models. This is 
 valuable for companies wishing to keep their existing C models while using Scala/Chisel for simulation.
 
@@ -1100,20 +1098,24 @@ dut.io.in.foreach((input: DecoupledIO[UInt]) => {
  \end{lstlisting}
 Only considering coverage-related code, this definition requires 26 lines of code for the arbiter's complete verification plan.
 
-\paragraph{Summary} The results from our comparison are summarized in Figure~\ref{fig:cvsvpycomp}.
+\paragraph{Summary}
 \begin{figure}[h]
   \centering
   \includegraphics[trim=0.7cm 0.5cm 1cm 1cm, clip, width=.9\linewidth]{svcvpycomp.pdf}
   \caption{Verbosity overhead comparison between verification plans written for three designs with ChiselVerify (CV), SystemVerilog (SV), and cocotb (PY). For SV, only the \texttt{uvm\_subscriber} code is taken into account. }
   \label{fig:cvsvpycomp}
   \end{figure}
-  This shows that, with ChiselVerify, we obtain on average a 70\% reduction in LOC over UVM and a 38\% reduction over cocotb. 
-  This is due to ChiselVerify's capability of exploiting the high-level design constructs, such as Vectors, directly in the Verification Plan, while the other solutions need to rely on the unfolded generated Verilog.
-  An observation can be made that, for designs with simple interfaces such as the priority queue or the Leros ALU, we obtain an increase of 30\% over cocotb. 
-  This comes from cocotb's grouped bin declarations in a coverpoint.
-  However, this is an incomplete comparison, since cocotb does not provide the tools to express value transitions or temporal relations inside of a cover point, making its verification plan a less accurate model of our specification.
-  Thus, while it can be more concise to declare coverpoints in cocotb with simple designs, complex relations, often found in realistic designs, are far more difficult to model.
-  Additionally, cocotb does not have direct interfacing capabilities with the Chisel design itself, forcing the user to have to rely on generating and testing a Verilog description rather than the original Chisel one.
+  
+The results from our comparison are summarized in Figure~\ref{fig:cvsvpycomp}.
+Figure~\ref{fig:cvsvpycomp} shows that, with ChiselVerify, we obtain on average a 70\% reduction in LOC over UVM and a 38\% reduction over cocotb. 
+This is due to ChiselVerify's capability of exploiting the high-level design constructs, such as vectors, directly in the verification plan, while the other solutions need to rely on the unfolded generated Verilog.
+For designs with simple interfaces such as the priority queue or the Leros ALU, we obtain an increase of 30\% over cocotb. 
+This comes from cocotb's grouped bin declarations in a coverpoint.
+However, this is an incomplete comparison, since cocotb does not provide the tools to express value transitions or temporal relations inside of a cover point, making its verification plan a less accurate model of our specification.
+Thus, while it can be more concise to declare coverpoints in cocotb with simple designs, complex relations, often found in realistic designs, are more difficult to model.
+It is much easier to access the ports from ChiselTest instead of UVM or cocotb, as we can use the original Chisel object.
+This becomes especially important for deeper nested structures of IO ports.
+
 
 \subsubsection{ChiselVerify Performance Overhead}
 In order to evaluate our proposed solutions more thoroughly, we will look at the performance overhead that comes with using our verification tools to augment a ChiselTest test bench.

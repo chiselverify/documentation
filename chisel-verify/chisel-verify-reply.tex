@@ -97,14 +97,17 @@ Here are some self-explanatory excerpts that should simply never appear in a jou
 
 \martin{this needs just a bit of rewriting.}
 
-> The recommended way to
-> start a Chisel project is to use the open-source Chisel template
-> repository 5. The resulting Scala project automatically includes
-> dependencies on the Chisel and the chiseltest libraries which
-> will be downloaded by the Scala build tool.
+\begin{quote}
+The recommended way to
+start a Chisel project is to use the open-source Chisel template
+repository 5. The resulting Scala project automatically includes
+dependencies on the Chisel and the chiseltest libraries which
+will be downloaded by the Scala build tool.
 
-> If the user now clicks the test icon again
-> or runs the sbt test command, (...)
+If the user now clicks the test icon again
+or runs the sbt test command, (...)
+\end{quote}
+
 
 There are many more examples. 
 I strongly encourage the authors to step back and make the effort to extract the actual scientific contribution (which I believe does exist in this work) from their software-development work.
@@ -125,7 +128,9 @@ More generally, custom terms should be introduced with parsimony by the authors 
 \martin{Agreed, we will rewrite}
 
 Some comments are based on the content of the chisel-template, making the article not self-sufficient despite numerous code listings.
-> we just need to substitute the test(new DecoupledGcd(16)) command with verify(new DecoupledGcd(16),
+\begin{quote}
+we just need to substitute the test(new DecoupledGcd(16)) command with verify(new DecoupledGcd(16),
+\end{quote}
 
 \todo{Martin}
 
@@ -151,9 +156,7 @@ The three comparative listings presented raise three major issues.
 
 \martin{Do we still have the UVM and cocotb code somewhere?}
 
-\todo{Martin will create a new repo.}
 \todo{Kasper and Hans should help out with the UVM examples.}
-\todo{Andrew commits coctb to a repo.}
 
 2. The ability to enumerate port on the python seems neglected
 Code listings suggest that only ChiselVerify is able to enumerate ports to create cover points while any python user would retort that a dictionary of ports (even manually written) could also do the job.
@@ -162,11 +165,14 @@ Code listings suggest that only ChiselVerify is able to enumerate ports to creat
 \todo{Andrew looks into this.}
 
 3. The feature-to-feature comparison is not intelligible 
-> However, this is
-> an incomplete comparison, since cocotb does not provide the
-> tools to express value transitions or temporal relations inside
-> of a cover point, making its verification plan a less accurate
-> model of our specification. 
+\begin{quote}
+However, this is
+an incomplete comparison, since cocotb does not provide the
+tools to express value transitions or temporal relations inside
+of a cover point, making its verification plan a less accurate
+model of our specification. 
+\end{quote}
+
 
 \todo{probably solving with removing.}
 
@@ -196,10 +202,13 @@ Such functional discrepancies then call for a comparison of the 3 solutions from
 \#\# Uneven evaluating use-cases
 The three use-cases used for evaluation are very unevenly detailed, in particular the framework features in-use for each use-case is not clearly stated.
 The first use-case does not illustrate any framework feature while its usage remains very vaguely described:
-> In order to have a complete test suite,
-> we need to try all available operations and use all potential
-> input value corner cases. We will thus model our test bench
-> to do so.  
+\begin{quote}
+In order to have a complete test suite,
+we need to try all available operations and use all potential
+input value corner cases. We will thus model our test bench
+to do so.  
+\end{quote}
+
 
 \todo{Martin will look into this.}
 
@@ -213,32 +222,38 @@ In particular, a same color/shape combinaison should not be used for tools (trea
 
 In addition, for fair comparison with UVM \& cocotb, the entire stack shall be properly described:
 
-> Additionally, cocotb does not have direct interfacing
-> capabilities with the Chisel design itself, forcing the user to
-> have to rely on generating and testing a Verilog description
-> rather than the original Chisel one.
+\begin{quote}
+Additionally, cocotb does not have direct interfacing
+capabilities with the Chisel design itself, forcing the user to
+have to rely on generating and testing a Verilog description
+rather than the original Chisel one.
+\end{quote}
+
 This statement is very misleading, Figure 1 illustrates that the design has to be generated (Chisel elaboration + FIRRTL compilation) before testing in any case, even with treadle.
 Meaning that the framework always tests a generated Verilog description (with all simulation backends but treadle which relies on the generated High-FIRRTL), and never tests the actual chisel/scala code.
 What can be highlighted here is only a much easier access to the ports with ChiselTest, in their original Scala/Chisel object form rather than by name, but that's it.
 
-\todo{Martin will look into this}
+\begin{quote}
+\reply{We have toned down our comparison and rewrote as suggested that the access is easier from ChiselTest.}
+\end{quote}
 
 
 \#\# Java as a selling point
-> Java virtual machine (JVM) and has excellent interoperability with
-> the large pool of existing Scala and Java libraries for design
-> and verification. Integrating external components is further
-> simplified by Scala/Java's packaging system.
+\begin{quote}
+Java virtual machine (JVM) and has excellent interoperability with
+the large pool of existing Scala and Java libraries for design
+and verification. Integrating external components is further
+simplified by Scala/Java's packaging system.
+\end{quote}
 
 Java is definitely not a selling point of the Chisel Stack.
 Java has a considerable memory overhead and sometimes lead to dependency nightmare on comparison to traditional HDLs.
 Few java/scala libraries actually reveal useful to hardware engineers, on the contrary to Python which provides maintained libraries well known to hardware engineers from signal processing (numpy, matplotlib) to network (scapy).
 
-\martin{Mmh, maybe downplay it a bit? Looks like HW people don't like Java.}
-
-\todo{Martin will rephrase.}
-
-\todo{Maybe mention https://github.com/scalanlp/breeze like numpy.}
+\begin{quote}
+\reply{We probably should not start a Python vs. Java/Scala discussion. We have very much toned down our statement, no ``excellent''
+and no `` large pool''.}
+\end{quote}
 
 \#\# Volume of captions
 Captions below figures 2,3,4 \& 5 are very verbose and exceed the simple description the figure by introducing additional explanations.
@@ -309,7 +324,7 @@ Details:
 - "Fig." vs. "Figure": In the text, all figures except Fig. 1 are referred to as "Figure", not "Fig.". Check consistency.
 
 \begin{quote}
-\reply{Thank you for pointing this out. We fixed it.}
+\reply{Thank you for pointing this out. We fixed all of them.}
 \end{quote}
 
 - Figure 2, Figure 3 and Figure 5 are not referenced in the text. Consider referring to them in the text. The captions of Figures 2-5 are really long, which is ok, however, one might just move some of the captions to the text when referring to the figures. In addition, the position of Figure 4 in the text can be improved. 

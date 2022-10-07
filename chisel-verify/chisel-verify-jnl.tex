@@ -173,7 +173,7 @@ for future performance improvements~\cite{domain-hw-acc:2020}.
 The design of these accelerators is often complex, and their development is time-consuming and error-prone.
 To mitigate this issue, we shall learn from software development trends such as agile software
 development~\cite{agile:manifesto}, and adapt to agile hardware development~\cite{henn-patt:turing:2019}.
-One move in this direction is Chisel~\cite{chisel:dac2012}, a Scala-embedded hardware construction language,
+One move in this direction is Chisel~\cite{chisel:dac2012, chisel:book}, a Scala-embedded hardware construction language,
 that was introduced in order to move digital circuit description to a more software-like high-level language. 
 
 Hardware design is still dominated by the traditional hardware description languages, such as VHDL and SystemVerilog.
@@ -292,6 +292,9 @@ Additionally, modeling hardware with SMT logic requires the use of Bit-Vector th
 Thus, a main difference between the proposed formal methods and traditional software verification is that our solution requires the use of bounded model checking in order to combat the complexity of bit vector theories.
 
 To the best of our knowledge, ChiselVerify, along with the formal methods proposed in this work, forms the only framework that provides easy-to-use formal and dynamic verification functionalities which are well-integrated into the Chisel and ChiselTest ecosystem.
+
+
+\martin{Maybe we should add: \url{https://link.springer.com/chapter/10.1007/978-3-031-17108-6_20}}
 
 \section{Background}
 \label{sec:background}

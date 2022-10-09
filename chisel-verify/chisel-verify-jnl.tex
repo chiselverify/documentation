@@ -284,12 +284,14 @@ tools to guide its randomized verification. For the sake of completeness, we als
 work of ours presenting the use of ChiselVerify's coverage tools for functional-coverage driven mutation-based
 fuzzing~\cite{verify:fuzzing:2021}.
 
-A different approach, also inspired by software verification, is to model the expected behavior of a design in an abstract manner using Satisfiability Modulo Theory (SMT) logic~\cite{smt}.
-This model can be seen as a series of constraints which can then be given to an SMT solver, such as Z3~\cite{de2008z3}, which returns whether or not a set of inputs exists that satisfies the given constraints.
-This approach is often used in software verification, but can be quite cumbersome to write, since we have to hand-write a model of our program by expressing constraints between its different variables.
-The formal methods proposed in this paper differ from that however, since they create an abstraction above bare SMT logic to make it easier to define formal specifications for a design.
-Additionally, modeling hardware with SMT logic requires the use of Bit-Vector theories in order to correctly represent the design, which are much more computationally complex to reason about than more mathematical theories~\cite{DecisionBitVector:1998}.
-Thus, a main difference between the proposed formal methods and traditional software verification is that our solution requires the use of bounded model checking in order to combat the complexity of bit vector theories.
+% Kevin: I commented out this paragraph, because it makes no sense. Bounded Model Checking **is** used for software verification (e.g., CBMC) and bit-vector theory is also used for
+%         verifying C or C++ programs (e.g., CBMC, Klee)
+% A different approach, also inspired by software verification, is to model the expected behavior of a design in an abstract manner using Satisfiability Modulo Theory (SMT) logic~\cite{smt}.
+% This model can be seen as a series of constraints which can then be given to an SMT solver, such as Z3~\cite{de2008z3}, which returns whether or not a set of inputs exists that satisfies the given constraints.
+% This approach is often used in software verification, but can be quite cumbersome to write, since we have to hand-write a model of our program by expressing constraints between its different variables.
+% The formal methods proposed in this paper differ from that however, since they create an abstraction above bare SMT logic to make it easier to define formal specifications for a design.
+% Additionally, modeling hardware with SMT logic requires the use of Bit-Vector theories in order to correctly represent the design, which are much more computationally complex to reason about than more mathematical theories~\cite{DecisionBitVector:1998}.
+% Thus, a main difference between the proposed formal methods and traditional software verification is that our solution requires the use of bounded model checking in order to combat the complexity of bit vector theories.
 
 To the best of our knowledge, ChiselVerify, along with the formal methods proposed in this work, forms the only framework that provides easy-to-use formal and dynamic verification functionalities which are well-integrated into the Chisel and ChiselTest ecosystem.
 

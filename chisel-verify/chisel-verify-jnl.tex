@@ -687,50 +687,7 @@ initialized the state to concrete values from the solver and then drives the inp
 If the solver returns that there is no such assignment, we get a guarantee that our circuit will not hit any assertion violation for the first $k$
 cycles of its execution.
 
-\begin{figure}
-    \centering
-\begin{lstlisting}[language=scala]
-class Quiz15 extends Module {
-  /* [...] I/O definitions */
-  val mem = SyncReadMem(256, UInt(32.W), WriteFirst)
-  when(iWrite) { mem.write(iWAddr, iData) }
-  oData := mem.read(iRAddr, iRead)
 
-  when(past(iWrite && iRead &&
-            iWAddr === iRAddr)) {
-    verification.assert(oData === past(iData))
-  }
-}
-
-class ZipCpuQuizzes extends AnyFlatSpec
-  with ChiselScalatestTester with Formal {
-  "Quiz15" should "pass with WriteFirst" in {
-    verify(new Quiz15, Seq(BoundedCheck(5)))
-  }
-}
-\end{lstlisting}
-
-\includegraphics{woset_2021_quiz15.pdf}
-\caption[Chisel verification example.]{This example verifies that when a Chisel memory with synchronous read port and
-\code{WriteFirst} behavior has a read and a write access to the same address,
-the new value will be returned.
-The check fails if \code{WriteFirst} is substituted with \code{ReadFirst} or \code{Undefined} (Section~\ref{sec:undef}).
-It is based on \href{https://zipcpu.com/answer/2021/07/03/fv-answer15.html}{a Verilog example from a popular blog}.
-In the Chisel version, the assertion is automatically delayed until at least one cycle after reset, when there are valid \code{past} values available
-(Section~\ref{sec:past}).
-A bounded model check is executed by the \code{verify} command, which is called from a standard Scala unit test (Section~\ref{sec:flow}).
-When the check fails, the failing inputs and starting states are replayed on a simulator, resulting in a waveform file that is identical
-to the output we would get from a dynamic verification run.
-However, since we used bounded model checking to find the failing trace, it will be as short as possible.
-In our example, two cycles after reset are needed to fail the property.
-The first cycle contains the read and write requests and the second cycle observes the arbitrary result on the read port if
-we set the memory behavior to \code{Undefined} for read/write conflicts.
-The included screenshot was obtained with the open-source GTKWave waveform viewer.
-}
-\label{fig:quiz15}
-\end{figure}
-
-\martin{The captions are too long. They should go into the main text.}
 
 % the current state of the open-source ecosystem for formal verification
 There has been a long tradition of open-source formal verification systems from the academic community~\cite{mcmillan1993smv, cimatti2000nusmv, mishchenko2007abc}.
@@ -753,21 +710,7 @@ In this paper we describe our approach to providing Chisel users with an easy wa
 We adapt many good ideas from yosys and build several new convenience features on top of them, taking advantage
 of the existing compiler infrastructure for Chisel.
 
-\subsection{Our Formal Verification Flow}\label{sec:flow}
-
-
-Before we dive into some of the details of our implementation we want to present
-the workflow that we imagine and illustrate how easy it can be to get started
-with formal verification of a Chisel circuit~\footnote{
-A scala project with executable examples as well as a Jupyter notebook are included in the companion repository to this paper:
-\url{https://github.com/ekiwi/open-source-formal-verification-for-chisel}.
-The contributions described in this paper are all part of the upstream \href{https://github.com/chipsalliance/firrtl}{firrtl}
-and \href{https://github.com/ucb-bar/chiseltest}{ChiselTest} libraries.
-}.
-The recommended way to start a Chisel project is to use the open-source Chisel template 
-repository~\footnote{\url{https://github.com/freechipsproject/chisel-template}}.
-The resulting Scala project automatically includes dependencies on the Chisel and the ChiselTest
-libraries which will be downloaded by the Scala build tool.
+\subsection{Example: Verifying a GCD Circuit}
 
 The template contains an example of using the ChiselTest library to test a Greatest Common Denominator (GCD) circuit in simulation.
 This test can be executed through a Scala IDE or from a shell with the \code{sbt test} command.
@@ -781,8 +724,7 @@ The only additional program required is a copy of the open-source SMT solver Z3~
 \begin{figure}[h]
 \centering
 \includegraphics{woset_formal_ide_flow.pdf}
-\caption{When working in a standard Scala IDE like the open-source IntelliJ IDEA with the Scala plugin, the user can launch the formal check with the press of a button.
-The success or failure will be communicated the same way as any other unit test. A VCD waveform dump is automatically generated to help debug failing checks.}
+\caption{Formal checks can be launched from a Scala IDE.}
 \label{fig:ide-flow}
 \end{figure}
 
@@ -821,18 +763,64 @@ when(past(!input.fire() && !output.fire())) {
 Here we make use of our \code{past} function for temporal properties which is described in detail in Section~\ref{sec:past}.
 
 
+When working in a standard Scala IDE like the open-source IntelliJ IDEA with the Scala plugin, the user can launch the formal check with the press of a button.
+The success or failure will be communicated the same way as any other unit test. A VCD waveform dump is automatically generated to help debug failing checks.
+This is illustrated in Figure~\ref{fig:ide-flow}.
+
+\subsection{Formal Verification of an RTL Memory}
+
+\begin{figure}
+    \centering
+\begin{lstlisting}[language=scala]
+class Quiz15 extends Module {
+  /* [...] I/O definitions */
+  val mem = SyncReadMem(256, UInt(32.W), WriteFirst)
+  when(iWrite) { mem.write(iWAddr, iData) }
+  oData := mem.read(iRAddr, iRead)
+
+  when(past(iWrite && iRead &&
+            iWAddr === iRAddr)) {
+    verification.assert(oData === past(iData))
+  }
+}
+
+class ZipCpuQuizzes extends AnyFlatSpec
+  with ChiselScalatestTester with Formal {
+  "Quiz15" should "pass with WriteFirst" in {
+    verify(new Quiz15, Seq(BoundedCheck(5)))
+  }
+}
+\end{lstlisting}
+
+\includegraphics{woset_2021_quiz15.pdf}
+\caption[]{RTL code with inline assertion, formal test and counter example waveform for a verification example.}
+\label{fig:quiz15}
+\end{figure}
+
+The example shown in Figure~\ref{fix:quiz15} verifies that when a Chisel memory with synchronous read port and
+\code{WriteFirst} behavior has a read and a write access to the same address,
+the new value will be returned.
+The check fails if \code{WriteFirst} is substituted with \code{ReadFirst} or \code{Undefined} (Section~\ref{sec:undef}).
+It is based on \href{https://zipcpu.com/answer/2021/07/03/fv-answer15.html}{a Verilog example from a popular blog}~\footnote{\url{https://zipcpu.com/answer/2021/07/03/fv-answer15.html}}.
+In the Chisel version, the assertion is automatically delayed until at least one cycle after reset, when there are valid \code{past} values available
+(Section~\ref{sec:past}).
+A bounded model check is executed by the \code{verify} command, which is called from a standard Scala unit test (Section~\ref{sec:flow}).
+When the check fails, the failing inputs and starting states are replayed on a simulator, resulting in a waveform file that is identical
+to the output we would get from a dynamic verification run.
+However, since we used bounded model checking to find the failing trace, it will be as short as possible.
+In our example, two cycles after reset are needed to fail the property.
+The first cycle contains the read and write requests and the second cycle observes the arbitrary result on the read port if
+we set the memory behavior to \code{Undefined} for read/write conflicts.
+The included screenshot was obtained with the open-source GTKWave waveform viewer.
+
+
 
 \subsection{A Formal Backend for FIRRTL}\label{sec:undef}
 
 \begin{figure}[h]
 \centering
 \includegraphics{woset_verify_flow.pdf}
-\caption{The \code{verify} command is implemented as part of the ChiselTest library and uses several compiler passes that make up the FIRRTL formal backend.
-We hook into the FIRRTL compiler to model undefined behavior with \code{DefRandom} statements and to delay temporal assertions as part of our safe past construct.
-We then add reset assumptions, flatten the system, convert to a formal transition system and then serialize the system to SMTLib or btor2.
-We provide bindings to launch various formal engines from ChiselTest.
-If a counter example is found, we convert the \code{DefRandom} nodes in the circuit to registers before loading the circuit into the treadle simulator
-to replay the failure and obtain a simulation quality VCD and error message.}
+\caption{Verification Flow}
 \label{fig:verify-flow}
 \end{figure}
 
@@ -872,6 +860,12 @@ The formal backend implements \code{DefRandom} nodes as inputs that can be freel
 To make \code{DefRandom} work with our simulator, we  replace the nodes with registers of the same type that are never updated by the hardware.
 Instead we use the software interface to our simulator to update these registers with the values chosen by the formal engine in each cycle.
 Figure~\ref{fig:verify-flow} shows our compilation flow in more detail.
+The \code{verify} command is implemented as part of the ChiselTest library and uses several compiler passes that make up the FIRRTL formal backend.
+We hook into the FIRRTL compiler to model undefined behavior with \code{DefRandom} statements and to delay temporal assertions as part of our safe past construct.
+We then add reset assumptions, flatten the system, convert to a formal transition system and then serialize the system to SMTLib or btor2.
+We provide bindings to launch various formal engines from ChiselTest.
+If a counter example is found, we convert the \code{DefRandom} nodes in the circuit to registers before loading the circuit into the treadle simulator
+to replay the failure and obtain a simulation quality VCD and error message.
 
 The btor2 format does not support hierarchical circuits and we thus always flatten the system by inlining everything into a single module.
 In order to ensure that we produce a good waveform dump, the counter example will be replayed on the non-inlined circuit.
@@ -884,19 +878,7 @@ We used the FIRRTL specification to accurately translate FIRRTL expressions to t
 Our backend supports memory and register initialization using the same user annotations as the Verilog backend.
 Multi-clock support through a clock stuttering pass is work in progress, for now only circuits with a single clock domain are officially supported.
 
-\begin{figure}[h]
-  \centering
-  \includegraphics{woset_safe_past.pdf}
-  \caption{The temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \code{past} function:
-  One to delay the condition from the \code{when} statement and the other to delay the input data before it is compared to the current output data.
-  By default an assertion is only enabled when reset is inactive and the surrounding \code{when} condition is true.
-  Our compiler pass analyzes the connectivity graph with the result that both the enable condition as well as the predicate are delayed by a single past register.
-  Thus the assertion enable signal is automatically extended to include the condition that at least 1 cycle must have past since the last reset.
-  The new enable condition is derived from a synthesizable, saturating \code{cycle} counter which is created by the compiler pass.
-  }
-  \label{fig:past}
-  \end{figure}
-  
+
 
 \subsection{Reset Assumptions}\label{sec:reset}
 
@@ -946,6 +928,20 @@ Finally we generate a cycle counter register and use its value to guard the indi
 Since our \code{past} function only relies on synthesizable hardware it can also be used in software and FPGA based
 simulation testing~\cite{karandikar2018firesim}.
 
+Figure~\ref{fig:past} shows how the temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \code{past} function:
+  One to delay the condition from the \code{when} statement and the other to delay the input data before it is compared to the current output data.
+  By default an assertion is only enabled when reset is inactive and the surrounding \code{when} condition is true.
+  Our compiler pass analyzes the connectivity graph with the result that both the enable condition as well as the predicate are delayed by a single past register.
+  Thus the assertion enable signal is automatically extended to include the condition that at least 1 cycle must have past since the last reset.
+  The new enable condition is derived from a synthesizable, saturating \code{cycle} counter which is created by the compiler pass.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{woset_safe_past.pdf}
+  \caption{Hardware generated by our tool to implement the temporal assertion in Figure~\ref{fig:quiz15}.}
+  \label{fig:past}
+  \end{figure}
+  
 
 \section{Evaluation}
 \label{sec:eval}

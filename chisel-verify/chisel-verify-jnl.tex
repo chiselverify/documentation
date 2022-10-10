@@ -705,32 +705,41 @@ as well as a small configuration script. SymbiYosys translates any failing trace
 for the user to inspect~\footnote{With the open-source GHDL plugin, yosys now also supports formally verifying VHDL circuits.}.
 
 
-% problems with the SymbiYosys approach
-In this paper we describe our approach to providing Chisel users with an easy way to formally verify their designs.
-We adapt many good ideas from yosys and build several new convenience features on top of them, taking advantage
-of the existing compiler infrastructure for Chisel.
-
-\subsection{Example: Verifying a GCD Circuit}
-
-The template contains an example of using the ChiselTest library to test a Greatest Common Denominator (GCD) circuit in simulation.
-This test can be executed through a Scala IDE or from a shell with the \code{sbt test} command.
-In order to turn this test into a formal check, we just need to substitute the \code{test(new DecoupledGcd(16))}
-command with \code{verify(new DecoupledGcd(16)}, as well as provide the type of verification job as
-\code{BoundedCheck(10)} and extend the testing class with the \code{Formal} trait.
-If the user now clicks the test icon again or runs the \code{sbt test} command, a formal bounded check will
-be executed for ten cycles after reset instead of a simulation test.
-The only additional program required is a copy of the open-source SMT solver Z3~\cite{de2008z3}.
-
-\begin{figure}[h]
+\begin{figure}
 \centering
 \includegraphics{woset_formal_ide_flow.pdf}
 \caption{Formal checks can be launched from a Scala IDE.}
 \label{fig:ide-flow}
 \end{figure}
 
+% problems with the SymbiYosys approach
+In this paper we describe our approach to providing Chisel users with an easy way to formally verify their designs.
+We adapt many good ideas from yosys and build several new convenience features on top of them, taking advantage
+of the existing compiler infrastructure for Chisel.
+We first present two introductory examples and then provide details on how the formal backend was engineered to ensure that
+all failures could be replayed in simulation to help debugging in Section~\ref{sec:undef}.
+We then discuss reset assumptions (Section~\ref{sec:reset}) and a simple approach to temporal assertions using an improved version of the
+past statement which avoids common pitfalls compared to the equivalent functionality in Verilog (Section~\ref{sec:past}).
+
+
+\subsection{Example: Verifying a GCD Circuit}
+
+We focus on a simple greatest common denominator (GCD) circuit which is a standard Chisel example~\footnote{The GCD code is part of the Chisel template: \url{https://github.com/freechipsproject/chisel-template}}.
+Dynamic tests written with ChiselTest can be executed through a Scala IDE or from a shell with the \code{sbt test} command.
+With our proposed extension, formal checks can be run in a similar fashion.
+The user just needs to substitute the \code{test(new DecoupledGcd(16))}
+command with \code{verify(new DecoupledGcd(16), BoundedCheck(10))}.
+%, as well as provide the type of verification job as
+%\code{BoundedCheck(10)} and extend the testing class with the \code{Formal} trait.
+If the user now clicks the test icon again or runs the \code{sbt test} command, a formal bounded check will
+be executed for ten cycles after reset instead of a simulation test.
+The only additional program required is a copy of the open-source SMT solver Z3~\cite{de2008z3}.
+
+
+
 Initially the check will always pass, no matter which changes we make to our circuit.
 Since the GCD circuit contains no assertions, there is nothing to tell the solver if the circuits misbehaves.
-In order to actually verify something, we can add assertions directly to the circuit by using the
+In order to actually verify something, an assertion needs to be added directly to the circuit by using the
 Chisel \code{assert} statement.
 The decoupled GCD circuit used as an example has an \code{input} and an \code{output} channel
 as well as a 1-bit \code{busy} register.
@@ -746,7 +755,7 @@ This assertion will pass because the circuit does indeed fulfill the property af
 We now introduce a small bug by connecting \code{input.ready} to \code{true.B} and rerun the test.
 An assertion violation will be reported one cycle after reset.
 The user is also presented with an error message indicating the Scala line number of the failing assertion.
-To debug the problem, they can find a VCD waveform dump in the standard test directory created by our
+To debug the problem, they can find a VCD waveform dump in the standard test directory created by the
 ChiselTest library.
 Since we replay the test on a concrete simulator, the error message and VCD will be exactly the same
 as if the user was running a simulation test.
@@ -767,7 +776,7 @@ When working in a standard Scala IDE like the open-source IntelliJ IDEA with the
 The success or failure will be communicated the same way as any other unit test. A VCD waveform dump is automatically generated to help debug failing checks.
 This is illustrated in Figure~\ref{fig:ide-flow}.
 
-\subsection{Formal Verification of an RTL Memory}
+\subsection{Example: Verifying the Read Behavior of a RTL Memory}
 
 \begin{figure}
     \centering
@@ -797,14 +806,14 @@ class ZipCpuQuizzes extends AnyFlatSpec
 \label{fig:quiz15}
 \end{figure}
 
-The example shown in Figure~\ref{fix:quiz15} verifies that when a Chisel memory with synchronous read port and
+The example shown in Figure~\ref{fig:quiz15} verifies that when a Chisel memory with synchronous read port and
 \code{WriteFirst} behavior has a read and a write access to the same address,
 the new value will be returned.
-The check fails if \code{WriteFirst} is substituted with \code{ReadFirst} or \code{Undefined} (Section~\ref{sec:undef}).
+The check fails if \code{WriteFirst} is substituted with \code{ReadFirst} or \code{Undefined}.
+% The implementation of \code{undefined} values is detailed in Section~\ref{sec:undef}.
 It is based on \href{https://zipcpu.com/answer/2021/07/03/fv-answer15.html}{a Verilog example from a popular blog}~\footnote{\url{https://zipcpu.com/answer/2021/07/03/fv-answer15.html}}.
-In the Chisel version, the assertion is automatically delayed until at least one cycle after reset, when there are valid \code{past} values available
-(Section~\ref{sec:past}).
-A bounded model check is executed by the \code{verify} command, which is called from a standard Scala unit test (Section~\ref{sec:flow}).
+In the Chisel version, the assertion is automatically delayed until at least one cycle after reset, when there are valid \code{past} values available.
+A bounded model check is executed by the \code{verify} command, which is called from a standard Scala unit test.
 When the check fails, the failing inputs and starting states are replayed on a simulator, resulting in a waveform file that is identical
 to the output we would get from a dynamic verification run.
 However, since we used bounded model checking to find the failing trace, it will be as short as possible.
@@ -817,14 +826,8 @@ The included screenshot was obtained with the open-source GTKWave waveform viewe
 
 \subsection{A Formal Backend for FIRRTL}\label{sec:undef}
 
-\begin{figure}[h]
-\centering
-\includegraphics{woset_verify_flow.pdf}
-\caption{Verification Flow}
-\label{fig:verify-flow}
-\end{figure}
 
-In order to implement the verify command, introduced in the previous section, we need to convert the Chisel circuit into a format that is understood
+In order to implement the verify command, introduced in the previous sections, we need to convert the Chisel circuit into a format that is understood
 by open-source model checkers or SMT solvers.
 We can do this by using the FIRRTL compiler to convert the circuit to Verilog and then using yosys to convert to the
 model checking formats.
@@ -880,6 +883,13 @@ Multi-clock support through a clock stuttering pass is work in progress, for now
 
 
 
+\begin{figure}
+\centering
+\includegraphics{woset_verify_flow.pdf}
+\caption{Our Formal Verification Flow}
+\label{fig:verify-flow}
+\end{figure}
+
 \subsection{Reset Assumptions}\label{sec:reset}
 
 In Chisel, users rarely need to worry about resets.
@@ -898,6 +908,13 @@ disable reset assumptions or increase the number of reset cycles.
 
 
 \subsection{Simple Temporal Assertions}\label{sec:past}
+
+\begin{figure}
+  \centering
+  \includegraphics{woset_safe_past.pdf}
+  \caption{Hardware generated by our tool to implement the temporal assertion in Figure~\ref{fig:quiz15}.}
+  \label{fig:past}
+\end{figure}
 
 
 While a simple \code{assert} statement allows us to specify a property over signals during a single
@@ -929,18 +946,13 @@ Since our \code{past} function only relies on synthesizable hardware it can also
 simulation testing~\cite{karandikar2018firesim}.
 
 Figure~\ref{fig:past} shows how the temporal assertion from Figure~\ref{fig:quiz15} results in a circuit with two registers created by the \code{past} function:
-  One to delay the condition from the \code{when} statement and the other to delay the input data before it is compared to the current output data.
-  By default an assertion is only enabled when reset is inactive and the surrounding \code{when} condition is true.
-  Our compiler pass analyzes the connectivity graph with the result that both the enable condition as well as the predicate are delayed by a single past register.
-  Thus the assertion enable signal is automatically extended to include the condition that at least 1 cycle must have past since the last reset.
-  The new enable condition is derived from a synthesizable, saturating \code{cycle} counter which is created by the compiler pass.
+One to delay the condition from the \code{when} statement and the other to delay the input data before it is compared to the current output data.
+By default an assertion is only enabled when reset is inactive and the surrounding \code{when} condition is true.
+Our compiler pass analyzes the connectivity graph with the result that both the enable condition as well as the predicate are delayed by a single past register.
+Thus the assertion enable signal is automatically extended to include the condition that at least 1 cycle must have past since the last reset.
+The new enable condition is derived from a synthesizable, saturating \code{cycle} counter which is created by the compiler pass.
 
-\begin{figure}[h]
-  \centering
-  \includegraphics{woset_safe_past.pdf}
-  \caption{Hardware generated by our tool to implement the temporal assertion in Figure~\ref{fig:quiz15}.}
-  \label{fig:past}
-  \end{figure}
+
   
 
 \section{Evaluation}

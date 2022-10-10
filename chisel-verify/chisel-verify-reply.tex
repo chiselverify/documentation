@@ -112,7 +112,10 @@ or runs the sbt test command, (...)
 There are many more examples. 
 I strongly encourage the authors to step back and make the effort to extract the actual scientific contribution (which I believe does exist in this work) from their software-development work.
 
-\todo{Kevin will remove a paragraph and work on the captions. Martin will rewrite}
+\reply{
+We removed the paragraph containing the step-by-step isntructions. However, we retained some of the work flow description as we think it is important for the reader to be able to understand what
+the intended workflow for our proposed formal verification solution is in order to properly understand our design choices.
+}
 
 
 \#\# Assumptions \& External dependencies
@@ -259,7 +262,9 @@ and no `` large pool''.}
 Captions below figures 2,3,4 \& 5 are very verbose and exceed the simple description the figure by introducing additional explanations.
 It is not exactly clear for the reader when to read those explanations, which impairs the reading experience.  
 
-\todo{Kevin will do it.}
+\reply{
+We moved the captions into the text and properly reference the figures from there.
+}
 
 \#\# Miscellaneous
 - Non explained results to detail or remove: `Port io\_outAB has 26 hits`
@@ -317,7 +322,9 @@ Details:
 
 - Bounded model checking from checkpoints: Is is written that: "If the solver returns that there is no such assignment, we get a guarantee that our circuit will not hit any assertion violation for the first k cycles of its execution." which sounds like that's just possible at the beginning (i.e. after reset). Is it also possible to do this from any known state of the circuit (i.e. a checkpoint)?
 
-\todo{Kevin writes a response.}
+\reply{
+Starting from a checkpoint would be feasible to implement. However, it is currently not supported by out tool.
+}
 
 - In the introduction, cocotb and Leros are introduced without citation, while there are cited later on. Consider adding citations in the intro.
 - In the Abstract: "support the both formal and dynamic" remove "the"
@@ -329,11 +336,15 @@ Details:
 
 - Figure 2, Figure 3 and Figure 5 are not referenced in the text. Consider referring to them in the text. The captions of Figures 2-5 are really long, which is ok, however, one might just move some of the captions to the text when referring to the figures. In addition, the position of Figure 4 in the text can be improved. 
 
-\todo{Kevin will fix.}
+\reply{
+We moved the captions into the text and properly reference the figures from there.
+}
 
 - The references to the zipcpu blog are great. Consider adding the URL as footnotes, not just as hyperlinks
 
-\todo{Kevin}
+\reply{
+We added the URL as a footnote.
+}
 
 - In Figure 1, consider adding GDSII to bitstream in the box, to include both FPGA and ASIC targets
 

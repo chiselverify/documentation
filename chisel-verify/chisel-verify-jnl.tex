@@ -271,6 +271,7 @@ Yosys uses the open-source logic synthesis tool ABC~\cite{abc:cav:2010} for gate
 Yosys is a framework that can be extended.
 We can use Yosys for interactive design investigation, circuit analysis, or symbolic model checking.
 
+
 Beyond the general frameworks available in SystemVerilog and UVM, other projects have proposed 
 using software testing techniques to do hardware verification. For example, RFuzz~\cite{rfuzz2018} 
 is a generalized method that enables efficient ``coverage-guided fuzz mutational testing''. 
@@ -293,10 +294,25 @@ fuzzing~\cite{verify:fuzzing:2021}.
 % Additionally, modeling hardware with SMT logic requires the use of Bit-Vector theories in order to correctly represent the design, which are much more computationally complex to reason about than more mathematical theories~\cite{DecisionBitVector:1998}.
 % Thus, a main difference between the proposed formal methods and traditional software verification is that our solution requires the use of bounded model checking in order to combat the complexity of bit vector theories.
 
+The SecChisel framework~\cite{deng2019secchisel} adds security labels and
+static type checking of information flow to the Chisel languages.
+The type checks are performed using the Z3 SMT solver~\cite{de2008z3}.
+This is different from bounded model checking which verifys user defined
+assertions over signals and is able to find sound multi-cycle counter examples
+to failing properties. However, bounded model checking is incomplete,
+meaning we can miss bugs that only occure many cycles into the design execution.
+Static information flow tracking only looks at the combinatorial logic
+only to ensure that now information is leaked.
+This allows it guarantee that no information will be leaked, but can lead to
+false positives where the type check fails, but no bug exists.
+
 To the best of our knowledge, ChiselVerify, along with the formal methods proposed in this work, forms the only framework that provides easy-to-use formal and dynamic verification functionalities which are well-integrated into the Chisel and ChiselTest ecosystem.
 
+The CHA library~\cite{yu2022cha} implements temporal assertions
+similar to SystemVerilog Assertions for Chisel designs.
+It builds upon the formal verification framework which we discuss
+in Section~\ref{sec:formal}.
 
-\martin{Maybe we should add: \url{https://link.springer.com/chapter/10.1007/978-3-031-17108-6_20}}
 
 \section{Background}
 \label{sec:background}

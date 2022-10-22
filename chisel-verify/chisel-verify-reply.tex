@@ -72,9 +72,6 @@ First, we repeat all review comments and provide explanations on how we addresse
 %Then, we describe other changes that are not tied to a specific reviewer comment.
 
 
-\martin{These are quite detailed reviews! This is a lot of work done by the reviewers. We shall honer them.}
-
-
 \section*{Reviewer 1}
 
 
@@ -112,10 +109,12 @@ or runs the sbt test command, (...)
 There are many more examples. 
 I strongly encourage the authors to step back and make the effort to extract the actual scientific contribution (which I believe does exist in this work) from their software-development work.
 
+\begin{quote}
 \reply{
 We removed the paragraph containing the step-by-step instructions. However, we retained some of the work flow description as we think it is important for the reader to be able to understand what
 the intended workflow for our proposed formal verification solution is in order to properly understand our design choices.
 }
+\end{quote}
 
 
 \#\# Assumptions \& External dependencies
@@ -126,20 +125,25 @@ Then `Queryable` is never used again... or is it to be assumed by the reader the
 The same comment applies to `RandObj` and its `Model` whose respective roles remain unclear.
 More generally, custom terms should be introduced with parsimony by the authors and always thoroughly explained in order not to impair the reading fluidity and obscur the underlying contribution.
 
+\begin{quote}
 \reply{
 We fixed this by making our naming choices more consistent, and explained them clearly every time, rather than assuming that the reader knew what we were talking about.
+We now explained the concepts as we introduce them, and made sure to always use the same terms throughout the paper.
 }
+\end{quote}
 
-\todo{Andrew: DONE, I explained the concepts as I introduced them, and made sure to always use the same terms throughout the paper.}
-
-\martin{Agreed, we will rewrite}
 
 Some comments are based on the content of the chisel-template, making the article not self-sufficient despite numerous code listings.
 \begin{quote}
 we just need to substitute the test(new DecoupledGcd(16)) command with verify(new DecoupledGcd(16),
 \end{quote}
 
-\todo{Martin}
+\begin{quote}
+\reply{
+We kept the reference to the Chisel template, as this is an easy starting point.
+However, the main content of the paper does not really depend on this template.
+}
+\end{quote}
 
 
 \#\# Fair comparison with UVM and cocotb
@@ -204,7 +208,10 @@ Such functional discrepancies then call for a comparison of the 3 solutions from
 - SecChisel[1] is worth mentioning, not due to an equivalent purpose but because it internally leverages a similar flow based on FIRRTL transforms, SMT code generator and Z3 SMT solver.
 [1] Deng, Shuwen, et al. "SecChisel framework for security verification of secure processor architectures." Proceedings of the 8th International Workshop on Hardware and Architectural Support for Security and Privacy. 2019.
 
+\begin{quote}
 \reply{Thanks for pointing out this work. We added it to the related work section.}
+\end{quote}
+
 
 \#\# Uneven evaluating use-cases
 The three use-cases used for evaluation are very unevenly detailed, in particular the framework features in-use for each use-case is not clearly stated.
@@ -223,8 +230,9 @@ to do so.
 Figure 1 must be drawn in a single direction (left to right arrows only), with appropriate color schemes and legend. It is currently quite confusing even for an advanced chisel-user.
 In particular, a same color/shape combinaison should not be used for tools (treadle, verilator, synthesizer) and products (chisel code, verilog, bitstream).
 
-\martin{We should use the ``list'' symbol for files.}
-\todo{Hans will redraw it and use file symbols, something like https://icones.pro/en/file-and-document-icon-png-symbol-black/}
+\begin{quote}
+\reply{We have redrawn the figure with a clear flow from left to right and different symbols for tools and files.}
+\end{quote}
 
 
 In addition, for fair comparison with UVM \& cocotb, the entire stack shall be properly described:
@@ -266,19 +274,25 @@ and no `` large pool''.}
 Captions below figures 2,3,4 \& 5 are very verbose and exceed the simple description the figure by introducing additional explanations.
 It is not exactly clear for the reader when to read those explanations, which impairs the reading experience.  
 
+\begin{quote}
 \reply{
 We moved the captions into the text and properly reference the figures from there.
 }
+\end{quote}
 
 \#\# Miscellaneous
 - Non explained results to detail or remove: `Port io\_outAB has 26 hits`
 - Swapped word *Response/Data*: `Next, it transfers the data elements one at a time over the Write Response channel`
 - Usage of color highlighting on code listings would be a plus
 
+
+\begin{quote}
 \reply{
 We chose to opt out of color highlighting, as we use too many different languages in our listings which would each have a different color scheme.
 As for the other comments, the non-explained results were simply omitted, and the second sentence was reformulated.
 }
+\end{quote}
+
 
 \todo{Andrew wil fix it.}
 \todo{Color highlighting no, as too may different languages.}
@@ -287,7 +301,11 @@ As for the other comments, the non-explained results were simply omitted, and th
 I believe this paper could be a very good one if the above is addressed, and I strongly encourage the authors to invest on the topic. 
 I think it is timely, needed and very helpful to the community.
 
-\todo{say thank you}
+\begin{quote}
+\reply{
+Thank you for this positive feedback! We have been motivated to continue our work and improve the paper.
+}
+\end{quote}
 
 
 \section*{Reviewer 2}
@@ -318,9 +336,9 @@ discussing this mix and match. Could be the next paper...}
 
 - Random variables for constrained random verification: It was not clear to me whether, apart from regular or cyclic, the sequence of random values is pseudorandom or not, or whether this can be specified. For most applications, repeatability (i.e. pseudorandom sequences) is desirable. Consider adding clarification regarding this.
 
+\begin{quote}
 \reply{A specification of this was added to the section on constraint random verification. Indeed a seed can be specified, making the sequence repeatable and predictable.}
-
-\todo{Andrew makes it clear.}
+\end{quote}
 
 - In the evaluation section, the performance overhead of ChiselVerify for functional coverage and constrained random verification is analyzed. Is it also possible to include UVM and cocotb in this analysis without major effort? If so, consider adding this.
 
@@ -329,15 +347,17 @@ discussing this mix and match. Could be the next paper...}
 Details:
 - Output for Listing 1: Is there any way to comprehend the 26 hits for io\_outAB. As io\_outAB is only listed in the report, not in the listing, maybe it should be removed or explained further.
 
-\reply{This was removed. as it does not add any additional information to the description of the coverage tool.}
-
-\todo{Andrew will fix.}
+\begin{quote}
+\reply{We removed that listing, as it does not add any additional information to the description of the coverage tool.}
+\end{quote}
 
 - Bounded model checking from checkpoints: Is is written that: "If the solver returns that there is no such assignment, we get a guarantee that our circuit will not hit any assertion violation for the first k cycles of its execution." which sounds like that's just possible at the beginning (i.e. after reset). Is it also possible to do this from any known state of the circuit (i.e. a checkpoint)?
 
+\begin{quote}
 \reply{
-Starting from a checkpoint would be feasible to implement. However, it is currently not supported by out tool.
+Starting from a checkpoint is a very good idea and would be feasible to implement. However, it is currently not supported by out tool.
 }
+\end{quote}
 
 - In the introduction, cocotb and Leros are introduced without citation, while there are cited later on. Consider adding citations in the intro.
 - In the Abstract: "support the both formal and dynamic" remove "the"
@@ -349,19 +369,26 @@ Starting from a checkpoint would be feasible to implement. However, it is curren
 
 - Figure 2, Figure 3 and Figure 5 are not referenced in the text. Consider referring to them in the text. The captions of Figures 2-5 are really long, which is ok, however, one might just move some of the captions to the text when referring to the figures. In addition, the position of Figure 4 in the text can be improved. 
 
+\begin{quote}
 \reply{
 We moved the captions into the text and properly reference the figures from there.
 }
+\end{quote}
+
 
 - The references to the zipcpu blog are great. Consider adding the URL as footnotes, not just as hyperlinks
 
+\begin{quote}
 \reply{
 We added the URL as a footnote.
-}
+}\end{quote}
 
 - In Figure 1, consider adding GDSII to bitstream in the box, to include both FPGA and ASIC targets
 
-\todo{Hans}
+\begin{quote}
+\reply{
+We added the GDSII to the figure.
+}\end{quote}
 
 - Homogenize between American and British English, e.g.: standardized vs. standardized, modeling vs. modeling, behavior vs. behaviour, etc.
 - Homogenize hyphenation: evermore vs. ever-more, object-oriented, open-source, etc.
@@ -372,6 +399,10 @@ We added the URL as a footnote.
 
 \todo{Andrew will fix the .bib file.}
 
+\begin{quote}
+\reply{
+We fixed the bib.
+}\end{quote}
 
 
 
@@ -380,7 +411,7 @@ We added the URL as a footnote.
 Here we list a few changes not based on review comments.
 
 \begin{itemize}
-	\item  made capitalization of chiseltest linrary consistent
+	\item  made capitalization of ChiselTest consistent
 \end{itemize}
 
 \end{document}

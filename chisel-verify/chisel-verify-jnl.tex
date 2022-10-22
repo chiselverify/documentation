@@ -438,7 +438,7 @@ Both methods have their advantages and disadvantages, which we will discuss in d
 In both cases, in order to define our methods, we needed to be able to do the following:
 
 \begin{itemize}
-  \item Create a verification plan, either implicitly using a \texttt{Queryable} reporter, or explicitly using \texttt{cover} constructs, 
+  \item Create a verification plan, either implicitly using a \texttt{QueryableCoverage} object, which creates a verification plan containing all of our device's ports, or explicitly using \texttt{cover} constructs, 
   \item sample our tested device's ports, using ChiselTest's interfacing capabilities, 
   \item keep track of the different sampled values that hit for each bin, using a coverage database, and 
   \item compile all of the results into a comprehensible and programmatically useful coverage report.
@@ -460,7 +460,7 @@ Obtaining coverage information using this method is done at the end of a test su
 A query of this sort yields a \texttt{CoverageResult} case class that can then be used either programmatically or to generate a readable report using its \texttt{print} method.
 One can also simply print out a full report of all ports in the DUT using the \texttt{QueryableCoverage} object's \texttt{printAll} method.
 
-\begin{lstlisting}[captionpos=b,caption={Example use of Queryable coverage in order to gain information about the DUT's testing process. Note that \texttt{outA} and \texttt{outB} simply output the values of \texttt{a} and \texttt{b}.},label={lst:implcov},language=scala]
+\begin{lstlisting}[captionpos=b,caption={Example use of a \texttt{QueryableCoverage} object in order to gain information about the DUT's testing process. Note that \texttt{outA} and \texttt{outB} simply output the values of \texttt{a} and \texttt{b}.},label={lst:implcov},language=scala]
 val coverage = new QueryableCoverage(dut)
 for (fun <- 0 until 50) {
   dut.io.a.poke(toUInt(fun))
@@ -481,7 +481,6 @@ Port io_outA for Range 0 to 4 has 5 hits
 = 100.0% coverage.  
 
 ========= COVERAGE REPORT ========= 
-Port io_outAB has 26 hits.
 Port io_outB has 4 hits.
 Port io_outA has 50 hits.
 Port io_b has 4 hits.
@@ -492,7 +491,7 @@ This report shows the coverage results from our simple test in the form of the n
 Given a specification for the amount of expected hits, the tool also shows a coverage percentage over the port.
 We can also see that given a range, the tool is also able to output a coverage percentage using the range length as the expected number of hits.
 
-Queryable coverage can be a useful tool for gathering simpler coverage information on a DUT.
+The \texttt{QueryableCoverage} object can be a useful tool for gathering simpler coverage information on a DUT.
 However, in order to define complex specifications for our functional coverage, explicit verification plans must be used.
 
 \paragraph{Explicit Verification Plans} As detailed in our previous work on the topic~\cite{dobisCoverage:ETS22}, our solution allows for the definition of a target specification using a set of \texttt{cover} constructs defined inside of a \texttt{CoverageReporter}.
@@ -583,6 +582,7 @@ This is done by providing a ``constraint programming" domain-specific language t
 Our solution allows for the declaration of a constrained random object by defining a \texttt{class} that extends the \texttt{RandObj} trait.
 The newly defined \texttt{RandObj} class contains all of the constraints and random variables that will later be used in our constrained random tests. 
 This information will be stored inside of a \texttt{Model}, that is given to the \texttt{RandObj} on initialization.
+A \texttt{Model} is simply an object which functions as a database for our generated random number. It can be initialized with a seed to allow for predictable pseudo-random number generation.
 In total, there are two main elements that are used inside of the object to drive the randomization process: random variables and constraints.
 
 \paragraph{Random Variables} The first element represents a random value generator and is associated to constraints that will determine the set of values that the random variable can take.
@@ -646,7 +646,9 @@ ARM~\cite{axi4standard}.
 \subsubsection{Introduction to AXI4}
 The AXI4 protocol by ARM is a generic, flexible interconnect standard. It comprises five independent handshake-based channels; three for write operations (\textit{Write Address}, \textit{Write Data}, and \textit{Write Response}) and two for read operations (\textit{Read Address} and \textit{Read Data}). Interconnect operations, known as transactions, consist of sequences of transfers across either set of channels. All channels share a common clock and reset.
 
-As an example, consider a write transaction of 16 data elements. First, the manager provides the transaction attributes (e.g., target address and data size) as a transfer on the \textit{Write Address} channel. Next, it transfers the data elements one at a time over the \textit{Write Response} channel. Finally, the subordinate indicates transaction status on the \textit{Write Response} channel. Note that channel independence means that data may be transferred before the transaction attributes and that the read channels may operate at the same time~\cite{axi4standard}.
+As an example, consider a write transaction of 16 data elements. First, the manager provides the transaction attributes (e.g., target address and data size) as a transfer on the \textit{Write Address} channel. 
+Next, it transfers the data elements one at a time over the \textit{Write Data} channel. 
+Finally, the subordinate indicates transaction status on the \textit{Write Response} channel. Note that channel independence means that data may be transferred before the transaction attributes and that the read channels may operate at the same time~\cite{axi4standard}.
 
 \subsubsection{Implementation}
 To enable easy verification of AXI4-interfaced components using ChiselVerify, we provide definitions of channel wire bundles, abstract manager and subordinate classes, and a transaction-based bus functional model: the \texttt{FunctionalManager} class. Through parameterizing the manager with a \texttt{Subordinate} DUT provides a simple interface to control the DUT. Its two most important methods are \texttt{createWriteTrx} and \texttt{createReadTrx} to create and enqueue write and read transactions, respectively.

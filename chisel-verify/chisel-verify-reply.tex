@@ -113,7 +113,7 @@ There are many more examples.
 I strongly encourage the authors to step back and make the effort to extract the actual scientific contribution (which I believe does exist in this work) from their software-development work.
 
 \reply{
-We removed the paragraph containing the step-by-step isntructions. However, we retained some of the work flow description as we think it is important for the reader to be able to understand what
+We removed the paragraph containing the step-by-step instructions. However, we retained some of the work flow description as we think it is important for the reader to be able to understand what
 the intended workflow for our proposed formal verification solution is in order to properly understand our design choices.
 }
 
@@ -126,7 +126,11 @@ Then `Queryable` is never used again... or is it to be assumed by the reader the
 The same comment applies to `RandObj` and its `Model` whose respective roles remain unclear.
 More generally, custom terms should be introduced with parsimony by the authors and always thoroughly explained in order not to impair the reading fluidity and obscur the underlying contribution.
 
-\todo{Andrew}
+\reply{
+We fixed this by making our naming choices more consistent, and explained them clearly every time, rather than assuming that the reader knew what we were talking about.
+}
+
+\todo{Andrew: DONE, I explained the concepts as I introduced them, and made sure to always use the same terms throughout the paper.}
 
 \martin{Agreed, we will rewrite}
 
@@ -271,6 +275,11 @@ We moved the captions into the text and properly reference the figures from ther
 - Swapped word *Response/Data*: `Next, it transfers the data elements one at a time over the Write Response channel`
 - Usage of color highlighting on code listings would be a plus
 
+\reply{
+We chose to opt out of color highlighting, as we use too many different languages in our listings which would each have a different color scheme.
+As for the other comments, the non-explained results were simply omitted, and the second sentence was reformulated.
+}
+
 \todo{Andrew wil fix it.}
 \todo{Color highlighting no, as too may different languages.}
 
@@ -309,6 +318,8 @@ discussing this mix and match. Could be the next paper...}
 
 - Random variables for constrained random verification: It was not clear to me whether, apart from regular or cyclic, the sequence of random values is pseudorandom or not, or whether this can be specified. For most applications, repeatability (i.e. pseudorandom sequences) is desirable. Consider adding clarification regarding this.
 
+\reply{A specification of this was added to the section on constraint random verification. Indeed a seed can be specified, making the sequence repeatable and predictable.}
+
 \todo{Andrew makes it clear.}
 
 - In the evaluation section, the performance overhead of ChiselVerify for functional coverage and constrained random verification is analyzed. Is it also possible to include UVM and cocotb in this analysis without major effort? If so, consider adding this.
@@ -317,6 +328,8 @@ discussing this mix and match. Could be the next paper...}
 
 Details:
 - Output for Listing 1: Is there any way to comprehend the 26 hits for io\_outAB. As io\_outAB is only listed in the report, not in the listing, maybe it should be removed or explained further.
+
+\reply{This was removed. as it does not add any additional information to the description of the coverage tool.}
 
 \todo{Andrew will fix.}
 

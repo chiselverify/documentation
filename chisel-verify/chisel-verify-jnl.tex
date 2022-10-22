@@ -77,7 +77,7 @@
 %\IEEEauthorblockA{No Institute Given}
 %}
 
-\author{\IEEEauthorblockN{Andrew Dobis\IEEEauthorrefmark{3}, Kevin Laeufer\IEEEauthorrefmark{2}, Hans Jakob Damsgaard\IEEEauthorrefmark{1}\IEEEauthorrefmark{4}\thanks{Hans Jakob Damsgaard carried out his work at the Technical University of Denmark. He is currently with Tampere University as part of the EU Horizon 2020 APROPOS project, MSCA grant agreement No. $956090$.}, Tjark Petersen\IEEEauthorrefmark{1},\\
+\author{\IEEEauthorblockN{Andrew Dobis\IEEEauthorrefmark{1}\IEEEauthorrefmark{3}, Kevin Laeufer\IEEEauthorrefmark{2}, Hans Jakob Damsgaard\IEEEauthorrefmark{1}\IEEEauthorrefmark{4}\thanks{Hans Jakob Damsgaard carried out his work at the Technical University of Denmark. He is currently with Tampere University as part of the EU Horizon 2020 APROPOS project, MSCA grant agreement No. $956090$.}, Tjark Petersen\IEEEauthorrefmark{1},\\
 Kasper Juul Hesse Rasmussen\IEEEauthorrefmark{1},
 Enrico Tolotto\IEEEauthorrefmark{1}, Simon Thye Andersen\IEEEauthorrefmark{1},\\
 Richard Lin\IEEEauthorrefmark{2}, Martin Schoeberl\IEEEauthorrefmark{1}}\\[-6pt]
@@ -1181,7 +1181,7 @@ They both show to have an average overhead of 3.5\% over ChiselTest independent 
 Such a low and scalable overhead shows that ChiselVerify is an efficient addition to the Chisel verification ecosystem.
 
 \subsubsection{ChiselVerify and UVM Performance Comparison}
-Finally, we evaluate our solution by directly comparing the runtime of two tests, one implemented using SystemVerilog with UVM and the other with ChiselVerify. 
+Finally, we evaluate our solution's performance by directly comparing the runtime of two tests, one implemented using SystemVerilog with UVM and the other with ChiselVerify. 
 The UVM testbench is running using Vivado\footnote{\url{https://support.xilinx.com/s/article/1070861}}, as verilator has yet to support the full verification functionalities required by UVM.
 
 \paragraph{Benchmarking Infrastructure}
@@ -1189,7 +1189,7 @@ To evaluate the performance of our solution, we run one of the tests of the Lero
 The relevant test, \texttt{random\_test}, stimulates the device under test using uniformly random inputs.
 This test is run 50 times in order to obtain a non-biased runtime measured in seconds. 
 A description of the system used for our benchmarking can be found in table \ref{tab:processorinfo}.
-\todo{KASPER: REPLACE WITH YOUR MACHINE'S SPECS}
+%\todo{KASPER: REPLACE WITH YOUR MACHINE'S SPECS}
 \begin{table}[h]
 \centering
 \begin{tabular}{|l|c|}
@@ -1207,26 +1207,31 @@ A description of the system used for our benchmarking can be found in table \ref
 
 \paragraph{Benchmarking Results}
 The results from running the test using first UVM, and secondly using the various tools provided in ChiselVerify, are compiled and summarized in table \ref{tab:perfresults}.
-\todo{KASPER: REPLACE WITH YOUR RESULTS FOR CHISELVERIFY}
-\todo{Talk about results}
+%\todo{KASPER: REPLACE WITH YOUR RESULTS FOR CHISELVERIFY}
+%\todo{Talk about results}
 \begin{table}[h]
 \centering
 \begin{tabular}{|c|c|c|c|}
 \hline
 \textbf{Runtime {[}s{]}} & \textbf{Mean} & \textbf{Std-Deviation} & \textbf{Startup Time} \\ \hline
-\textbf{UVM}             & 0.4           & 0.16                   & 82.5                  \\ \hline
+\textbf{UVM}             & 1.2           & 0.16                   & 82.5                  \\ \hline
 \textbf{ChiselVerify}    & 11.3            & 1.2                      & 13.23                 \\ \hline
 \end{tabular}
 \caption{Runtime results obtained when running the \texttt{random\_test} benchmark implemented with UVM and with ChiselVerify.}
 \label{tab:perfresults}
 \end{table}
 
+These numbers show that ChiselVerify's reliance on ChiselTest and sbt gives it a rather slow runtime when testing, but with a much faster startup time, making it ideal for smaller test suites.
+Recent work by Iyer et al.\ \cite{highperftestapi:Iyer2022} has shown that this might be due to the way ChiselTest handles multi-threading, and efforts, also presented in part in said work, are being made to alleviate this overhead.
 
 \subsubsection{Evaluation Summary}
 As demonstrated above, ChiselVerify allows for the use of functional coverage constructs, as well constrained random verification directly inside of a ChiselTest test bench. 
 Complex constructs can be defined following the low verbosity of Chisel and ChiselTest, requiring on average a 70\% fewer LOC than the industry standard UVM and a 38\% fewer than cocotb.
 ChiselVerify improves upon these existing solutions by enabling direct use of high-level aspects of a Chisel design.
 All of this is done with a low performance overhead, averaging at 3.5\% across the different functionalities.
+Iyer et al.\ \cite{highperftestapi:Iyer2022} have shown that ChiselTest's command api performs better than cocotb's by a factor of 2x.
+However we have seen that, given its low startup time, ChiselVerify still remains slower, in terms of post-startup runtime, than UVM.
+With the efforts presented in Iyer et al.'s work, we can expect the performance of ChiselTest, and thus also ChiselVerify, to improve in the near future.
 
 \section{Conclusion}
 \label{sec:conclude}
@@ -1270,7 +1275,7 @@ reflect the position or the policy of the sponsors.
 
 \begin{IEEEbiography}[{\includegraphics[trim={3cm 0 3cm 0}, width=1in,height=1.25in,clip,keepaspectratio]{bios/dobis.jpg}}]{Andrew Dobis}
 is a Masters student in Computer Science at ETH Zurich. 
-After obtaining his Bachelors degree in the same field from EPFL in 2020, he worked at the Technical University of Denmark (DTU)'s Embedded Systems Group as a Research Assistant.
+After obtaining his B.Sc. in Computer Science from EPFL in 2020, he worked at the Technical University of Denmark (DTU)'s Embedded Systems Group as a Research Assistant.
 His research focused on improving the verification capabilities of the Chisel Hardware Construction language, which lead to the creation of the ChiselVerify verification library.
 His current research interests are more geared towards formal verification.
 \end{IEEEbiography}

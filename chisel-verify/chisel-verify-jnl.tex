@@ -264,6 +264,12 @@ UVM imposes significant initial time-investment demands but is re-usable once it
 running. Moreover, newcomers may experience that UVM is less accessible than simpler approaches 
 such as ChiselVerify as its structure differs from most traditional test benches.
 
+Other works have focused on proposing different verification tools for other HCLs, such as bluecheck~\cite{bluecheck:2015} for the BlueSpec HDL, 
+or fault~\cite{fault:cav2020} which introduces verification components for the Magma HCL. 
+Similarly to ChiselVerify, these solutions propose verification functionalities for their specific HCLs. 
+Bluecheck focuses on enabling the creation of generic testbenches, similarly to UVM, that are synthesizable.
+Fault focuses on providing formal and constraint random verification functionalities, similarly to ChiselVerify, but embedded in Python.
+
 Yosys~\cite{Yosys} is an open-source tool for circuit synthesis.
 Claire Wolf developed the Yosys Open SYnthesis Suite (Yosys) as part of her
 Bachelor thesis at the Vienna University of Technology~\cite{yosys:bachelor}.
@@ -271,7 +277,6 @@ The focus of Yosys is on high-level digital synthesis.
 Yosys uses the open-source logic synthesis tool ABC~\cite{abc:cav:2010} for gate-level optimizations.
 Yosys is a framework that can be extended.
 We can use Yosys for interactive design investigation, circuit analysis, or symbolic model checking.
-
 
 Beyond the general frameworks available in SystemVerilog and UVM, other projects have proposed 
 using software testing techniques to do hardware verification. For example, RFuzz~\cite{rfuzz2018} 
@@ -284,7 +289,7 @@ of solution focusing on implementing verification functionalities in a language 
 RFuzz offers an efficient way of using these to ameliorate testing; particularly by using coverage 
 tools to guide its randomized verification. For the sake of completeness, we also mention another 
 work of ours presenting the use of ChiselVerify's coverage tools for functional-coverage driven mutation-based
-fuzzing~\cite{verify:fuzzing:2021}.
+fuzzing~\cite{verify:fuzzing:2021}, as well as a similar work, which proposes a coverage-driven mutation-based fuzzer for SpinalHDL~\cite{ruep2022spinalfuzz}.
 
 % Kevin: I commented out this paragraph, because it makes no sense. Bounded Model Checking **is** used for software verification (e.g., CBMC) and bit-vector theory is also used for
 %         verifying C or C++ programs (e.g., CBMC, Klee)
@@ -1084,8 +1089,6 @@ For example, this is done for the arbiter circuit using the following structure:
 	IN0_READY: coverpoint dut.io_in_0_ready {
 		bins zero = {0};
 		bins one = {1};
-		bins transitionzto 0 => 1;
-		bins transitionotz 1 => 0;
 	}
 	IN0_VALID: coverpoint dut.io_in_0_valid {
 		//Same bins as in IN0_READY
@@ -1108,26 +1111,31 @@ For example, the arbiter circuit's verification plan has the following structure
  range_relation = lambda val_, bin_ : bin_[0] <= val_ <= bin_[1]
 Arbiter_Coverage = coverage_section(
     CoverPoint("top.io_out_ready", vname="io_out_ready", rel = range_relation, 
-        bins = [(0,1), 0, 1], bins_labels = ["ReadyStates", "ready0", "ready1"]),
+        bins = [0, 1], bins_labels = ["ready0", "ready1"]),
     CoverPoint("top.io_out_valid", vname="top.io_out_valid", rel = range_relation, 
-        bins = [(0,1), 0, 1], bins_labels = ["ValidStates", "valid0", "valid1"]),
+        bins = [0, 1], bins_labels = ["valid0", "valid1"]),
     # [...] Repeat for each port
 )
  \end{lstlisting}
- Only considering coverage-related code, this requires 82 lines of cocotb-coverage code.
+ Here the range relation lambda tells cocotb how to interpret the bounds of a range. 
+ This can be compared to how ChiselVerify allows for custom hit conditions to be defined.
+ When a single number is give, e.g.\ $0$, this is interpreted as a range \texttt{0 to 0}, thus a hit is considered if our relation holds for the sampled value, i.e.\ \texttt{0 <= val <= 0}.
+ Only considering coverage-related code, the verification plan defined in cocotb requires 82 lines of cocotb-coverage code.
  
 \paragraph{Functional Coverage with ChiselVerify} Finally, using ChiselVerify to gather functional coverage information about a design allows for direct interaction with the Chisel design.
 In the case of designs with complex interfaces, such as the arbiter, this allows us to create generic verification plans that function with any parametrization of the design.
 For example, in the case of the arbiter, which has a variable number of inputs, we can simply define our verification plan using a generic loop over all inputs in the design as follows:
  \begin{lstlisting}[language=scala]
-dut.io.in.foreach((input: DecoupledIO[UInt]) => {
+dut.io.in.zipWithIndex.foreach((input: DecoupledIO[UInt], idx: Int) => {
   cr.register(
-    cover(s"in${input.hashCode()}.ready", input.ready)(
-        bin("ReadyStates", 0 to 1)),
+    cover(s"in${idx}.ready", input.ready)(
+        bin("Ready0", 0 to 0), 
+        bin("Ready1", 1 to 1)),
     // [...] Continue the VP of a single input
   )
 })
  \end{lstlisting}
+Here, the \texttt{zipWithIndex} call allows us to concisely loop over our array with a \texttt{foreach} loop, while having access to the loop index, enabling the creation of unique identifiers for our \texttt{cover} objects.
 Only considering coverage-related code, this definition requires 26 lines of code for the arbiter's complete verification plan.
 
 \paragraph{Summary}
@@ -1139,6 +1147,7 @@ Only considering coverage-related code, this definition requires 26 lines of cod
   \end{figure}
   
 The results from our comparison are summarized in Figure~\ref{fig:cvsvpycomp}.
+It is important to keep in mind that these user-level comparisons are not absolute, and are used to give the reader an idea of the amount of code that is required to be written in the different languages to solve the same problems.
 Figure~\ref{fig:cvsvpycomp} shows that, with ChiselVerify, we obtain on average a 70\% reduction in LOC over UVM and a 38\% reduction over cocotb. 
 This is due to ChiselVerify's capability of exploiting the high-level design constructs, such as vectors, directly in the verification plan, while the other solutions need to rely on the unfolded generated Verilog.
 For designs with simple interfaces such as the priority queue or the Leros ALU, we obtain an increase of 30\% over cocotb. 
@@ -1195,7 +1204,7 @@ A description of the system used for our benchmarking can be found in table \ref
 \begin{tabular}{|l|c|}
 \hline
 \multicolumn{1}{|c|}{\textbf{}}      & \textbf{Processor}     \\ \hline
-\multicolumn{1}{|c|}{\textbf{Model}} & Intel Core m5-6Y54 CPU \\ \hline
+\textbf{Model} & Intel Core m5-6Y54 CPU \\ \hline
 \textbf{µArch}                       & Skylake                \\ \hline
 \textbf{Base Frequency}              & 1.20 GHz               \\ \hline
 \textbf{Max Frequency}               & 2.7 GHz                \\ \hline

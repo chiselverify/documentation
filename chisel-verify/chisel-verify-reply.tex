@@ -92,7 +92,7 @@ Many sentences sound like attempts to justify that the authors have actually don
 More importantly, a scientific paper is neither a tool documentation nor a github readme.
 Here are some self-explanatory excerpts that should simply never appear in a journal paper.
 
-\martin{this needs just a bit of rewriting.}
+%\martin{this needs just a bit of rewriting.}
 
 \begin{quote}
 The recommended way to
@@ -127,8 +127,8 @@ More generally, custom terms should be introduced with parsimony by the authors 
 
 \begin{quote}
 \reply{
-We fixed this by making our naming choices more consistent, and explained them clearly every time, rather than assuming that the reader knew what we were talking about.
-We now explained the concepts as we introduce them, and made sure to always use the same terms throughout the paper.
+We fixed this by making our keyword uses more consistent, and explained them clearly every time, rather than assuming that the reader knew what we were talking about.
+We now explain the concepts as we introduce them, and make sure to always use the same terms throughout the paper.
 }
 \end{quote}
 
@@ -154,8 +154,16 @@ Absolute key figures are missing here: total time spent, number of runs, average
 These figures are critical for the reader to figure out how it compares to its own use-cases and if such testing framework are worth of interest in practice.
 A common underlying commercial simulation tools would be required here for UVM support, which does not exclude an additional discussion on the ability to use very performant open-source tools such as verilator thanks to framework such as yours or cocotb.
 
-\martin{This is the toughest one. Even when we run those tests on our EDA servers, can we run
-Chisel and Verilator there as well? Or can we run the UVM stuff in Vivado?}
+%\martin{This is the toughest one. Even when we run those tests on our EDA servers, can we run
+%Chisel and Verilator there as well? Or can we run the UVM stuff in Vivado?}
+
+\begin{quote}
+\reply{
+We created a benchmarking infrastructure for our work and used it to evaluate the performance of ChiselVerify directly agains UVM. 
+These benchmarks are available in our repository \url{github.com/chiselverify/blob/main/chiselverify/benchmark.py} for the chiselverify benchmark, and  \url{github.com/chiselverify/otherverify/blob/main/sv/leros/benchmark.py} for the UVM one.
+The numbers we obtained are still very preliminary, since we were only able to run the benchmark once, and have yet to create such a benchmarking script for cocotb. This was due to time constraints.
+}
+\end{quote}
 
 Second, comparisons of user-experience in terms of Lines of Codes are always slippery, and must hence be extremely accurate when defended as a key improvement over existing solutions.
 The three comparative listings presented raise three major issues.
@@ -165,15 +173,28 @@ The three comparative listings presented raise three major issues.
 - Cocotb example covers `top.io\_out\_ready` and `top.io\_out\_valid` with 3 bins each
 - ChiselVerify covers generically `in\${input.hashCode()}.ready` with only one bin (note that the use of `hashCode` here is both cumbersome and baffling for non scala-expert readers)
 
-\martin{Do we still have the UVM and cocotb code somewhere?}
+\begin{quote}
+\reply{
+We decided to maintain our LOC comparison, as we think that it gives the reader a decent idea of the effort that is required to write test-benches using the different frameworks.
+We made the snippets more consistent, using the same number of bins for each coverpoint, and using simpler solutions for the scala code in order to make it easier to read for non scala-experts.
+We also reformulated our LOC comparison conclusion to make it clear that we are simply trying to convey an idea of the amount effort required to write each type of test-bench, and not give absolute results.
+}
+\end{quote}
+%\martin{Do we still have the UVM and cocotb code somewhere?}
 
-\todo{Kasper and Hans should help out with the UVM examples.}
+%\todo{Kasper and Hans should help out with the UVM examples.}
 
 2. The ability to enumerate port on the python seems neglected
 Code listings suggest that only ChiselVerify is able to enumerate ports to create cover points while any python user would retort that a dictionary of ports (even manually written) could also do the job.
 
-\martin{Good point. We need to fix this.}
-\todo{Andrew looks into this.}
+\begin{quote}
+\reply{After looking into this, it does not seem to reduce the over amount of code that is needed to be written, as the generated verilog description is still the one being interfaced with, and not the chisel description.
+We are not experts when it comes to using cocotb, however we did notice that writing such a dictionary in order to iterate over it generically still required a substantial amount of manual work, which did not really reduce the amount of code being written.
+}
+\end{quote}
+
+%\martin{Good point. We need to fix this.}
+%\todo{Andrew looks into this.}
 
 3. The feature-to-feature comparison is not intelligible 
 \begin{quote}
@@ -184,26 +205,36 @@ of a cover point, making its verification plan a less accurate
 model of our specification. 
 \end{quote}
 
-
-\todo{probably solving with removing.}
+\begin{quote}
+\reply{This part was removed after reconsideration, as it does seem too vague and subjective.}
+\end{quote}
+%\todo{probably solving with removing.}
 
 This argument cannot be understood by the reader with the given code listing.
 Without further explanation, the python `range\_relation` lambda function might be understood as this value transition while nothing is specified on ChiselVerify listing.
 If this ability to model value transition is a real advantage over cocotb, it should be further detailed.
 Such functional discrepancies then call for a comparison of the 3 solutions from a functional point of view, maybe with a small summarizing table of common and distinct features.
 
-\todo{Martin will look this up.}
+\begin{quote}
+\reply{The different functionalities used in the code snippets are now explained in more detail in the text, allowing for the reader to understand exactly how we are modeling the same behavior in the three frameworks.
+We did not specify anything in the chiselverify code snippet, as there is already an entire detailed section dedicated to chiselverify's coverage syntax, and the different functionalities it offers.
+We chose not to compare the functionalities of the three solutions in a table, as it ended up being confusing and cumbersome, and the information was already given in the various chiselverify presentation sections.}
+\end{quote}
+%\todo{Martin will look this up.}
 
 \# Minor concerns
 
 \#\# Related work
 - no mention/comparison of testing framework associated to other HCLs, this requires further investigations
 
-\todo{cite fault: A Python Embedded Domain-Specific Language for Metaprogramming Portable Hardware Verification Components, CAV'20}
+%\todo{cite fault: A Python Embedded Domain-Specific Language for Metaprogramming Portable Hardware Verification Components, CAV'20}
 
-\todo{cite BlueCheck: BlueCheck: Naylor, Matthew, and Simon Moore. "A generic synthesisable test bench." In 2015 ACM/IEEE International Conference on Formal Methods and Models for Codesign (MEMOCODE), pp. 128-137. IEEE, 2015.}
+%\todo{cite BlueCheck: BlueCheck: Naylor, Matthew, and Simon Moore. "A generic synthesisable test bench." In 2015 ACM/IEEE International Conference on Formal Methods and Models for Codesign (MEMOCODE), pp. 128-137. IEEE, 2015.}
 
-\todo{cite SpinalHDL}
+%\todo{cite SpinalHDL}
+\begin{quote}
+\reply{We added a paragraph in the related work section briefly comparing ChiselVerify to fault (magma's verification framework), BlueCheck (BlueSpec's verification framework) and SpinalFuzz (for Spinal HDL).}
+\end{quote}
 
 - SecChisel[1] is worth mentioning, not due to an equivalent purpose but because it internally leverages a similar flow based on FIRRTL transforms, SMT code generator and Z3 SMT solver.
 [1] Deng, Shuwen, et al. "SecChisel framework for security verification of secure processor architectures." Proceedings of the 8th International Workshop on Hardware and Architectural Support for Security and Privacy. 2019.
@@ -223,12 +254,16 @@ input value corner cases. We will thus model our test bench
 to do so.  
 \end{quote}
 
+\reply{We chose not to focus too much on the Leros accumulator testbench description, as it is somewhat of a toy example. 
+Testing all operations simply means feeding all possible values to the ``op'' input.
+The level of description of the use-case is intended to match the use-case's complexity.
+}
 
-\todo{Martin will look into this.}
+%\todo{Martin will look into this.}
 
 \#\# Chisel stack presentation
 Figure 1 must be drawn in a single direction (left to right arrows only), with appropriate color schemes and legend. It is currently quite confusing even for an advanced chisel-user.
-In particular, a same color/shape combinaison should not be used for tools (treadle, verilator, synthesizer) and products (chisel code, verilog, bitstream).
+In particular, a same color/shape combination should not be used for tools (treadle, verilator, synthesizer) and products (chisel code, verilog, bitstream).
 
 \begin{quote}
 \reply{We have redrawn the figure with a clear flow from left to right and different symbols for tools and files.}
@@ -294,8 +329,8 @@ As for the other comments, the non-explained results were simply omitted, and th
 \end{quote}
 
 
-\todo{Andrew wil fix it.}
-\todo{Color highlighting no, as too may different languages.}
+%\todo{Andrew wil fix it.}
+%\todo{Color highlighting no, as too may different languages.}
 
 \# Conclusion
 I believe this paper could be a very good one if the above is addressed, and I strongly encourage the authors to invest on the topic. 
@@ -317,7 +352,7 @@ General comments:
 The paper does not have any major weak points and is of high quality. Consider the following remarks for further improvements
 
 \begin{quote}
-\reply{Thank you for this assesment.}
+\reply{Thank you for this assessment.}
 \end{quote}
 
 - yosys (and related tools) are mentioned in the formal verification chapter. Maybe it might be a good idea to also include an intro to it in the related work or background section.
@@ -342,13 +377,19 @@ discussing this mix and match. Could be the next paper...}
 
 - In the evaluation section, the performance overhead of ChiselVerify for functional coverage and constrained random verification is analyzed. Is it also possible to include UVM and cocotb in this analysis without major effort? If so, consider adding this.
 
-\martin{Same request as Reviewer 1}
+\begin{quote}
+\reply{We did not perform an overhead analysis on cocotb or UVM, as this would require too much work given the short amount of time we had.
+We chose to focus on adding a more scientific performance comparison between ChiselVerify and UVM.
+The overhead analysis for ChiselVerify was kept, because it shows that most of the bottleneck from our solution comes from ChiselTest and not ChiselVerify itself.
+}
+\end{quote}
+%\martin{Same request as Reviewer 1}
 
 Details:
 - Output for Listing 1: Is there any way to comprehend the 26 hits for io\_outAB. As io\_outAB is only listed in the report, not in the listing, maybe it should be removed or explained further.
 
 \begin{quote}
-\reply{We removed that listing, as it does not add any additional information to the description of the coverage tool.}
+\reply{We removed that part of the listing, as it does not add any additional information to the description of the coverage tool.}
 \end{quote}
 
 - Bounded model checking from checkpoints: Is is written that: "If the solver returns that there is no such assignment, we get a guarantee that our circuit will not hit any assertion violation for the first k cycles of its execution." which sounds like that's just possible at the beginning (i.e. after reset). Is it also possible to do this from any known state of the circuit (i.e. a checkpoint)?
@@ -393,15 +434,16 @@ We added the GDSII to the figure.
 - Homogenize between American and British English, e.g.: standardized vs. standardized, modeling vs. modeling, behavior vs. behaviour, etc.
 - Homogenize hyphenation: evermore vs. ever-more, object-oriented, open-source, etc.
 - cototb is written using a different font in the evaluation chapter compared to the previous chapters
-\todo{Martin will fix and run Grammarly}
+%\todo{Martin will fix and run Grammarly}
+\begin{quote}
+\reply{Thank you for pointing this out, the text has been homogenized.}
+\end{quote}
 
 - Bibliography: Consistent upper/lower case usage for, e.g. chisel or scala.
 
-\todo{Andrew will fix the .bib file.}
-
 \begin{quote}
 \reply{
-We fixed the bib.
+We fixed the bib, and made the capitalization consistent.
 }\end{quote}
 
 
@@ -411,7 +453,9 @@ We fixed the bib.
 Here we list a few changes not based on review comments.
 
 \begin{itemize}
-	\item  made capitalization of ChiselTest consistent
+	\item Made capitalization of ChiselTest consistent.
+	\item Updated the affiliation of one of the authors.
+	\item Added a reference to a recent work by Iyer et al., which proposes a solution to one of the main performance bottlenecks of ChiselTest.
 \end{itemize}
 
 \end{document}

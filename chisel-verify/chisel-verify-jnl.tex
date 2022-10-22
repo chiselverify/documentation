@@ -1143,11 +1143,9 @@ Figure~\ref{fig:cvsvpycomp} shows that, with ChiselVerify, we obtain on average 
 This is due to ChiselVerify's capability of exploiting the high-level design constructs, such as vectors, directly in the verification plan, while the other solutions need to rely on the unfolded generated Verilog.
 For designs with simple interfaces such as the priority queue or the Leros ALU, we obtain an increase of 30\% over cocotb. 
 This comes from cocotb's grouped bin declarations in a coverpoint.
-However, this is an incomplete comparison, since cocotb does not provide the tools to express value transitions or temporal relations inside of a cover point, making its verification plan a less accurate model of our specification.
-Thus, while it can be more concise to declare coverpoints in cocotb with simple designs, complex relations, often found in realistic designs, are more difficult to model.
-It is much easier to access the ports from ChiselTest instead of UVM or cocotb, as we can use the original Chisel object.
+While it can be more concise to declare coverpoints in cocotb with simple designs, complex relations, often found in realistic designs, are more difficult to model.
+It is more direct to access the ports from a Chisel description using ChiselTest instead of UVM or cocotb, since we can use the Chisel object as it was originally described, and not have to interface via a more low-level generated Verilog description.
 This becomes especially important for deeper nested structures of IO ports.
-
 
 \subsubsection{ChiselVerify Performance Overhead}
 In order to evaluate our proposed solutions more thoroughly, we will look at the performance overhead that comes with using our verification tools to augment a ChiselTest test bench.
@@ -1181,6 +1179,48 @@ The results from these measurements are summarized in Figure~\ref{fig:cvoverhead
 These results show that the both the functional coverage and constrained random verification tools scale quite well, since their overheads seem to be almost independent of the size of the verification plan or the number of random variables used.
 They both show to have an average overhead of 3.5\% over ChiselTest independent of the scale at which they are used.
 Such a low and scalable overhead shows that ChiselVerify is an efficient addition to the Chisel verification ecosystem.
+
+\subsubsection{ChiselVerify and UVM Performance Comparison}
+Finally, we evaluate our solution by directly comparing the runtime of two tests, one implemented using SystemVerilog with UVM and the other with ChiselVerify. 
+The UVM testbench is running using Vivado\footnote{\url{https://support.xilinx.com/s/article/1070861}}, as verilator has yet to support the full verification functionalities required by UVM.
+
+\paragraph{Benchmarking Infrastructure}
+To evaluate the performance of our solution, we run one of the tests of the Leros accumulator ALU presented in a previous section.
+The relevant test, \texttt{random\_test}, stimulates the device under test using uniformly random inputs.
+This test is run 50 times in order to obtain a non-biased runtime measured in seconds. 
+A description of the system used for our benchmarking can be found in table \ref{tab:processorinfo}.
+\todo{KASPER: REPLACE WITH YOUR MACHINE'S SPECS}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\multicolumn{1}{|c|}{\textbf{}}      & \textbf{Processor}     \\ \hline
+\multicolumn{1}{|c|}{\textbf{Model}} & Intel Core m5-6Y54 CPU \\ \hline
+\textbf{µArch}                       & Skylake                \\ \hline
+\textbf{Base Frequency}              & 1.20 GHz               \\ \hline
+\textbf{Max Frequency}               & 2.7 GHz                \\ \hline
+\textbf{N\_Threads}                  & 4                      \\ \hline
+\end{tabular}
+\caption{Various details about the processor used for our benchmarks.}
+\label{tab:processorinfo}
+\end{table}
+
+\paragraph{Benchmarking Results}
+The results from running the test using first UVM, and secondly using the various tools provided in ChiselVerify, are compiled and summarized in table \ref{tab:perfresults}.
+\todo{KASPER: REPLACE WITH YOUR RESULTS FOR CHISELVERIFY}
+\todo{Talk about results}
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Runtime {[}s{]}} & \textbf{Mean} & \textbf{Std-Deviation} & \textbf{Startup Time} \\ \hline
+\textbf{UVM}             & 0.4           & 0.16                   & 82.5                  \\ \hline
+\textbf{ChiselVerify}    & x             & y                      & 13.23                 \\ \hline
+\end{tabular}
+\caption{Runtime results obtained when running the \texttt{random\_test} benchmark implemented with UVM and with ChiselVerify.}
+\label{tab:perfresults}
+\end{table}
+
 
 \subsubsection{Evaluation Summary}
 As demonstrated above, ChiselVerify allows for the use of functional coverage constructs, as well constrained random verification directly inside of a ChiselTest test bench. 
